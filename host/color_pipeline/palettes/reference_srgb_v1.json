@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "palette_id": "reference-srgb-v1",
+  "calibrated": false,
+  "source": "Mathematical IEC sRGB/D65 anchors for offline development; not MF-1750 panel measurements",
+  "illuminant": "D65",
+  "observer": "2deg",
+  "notes": "Replace Lab values with measured panel patches and set calibrated=true only after controlled measurement.",
+  "entries": [
+    {"code": 0, "name": "black",  "lab": [0.0, 0.0, 0.0],                  "preview_rgb": [0, 0, 0]},
+    {"code": 1, "name": "white",  "lab": [100.0, 0.0, 0.0],                "preview_rgb": [255, 255, 255]},
+    {"code": 2, "name": "yellow", "lab": [97.1393, -21.5537, 94.4780],     "preview_rgb": [255, 255, 0]},
+    {"code": 3, "name": "red",    "lab": [53.2408, 80.0925, 67.2032],      "preview_rgb": [255, 0, 0]},
+    {"code": 5, "name": "blue",   "lab": [32.2970, 79.1875, -107.8602],    "preview_rgb": [0, 0, 255]},
+    {"code": 6, "name": "green",  "lab": [87.7347, -86.1827, 83.1793],     "preview_rgb": [0, 255, 0]}
+  ]
+}
