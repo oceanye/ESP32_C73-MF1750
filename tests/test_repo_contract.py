@@ -78,5 +78,23 @@ class StaticContractTests(unittest.TestCase):
             self.assertTrue(any("C string" in error for error in result.errors))
 
 
+class FingerprintTests(unittest.TestCase):
+    def test_text_fingerprint_accepts_lf_and_crlf_checkout_forms(self) -> None:
+        from tools.check_repo_contract import _matches_fingerprint
+
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "frozen.csv"
+            crlf = b"name,value\r\nalpha,1\r\n"
+            expected_bytes = len(crlf)
+            expected_sha256 = hashlib.sha256(crlf).hexdigest()
+
+            path.write_bytes(crlf)
+            self.assertTrue(_matches_fingerprint(path, expected_bytes, expected_sha256))
+            path.write_bytes(crlf.replace(b"\r\n", b"\n"))
+            self.assertTrue(_matches_fingerprint(path, expected_bytes, expected_sha256))
+            path.write_bytes(b"name,value\nalpha,2\n")
+            self.assertFalse(_matches_fingerprint(path, expected_bytes, expected_sha256))
+
+
 if __name__ == "__main__":
     unittest.main()
