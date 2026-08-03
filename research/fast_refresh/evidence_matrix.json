@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "panel": "MF-17506-M009F-T",
+  "controller": "SPD1657B revision 0x04",
+  "updated": "2026-08-04",
+  "evidence": [
+    {
+      "id": "D1",
+      "classification": "direct-panel",
+      "source": "参考资料/MF-1750..1).pdf pages 4, 11, 13-15",
+      "finding": "The panel integrates SRAM, LUT, temperature sensor and an on-chip OTP waveform. Write-clock cycle is at least 50 ns (20 MHz ceiling). The command table defers to the SPD1657B datasheet. Electrical and optical performance is guaranteed only with the controller and waveform supplied by InkCubic.",
+      "permits": [
+        "A staged 1/2/4/8/10 MHz SPI upload sweep",
+        "Considering 20 MHz only after all lower rates pass and signal timing is reviewed",
+        "Requesting the matching SPD1657B command and waveform package"
+      ],
+      "does_not_permit": [
+        "Blind command enumeration",
+        "Changing high-voltage or waveform parameters",
+        "Assuming a partial-update command exists"
+      ]
+    },
+    {
+      "id": "D2",
+      "classification": "direct-panel-family",
+      "source": "参考资料/E6_73_sample code_V1.2_20250116/E6_73_sample code_V1.2_20250116/E6_73.c",
+      "finding": "The supplied E Ink sample has one full DTM/PON/DRF/POF sequence. Command 0x86 is named Interlace and is reserved for future dither images, depending on dither area. No partial-window or fast-waveform sequence is supplied. V1.2 adds a six-second wait and panel-VDD cut sequence after every display.",
+      "permits": [
+        "Asking the vendor for the documented 0x86 data format and area semantics",
+        "Keeping post-display power-cut timing in the safety baseline"
+      ],
+      "does_not_permit": [
+        "Calling 0x86 without its command definition",
+        "Treating Interlace as proof of fast or partial refresh",
+        "Removing the V1.2 power-cut sequence"
+      ]
+    },
+    {
+      "id": "D3",
+      "classification": "direct-technology-platform",
+      "source": "https://www.eink.com/brand/detail/Spectra6",
+      "finding": "E Ink states that Spectra 6 supports the Sparkle partial-image flashing effect.",
+      "permits": [
+        "Requesting Sparkle support files or a compatible waveform for this exact panel and OTP lot"
+      ],
+      "does_not_permit": [
+        "Assuming every Spectra 6 panel/controller/OTP exposes Sparkle",
+        "Inferring SPD1657B command bytes"
+      ]
+    },
+    {
+      "id": "D4",
+      "classification": "direct-technology-platform",
+      "source": "https://shopkits.eink.com/en/product/detail/7.3%27%27Spectra6ePaperDisplay",
+      "finding": "A contemporary 7.3-inch Spectra 6 module advertises on-chip display RAM and waveform storage in on-chip OTP, and requires project-specific support files for the matching evaluation board.",
+      "permits": [
+        "Treating waveform/support-data matching as a hard dependency"
+      ],
+      "does_not_permit": [
+        "Copying support data from a different panel size or controller revision"
+      ]
+    },
+    {
+      "id": "D5",
+      "classification": "direct-technology-research",
+      "source": "https://patents.google.com/patent/US20250239231A1/en",
+      "finding": "E Ink describes color partial updates as transition-aware operations that preserve unchanged pixels, with special handling around update borders to reduce inter-pixel ghosting.",
+      "permits": [
+        "Designing future host tooling around old/new frames, changed-pixel masks, expanded borders and cleanup counters"
+      ],
+      "does_not_permit": [
+        "Deriving a production waveform or controller command sequence from the patent"
+      ]
+    },
+    {
+      "id": "A1",
+      "classification": "adjacent-controller",
+      "source": "参考资料/Solomon-SPD1656.pdf",
+      "finding": "SPD1656 is an earlier color EPD controller with a different waveform-storage and command model.",
+      "permits": [
+        "Understanding general EPD controller concepts only"
+      ],
+      "does_not_permit": [
+        "Porting PartialRAM, LUT-unlock, voltage, frame-rate or waveform commands to SPD1657B"
+      ]
+    },
+    {
+      "id": "I1",
+      "classification": "incompatible-generation",
+      "source": "https://www.eink.com/news/detail/E-Ink-Ripple-Second-Generation-Waveform-Architecture-E%20Ink-Spectra-Displays",
+      "finding": "Ripple and the second-generation architecture use compatible newer chipsets and may use a standalone T2000 controller.",
+      "permits": [
+        "A future hardware/platform migration study"
+      ],
+      "does_not_permit": [
+        "Claiming Ripple is available on the current MF-1750/SPD1657B board"
+      ]
+    }
+  ],
+  "missing_primary_inputs": [
+    "SPD1657B full command datasheet for revision 0x04",
+    "MF-17506-M009F-T OTP waveform identifier and version",
+    "Documented 0x86 Interlace definition and region encoding",
+    "Sparkle/partial/fast waveform availability for this exact panel and OTP lot",
+    "Supported transition matrix and old-frame requirements",
+    "Temperature bands and sensor-read procedure",
+    "Maximum consecutive partial updates and mandatory cleanup sequence",
+    "Optical, lifetime and warranty limits for fast/partial modes"
+  ]
+}
+
