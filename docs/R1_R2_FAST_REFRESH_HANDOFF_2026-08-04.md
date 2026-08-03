@@ -16,6 +16,17 @@ Risks requiring integrator review: 20 MHz 是面板接口上限而非板级保�
 Suggested merge order: D0 baseline -> C1 -> R1 offline tooling；R2 文档可独立合并，任何未来 src 实验另开分支审查。
 ```
 
+## 远端与集成状态（2026-08-04 更新）
+
+- `research/fast-refresh` 已推送，工作包头提交为 `b03b7e1`；
+- 已合入 `integration/host-fast-refresh-ci-color`，代码合并点 `42773d4`，
+  集成说明点 `aa006c4`；
+- 集成分支本地 `Ran 64 tests in 10.220s`，GitHub Actions
+  [run 30862770816](https://github.com/oceanye/ESP32_C73-MF1750/actions/runs/30862770816)
+  的主机门禁与 PlatformIO release 编译均成功；
+- 上述结果仍为 `Hardware tested: NO`。SPI 实机扫频、快速波形和局刷没有因此
+  自动解锁。
+
 ## 家中集成负责人下一步
 
 1. 先完成 D0 的 MAP_ORIENT_V1 方向检查和 1 MHz 正常图片验收；

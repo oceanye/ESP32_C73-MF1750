@@ -22,6 +22,11 @@ git diff --check
 
 结果：仓库契约通过；`Ran 64 tests in 10.220s`；`OK`；全部 exit code 0。
 
+远端代码与说明点 `aa006c4` 已推送；对应
+[GitHub Actions run 30862770816](https://github.com/oceanye/ESP32_C73-MF1750/actions/runs/30862770816)
+已完成且结论为 `success`。其中 “Host tests and frozen contracts” 与
+“PlatformIO release build (hardware not tested)” 两个 job 均通过。
+
 此分支没有修改 `src/epd_driver.*`、硬件设计或冻结生产文件，也没有刷写或
 连接实物。CI/PlatformIO 成功仅代表主机契约和固件编译成功，始终不是硬件
 验收。快速波形/局刷仍受 SPD1657B 与面板 OTP 厂商资料门禁约束；色彩效果仍

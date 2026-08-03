@@ -16,6 +16,15 @@ Risks requiring integrator review: replace the reference palette with controlled
 Suggested merge order: D0 baseline -> C1 -> C5 -> C2
 ```
 
+## 远端验证与集成状态
+
+- `feature/color-dither` @ `7cc015e` 已推送；
+- [C2 Actions run 30862376043](https://github.com/oceanye/ESP32_C73-MF1750/actions/runs/30862376043)
+  的 45 项分支回归与 PlatformIO release 编译成功；
+- 已合入 `integration/host-fast-refresh-ci-color`，代码合并点 `42773d4`；
+- [完整集成 Actions run 30862770816](https://github.com/oceanye/ESP32_C73-MF1750/actions/runs/30862770816)
+  成功，仍明确为 `Hardware tested: NO`。
+
 ## Delivered contract
 
 - Reuses C1 `pack_pixels`, `validate_frame`, physical colour codes and FNV-1a;

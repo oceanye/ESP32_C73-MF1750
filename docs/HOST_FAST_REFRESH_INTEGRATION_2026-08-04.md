@@ -1,5 +1,9 @@
 # 主机帧与快速刷新集成候选（2026-08-04）
 
+> 本文记录 C1 + R1/R2 的早期 37-test 集成快照。包含后续 C5 与 C2、并已
+> 通过 64 项联合回归的最新候选见
+> [`HOST_REFRESH_COLOR_INTEGRATION_2026-08-04.md`](HOST_REFRESH_COLOR_INTEGRATION_2026-08-04.md)。
+
 ```text
 Baseline commit SHA: 3033da0
 Integration branch: integration/host-fast-refresh
