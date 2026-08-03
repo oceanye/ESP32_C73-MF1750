@@ -1,0 +1,7030 @@
+(kicad_sch
+	(version 20250114)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "e8b167f2-19c4-463e-b70b-ca82a8a43a73")
+	(paper "A2")
+	(title_block
+		(title "MF-1750 / M009F-T Full 50-pin Driver - Reference Schematic Draft")
+		(company "Generated in ESP32_C73 workspace")
+	)
+	(lib_symbols
+		(symbol "Local:MF1750_FPC50"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "J"
+				(at 0 0 0)
+				(effects (font (size 1.27 1.27)))
+			)
+			(property "Value" "MF1750_FPC50"
+				(at 0 -2.54 0)
+				(effects (font (size 1.27 1.27)))
+			)
+			(property "Footprint" "Connector:FPC50-0.5-28.6X4.9X2MM"
+				(at 0 0 0)
+				(effects (font (size 1.27 1.27)) (hide yes))
+			)
+			(symbol "MF1750_FPC50_0_1"
+				(rectangle
+					(start -10 -4.00)
+					(end 10 63.50)
+					(stroke (width 0.254) (type default))
+					(fill (type background))
+				)
+			)
+			(symbol "MF1750_FPC50_1_1"
+				(pin passive line
+					(at -15.24 60.96 0)
+					(length 5.08)
+					(name "NC" (effects (font (size 0.85 0.85))))
+					(number "1" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 58.42 0)
+					(length 5.08)
+					(name "TFT_VCOM" (effects (font (size 0.85 0.85))))
+					(number "2" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 55.88 0)
+					(length 5.08)
+					(name "FPL_VCOM" (effects (font (size 0.85 0.85))))
+					(number "3" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 53.34 0)
+					(length 5.08)
+					(name "SL_CSB" (effects (font (size 0.85 0.85))))
+					(number "4" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 50.80 0)
+					(length 5.08)
+					(name "GDRH" (effects (font (size 0.85 0.85))))
+					(number "5" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 48.26 0)
+					(length 5.08)
+					(name "RESEH" (effects (font (size 0.85 0.85))))
+					(number "6" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 45.72 0)
+					(length 5.08)
+					(name "GDRL" (effects (font (size 0.85 0.85))))
+					(number "7" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 43.18 0)
+					(length 5.08)
+					(name "RESEL" (effects (font (size 0.85 0.85))))
+					(number "8" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 40.64 0)
+					(length 5.08)
+					(name "GDRC" (effects (font (size 0.85 0.85))))
+					(number "9" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 38.10 0)
+					(length 5.08)
+					(name "RESEC" (effects (font (size 0.85 0.85))))
+					(number "10" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 35.56 0)
+					(length 5.08)
+					(name "VPC" (effects (font (size 0.85 0.85))))
+					(number "11" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 33.02 0)
+					(length 5.08)
+					(name "GND" (effects (font (size 0.85 0.85))))
+					(number "12" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 30.48 0)
+					(length 5.08)
+					(name "VGL" (effects (font (size 0.85 0.85))))
+					(number "13" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 27.94 0)
+					(length 5.08)
+					(name "VPH" (effects (font (size 0.85 0.85))))
+					(number "14" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 25.40 0)
+					(length 5.08)
+					(name "VSH" (effects (font (size 0.85 0.85))))
+					(number "15" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 22.86 0)
+					(length 5.08)
+					(name "VSH_LV" (effects (font (size 0.85 0.85))))
+					(number "16" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 20.32 0)
+					(length 5.08)
+					(name "VSH_LV2" (effects (font (size 0.85 0.85))))
+					(number "17" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 17.78 0)
+					(length 5.08)
+					(name "VSL" (effects (font (size 0.85 0.85))))
+					(number "18" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 15.24 0)
+					(length 5.08)
+					(name "VSL_LV" (effects (font (size 0.85 0.85))))
+					(number "19" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 12.70 0)
+					(length 5.08)
+					(name "VSL_LV2" (effects (font (size 0.85 0.85))))
+					(number "20" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 10.16 0)
+					(length 5.08)
+					(name "GNDA" (effects (font (size 0.85 0.85))))
+					(number "21" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 7.62 0)
+					(length 5.08)
+					(name "REFN" (effects (font (size 0.85 0.85))))
+					(number "22" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 5.08 0)
+					(length 5.08)
+					(name "REFP" (effects (font (size 0.85 0.85))))
+					(number "23" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 2.54 0)
+					(length 5.08)
+					(name "TSCL" (effects (font (size 0.85 0.85))))
+					(number "24" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 0.00 0)
+					(length 5.08)
+					(name "TSDA" (effects (font (size 0.85 0.85))))
+					(number "25" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at 15.24 60.96 180)
+					(length 5.08)
+					(name "BS0" (effects (font (size 0.85 0.85))))
+					(number "26" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at 15.24 58.42 180)
+					(length 5.08)
+					(name "BS1" (effects (font (size 0.85 0.85))))
+					(number "27" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at 15.24 55.88 180)
+					(length 5.08)
+					(name "RST_N" (effects (font (size 0.85 0.85))))
+					(number "28" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at 15.24 53.34 180)
+					(length 5.08)
+					(name "BUSY_N" (effects (font (size 0.85 0.85))))
+					(number "29" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at 15.24 50.80 180)
+					(length 5.08)
+					(name "DC" (effects (font (size 0.85 0.85))))
+					(number "30" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at 15.24 48.26 180)
+					(length 5.08)
+					(name "CSB" (effects (font (size 0.85 0.85))))
+					(number "31" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at 15.24 45.72 180)
+					(length 5.08)
+					(name "SCL" (effects (font (size 0.85 0.85))))
+					(number "32" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at 15.24 43.18 180)
+					(length 5.08)
+					(name "SI0" (effects (font (size 0.85 0.85))))
+					(number "33" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at 15.24 40.64 180)
+					(length 5.08)
+					(name "SI1" (effects (font (size 0.85 0.85))))
+					(number "34" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at 15.24 38.10 180)
+					(length 5.08)
+					(name "SI2" (effects (font (size 0.85 0.85))))
+					(number "35" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at 15.24 35.56 180)
+					(length 5.08)
+					(name "SI3" (effects (font (size 0.85 0.85))))
+					(number "36" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at 15.24 33.02 180)
+					(length 5.08)
+					(name "VDDD" (effects (font (size 0.85 0.85))))
+					(number "37" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at 15.24 30.48 180)
+					(length 5.08)
+					(name "VDD" (effects (font (size 0.85 0.85))))
+					(number "38" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at 15.24 27.94 180)
+					(length 5.08)
+					(name "GND" (effects (font (size 0.85 0.85))))
+					(number "39" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at 15.24 25.40 180)
+					(length 5.08)
+					(name "VDDIO" (effects (font (size 0.85 0.85))))
+					(number "40" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at 15.24 22.86 180)
+					(length 5.08)
+					(name "VCP2" (effects (font (size 0.85 0.85))))
+					(number "41" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at 15.24 20.32 180)
+					(length 5.08)
+					(name "CP2N" (effects (font (size 0.85 0.85))))
+					(number "42" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at 15.24 17.78 180)
+					(length 5.08)
+					(name "CP2P" (effects (font (size 0.85 0.85))))
+					(number "43" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at 15.24 15.24 180)
+					(length 5.08)
+					(name "VCP1" (effects (font (size 0.85 0.85))))
+					(number "44" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at 15.24 12.70 180)
+					(length 5.08)
+					(name "CP1N" (effects (font (size 0.85 0.85))))
+					(number "45" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at 15.24 10.16 180)
+					(length 5.08)
+					(name "CP1P" (effects (font (size 0.85 0.85))))
+					(number "46" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at 15.24 7.62 180)
+					(length 5.08)
+					(name "CGH1N" (effects (font (size 0.85 0.85))))
+					(number "47" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at 15.24 5.08 180)
+					(length 5.08)
+					(name "CGH1P" (effects (font (size 0.85 0.85))))
+					(number "48" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at 15.24 2.54 180)
+					(length 5.08)
+					(name "VGH" (effects (font (size 0.85 0.85))))
+					(number "49" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at 15.24 0.00 180)
+					(length 5.08)
+					(name "VCOMBD" (effects (font (size 0.85 0.85))))
+					(number "50" (effects (font (size 0.8 0.8))))
+				)
+			)
+		)
+		(symbol "Local:ESP32_SPI_10PIN"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "J"
+				(at 0 0 0)
+				(effects (font (size 1.27 1.27)))
+			)
+			(property "Value" "ESP32_SPI_10PIN"
+				(at 0 -2.54 0)
+				(effects (font (size 1.27 1.27)))
+			)
+			(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x10_P2.54mm_Vertical"
+				(at 0 0 0)
+				(effects (font (size 1.27 1.27)) (hide yes))
+			)
+			(symbol "ESP32_SPI_10PIN_0_1"
+				(rectangle
+					(start -10 -4.00)
+					(end 10 25.40)
+					(stroke (width 0.254) (type default))
+					(fill (type background))
+				)
+			)
+			(symbol "ESP32_SPI_10PIN_1_1"
+				(pin passive line
+					(at -15.24 22.86 0)
+					(length 5.08)
+					(name "3V3" (effects (font (size 0.85 0.85))))
+					(number "1" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 20.32 0)
+					(length 5.08)
+					(name "GND" (effects (font (size 0.85 0.85))))
+					(number "2" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 17.78 0)
+					(length 5.08)
+					(name "SDI/SI0" (effects (font (size 0.85 0.85))))
+					(number "3" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 15.24 0)
+					(length 5.08)
+					(name "SCLK/SCL" (effects (font (size 0.85 0.85))))
+					(number "4" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 12.70 0)
+					(length 5.08)
+					(name "CSB" (effects (font (size 0.85 0.85))))
+					(number "5" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 10.16 0)
+					(length 5.08)
+					(name "SL_CSB" (effects (font (size 0.85 0.85))))
+					(number "6" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 7.62 0)
+					(length 5.08)
+					(name "D/C" (effects (font (size 0.85 0.85))))
+					(number "7" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 5.08 0)
+					(length 5.08)
+					(name "RES/RST_N" (effects (font (size 0.85 0.85))))
+					(number "8" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 2.54 0)
+					(length 5.08)
+					(name "BUSY_N" (effects (font (size 0.85 0.85))))
+					(number "9" (effects (font (size 0.8 0.8))))
+				)
+				(pin passive line
+					(at -15.24 0.00 0)
+					(length 5.08)
+					(name "GND" (effects (font (size 0.85 0.85))))
+					(number "10" (effects (font (size 0.8 0.8))))
+				)
+			)
+		)
+		(symbol "Local:R"
+			(pin_names (offset 0.508))
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "R" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
+			(property "Value" "R" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
+			(property "Footprint" "Resistor_SMD:R_0603_1608Metric" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+			(symbol "R_0_1"
+				(rectangle (start -2.54 -1.27) (end 2.54 1.27) (stroke (width 0.2) (type default)) (fill (type none)))
+			)
+			(symbol "R_1_1"
+				(pin passive line (at -5.08 0 0) (length 2.54) (name "1" (effects (font (size 0.75 0.75)))) (number "1" (effects (font (size 0.75 0.75)))))
+				(pin passive line (at 5.08 0 180) (length 2.54) (name "2" (effects (font (size 0.75 0.75)))) (number "2" (effects (font (size 0.75 0.75)))))
+			)
+		)
+		(symbol "Local:C"
+			(pin_names (offset 0.508))
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "C" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
+			(property "Value" "C" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
+			(property "Footprint" "Capacitor_SMD:C_0603_1608Metric" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+			(symbol "C_0_1"
+				(rectangle (start -2.54 -1.27) (end 2.54 1.27) (stroke (width 0.2) (type default)) (fill (type none)))
+			)
+			(symbol "C_1_1"
+				(pin passive line (at -5.08 0 0) (length 2.54) (name "1" (effects (font (size 0.75 0.75)))) (number "1" (effects (font (size 0.75 0.75)))))
+				(pin passive line (at 5.08 0 180) (length 2.54) (name "2" (effects (font (size 0.75 0.75)))) (number "2" (effects (font (size 0.75 0.75)))))
+			)
+		)
+		(symbol "Local:L"
+			(pin_names (offset 0.508))
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "L" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
+			(property "Value" "L" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
+			(property "Footprint" "Inductor_SMD:L_7.3x7.3_H4.5" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+			(symbol "L_0_1"
+				(rectangle (start -2.54 -1.27) (end 2.54 1.27) (stroke (width 0.2) (type default)) (fill (type none)))
+			)
+			(symbol "L_1_1"
+				(pin passive line (at -5.08 0 0) (length 2.54) (name "1" (effects (font (size 0.75 0.75)))) (number "1" (effects (font (size 0.75 0.75)))))
+				(pin passive line (at 5.08 0 180) (length 2.54) (name "2" (effects (font (size 0.75 0.75)))) (number "2" (effects (font (size 0.75 0.75)))))
+			)
+		)
+		(symbol "Local:D_SCH"
+			(pin_names (offset 0.508))
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "D" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
+			(property "Value" "D_SCH" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
+			(property "Footprint" "Diode_SMD:D_SOD-123" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+			(symbol "D_SCH_0_1"
+				(rectangle (start -2.54 -1.27) (end 2.54 1.27) (stroke (width 0.2) (type default)) (fill (type none)))
+			)
+			(symbol "D_SCH_1_1"
+				(pin passive line (at -5.08 0 0) (length 2.54) (name "K" (effects (font (size 0.75 0.75)))) (number "1" (effects (font (size 0.75 0.75)))))
+				(pin passive line (at 5.08 0 180) (length 2.54) (name "A" (effects (font (size 0.75 0.75)))) (number "2" (effects (font (size 0.75 0.75)))))
+			)
+		)
+		(symbol "Local:NMOS"
+			(pin_names (offset 0.508))
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "Q" (at 0 -5.08 0) (effects (font (size 1.27 1.27))))
+			(property "Value" "NMOS" (at 0 5.08 0) (effects (font (size 1.27 1.27))))
+			(property "Footprint" "Package_TO_SOT_SMD:SOT-23-3" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+			(symbol "NMOS_0_1"
+				(rectangle (start -2.54 -3.81) (end 2.54 3.81) (stroke (width 0.2) (type default)) (fill (type none)))
+			)
+			(symbol "NMOS_1_1"
+				(pin input line (at -5.08 0 0) (length 2.54) (name "G" (effects (font (size 0.75 0.75)))) (number "1" (effects (font (size 0.75 0.75)))))
+				(pin passive line (at 5.08 -2.54 180) (length 2.54) (name "D" (effects (font (size 0.75 0.75)))) (number "2" (effects (font (size 0.75 0.75)))))
+				(pin passive line (at 5.08 2.54 180) (length 2.54) (name "S" (effects (font (size 0.75 0.75)))) (number "3" (effects (font (size 0.75 0.75)))))
+			)
+		)
+		(symbol "Local:PMOS"
+			(pin_names (offset 0.508))
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "Q" (at 0 -5.08 0) (effects (font (size 1.27 1.27))))
+			(property "Value" "PMOS" (at 0 5.08 0) (effects (font (size 1.27 1.27))))
+			(property "Footprint" "Package_TO_SOT_SMD:SOT-23-3" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+			(symbol "PMOS_0_1"
+				(rectangle (start -2.54 -3.81) (end 2.54 3.81) (stroke (width 0.2) (type default)) (fill (type none)))
+			)
+			(symbol "PMOS_1_1"
+				(pin input line (at -5.08 0 0) (length 2.54) (name "G" (effects (font (size 0.75 0.75)))) (number "1" (effects (font (size 0.75 0.75)))))
+				(pin passive line (at 5.08 -2.54 180) (length 2.54) (name "D" (effects (font (size 0.75 0.75)))) (number "2" (effects (font (size 0.75 0.75)))))
+				(pin passive line (at 5.08 2.54 180) (length 2.54) (name "S" (effects (font (size 0.75 0.75)))) (number "3" (effects (font (size 0.75 0.75)))))
+			)
+		)
+		(symbol "Local:TP"
+			(pin_names (offset 0.508))
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "TP" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
+			(property "Value" "TP" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
+			(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+			(symbol "TP_0_1"
+				(circle (center 0 0) (radius 1.27) (stroke (width 0.2) (type default)) (fill (type none)))
+			)
+			(symbol "TP_1_1"
+				(pin passive line (at -5.08 0 0) (length 3.81) (name "1" (effects (font (size 0.75 0.75)))) (number "1" (effects (font (size 0.75 0.75)))))
+			)
+		)
+	)
+	(symbol
+		(lib_id "Local:MF1750_FPC50")
+		(at 444.50 55.88 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "48e2a920-e4ec-484d-a2bc-1d35b987aabe")
+		(property "Reference" "J1"
+			(at 444.50 51.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "MF-1750 50pin FPC"
+			(at 444.50 59.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Connector:FPC50-0.5-28.6X4.9X2MM"
+			(at 444.50 55.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Connector:FPC50-0.5-28.6X4.9X2MM"
+			(at 444.50 58.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 444.50 55.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 444.50 55.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "90d99604-aaec-4cf7-8e5e-02385d530750")
+		)
+		(pin "2"
+			(uuid "a62efc95-52fd-46c4-81c5-9bf3d56cba67")
+		)
+		(pin "3"
+			(uuid "3cdaf8d0-2111-4010-a02b-d535fd53517c")
+		)
+		(pin "4"
+			(uuid "06066323-e6e9-4ed2-bcc4-8e6fbf85ed0d")
+		)
+		(pin "5"
+			(uuid "96d76754-7565-4842-8757-4b45f33163f8")
+		)
+		(pin "6"
+			(uuid "e080800e-73d1-4cbe-adf3-8da769219479")
+		)
+		(pin "7"
+			(uuid "9cd56b7c-ae18-4d97-bdb3-315f2987ec7b")
+		)
+		(pin "8"
+			(uuid "8b57d8d6-280c-4437-b393-b17edc86b441")
+		)
+		(pin "9"
+			(uuid "e6cd2504-c7b9-4dea-93b7-a45afccff4ef")
+		)
+		(pin "10"
+			(uuid "1334fda3-6d9a-4805-b4fc-2b4ac5c259b5")
+		)
+		(pin "11"
+			(uuid "2e24361e-73ef-417d-9d3f-d2977d2663bf")
+		)
+		(pin "12"
+			(uuid "428346be-c848-46b6-8f16-f7fb84647045")
+		)
+		(pin "13"
+			(uuid "f00010fe-b50e-4465-befb-09b36d324f6d")
+		)
+		(pin "14"
+			(uuid "47c22848-6615-4ba3-8b83-ab0d36f72659")
+		)
+		(pin "15"
+			(uuid "4d7912be-a39c-43c1-bf48-f0ea264cb1d6")
+		)
+		(pin "16"
+			(uuid "6a6449ca-3b7f-4cbd-abf5-5c02503c22cd")
+		)
+		(pin "17"
+			(uuid "9ab94dd7-2024-49e7-ad75-7836601e2ed0")
+		)
+		(pin "18"
+			(uuid "80c4ac11-797a-4d75-a7e4-8868b5c78d5c")
+		)
+		(pin "19"
+			(uuid "aff7f120-4705-4a79-9f26-22c376a96880")
+		)
+		(pin "20"
+			(uuid "d0a15529-b1be-46d3-b7f1-67b307a24414")
+		)
+		(pin "21"
+			(uuid "4db59674-a2fa-403a-838e-4575c3d515a7")
+		)
+		(pin "22"
+			(uuid "8b738e38-98ec-49e0-8ac2-51a9e856d914")
+		)
+		(pin "23"
+			(uuid "84c62624-6987-48c0-afb3-502b8f9321d5")
+		)
+		(pin "24"
+			(uuid "efcb93d3-f450-4b8d-bb0c-28e554e221d1")
+		)
+		(pin "25"
+			(uuid "bf59ecc2-1b11-4bbd-b859-2253620b918b")
+		)
+		(pin "26"
+			(uuid "73690bc7-b77e-486e-87ec-9b42e626b4c1")
+		)
+		(pin "27"
+			(uuid "19ce1320-712b-431a-b488-09aea4eeeda5")
+		)
+		(pin "28"
+			(uuid "86dcc7b3-7c26-4ab7-bbf1-ae9587dd8736")
+		)
+		(pin "29"
+			(uuid "e75179e0-09c5-411f-9d46-f18b3a09870b")
+		)
+		(pin "30"
+			(uuid "0cab4c5c-0c77-483c-b75a-0cf69f8bf33e")
+		)
+		(pin "31"
+			(uuid "fda869d0-3e58-4b7a-8eef-49c0bc0ba896")
+		)
+		(pin "32"
+			(uuid "0eb7a208-453f-4434-aff6-828f4b9f3f19")
+		)
+		(pin "33"
+			(uuid "28185b44-02c8-4c40-8731-70ef5738894c")
+		)
+		(pin "34"
+			(uuid "58e5ec69-da18-4897-8d57-5b013a60db3f")
+		)
+		(pin "35"
+			(uuid "eff54f2b-6f31-4b2d-93fa-d5ed5573fa23")
+		)
+		(pin "36"
+			(uuid "071d80a0-0ebd-465f-a664-f1f78067ab8c")
+		)
+		(pin "37"
+			(uuid "9074a558-1b5f-4469-8e66-0137ba888996")
+		)
+		(pin "38"
+			(uuid "0fb2a5b7-7f33-460f-b0d2-02b32107e59b")
+		)
+		(pin "39"
+			(uuid "80a64780-3422-45a4-a162-740cfe2188d1")
+		)
+		(pin "40"
+			(uuid "1082d68a-c2e6-4e9d-a2fd-fac3bf05b919")
+		)
+		(pin "41"
+			(uuid "296496ef-3e45-4970-9738-bf70aee1aaf9")
+		)
+		(pin "42"
+			(uuid "735c213f-8375-4ecc-9845-9d86325c7fe2")
+		)
+		(pin "43"
+			(uuid "d38826c7-08ff-444c-a4bf-9374a98cb0d5")
+		)
+		(pin "44"
+			(uuid "005a623e-eebb-41d1-ae02-04d4968c5596")
+		)
+		(pin "45"
+			(uuid "180aea01-3ede-4bab-ac0c-1a657f8c4116")
+		)
+		(pin "46"
+			(uuid "95556aa5-d2fa-4872-9d70-3c0f8f9abb5a")
+		)
+		(pin "47"
+			(uuid "ae99bdb7-6fb0-40ae-a17e-6d231204cf36")
+		)
+		(pin "48"
+			(uuid "6c4a0a71-1ddc-432d-9ab3-b968991844ae")
+		)
+		(pin "49"
+			(uuid "4f285f50-420e-4f12-885e-b2f53441c779")
+		)
+		(pin "50"
+			(uuid "3d92bc7e-c77e-49a5-8776-277be70210a0")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/740a6170-a0d1-4fda-a439-81cdb2df7dd2"
+					(reference "J1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Local:ESP32_SPI_10PIN")
+		(at 76.20 60.96 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a725ddd9-48e3-40de-a5e3-a7daeb9b8839")
+		(property "Reference" "J2"
+			(at 76.20 56.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "ESP32 SPI 10pin"
+			(at 76.20 64.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x10_P2.54mm_Vertical"
+			(at 76.20 60.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Connector_PinHeader_2.54mm:PinHeader_1x10_P2.54mm_Vertical"
+			(at 76.20 63.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 76.20 60.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 76.20 60.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "7a0f6c8a-ddbe-43cb-8d8e-d0e543022c66")
+		)
+		(pin "2"
+			(uuid "218f675c-a1e2-4c9b-891d-9e631ddc99f7")
+		)
+		(pin "3"
+			(uuid "d4e817de-fe9a-460b-9958-bdff963c4d4d")
+		)
+		(pin "4"
+			(uuid "66d73d4b-d65f-47e8-8724-ba11dcf426e1")
+		)
+		(pin "5"
+			(uuid "ff9a6634-f567-4eaa-9a40-bc2bc516cbf7")
+		)
+		(pin "6"
+			(uuid "07152895-55fe-4c6b-86cb-560c7f069d75")
+		)
+		(pin "7"
+			(uuid "9dffae68-c18b-4744-8ba0-40ffe307a018")
+		)
+		(pin "8"
+			(uuid "db5abd7d-7959-4c64-af22-b86b8dff1425")
+		)
+		(pin "9"
+			(uuid "038ff8d0-8fef-44f5-945d-e25f1dc40fcd")
+		)
+		(pin "10"
+			(uuid "064f1bb5-0ad7-40ca-81be-4bb75b7d15d7")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/e303de12-ecb2-495d-930a-45a1385a03e1"
+					(reference "J2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(no_connect
+		(at 429.26 -5.08)
+		(uuid "5c34f4ff-a87c-4d5b-8581-965c5eee9d39")
+	)
+	(wire
+		(pts
+			(xy 429.26 -2.54) (xy 421.64 -2.54)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "23c6da15-923b-42b8-bcc2-95304252de2f")
+	)
+	(label "TFT_VCOM"
+		(at 421.64 -2.54 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "2b20b6a1-77a2-4273-af4e-68d88fe1f724")
+	)
+	(wire
+		(pts
+			(xy 429.26 0.00) (xy 421.64 0.00)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "a71fc035-bcef-4844-bae3-1da6459ded81")
+	)
+	(label "FPL_VCOM"
+		(at 421.64 0.00 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "8cc7fcb2-d513-42fc-aea0-f5559b404cbf")
+	)
+	(wire
+		(pts
+			(xy 429.26 2.54) (xy 421.64 2.54)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "4426c1dc-6b67-4099-8dda-8ffdecc6fea3")
+	)
+	(label "SL_CSB"
+		(at 421.64 2.54 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "7d3665df-c425-452e-b18a-d0fb11335957")
+	)
+	(wire
+		(pts
+			(xy 429.26 5.08) (xy 421.64 5.08)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "6a2683dd-1ba5-432f-95e6-ad7d7d16f112")
+	)
+	(label "GDRH"
+		(at 421.64 5.08 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "2ed87138-3fd3-4443-bd8d-57725bd4398f")
+	)
+	(wire
+		(pts
+			(xy 429.26 7.62) (xy 421.64 7.62)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "e26a8190-cb0f-4a4c-a383-799e481ab1df")
+	)
+	(label "RESEH"
+		(at 421.64 7.62 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "9650cf30-3e5a-43e0-be2d-3bdd3b6b0552")
+	)
+	(wire
+		(pts
+			(xy 429.26 10.16) (xy 421.64 10.16)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "c453d65e-7bf3-4a51-8cae-1db215e35653")
+	)
+	(label "GDRL"
+		(at 421.64 10.16 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "be37a338-c81c-4405-8f0d-f60427d16bc6")
+	)
+	(wire
+		(pts
+			(xy 429.26 12.70) (xy 421.64 12.70)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "f4edba10-22fd-4ad2-9772-4379b098b6d7")
+	)
+	(label "RESEL"
+		(at 421.64 12.70 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "faa724c6-d37c-4d34-bd5f-786a1b43d215")
+	)
+	(wire
+		(pts
+			(xy 429.26 15.24) (xy 421.64 15.24)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "2cf96452-6459-4fce-878b-cdc340bead4a")
+	)
+	(label "GDRC"
+		(at 421.64 15.24 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "e2d13c18-1424-4359-9d72-3e54415a574d")
+	)
+	(wire
+		(pts
+			(xy 429.26 17.78) (xy 421.64 17.78)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "891aaf15-faf5-4d30-b6d2-4177572f32d2")
+	)
+	(label "RESEC"
+		(at 421.64 17.78 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "8e8451e3-2862-41d2-a4d0-c66d267cf00f")
+	)
+	(wire
+		(pts
+			(xy 429.26 20.32) (xy 421.64 20.32)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "ae85bd62-d9de-429e-b2fd-4acdc6839cde")
+	)
+	(label "VPC"
+		(at 421.64 20.32 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "bbf5b89b-c8b5-4bcc-9c98-af428f268f27")
+	)
+	(wire
+		(pts
+			(xy 429.26 22.86) (xy 421.64 22.86)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "10ce619e-9527-4872-91f6-f60e00551814")
+	)
+	(label "GND"
+		(at 421.64 22.86 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "5eabd6a0-c194-4622-b39c-c96b7760df7d")
+	)
+	(wire
+		(pts
+			(xy 429.26 25.40) (xy 421.64 25.40)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "ac2ab427-60f0-446e-8a88-c27ad165a27c")
+	)
+	(label "PREVGL"
+		(at 421.64 25.40 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "9a116c04-6d2c-4c77-8e6f-bf169611abe2")
+	)
+	(wire
+		(pts
+			(xy 429.26 27.94) (xy 421.64 27.94)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "c3f38fc1-948c-47f9-a4bf-cf45d8986405")
+	)
+	(label "VPH"
+		(at 421.64 27.94 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "4fc2c116-41f1-4ab5-93b1-6bcb09edb7f9")
+	)
+	(wire
+		(pts
+			(xy 429.26 30.48) (xy 421.64 30.48)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "ad64fcfd-0704-4c5c-8368-f5fdae695ab7")
+	)
+	(label "VSH"
+		(at 421.64 30.48 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "faa3fe34-b135-4444-b80c-7b42f56b7b2b")
+	)
+	(wire
+		(pts
+			(xy 429.26 33.02) (xy 421.64 33.02)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "ad3dfa04-99de-47f9-955b-1a1885144a98")
+	)
+	(label "VSH_LV"
+		(at 421.64 33.02 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "b0161aae-cb51-4e66-b612-eb473d8bd886")
+	)
+	(wire
+		(pts
+			(xy 429.26 35.56) (xy 421.64 35.56)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "013e53f6-78bc-4ff7-8409-28ad14f1a126")
+	)
+	(label "VSH_LV2"
+		(at 421.64 35.56 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "e2228276-ba00-4b0d-8412-ce892c6d3894")
+	)
+	(wire
+		(pts
+			(xy 429.26 38.10) (xy 421.64 38.10)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "7866aa85-669a-4ac5-ae3a-51595785bb1f")
+	)
+	(label "VSL"
+		(at 421.64 38.10 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "87c9db8b-7864-4f64-a871-fc0409a5749b")
+	)
+	(wire
+		(pts
+			(xy 429.26 40.64) (xy 421.64 40.64)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "38580e2f-d6e1-49be-bf2c-be55a30469d1")
+	)
+	(label "VSL_LV"
+		(at 421.64 40.64 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "64a3c126-c6fe-4519-9e4b-0ad664c81ff9")
+	)
+	(wire
+		(pts
+			(xy 429.26 43.18) (xy 421.64 43.18)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "fda5b72c-0be0-45dc-b3a3-072fb0e55d9b")
+	)
+	(label "VSL_LV2"
+		(at 421.64 43.18 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "4017a6d5-40ad-44d1-8eda-a036f890b88d")
+	)
+	(wire
+		(pts
+			(xy 429.26 45.72) (xy 421.64 45.72)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "932903b9-91c6-494b-9c20-36b7211ca248")
+	)
+	(label "GND"
+		(at 421.64 45.72 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "311c442f-6441-4b5f-949f-596489f7ad37")
+	)
+	(wire
+		(pts
+			(xy 429.26 48.26) (xy 421.64 48.26)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "ff14c4cb-e9f4-4f96-94ae-2e725c5732e4")
+	)
+	(label "REFN"
+		(at 421.64 48.26 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "f9b11999-fb73-4711-be6b-b34c094bdb4c")
+	)
+	(wire
+		(pts
+			(xy 429.26 50.80) (xy 421.64 50.80)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "cd2b701d-6e2c-478f-b978-5bce6f50f2df")
+	)
+	(label "REFP"
+		(at 421.64 50.80 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "341f4317-f163-40c5-9abc-82562d2bcb9a")
+	)
+	(wire
+		(pts
+			(xy 429.26 53.34) (xy 421.64 53.34)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "e82c003b-9df0-45b6-a5ac-4c07c5a22554")
+	)
+	(label "TSCL"
+		(at 421.64 53.34 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "e11db547-c96e-4736-8004-2c5b27b30285")
+	)
+	(wire
+		(pts
+			(xy 429.26 55.88) (xy 421.64 55.88)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "7269f73e-bda1-476b-9dc1-342143d5bec6")
+	)
+	(label "TSDA"
+		(at 421.64 55.88 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "d650e797-c922-4e8c-ac08-1d641c695218")
+	)
+	(wire
+		(pts
+			(xy 459.74 -5.08) (xy 467.36 -5.08)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "167a89c5-8858-4749-9399-6207414d86c6")
+	)
+	(label "BS0"
+		(at 467.36 -5.08 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "7f936240-acd9-4b7d-a032-a13c4f4423c9")
+	)
+	(wire
+		(pts
+			(xy 459.74 -2.54) (xy 467.36 -2.54)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "232610a2-bc45-4fa4-bd51-6092490007f9")
+	)
+	(label "BS1"
+		(at 467.36 -2.54 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "1160a6ab-65ad-4d6d-95c5-af852e257019")
+	)
+	(wire
+		(pts
+			(xy 459.74 0.00) (xy 467.36 0.00)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "31b33f64-b1f6-43d3-a78a-9605f78f2895")
+	)
+	(label "RST_N"
+		(at 467.36 0.00 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "31d55838-c5be-4775-9487-6431882d1b28")
+	)
+	(wire
+		(pts
+			(xy 459.74 2.54) (xy 467.36 2.54)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "8bbaf035-5ef6-41c4-ad77-fd72b9fe4207")
+	)
+	(label "BUSY_N"
+		(at 467.36 2.54 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "9854ed9b-28e7-4710-9649-068d5bc48ee0")
+	)
+	(wire
+		(pts
+			(xy 459.74 5.08) (xy 467.36 5.08)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "d467036b-9355-47e5-923c-ca552b909b4b")
+	)
+	(label "DC"
+		(at 467.36 5.08 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "b14ba934-ccb1-40ad-adff-c98d5ce81e02")
+	)
+	(wire
+		(pts
+			(xy 459.74 7.62) (xy 467.36 7.62)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "5b560615-1f56-4799-b791-15cd69ad86d9")
+	)
+	(label "CSB"
+		(at 467.36 7.62 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "97cfae20-449b-4341-8885-97c50e0b3723")
+	)
+	(wire
+		(pts
+			(xy 459.74 10.16) (xy 467.36 10.16)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "15454691-66cd-4f9e-bf55-e9c35a4bae51")
+	)
+	(label "SCL"
+		(at 467.36 10.16 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "57fd5501-02bf-4b9b-9fe7-cac55cbf5089")
+	)
+	(wire
+		(pts
+			(xy 459.74 12.70) (xy 467.36 12.70)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "0ec7b17f-82b7-40c3-aa1c-3d5e6a53518b")
+	)
+	(label "SI0"
+		(at 467.36 12.70 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "d4a137b3-6540-4be1-9f81-04850d028ff5")
+	)
+	(wire
+		(pts
+			(xy 459.74 15.24) (xy 467.36 15.24)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "7298f424-3bc3-49be-9b6e-eafcd5469f95")
+	)
+	(label "SI1"
+		(at 467.36 15.24 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "a64cb652-b725-469d-89de-0a81888662d7")
+	)
+	(wire
+		(pts
+			(xy 459.74 17.78) (xy 467.36 17.78)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "d78ff6ad-a455-45e6-84f6-1e33b5fc9fb6")
+	)
+	(label "SI2"
+		(at 467.36 17.78 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "2ed8f33c-796d-4d69-8fb9-9d742f28b1aa")
+	)
+	(wire
+		(pts
+			(xy 459.74 20.32) (xy 467.36 20.32)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "ac326e5e-9fca-4272-a9cd-99c381c63501")
+	)
+	(label "SI3"
+		(at 467.36 20.32 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "c3bf08c1-eaca-4d5b-8458-a81d6029c603")
+	)
+	(wire
+		(pts
+			(xy 459.74 22.86) (xy 467.36 22.86)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "a3f87417-d81a-428b-8d4e-5007ff0e5612")
+	)
+	(label "VDDD"
+		(at 467.36 22.86 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "ca59ee61-7f3d-4505-a1ef-fec6d1de2979")
+	)
+	(wire
+		(pts
+			(xy 459.74 25.40) (xy 467.36 25.40)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "69f184b4-e765-45f8-9868-3d21f160bbb6")
+	)
+	(label "VDD"
+		(at 467.36 25.40 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "441fcbbb-8aa2-468d-a759-6ac5842e93f0")
+	)
+	(wire
+		(pts
+			(xy 459.74 27.94) (xy 467.36 27.94)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "fe617fbf-cd38-4b56-8d9b-659934040c69")
+	)
+	(label "GND"
+		(at 467.36 27.94 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "853a6f57-5595-439e-aa37-4df9b2f4ee5e")
+	)
+	(wire
+		(pts
+			(xy 459.74 30.48) (xy 467.36 30.48)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "1f75dad3-b618-44b1-aea7-97c705c611db")
+	)
+	(label "VDDIO"
+		(at 467.36 30.48 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "042d92d5-7ea9-4c60-8e5b-57582a102dcb")
+	)
+	(wire
+		(pts
+			(xy 459.74 33.02) (xy 467.36 33.02)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "7b1e139b-d569-42bb-a0a2-ede3150d4e83")
+	)
+	(label "VCP2"
+		(at 467.36 33.02 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "45fd8589-7bf3-4915-9bce-4f742f78a153")
+	)
+	(wire
+		(pts
+			(xy 459.74 35.56) (xy 467.36 35.56)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "7fba0b08-ec79-483f-bf4e-b75424a84275")
+	)
+	(label "CP2N"
+		(at 467.36 35.56 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "185fb0b7-eb76-48fd-b9bf-bcd8efe6c82a")
+	)
+	(wire
+		(pts
+			(xy 459.74 38.10) (xy 467.36 38.10)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "c6222f20-5506-4c7f-8d4e-1c19bac5aacf")
+	)
+	(label "CP2P"
+		(at 467.36 38.10 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "352a316e-3474-430f-a084-71f9a2de5133")
+	)
+	(wire
+		(pts
+			(xy 459.74 40.64) (xy 467.36 40.64)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "3cfac83e-9e63-40f1-937d-4d96e5897f93")
+	)
+	(label "VCP1"
+		(at 467.36 40.64 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "33d8facc-b10c-4fe8-9978-40cb0e8820fd")
+	)
+	(wire
+		(pts
+			(xy 459.74 43.18) (xy 467.36 43.18)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "b94ec2af-38dc-4239-a6e3-3c1105b0b814")
+	)
+	(label "CP1N"
+		(at 467.36 43.18 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "59f438d1-6a03-4acd-afc3-03d08fea5332")
+	)
+	(wire
+		(pts
+			(xy 459.74 45.72) (xy 467.36 45.72)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "732e43d3-1e26-43bb-a86d-5655315fe152")
+	)
+	(label "CP1P"
+		(at 467.36 45.72 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "6f6ab610-eedc-4047-a8fc-d028b5ee175d")
+	)
+	(wire
+		(pts
+			(xy 459.74 48.26) (xy 467.36 48.26)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "5399afa4-4b4a-4351-883f-d5a9c6d18c21")
+	)
+	(label "CGH1N"
+		(at 467.36 48.26 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "50610eb5-33d7-4636-8587-01ab12d16748")
+	)
+	(wire
+		(pts
+			(xy 459.74 50.80) (xy 467.36 50.80)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "8f91f5e3-0681-40bf-9a93-050a082a4272")
+	)
+	(label "CGH1P"
+		(at 467.36 50.80 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "6c4bf1ea-ab65-4657-949b-829a3b1c16fa")
+	)
+	(wire
+		(pts
+			(xy 459.74 53.34) (xy 467.36 53.34)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "424da967-3a66-4876-a5b7-14ffce735fc1")
+	)
+	(label "PREVGH"
+		(at 467.36 53.34 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "b6686889-78a7-4267-b8ab-6d66ce378051")
+	)
+	(wire
+		(pts
+			(xy 459.74 55.88) (xy 467.36 55.88)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "fd5b2ba2-e267-493f-a1a1-05cdbff9b55f")
+	)
+	(label "VCOMBD"
+		(at 467.36 55.88 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "eff33202-95f8-451c-979d-177cc13f9b2f")
+	)
+	(wire
+		(pts
+			(xy 60.96 38.10) (xy 53.34 38.10)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "4711e412-56de-46a0-a522-a11603c8cca9")
+	)
+	(label "3V3"
+		(at 53.34 38.10 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "c17f72cf-579d-492c-8651-6787726fd038")
+	)
+	(wire
+		(pts
+			(xy 60.96 40.64) (xy 53.34 40.64)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "259bf908-2219-46d7-849e-ce124bdfb87c")
+	)
+	(label "GND"
+		(at 53.34 40.64 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "38dec0a4-7f30-4403-a2d0-f28aab9e59f4")
+	)
+	(wire
+		(pts
+			(xy 60.96 43.18) (xy 53.34 43.18)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "ed744a43-9615-44f7-9769-9fcfb3a9afc6")
+	)
+	(label "SI0"
+		(at 53.34 43.18 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "a5503450-6f0a-42aa-b358-432349638610")
+	)
+	(wire
+		(pts
+			(xy 60.96 45.72) (xy 53.34 45.72)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "f994c6cd-b383-48e2-b577-e15c04c1fe4c")
+	)
+	(label "SCL"
+		(at 53.34 45.72 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "6cc24fdb-d2be-48b9-8bf1-c98ed547a07c")
+	)
+	(wire
+		(pts
+			(xy 60.96 48.26) (xy 53.34 48.26)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "f1e34762-785a-4d92-a4b3-579f5a928cc9")
+	)
+	(label "CSB"
+		(at 53.34 48.26 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "48b36cbc-6b13-4e3b-ba85-09d3ebdfa3f3")
+	)
+	(wire
+		(pts
+			(xy 60.96 50.80) (xy 53.34 50.80)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "f612a962-b9e7-412d-a0e7-7d178b88e806")
+	)
+	(label "SL_CSB"
+		(at 53.34 50.80 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "a6898cc1-2fa3-47d0-8349-b61bc3c9c7e7")
+	)
+	(wire
+		(pts
+			(xy 60.96 53.34) (xy 53.34 53.34)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "4bb310d7-2a39-48ca-9bb9-de2109b9366d")
+	)
+	(label "DC"
+		(at 53.34 53.34 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "bf7a7e04-64b2-4d63-8605-95ea3fa0479c")
+	)
+	(wire
+		(pts
+			(xy 60.96 55.88) (xy 53.34 55.88)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "811e8ac1-39d7-45d7-83ac-d76631ef2b01")
+	)
+	(label "RST_N"
+		(at 53.34 55.88 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "ddeb9e9b-f2c8-45bb-841a-c7564f86ab3d")
+	)
+	(wire
+		(pts
+			(xy 60.96 58.42) (xy 53.34 58.42)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "66290668-7256-4c62-91cf-6d5847a4a63b")
+	)
+	(label "BUSY_N"
+		(at 53.34 58.42 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "b7181b92-8481-4517-aec2-f9e26300fbcd")
+	)
+	(wire
+		(pts
+			(xy 60.96 60.96) (xy 53.34 60.96)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "c573c823-74fe-4674-a887-5182b5bda76c")
+	)
+	(label "GND"
+		(at 53.34 60.96 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "26fb5226-9f18-4595-8e3c-7296d70835d5")
+	)
+	(text "HV boost / negative pump from MF-1750 reference page 10"
+		(exclude_from_sim no)
+		(at 35.00 132.00 0)
+		(effects (font (size 1.20 1.20)) (justify left))
+		(uuid "736e7f78-941b-4ef9-a96e-8fd507778e66")
+	)
+	(symbol
+		(lib_id "Local:C")
+		(at 40.64 144.78 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8f3685ba-ad61-4aa4-884a-fd610250d207")
+		(property "Reference" "C0"
+			(at 40.64 140.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "4.7uF/25V/0603"
+			(at 40.64 148.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+			(at 40.64 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Capacitor_SMD:C_0603_1608Metric"
+			(at 40.64 146.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 40.64 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 40.64 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "1dbe9cc4-1f91-4e25-ad0b-1185e99d959d")
+		)
+		(pin "2"
+			(uuid "0727b01b-3341-4ea4-ad91-057f50af7de2")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/0869df53-a047-4c4d-9aac-98c8852c2e31"
+					(reference "C0")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 35.56 144.78) (xy 27.94 144.78)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "deec9a9e-ea71-4344-b74b-9c33563da55a")
+	)
+	(label "V_B"
+		(at 27.94 144.78 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "74134797-2580-4736-a4dc-5db023cf6b3e")
+	)
+	(wire
+		(pts
+			(xy 45.72 144.78) (xy 53.34 144.78)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "bd57ee75-811f-4274-9a14-867a2362f105")
+	)
+	(label "GND"
+		(at 53.34 144.78 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "bb4bbd91-0c20-4b49-a593-7d2e13ef92c4")
+	)
+	(text "Local V_B input cap near L1"
+		(exclude_from_sim no)
+		(at 31.64 149.58 0)
+		(effects (font (size 0.85 0.85)) (justify left))
+		(uuid "f72f123c-0466-4406-86d5-93643ab10756")
+	)
+	(symbol
+		(lib_id "Local:L")
+		(at 78.74 144.78 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a2eefe9f-dd73-473e-b0dc-d2615d43f1e1")
+		(property "Reference" "L1"
+			(at 78.74 140.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "15uH 2A"
+			(at 78.74 148.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Inductor_SMD:L_7.3x7.3_H4.5"
+			(at 78.74 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Inductor_SMD:L_7.3x7.3_H4.5"
+			(at 78.74 146.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 78.74 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 78.74 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "050dca9a-eff9-40ce-ac46-482424a7becf")
+		)
+		(pin "2"
+			(uuid "47d84046-d174-4e81-8c58-5285cc24957d")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/76535b62-a5c8-476d-a16f-56394881a654"
+					(reference "L1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 73.66 144.78) (xy 66.04 144.78)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "457888ab-63fc-4df6-a0e9-bb0da99123dd")
+	)
+	(label "V_B"
+		(at 66.04 144.78 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "65e4b67e-4f54-46d1-93c4-797bacf2df61")
+	)
+	(wire
+		(pts
+			(xy 83.82 144.78) (xy 91.44 144.78)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "1c49dde0-a1e9-44c8-9e12-16a40ea437a3")
+	)
+	(label "SW_H"
+		(at 91.44 144.78 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "68296f60-fddc-4d98-b5fd-77bf699d266c")
+	)
+	(text "High-side boost inductor"
+		(exclude_from_sim no)
+		(at 69.74 149.58 0)
+		(effects (font (size 0.85 0.85)) (justify left))
+		(uuid "b66f2329-76bc-4416-ae8e-f567ecc01b5f")
+	)
+	(symbol
+		(lib_id "Local:D_SCH")
+		(at 119.38 144.78 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8751bd6f-a391-4588-83be-0445c44a30c6")
+		(property "Reference" "D1"
+			(at 119.38 140.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "MBR0530"
+			(at 119.38 148.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 119.38 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Diode_SMD:D_SOD-123"
+			(at 119.38 146.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 119.38 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 119.38 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "c962a691-fa56-4ac7-a039-4fec4667f6a5")
+		)
+		(pin "2"
+			(uuid "2f86c918-8c17-4a3e-83b6-655388483f2e")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/3dbce2ab-1504-493e-bfff-42ed1bd454d2"
+					(reference "D1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 114.30 144.78) (xy 106.68 144.78)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "1c6fafdd-49ca-4d9a-b537-b532ea72a0c4")
+	)
+	(label "VPH"
+		(at 106.68 144.78 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "485345f3-1a6e-4907-b681-d605892f5367")
+	)
+	(wire
+		(pts
+			(xy 124.46 144.78) (xy 132.08 144.78)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "1d004491-fd02-421e-bdeb-a45edc13c7e9")
+	)
+	(label "SW_H"
+		(at 132.08 144.78 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "93cbb9cb-9fbf-496d-b5f7-e4dc06b0dd09")
+	)
+	(text "Polarity: pad1/K=VPH, pad2/A=SW_H"
+		(exclude_from_sim no)
+		(at 110.38 149.58 0)
+		(effects (font (size 0.85 0.85)) (justify left))
+		(uuid "4f8ea6cc-7484-457a-8769-b35ab7ae68f6")
+	)
+	(symbol
+		(lib_id "Local:C")
+		(at 160.02 144.78 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "15d92141-7440-4ba8-9f26-957a0df1b012")
+		(property "Reference" "C2"
+			(at 160.02 140.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10uF/25V/1210"
+			(at 160.02 148.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_1210_3225Metric"
+			(at 160.02 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Capacitor_SMD:C_1210_3225Metric"
+			(at 160.02 146.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 160.02 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 160.02 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "2512590e-f746-4b5b-a821-3075017ef060")
+		)
+		(pin "2"
+			(uuid "1ee3a2fc-1841-49f4-b462-73b63a8f10fa")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/40f59a7f-5cbc-43d2-84ea-827da0b070f8"
+					(reference "C2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 154.94 144.78) (xy 147.32 144.78)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "57b2747f-c6ac-4a11-a72e-ab49754ccf05")
+	)
+	(label "VPH"
+		(at 147.32 144.78 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "3d0c11a8-1468-4f6a-bae2-5b0faf7db7ab")
+	)
+	(wire
+		(pts
+			(xy 165.10 144.78) (xy 172.72 144.78)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "58046cba-91e5-4e0d-82ac-2b7e06ae8511")
+	)
+	(label "GND"
+		(at 172.72 144.78 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "ec2b20b9-9bee-4b97-b647-50308eb86156")
+	)
+	(symbol
+		(lib_id "Local:R")
+		(at 200.66 144.78 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7dc3f789-1b7c-484c-a93d-4cfa04b538ae")
+		(property "Reference" "R5"
+			(at 200.66 140.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "0R"
+			(at 200.66 148.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+			(at 200.66 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Resistor_SMD:R_0603_1608Metric"
+			(at 200.66 146.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 200.66 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 200.66 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "08385a71-a5f4-4495-84b3-43b4a9140d8c")
+		)
+		(pin "2"
+			(uuid "1d584e01-9175-4fa6-b202-b25ae04429c1")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/50b76bee-9b62-4b36-8467-987c90849466"
+					(reference "R5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 195.58 144.78) (xy 187.96 144.78)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "83e57625-cc87-4295-af29-e346316c92e8")
+	)
+	(label "VPH"
+		(at 187.96 144.78 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "05f33468-8061-45f4-a7f7-ac6b2b665a75")
+	)
+	(wire
+		(pts
+			(xy 205.74 144.78) (xy 213.36 144.78)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "433352e7-039e-4d97-bd41-247cddb14d02")
+	)
+	(label "PREVGH"
+		(at 213.36 144.78 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "9dad3264-8530-40e4-8469-b28933fec6d0")
+	)
+	(symbol
+		(lib_id "Local:C")
+		(at 78.74 160.02 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "265cd9b6-4812-4887-8323-fc20611ce3fb")
+		(property "Reference" "C4"
+			(at 78.74 156.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10uF/25V/1210"
+			(at 78.74 163.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_1210_3225Metric"
+			(at 78.74 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Capacitor_SMD:C_1210_3225Metric"
+			(at 78.74 162.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 78.74 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 78.74 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "dfa95fb3-6fa2-4219-ad35-eef0572abcb9")
+		)
+		(pin "2"
+			(uuid "cfd8c132-3729-402a-a02b-21762f7eecfd")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/bbc3612b-d298-4369-b25f-3f8738d02aa7"
+					(reference "C4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 73.66 160.02) (xy 66.04 160.02)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "b36f4c4f-ceb1-4229-a174-19c9998d324e")
+	)
+	(label "SW_H"
+		(at 66.04 160.02 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "3e2c6230-4b9b-46c0-9297-eea9b4e8b977")
+	)
+	(wire
+		(pts
+			(xy 83.82 160.02) (xy 91.44 160.02)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "1b810131-5b7d-4114-84fa-b678881c2cca")
+	)
+	(label "NEG_PUMP_H"
+		(at 91.44 160.02 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "9f95e2ca-cf86-42c1-b705-9d26445f3742")
+	)
+	(symbol
+		(lib_id "Local:D_SCH")
+		(at 119.38 160.02 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2321c913-7cbb-47a6-8f27-de52cab7e3c5")
+		(property "Reference" "D2"
+			(at 119.38 156.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "MBR0530"
+			(at 119.38 163.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 119.38 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Diode_SMD:D_SOD-123"
+			(at 119.38 162.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 119.38 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 119.38 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "0601c449-ba9d-4889-916a-0466652993c2")
+		)
+		(pin "2"
+			(uuid "942d4e3d-c453-481c-8f4a-70a9a77fac9b")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/f9a9d1af-bee6-4d4e-b35c-760b73e34381"
+					(reference "D2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 114.30 160.02) (xy 106.68 160.02)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "f8d1c017-c09b-4f89-9137-434c6537fa30")
+	)
+	(label "NEG_PUMP_H"
+		(at 106.68 160.02 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "c2fdd612-6537-41b2-890d-f3d484827ea9")
+	)
+	(wire
+		(pts
+			(xy 124.46 160.02) (xy 132.08 160.02)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "d241138f-81ca-412f-a7fa-78471c2196df")
+	)
+	(label "GND"
+		(at 132.08 160.02 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "f46bb581-f345-48aa-b740-65ababb93d91")
+	)
+	(text "Polarity: pad1/K=NEG_PUMP_H, pad2/A=GND"
+		(exclude_from_sim no)
+		(at 110.38 164.82 0)
+		(effects (font (size 0.85 0.85)) (justify left))
+		(uuid "00f6c89a-24d9-4b4e-90c3-2fddb267498f")
+	)
+	(symbol
+		(lib_id "Local:D_SCH")
+		(at 160.02 160.02 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "52d5bad6-3fb3-4a76-831a-22bc8f55fdfb")
+		(property "Reference" "D3"
+			(at 160.02 156.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "MBR0530"
+			(at 160.02 163.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 160.02 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Diode_SMD:D_SOD-123"
+			(at 160.02 162.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 160.02 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 160.02 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "f1ecbf07-5c5a-4329-8da6-b346205689f8")
+		)
+		(pin "2"
+			(uuid "8f7e9aff-5ac9-49ba-8b13-33b894db112b")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/eaf94db7-b037-49f1-8518-4d043091fb2f"
+					(reference "D3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 154.94 160.02) (xy 147.32 160.02)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "d2fcfe2a-1c8f-4a26-aadc-ea205df23961")
+	)
+	(label "NEG_PUMP_H"
+		(at 147.32 160.02 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "9f2374e0-dbf9-4a4d-af63-5b27a2f3aa1f")
+	)
+	(wire
+		(pts
+			(xy 165.10 160.02) (xy 172.72 160.02)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "bdc96ded-3b69-4be9-bf26-61b84da7c9c8")
+	)
+	(label "PREVGL"
+		(at 172.72 160.02 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "d8241ffe-05a9-4488-b190-0b04ea5abaac")
+	)
+	(text "Polarity: pad1/K=NEG_PUMP_H, pad2/A=PREVGL"
+		(exclude_from_sim no)
+		(at 151.02 164.82 0)
+		(effects (font (size 0.85 0.85)) (justify left))
+		(uuid "eb4851a9-54f9-4dcd-afd7-71b21f863bae")
+	)
+	(symbol
+		(lib_id "Local:C")
+		(at 200.66 160.02 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "df1452a6-2c24-4f5a-9a46-e10eb19430b6")
+		(property "Reference" "C5"
+			(at 200.66 156.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10uF/25V/1210"
+			(at 200.66 163.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_1210_3225Metric"
+			(at 200.66 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Capacitor_SMD:C_1210_3225Metric"
+			(at 200.66 162.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 200.66 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 200.66 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "cd120e60-2d83-441a-a2f2-ec8876645b5f")
+		)
+		(pin "2"
+			(uuid "df93e72e-71c6-4864-ba47-ee7567a6a26f")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/fe6e4d4d-3961-4954-b149-98e134a46469"
+					(reference "C5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 195.58 160.02) (xy 187.96 160.02)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "e9cfe047-d436-4d14-ab06-077c67ed91cb")
+	)
+	(label "PREVGL"
+		(at 187.96 160.02 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "d087e78e-4879-4dfa-9022-fcdd86ebf709")
+	)
+	(wire
+		(pts
+			(xy 205.74 160.02) (xy 213.36 160.02)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "7593ec7c-b30c-45bc-bcd1-34bab9ffe61d")
+	)
+	(label "GND"
+		(at 213.36 160.02 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "e986eaf2-a669-4436-bf69-c199d26ab9d1")
+	)
+	(symbol
+		(lib_id "Local:R")
+		(at 139.70 185.42 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "4f49b709-f072-4878-b0d9-2223ee537e57")
+		(property "Reference" "R1"
+			(at 139.70 181.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "0.2R 0.2W 1%"
+			(at 139.70 188.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_1206_3216Metric"
+			(at 139.70 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Resistor_SMD:R_1206_3216Metric"
+			(at 139.70 187.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 139.70 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 139.70 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "cc864a6b-5765-4bdb-a9b1-aee3245798b2")
+		)
+		(pin "2"
+			(uuid "8fd1e3ee-8af8-4c5d-b8bf-06ddc7b4c589")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/f945bcad-33f7-4732-9186-bdc722e31809"
+					(reference "R1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 134.62 185.42) (xy 127.00 185.42)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "9cf918ae-6ebb-4372-8834-95186ab4f463")
+	)
+	(label "RESEH"
+		(at 127.00 185.42 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "d52abe0a-8651-4b7b-b314-489b8153c9db")
+	)
+	(wire
+		(pts
+			(xy 144.78 185.42) (xy 152.40 185.42)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "f6ecb745-4361-46a2-866a-4c341f21b9d1")
+	)
+	(label "GND"
+		(at 152.40 185.42 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "de112d72-dd07-40a3-8970-3e9cef7433a0")
+	)
+	(symbol
+		(lib_id "Local:C")
+		(at 40.64 205.74 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "3642e7c7-3864-4bff-bcca-8d22537fd838")
+		(property "Reference" "C22"
+			(at 40.64 201.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "4.7uF/25V/0603"
+			(at 40.64 209.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+			(at 40.64 205.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Capacitor_SMD:C_0603_1608Metric"
+			(at 40.64 207.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 40.64 205.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 40.64 205.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "561ce9cb-3ded-4dea-ad51-fef3acc8f529")
+		)
+		(pin "2"
+			(uuid "5c127f7d-9776-4225-ae85-940853e1ef08")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/85235a47-b275-47aa-8421-47988d2e9adf"
+					(reference "C22")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 35.56 205.74) (xy 27.94 205.74)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "b551693a-f253-43c7-b741-ea49370fa958")
+	)
+	(label "V_B"
+		(at 27.94 205.74 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "e003e0f0-6b25-4fd2-b495-61559afe61af")
+	)
+	(wire
+		(pts
+			(xy 45.72 205.74) (xy 53.34 205.74)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "b19db99c-746f-4331-92af-70781c4b19fe")
+	)
+	(label "GND"
+		(at 53.34 205.74 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "9a46515f-e8b7-4ae0-948d-abecb48116d7")
+	)
+	(text "Local V_B input cap near Q2"
+		(exclude_from_sim no)
+		(at 31.64 210.54 0)
+		(effects (font (size 0.85 0.85)) (justify left))
+		(uuid "2bba4afd-a3e9-4b9e-9fb9-9772432d9694")
+	)
+	(symbol
+		(lib_id "Local:L")
+		(at 129.54 226.06 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "bb324b01-bac2-4fd9-8dbf-0ab5597c244a")
+		(property "Reference" "L2"
+			(at 129.54 222.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "15uH 2A"
+			(at 129.54 229.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Inductor_SMD:L_7.3x7.3_H4.5"
+			(at 129.54 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Inductor_SMD:L_7.3x7.3_H4.5"
+			(at 129.54 228.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 129.54 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 129.54 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "79cf7495-9bda-4234-92ca-4b25ac5810b2")
+		)
+		(pin "2"
+			(uuid "c1c07f1e-947e-4e3e-8ad1-e2fe155d584b")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/48948230-462d-43bd-8294-83fd2e70ca5c"
+					(reference "L2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 124.46 226.06) (xy 116.84 226.06)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "6f4a865f-9ab9-46f0-ba5c-cb023d63a74a")
+	)
+	(label "SW_C"
+		(at 116.84 226.06 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "940efa63-fd26-46e8-8dff-308e8799df20")
+	)
+	(wire
+		(pts
+			(xy 134.62 226.06) (xy 142.24 226.06)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "3e875cd8-09a1-479a-967b-7331267e93fe")
+	)
+	(label "RESEC"
+		(at 142.24 226.06 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "51af3701-0ebd-44fa-ad9f-4dbd12e52cc1")
+	)
+	(symbol
+		(lib_id "Local:D_SCH")
+		(at 175.26 226.06 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a2d0b742-2478-4c3d-a5c9-c129c7a7c540")
+		(property "Reference" "D4"
+			(at 175.26 222.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "MBR0530"
+			(at 175.26 229.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 175.26 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Diode_SMD:D_SOD-123"
+			(at 175.26 228.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 175.26 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 175.26 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "2897935b-8649-45a6-a958-349d944901eb")
+		)
+		(pin "2"
+			(uuid "70b5ed98-ee7d-46c0-8772-0b20fc033021")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/ec1ecca1-12a9-45ca-9501-f4902fa11710"
+					(reference "D4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 170.18 226.06) (xy 162.56 226.06)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "8f7f78ca-5569-4b42-8bdf-20c7b8706099")
+	)
+	(label "SW_C"
+		(at 162.56 226.06 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "e034df6c-6b60-4735-b47c-b2ae2f2c3b59")
+	)
+	(wire
+		(pts
+			(xy 180.34 226.06) (xy 187.96 226.06)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "f76dd4ab-ae45-44e3-8886-4741b5ca2933")
+	)
+	(label "VPC"
+		(at 187.96 226.06 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "f2b68b96-e0b3-4071-b6df-f13f731374e5")
+	)
+	(text "Polarity: pad1/K=SW_C, pad2/A=VPC"
+		(exclude_from_sim no)
+		(at 166.26 230.86 0)
+		(effects (font (size 0.85 0.85)) (justify left))
+		(uuid "a6f09063-4a27-4783-8f00-2c62eaf07ba8")
+	)
+	(symbol
+		(lib_id "Local:C")
+		(at 215.90 226.06 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8129a6ce-6ba2-4341-9c77-6958830ffd08")
+		(property "Reference" "C6"
+			(at 215.90 222.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10uF/25V/1210"
+			(at 215.90 229.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_1210_3225Metric"
+			(at 215.90 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Capacitor_SMD:C_1210_3225Metric"
+			(at 215.90 228.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 215.90 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 215.90 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "521810ec-2518-46dd-9c13-a5f130004f6e")
+		)
+		(pin "2"
+			(uuid "9dc5370f-4ff7-4cd8-9e2e-06c68661eff5")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/71700d05-e1a2-4930-a48f-32eecc56b629"
+					(reference "C6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 210.82 226.06) (xy 203.20 226.06)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "a841a793-5715-4e99-afc6-9b4374f6c522")
+	)
+	(label "VPC"
+		(at 203.20 226.06 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "0f21c3a1-a800-404d-aeee-78e99c96c242")
+	)
+	(wire
+		(pts
+			(xy 220.98 226.06) (xy 228.60 226.06)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "c40d7394-91c7-42b8-9f65-d01749194460")
+	)
+	(label "GND"
+		(at 228.60 226.06 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "2eb72e2d-0e35-4cac-bb93-f970487c6d3a")
+	)
+	(symbol
+		(lib_id "Local:R")
+		(at 129.54 238.76 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "05b72b9c-8811-443a-9245-35724215fe11")
+		(property "Reference" "R3"
+			(at 129.54 234.76 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "0.22R 0.2W 1%"
+			(at 129.54 242.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_1206_3216Metric"
+			(at 129.54 238.76 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Resistor_SMD:R_1206_3216Metric"
+			(at 129.54 240.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 129.54 238.76 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 129.54 238.76 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "f7c4cfdc-ff27-43f8-baf9-1ea6922c5cf4")
+		)
+		(pin "2"
+			(uuid "9f831d53-e344-4b93-abfd-d8fc73ec8bb3")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/5908b5f9-7214-457b-8e1c-ba08ca6bf5d9"
+					(reference "R3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 124.46 238.76) (xy 116.84 238.76)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "31a68299-89b0-4e19-a082-75903845c048")
+	)
+	(label "RESEC"
+		(at 116.84 238.76 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "3918011a-ca50-4127-bf6c-b8a4db1a1857")
+	)
+	(wire
+		(pts
+			(xy 134.62 238.76) (xy 142.24 238.76)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "45c74d2f-e3fd-47ed-b322-f66b59409ce9")
+	)
+	(label "GND"
+		(at 142.24 238.76 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "6d746720-0b6d-43a0-970f-eec8d8723801")
+	)
+	(symbol
+		(lib_id "Local:NMOS")
+		(at 78.74 180.34 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "119330db-d6b8-42ec-a3ab-fc89834b5591")
+		(property "Reference" "Q1"
+			(at 78.74 176.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Si1308EDL"
+			(at 78.74 183.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-23-3"
+			(at 78.74 180.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Package_TO_SOT_SMD:SOT-23-3"
+			(at 78.74 182.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 78.74 180.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 78.74 180.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "a1c8fd06-2d98-4ea9-ae34-1070cb6098c7")
+		)
+		(pin "2"
+			(uuid "f8db3a1e-c1f3-4328-8e6e-626fcde84f11")
+		)
+		(pin "3"
+			(uuid "f122449a-9c3e-4d33-8472-7062758f8740")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/e2219698-2e33-499e-b5be-3dab7135bdf2"
+					(reference "Q1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 73.66 180.34) (xy 66.04 180.34)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "00f94cd1-3c90-4a55-afb1-0f77004925d7")
+	)
+	(label "GDRH"
+		(at 66.04 180.34 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "0e7a3109-e146-427a-ba4e-4f0c70da4a22")
+	)
+	(wire
+		(pts
+			(xy 83.82 182.88) (xy 91.44 182.88)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "886fe3ee-1353-4bc3-9878-e215f41550b5")
+	)
+	(label "RESEH"
+		(at 91.44 182.88 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "e40bb328-ed0f-4219-b7f4-6a23e0fbe395")
+	)
+	(wire
+		(pts
+			(xy 83.82 177.80) (xy 91.44 177.80)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "ea881730-9190-429e-9097-6e7d6ff849be")
+	)
+	(label "SW_H"
+		(at 91.44 177.80 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "0f9658fb-1aa4-497b-81da-e160c96c6711")
+	)
+	(text "NMOS VDS=30V, low Ron at VGS=2.5V, Qg <= 3.5nC"
+		(exclude_from_sim no)
+		(at 69.74 188.34 0)
+		(effects (font (size 0.85 0.85)) (justify left))
+		(uuid "344078fa-fffa-41ed-83e0-7ad530d7de7c")
+	)
+	(symbol
+		(lib_id "Local:PMOS")
+		(at 78.74 226.06 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "ebf8c90e-c34b-4457-b667-5d8a842c1579")
+		(property "Reference" "Q2"
+			(at 78.74 222.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "SI2301CDS-T1-GE3"
+			(at 78.74 229.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-23-3"
+			(at 78.74 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Package_TO_SOT_SMD:SOT-23-3"
+			(at 78.74 228.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 78.74 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 78.74 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "110bff61-b644-4336-8acc-e305d611d6b7")
+		)
+		(pin "2"
+			(uuid "507008ee-ae43-4a38-aac0-16f0ac4deba0")
+		)
+		(pin "3"
+			(uuid "f04a8ea1-f3b8-46e4-a332-004b85292856")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/513574f8-b951-40b4-8187-46fab7874957"
+					(reference "Q2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 73.66 226.06) (xy 66.04 226.06)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "ce690eac-894d-4f6b-afac-8702f324b5b0")
+	)
+	(label "GDRC"
+		(at 66.04 226.06 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "5c47717b-4ed0-4ba0-b144-f834d775c431")
+	)
+	(wire
+		(pts
+			(xy 83.82 228.60) (xy 91.44 228.60)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "57f5bbe1-2216-45a8-a212-827e73859d93")
+	)
+	(label "V_B"
+		(at 91.44 228.60 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "a21c184b-d2a6-4d50-a8c0-a343143d844a")
+	)
+	(wire
+		(pts
+			(xy 83.82 223.52) (xy 91.44 223.52)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "c95b73b3-15bb-4645-bc90-2442f2c942c1")
+	)
+	(label "SW_C"
+		(at 91.44 223.52 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "97316172-6bb2-4a26-a674-4fe6383819e9")
+	)
+	(text "PMOS VDS=-20V, low Ron at VGS=-2.5V, Qg <= 7.6nC"
+		(exclude_from_sim no)
+		(at 69.74 234.06 0)
+		(effects (font (size 0.85 0.85)) (justify left))
+		(uuid "a9c3b6ac-6b11-4745-aac0-69467949d520")
+	)
+	(text "Power distribution, cascade pullups, and 4-wire SPI mode straps"
+		(exclude_from_sim no)
+		(at 35.00 270.00 0)
+		(effects (font (size 1.20 1.20)) (justify left))
+		(uuid "3d4aae6c-967e-4e61-98b5-c7df6e65357a")
+	)
+	(symbol
+		(lib_id "Local:R")
+		(at 45.72 284.48 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "c3f7bec6-acec-444f-804c-df05e26db0ee")
+		(property "Reference" "R4"
+			(at 45.72 280.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "0R"
+			(at 45.72 287.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+			(at 45.72 284.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Resistor_SMD:R_0603_1608Metric"
+			(at 45.72 286.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 45.72 284.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 45.72 284.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "d3afbc5e-283a-4770-8912-0d20a8912e38")
+		)
+		(pin "2"
+			(uuid "1d071c36-22c9-4aa5-89da-bc578a29debb")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/8dbc59e9-f917-468d-bb32-8bc0b037ac32"
+					(reference "R4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 40.64 284.48) (xy 33.02 284.48)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "2a45f5fe-887c-4b6d-bbd4-c72fa915b3ec")
+	)
+	(label "3V3"
+		(at 33.02 284.48 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "b179118e-3a5c-421b-9948-a8ccb572db6f")
+	)
+	(wire
+		(pts
+			(xy 50.80 284.48) (xy 58.42 284.48)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "afb0927d-b872-4911-b42f-6692cc8435de")
+	)
+	(label "EPD_3V3"
+		(at 58.42 284.48 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "65809aa2-e539-4d9f-b902-02d4d035ecb5")
+	)
+	(symbol
+		(lib_id "Local:R")
+		(at 114.30 284.48 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2c28c865-b183-4045-aa3e-e980f2442f37")
+		(property "Reference" "R8"
+			(at 114.30 280.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "0R"
+			(at 114.30 287.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+			(at 114.30 284.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Resistor_SMD:R_0603_1608Metric"
+			(at 114.30 286.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 114.30 284.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 114.30 284.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "e1c8a6a3-2515-4dac-8365-37f2d49acdc5")
+		)
+		(pin "2"
+			(uuid "b02ac8df-495b-4401-b9fd-d9be10498929")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/768a4b66-9249-4a49-b94e-b83b0d94997d"
+					(reference "R8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 109.22 284.48) (xy 101.60 284.48)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "6c138201-3f2a-478a-aab9-f45a21d77081")
+	)
+	(label "3V3"
+		(at 101.60 284.48 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "1c92b714-9a2d-42ed-a750-5df4a71fde5b")
+	)
+	(wire
+		(pts
+			(xy 119.38 284.48) (xy 127.00 284.48)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "12748b38-268b-4b23-8243-011e2667fb43")
+	)
+	(label "V_B"
+		(at 127.00 284.48 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "f41d0587-39bb-49a7-b476-334ce3a0b7af")
+	)
+	(symbol
+		(lib_id "Local:C")
+		(at 185.42 284.48 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "28553141-fcc9-41a9-8d0a-1f3994ef0f39")
+		(property "Reference" "C23"
+			(at 185.42 280.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10uF/25V/1210"
+			(at 185.42 287.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_1210_3225Metric"
+			(at 185.42 284.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Capacitor_SMD:C_1210_3225Metric"
+			(at 185.42 286.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 185.42 284.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 185.42 284.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "9a44495d-9588-41ee-8a08-21c6f35e6636")
+		)
+		(pin "2"
+			(uuid "7eb50754-8dde-4c28-ba3f-12cfd3dffda2")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/f9c02429-8737-4ccb-999a-317f4fc15b40"
+					(reference "C23")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 180.34 284.48) (xy 172.72 284.48)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "c054b0a7-cb79-476f-87c9-acb787e95680")
+	)
+	(label "V_B"
+		(at 172.72 284.48 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "e93166eb-7440-4c41-bc41-4674f05a18ad")
+	)
+	(wire
+		(pts
+			(xy 190.50 284.48) (xy 198.12 284.48)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "ea4fcc24-3eed-49d8-a753-862a5b8fe9dd")
+	)
+	(label "GND"
+		(at 198.12 284.48 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "434849a2-f210-41c6-9364-0b5af81ba1e2")
+	)
+	(symbol
+		(lib_id "Local:R")
+		(at 254.00 284.48 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "06400406-daa1-4a3e-b8ca-ca9d372c6724")
+		(property "Reference" "R6"
+			(at 254.00 280.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "0R"
+			(at 254.00 287.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+			(at 254.00 284.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Resistor_SMD:R_0603_1608Metric"
+			(at 254.00 286.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 254.00 284.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 254.00 284.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "6c33535f-fce6-4abb-a146-a829c268036e")
+		)
+		(pin "2"
+			(uuid "939f2905-33d0-4d12-bfdb-d2d9b3d0c5b9")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/0c827da3-1638-44f7-9b15-78fee8e6f735"
+					(reference "R6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 248.92 284.48) (xy 241.30 284.48)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "996ba9a6-4485-4ae2-bcd0-070c93c7f950")
+	)
+	(label "EPD_3V3"
+		(at 241.30 284.48 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "d2fedf7f-08a9-49ed-9ea1-daf5f70bfeaf")
+	)
+	(wire
+		(pts
+			(xy 259.08 284.48) (xy 266.70 284.48)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "e21e162c-7e42-45ed-9a20-fd1f16f7c121")
+	)
+	(label "VDD"
+		(at 266.70 284.48 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "22de78a3-4168-42b2-8a81-15ce8d76bd1f")
+	)
+	(symbol
+		(lib_id "Local:R")
+		(at 325.12 284.48 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "b30f4efc-d304-4c98-9b23-2ced13031c8e")
+		(property "Reference" "R7"
+			(at 325.12 280.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "0R"
+			(at 325.12 287.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+			(at 325.12 284.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Resistor_SMD:R_0603_1608Metric"
+			(at 325.12 286.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 325.12 284.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 325.12 284.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "9fdf6a98-5415-4a1f-841b-1d5fb6f11738")
+		)
+		(pin "2"
+			(uuid "eee3e079-2cd6-4907-9cd3-8c4dd65969db")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/9acea2af-16fe-4958-bf9b-8bbb9a31e028"
+					(reference "R7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 320.04 284.48) (xy 312.42 284.48)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "6da8fe92-f6d2-4f45-b1a3-9697e2d3c406")
+	)
+	(label "EPD_3V3"
+		(at 312.42 284.48 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "42232a40-c618-4ae9-bcab-0ab62b47ed1c")
+	)
+	(wire
+		(pts
+			(xy 330.20 284.48) (xy 337.82 284.48)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "0cf50686-538c-43b0-bddf-9748fabe2ddc")
+	)
+	(label "VDDIO"
+		(at 337.82 284.48 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "73b3952a-a5fe-49a3-97a8-00e52b7e8683")
+	)
+	(symbol
+		(lib_id "Local:C")
+		(at 45.72 304.80 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "c129fde1-32ae-4733-a716-64cf6f61e086")
+		(property "Reference" "C3"
+			(at 45.72 300.80 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "0.1uF/25V/0603"
+			(at 45.72 308.30 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+			(at 45.72 304.80 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Capacitor_SMD:C_0603_1608Metric"
+			(at 45.72 307.00 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 45.72 304.80 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 45.72 304.80 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "80bd39d4-a71b-485a-ac85-6112a4e1de14")
+		)
+		(pin "2"
+			(uuid "c257d050-3d4f-4272-bde3-46bf7d23352a")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/bbe5d2b3-5253-4002-b3f8-d95563149acb"
+					(reference "C3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 40.64 304.80) (xy 33.02 304.80)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "a96c5baa-7048-490d-8bb0-a882e18400a3")
+	)
+	(label "EPD_3V3"
+		(at 33.02 304.80 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "b6e2b071-6228-4215-a100-74e4153d4cc7")
+	)
+	(wire
+		(pts
+			(xy 50.80 304.80) (xy 58.42 304.80)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "478ec3c8-f608-46a8-addf-8c663cdcf50d")
+	)
+	(label "GND"
+		(at 58.42 304.80 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "c03d1516-48d6-4f5a-9ece-67ddc9791b84")
+	)
+	(symbol
+		(lib_id "Local:R")
+		(at 114.30 304.80 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "1bcc0c30-769e-4a02-9a5d-e040f7326d00")
+		(property "Reference" "R9"
+			(at 114.30 300.80 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "4.7k 0.1W 1%"
+			(at 114.30 308.30 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+			(at 114.30 304.80 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Resistor_SMD:R_0603_1608Metric"
+			(at 114.30 307.00 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 114.30 304.80 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 114.30 304.80 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "97d275b3-f0b5-42cb-a823-17149ceda2b2")
+		)
+		(pin "2"
+			(uuid "57c757a0-27c8-428d-a918-1db119e82759")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/121c829d-714b-48cb-bf3d-c7c54d434671"
+					(reference "R9")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 109.22 304.80) (xy 101.60 304.80)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "ff140a85-0cd8-4b5f-9b74-91f247c3b207")
+	)
+	(label "TSCL"
+		(at 101.60 304.80 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "7f081b6f-636a-4c51-9451-38b639b8c63d")
+	)
+	(wire
+		(pts
+			(xy 119.38 304.80) (xy 127.00 304.80)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "6e42694c-5ad8-430c-8f30-e7cfdc1ce58a")
+	)
+	(label "3V3"
+		(at 127.00 304.80 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "8a676e70-dcb2-4772-ab34-cd5f1516b6cb")
+	)
+	(symbol
+		(lib_id "Local:R")
+		(at 185.42 304.80 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5d34bdda-d645-48dc-a6c4-5372a7a3525e")
+		(property "Reference" "R10"
+			(at 185.42 300.80 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "4.7k 0.1W 1%"
+			(at 185.42 308.30 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+			(at 185.42 304.80 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Resistor_SMD:R_0603_1608Metric"
+			(at 185.42 307.00 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 185.42 304.80 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 185.42 304.80 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "fbbc8f4b-8104-4852-9354-a777850f45fd")
+		)
+		(pin "2"
+			(uuid "784c5d4f-8bfd-4e11-b0a4-9328eb77ad6b")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/22f0db5c-1f53-4789-89cd-3983e54da523"
+					(reference "R10")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 180.34 304.80) (xy 172.72 304.80)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "8a8e4442-97a6-45cd-bea3-8ddb935ec3d8")
+	)
+	(label "TSDA"
+		(at 172.72 304.80 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "b129daa4-b3b6-48d9-9e48-537e7eb2c3de")
+	)
+	(wire
+		(pts
+			(xy 190.50 304.80) (xy 198.12 304.80)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "93dc673e-d020-463e-8a7d-c30e8e0926bb")
+	)
+	(label "3V3"
+		(at 198.12 304.80 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "95765dd4-3cb2-4899-8d14-fad22ed388a1")
+	)
+	(symbol
+		(lib_id "Local:R")
+		(at 254.00 304.80 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "30776f54-ea28-4fc8-8635-2c22e924591d")
+		(property "Reference" "R12"
+			(at 254.00 300.80 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "0R"
+			(at 254.00 308.30 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+			(at 254.00 304.80 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Resistor_SMD:R_0603_1608Metric"
+			(at 254.00 307.00 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 254.00 304.80 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 254.00 304.80 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "c10bb948-3b15-4edd-9968-483c982a2cc8")
+		)
+		(pin "2"
+			(uuid "a4b862cf-cac0-451f-809f-b7d1c10a2a15")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/17bb16ab-1e0c-4b49-b64b-b7231dd86c1e"
+					(reference "R12")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 248.92 304.80) (xy 241.30 304.80)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "c2e24850-629d-40b4-b706-097a39284d13")
+	)
+	(label "GND"
+		(at 241.30 304.80 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "8003cdec-065d-47e4-b5bf-8fd308afc8ff")
+	)
+	(wire
+		(pts
+			(xy 259.08 304.80) (xy 266.70 304.80)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "86146c28-93a7-48e6-8c75-1fd7a2f18f8d")
+	)
+	(label "BS0"
+		(at 266.70 304.80 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "44a50f5c-75a5-47d7-96a5-343e59b1c2c8")
+	)
+	(text "Populate for 4-wire SPI default"
+		(exclude_from_sim no)
+		(at 245.00 309.60 0)
+		(effects (font (size 0.85 0.85)) (justify left))
+		(uuid "3571597f-0746-45a6-b899-06c9e9e4c156")
+	)
+	(symbol
+		(lib_id "Local:R")
+		(at 325.12 304.80 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8b0377f1-51ae-4fda-9b5a-4ca5bc5dfac6")
+		(property "Reference" "R13"
+			(at 325.12 300.80 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "0R"
+			(at 325.12 308.30 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+			(at 325.12 304.80 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Resistor_SMD:R_0603_1608Metric"
+			(at 325.12 307.00 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 325.12 304.80 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 325.12 304.80 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "638cb68d-72f5-4df0-94b7-fa513080d11c")
+		)
+		(pin "2"
+			(uuid "7aa0647b-4d36-479c-b200-d848d40dd132")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/51f4f3f0-6888-4269-ac94-011b0a53f4e8"
+					(reference "R13")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 320.04 304.80) (xy 312.42 304.80)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "8aae2088-1a9f-4f2d-99ae-fab1559d4d7b")
+	)
+	(label "GND"
+		(at 312.42 304.80 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "a1176672-4be7-4355-8a9e-7daf043a2ed8")
+	)
+	(wire
+		(pts
+			(xy 330.20 304.80) (xy 337.82 304.80)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "a89da97e-9a1e-4dc7-81a4-3f1ef8e84280")
+	)
+	(label "BS1"
+		(at 337.82 304.80 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "89b3680e-3f53-463e-8749-e595a5306ef4")
+	)
+	(text "Populate for 4-wire SPI default"
+		(exclude_from_sim no)
+		(at 316.12 309.60 0)
+		(effects (font (size 0.85 0.85)) (justify left))
+		(uuid "0e3d3e1a-348f-426d-9045-9c6d84f7c8db")
+	)
+	(text "FPC-side decoupling, VCOM, source rails, references, and charge-pump capacitors"
+		(exclude_from_sim no)
+		(at 245.00 132.00 0)
+		(effects (font (size 1.20 1.20)) (justify left))
+		(uuid "bf6261cd-1efa-4fe8-b923-f4e0bacda508")
+	)
+	(symbol
+		(lib_id "Local:C")
+		(at 254.00 149.86 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a019c672-cc12-4aec-af9d-362b0f86458f")
+		(property "Reference" "C13"
+			(at 254.00 145.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "4.7uF/10V/0805"
+			(at 254.00 153.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+			(at 254.00 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Capacitor_SMD:C_0805_2012Metric"
+			(at 254.00 152.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 254.00 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 254.00 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "019630ff-361b-47dc-8f8c-b4fe0e6f5f14")
+		)
+		(pin "2"
+			(uuid "95ca4fcb-b1de-4e75-bcaa-296725be9acc")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/c68b6def-5e95-4116-8e12-cc4df3a01102"
+					(reference "C13")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 248.92 149.86) (xy 241.30 149.86)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "1798a119-5a61-46e8-a2df-dc2c52ae0584")
+	)
+	(label "TFT_VCOM"
+		(at 241.30 149.86 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "38572246-4bb7-4f0e-adf2-b926ae88d780")
+	)
+	(wire
+		(pts
+			(xy 259.08 149.86) (xy 266.70 149.86)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "ad57ee89-78d4-4ec9-9870-4d697bc4fa6e")
+	)
+	(label "GND"
+		(at 266.70 149.86 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "dcbe6d40-cdf4-4f7f-951b-3049e7188d0e")
+	)
+	(symbol
+		(lib_id "Local:C")
+		(at 325.12 149.86 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7ac1fdf4-b37c-4f3e-bda2-cc7f850ea3a9")
+		(property "Reference" "C14"
+			(at 325.12 145.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "0.47uF/25V/1210"
+			(at 325.12 153.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_1210_3225Metric"
+			(at 325.12 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Capacitor_SMD:C_1210_3225Metric"
+			(at 325.12 152.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 325.12 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 325.12 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "f9abe048-ab05-4642-8c17-ae8fcd26b7ba")
+		)
+		(pin "2"
+			(uuid "6c162607-8af1-4fc2-8196-b44fd3b1411f")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/d5126aea-e14a-4c8e-820d-4b64e6187aa5"
+					(reference "C14")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 320.04 149.86) (xy 312.42 149.86)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "e5ae413b-bd66-4c97-a0fe-510f1f6a7116")
+	)
+	(label "FPL_VCOM"
+		(at 312.42 149.86 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "0da3bcfe-95b8-43b6-ab71-aaf2c1b2d115")
+	)
+	(wire
+		(pts
+			(xy 330.20 149.86) (xy 337.82 149.86)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "15f33b3c-efec-47c8-ad42-c073811c39f2")
+	)
+	(label "GND"
+		(at 337.82 149.86 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "6255b5e4-a453-4dbf-b8a9-b4e46151413d")
+	)
+	(symbol
+		(lib_id "Local:R")
+		(at 396.24 149.86 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8d1447d3-e075-4f68-9afd-a735361b0fd6")
+		(property "Reference" "R2"
+			(at 396.24 145.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "0R"
+			(at 396.24 153.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+			(at 396.24 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Resistor_SMD:R_0603_1608Metric"
+			(at 396.24 152.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 396.24 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 396.24 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "23024e4a-8bbb-4080-b24b-57b854950a4c")
+		)
+		(pin "2"
+			(uuid "ca55923f-15ea-4ba9-be03-575229ddc0c9")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/6812c68d-4c68-4bd5-a55a-9b0b46c6544c"
+					(reference "R2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 391.16 149.86) (xy 383.54 149.86)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "037c544b-7a78-4256-b7ed-4b2d5dfb4a04")
+	)
+	(label "RESEL"
+		(at 383.54 149.86 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "a21dd213-fbad-475e-be8c-c6a460d41e60")
+	)
+	(wire
+		(pts
+			(xy 401.32 149.86) (xy 408.94 149.86)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "0ca82f33-0eed-4f25-91c7-1b0525fb4745")
+	)
+	(label "GND"
+		(at 408.94 149.86 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "0e05db7f-a14c-4f7e-a8eb-46bdef174380")
+	)
+	(symbol
+		(lib_id "Local:C")
+		(at 254.00 170.18 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "282e6d8a-d8a1-4f21-a22c-fcb5e467ecef")
+		(property "Reference" "C7"
+			(at 254.00 166.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10uF/25V/1210"
+			(at 254.00 173.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_1210_3225Metric"
+			(at 254.00 170.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Capacitor_SMD:C_1210_3225Metric"
+			(at 254.00 172.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 254.00 170.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 254.00 170.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "68d51c6e-4cf2-429c-a5b4-181d1bdafca2")
+		)
+		(pin "2"
+			(uuid "74bec4d0-f9e0-4f8e-91df-c5c5166559d1")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/8a42637f-bb99-4b1d-9327-b27dde1444d8"
+					(reference "C7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 248.92 170.18) (xy 241.30 170.18)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "e08be206-d8dc-48d8-8876-0d8d478edb09")
+	)
+	(label "VSH"
+		(at 241.30 170.18 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "5f704fb8-c8f7-4fcd-a7b7-d8ff1c5e75ba")
+	)
+	(wire
+		(pts
+			(xy 259.08 170.18) (xy 266.70 170.18)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "cd66328c-571a-4ebb-9370-b587872ea066")
+	)
+	(label "GND"
+		(at 266.70 170.18 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "05af3cae-fdc5-4c7c-b6db-166737ab1ff6")
+	)
+	(symbol
+		(lib_id "Local:C")
+		(at 325.12 170.18 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "9b98b3c8-df71-42bc-870c-58a8a2319732")
+		(property "Reference" "C8"
+			(at 325.12 166.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10uF/25V/1210"
+			(at 325.12 173.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_1210_3225Metric"
+			(at 325.12 170.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Capacitor_SMD:C_1210_3225Metric"
+			(at 325.12 172.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 325.12 170.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 325.12 170.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "38d64406-cdc1-4292-b26d-78a987db974e")
+		)
+		(pin "2"
+			(uuid "3c56c2bc-cc65-4cd6-93fd-9ac94bd07fee")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/1198c3e5-6464-4740-8cfa-41681b8fa671"
+					(reference "C8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 320.04 170.18) (xy 312.42 170.18)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "a9b1016a-2663-406f-a2a9-743bea1a545d")
+	)
+	(label "VSH_LV"
+		(at 312.42 170.18 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "1f3fe462-23e5-4705-b0e2-a76385d190d9")
+	)
+	(wire
+		(pts
+			(xy 330.20 170.18) (xy 337.82 170.18)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "c361e43c-a950-415d-9ce8-a504cb180a1f")
+	)
+	(label "GND"
+		(at 337.82 170.18 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "bfa2b13b-d521-4083-a9ae-e0d4af111a4c")
+	)
+	(symbol
+		(lib_id "Local:C")
+		(at 396.24 170.18 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "b1ec2ea2-7b6b-4c9d-9e69-459969e0ffc0")
+		(property "Reference" "C9"
+			(at 396.24 166.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10uF/25V/1210"
+			(at 396.24 173.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_1210_3225Metric"
+			(at 396.24 170.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Capacitor_SMD:C_1210_3225Metric"
+			(at 396.24 172.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 396.24 170.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 396.24 170.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "e54b4b06-d462-436c-8ec2-613dcca17094")
+		)
+		(pin "2"
+			(uuid "b5fb3fce-04fc-4369-9903-f6512b9a0c1b")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/33af2926-8b34-4900-afe5-93fd843d19ad"
+					(reference "C9")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 391.16 170.18) (xy 383.54 170.18)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "921127de-4b32-4b36-90ef-0fbce6f88c64")
+	)
+	(label "VSH_LV2"
+		(at 383.54 170.18 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "e85ee487-d1ac-43ba-80b5-3ef66dbaa878")
+	)
+	(wire
+		(pts
+			(xy 401.32 170.18) (xy 408.94 170.18)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "c30fb4f8-953d-4086-a7df-ddd1667da887")
+	)
+	(label "GND"
+		(at 408.94 170.18 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "5d71a40f-faba-4130-946e-762d6aacbb7b")
+	)
+	(symbol
+		(lib_id "Local:C")
+		(at 254.00 187.96 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "6a2a4643-9ae7-43ea-9340-c758d0444629")
+		(property "Reference" "C10"
+			(at 254.00 183.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10uF/25V/1210"
+			(at 254.00 191.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_1210_3225Metric"
+			(at 254.00 187.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Capacitor_SMD:C_1210_3225Metric"
+			(at 254.00 190.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 254.00 187.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 254.00 187.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "aa13f15b-523d-4fe1-b6a7-796799200c63")
+		)
+		(pin "2"
+			(uuid "0cfe2788-4ced-4b3c-b432-71352e3a0cf1")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/be3f4e8e-b855-4480-877c-a738597c9f3f"
+					(reference "C10")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 248.92 187.96) (xy 241.30 187.96)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "832e44c8-50a7-4789-a344-6bd68e7e4039")
+	)
+	(label "VSL"
+		(at 241.30 187.96 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "8751a393-141e-4d4d-96e8-dc6252a061b7")
+	)
+	(wire
+		(pts
+			(xy 259.08 187.96) (xy 266.70 187.96)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "0439a342-5d93-4fe0-bcd3-0b16be51a746")
+	)
+	(label "GND"
+		(at 266.70 187.96 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "01046045-9115-44c8-9baa-955823d00af5")
+	)
+	(symbol
+		(lib_id "Local:C")
+		(at 325.12 187.96 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f2095453-5f5a-48f0-aa9b-7ba2edf0310c")
+		(property "Reference" "C11"
+			(at 325.12 183.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10uF/25V/1210"
+			(at 325.12 191.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_1210_3225Metric"
+			(at 325.12 187.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Capacitor_SMD:C_1210_3225Metric"
+			(at 325.12 190.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 325.12 187.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 325.12 187.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "cb18ce40-34c3-4c38-b950-e118bc15a2c2")
+		)
+		(pin "2"
+			(uuid "9175f4c2-31fb-40b6-a4d1-cce23f8e4cc9")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/decab8aa-3548-439b-9440-b6a6e7729951"
+					(reference "C11")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 320.04 187.96) (xy 312.42 187.96)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "a9e47187-1899-435e-8ef8-7029519a28b0")
+	)
+	(label "VSL_LV"
+		(at 312.42 187.96 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "050b6292-b3b2-4160-aff5-63dc9acd4410")
+	)
+	(wire
+		(pts
+			(xy 330.20 187.96) (xy 337.82 187.96)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "8270edb5-81ea-459c-9960-c0685e237a39")
+	)
+	(label "GND"
+		(at 337.82 187.96 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "ed9221e2-0905-4b09-864e-09e494842ea8")
+	)
+	(symbol
+		(lib_id "Local:C")
+		(at 396.24 187.96 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "b904a3c4-a047-44bc-a35a-279d238bef1e")
+		(property "Reference" "C12"
+			(at 396.24 183.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10uF/25V/1210"
+			(at 396.24 191.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_1210_3225Metric"
+			(at 396.24 187.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Capacitor_SMD:C_1210_3225Metric"
+			(at 396.24 190.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 396.24 187.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 396.24 187.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "d1c4478c-b466-4823-b553-e2b33c36acb7")
+		)
+		(pin "2"
+			(uuid "1f21b6c9-2fe0-4e6e-a18b-7530c402adbc")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/78ab0dd0-3cbb-4ef4-a053-6b98beef1f2d"
+					(reference "C12")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 391.16 187.96) (xy 383.54 187.96)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "fce8a8c6-0c85-4be7-8f64-c602b6cce553")
+	)
+	(label "VSL_LV2"
+		(at 383.54 187.96 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "59962aff-7ca8-4237-ba1d-20cc19dffd45")
+	)
+	(wire
+		(pts
+			(xy 401.32 187.96) (xy 408.94 187.96)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "bd536eb7-206a-4a5c-bfce-14e202d83469")
+	)
+	(label "GND"
+		(at 408.94 187.96 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "d1f630df-1ac0-45a9-9fd1-f212d5e47982")
+	)
+	(symbol
+		(lib_id "Local:C")
+		(at 254.00 205.74 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "26f57ed8-b079-4696-b60d-15903fa72451")
+		(property "Reference" "C21"
+			(at 254.00 201.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "1uF/10V/0805"
+			(at 254.00 209.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+			(at 254.00 205.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Capacitor_SMD:C_0805_2012Metric"
+			(at 254.00 207.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 254.00 205.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 254.00 205.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "35839aba-2845-4b8c-8c1e-817577764553")
+		)
+		(pin "2"
+			(uuid "dff8bd17-4b98-4a35-a163-1b9ed2972634")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/72393be7-04c8-425e-870d-6b32cb8157df"
+					(reference "C21")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 248.92 205.74) (xy 241.30 205.74)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "8b8b6dcd-0f6f-4d87-b8ab-b4ab682592f4")
+	)
+	(label "REFN"
+		(at 241.30 205.74 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "54028cda-6af8-46a7-a49b-708b9936a779")
+	)
+	(wire
+		(pts
+			(xy 259.08 205.74) (xy 266.70 205.74)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "7b846558-c2ab-47d2-9e37-724ec093d5fc")
+	)
+	(label "GND"
+		(at 266.70 205.74 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "4b46867e-abba-40c0-9c63-be600750fbfb")
+	)
+	(symbol
+		(lib_id "Local:C")
+		(at 325.12 205.74 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "adf838bf-b0bc-4fe2-8433-59a6d414344d")
+		(property "Reference" "C20"
+			(at 325.12 201.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "1uF/10V/0805"
+			(at 325.12 209.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+			(at 325.12 205.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Capacitor_SMD:C_0805_2012Metric"
+			(at 325.12 207.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 325.12 205.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 325.12 205.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "ba815f13-f462-4539-92b4-74f94a2a60fe")
+		)
+		(pin "2"
+			(uuid "bf38df07-9f03-4eb5-8882-f390a75ffbaf")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/ff600f6e-5e3f-422e-8a9d-bfa0373e52bb"
+					(reference "C20")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 320.04 205.74) (xy 312.42 205.74)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "74c219db-c910-4ff0-a037-ed8a83d1036b")
+	)
+	(label "REFP"
+		(at 312.42 205.74 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "bb98ab30-98ae-455c-b41f-3c6ecbe36c5a")
+	)
+	(wire
+		(pts
+			(xy 330.20 205.74) (xy 337.82 205.74)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "697face6-ca18-41c3-9e57-5c4fc2764392")
+	)
+	(label "GND"
+		(at 337.82 205.74 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "13ad71fe-438f-466b-b355-ffef7084b0c4")
+	)
+	(symbol
+		(lib_id "Local:C")
+		(at 396.24 205.74 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f69f703f-7fa6-442e-870b-557100a0ecf7")
+		(property "Reference" "C1"
+			(at 396.24 201.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "2.2uF/25V/0603"
+			(at 396.24 209.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+			(at 396.24 205.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Capacitor_SMD:C_0603_1608Metric"
+			(at 396.24 207.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 396.24 205.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 396.24 205.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "1e8937d4-e25e-40db-b9a1-701f203fea50")
+		)
+		(pin "2"
+			(uuid "e050f9a9-a621-4c4d-b545-863516a9aaba")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/33daa37b-a1a0-4de9-a001-4d50e7ce6af8"
+					(reference "C1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 391.16 205.74) (xy 383.54 205.74)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "6a25a6d7-4080-4978-9edd-312f0ae991fb")
+	)
+	(label "VDDD"
+		(at 383.54 205.74 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "e3a63163-af57-4e8c-bfe8-b6b36494a1b3")
+	)
+	(wire
+		(pts
+			(xy 401.32 205.74) (xy 408.94 205.74)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "645935bd-11bc-4053-95bd-0fc7dec4de76")
+	)
+	(label "GND"
+		(at 408.94 205.74 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "4a59914a-0f2a-4bb4-96d9-4e4498f3fef7")
+	)
+	(symbol
+		(lib_id "Local:C")
+		(at 254.00 226.06 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "87f85e7f-0fcb-4853-9549-acf5a0652f86")
+		(property "Reference" "C19"
+			(at 254.00 222.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "1uF/10V/0805"
+			(at 254.00 229.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+			(at 254.00 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Capacitor_SMD:C_0805_2012Metric"
+			(at 254.00 228.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 254.00 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 254.00 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "06865803-8553-4417-878c-2590759ca50f")
+		)
+		(pin "2"
+			(uuid "d0eaccb9-2ea3-4c7d-a9ed-5b29a7d3de1f")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/c102f160-ace6-422d-ac9b-ba28668cb825"
+					(reference "C19")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 248.92 226.06) (xy 241.30 226.06)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "84576d2f-6554-4461-a604-89414f7be943")
+	)
+	(label "VCP2"
+		(at 241.30 226.06 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "02f9636d-983e-4aa7-b5ff-68d51d439e2b")
+	)
+	(wire
+		(pts
+			(xy 259.08 226.06) (xy 266.70 226.06)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "b91f58bb-9a96-4490-9c73-14bc70837d25")
+	)
+	(label "GND"
+		(at 266.70 226.06 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "97f0496a-635c-48ea-9ed6-8b88ce02b8b2")
+	)
+	(symbol
+		(lib_id "Local:C")
+		(at 325.12 226.06 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "99a95680-8da2-4a9b-914d-1aead75b5a48")
+		(property "Reference" "C18"
+			(at 325.12 222.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "1uF/10V/0805"
+			(at 325.12 229.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+			(at 325.12 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Capacitor_SMD:C_0805_2012Metric"
+			(at 325.12 228.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 325.12 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 325.12 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "d2d5ca72-06d0-4642-9e91-ae45a4884108")
+		)
+		(pin "2"
+			(uuid "1ec0cefa-91b0-4153-b647-3ca4ab12d244")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/d72c7c0a-8c95-4599-aa18-a043342582da"
+					(reference "C18")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 320.04 226.06) (xy 312.42 226.06)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "eaf6cb57-7409-4e6f-8fa2-a467a6af8ac4")
+	)
+	(label "CP2N"
+		(at 312.42 226.06 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "dc8b7137-1df0-430b-9a06-78494802e326")
+	)
+	(wire
+		(pts
+			(xy 330.20 226.06) (xy 337.82 226.06)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "709e1ed6-f600-4748-8256-ea9b8e8dd8b0")
+	)
+	(label "CP2P"
+		(at 337.82 226.06 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "de71a928-3d15-42bf-99d9-8d0fc107529c")
+	)
+	(symbol
+		(lib_id "Local:C")
+		(at 396.24 226.06 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "ab26c175-cc28-4417-b3d3-7b8e42d10a66")
+		(property "Reference" "C17"
+			(at 396.24 222.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "1uF/10V/0805"
+			(at 396.24 229.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+			(at 396.24 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Capacitor_SMD:C_0805_2012Metric"
+			(at 396.24 228.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 396.24 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 396.24 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "db65b420-bfc1-4df3-b97a-7a6cdf2f6569")
+		)
+		(pin "2"
+			(uuid "a53ed6f5-3b2c-42fa-99de-aae71febcad0")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/fabb3dc9-0913-48fb-87f4-f75fc4d1971d"
+					(reference "C17")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 391.16 226.06) (xy 383.54 226.06)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "4b556213-b286-43d1-bfa3-e28c10e7b056")
+	)
+	(label "VCP1"
+		(at 383.54 226.06 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "484bc3ff-069c-40ed-8508-74755bbe7bbc")
+	)
+	(wire
+		(pts
+			(xy 401.32 226.06) (xy 408.94 226.06)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "26914d55-86ff-4bc3-9b7d-afe01f935c0d")
+	)
+	(label "GND"
+		(at 408.94 226.06 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "f46663b3-a1b3-449e-8238-ba76ca1d3ec7")
+	)
+	(symbol
+		(lib_id "Local:C")
+		(at 254.00 243.84 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "fbac296c-e85c-4e30-92e1-1feb1ac9ba95")
+		(property "Reference" "C16"
+			(at 254.00 239.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "1uF/10V/0805"
+			(at 254.00 247.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+			(at 254.00 243.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Capacitor_SMD:C_0805_2012Metric"
+			(at 254.00 246.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 254.00 243.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 254.00 243.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "9327982e-c092-481c-8523-d5d41bf4cd0c")
+		)
+		(pin "2"
+			(uuid "e450d2be-aeaf-4643-8138-a94d7ac03824")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/c8581a19-01cb-4d52-a3db-b37341dd8e1c"
+					(reference "C16")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 248.92 243.84) (xy 241.30 243.84)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "11a7025a-ce2a-4d71-ad31-5cc6d63bb00d")
+	)
+	(label "CP1N"
+		(at 241.30 243.84 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "293515be-247c-4ca6-933f-666f23372738")
+	)
+	(wire
+		(pts
+			(xy 259.08 243.84) (xy 266.70 243.84)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "c7919c08-f102-451d-8d21-62d175b247bf")
+	)
+	(label "CP1P"
+		(at 266.70 243.84 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "b515600e-1265-460f-ac8d-e39f3873426a")
+	)
+	(symbol
+		(lib_id "Local:C")
+		(at 325.12 243.84 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "3ba157d2-6671-4cbe-ae9c-5c639dc14596")
+		(property "Reference" "C15"
+			(at 325.12 239.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "0.47uF/25V/1210"
+			(at 325.12 247.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_1210_3225Metric"
+			(at 325.12 243.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "Capacitor_SMD:C_1210_3225Metric"
+			(at 325.12 246.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 325.12 243.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 325.12 243.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "12d6eecc-1743-45a7-bb76-e99edd5470e7")
+		)
+		(pin "2"
+			(uuid "0130d71b-a79d-4cdc-b2d1-233f62a9145e")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/5d9f9092-fe7e-49db-addf-ef4b9a7dc1d3"
+					(reference "C15")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 320.04 243.84) (xy 312.42 243.84)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "f05f0932-577c-4d46-9e66-5819cc6c0be2")
+	)
+	(label "VCOMBD"
+		(at 312.42 243.84 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "365126bd-f6a5-4dda-9eab-32a25a1b97b7")
+	)
+	(wire
+		(pts
+			(xy 330.20 243.84) (xy 337.82 243.84)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "e128b19d-3501-4260-b062-4efeece63b70")
+	)
+	(label "GND"
+		(at 337.82 243.84 180)
+		(effects
+			(font (size 0.9 0.9))
+			(justify right)
+		)
+		(uuid "791a72db-7ccf-4feb-82b6-0f0c9103fb83")
+	)
+	(text "Minimal debug pads kept for first JLC routing pass"
+		(exclude_from_sim no)
+		(at 245.00 285.00 0)
+		(effects (font (size 1.20 1.20)) (justify left))
+		(uuid "e8f2e1e1-5bb0-4362-b49e-88ea8463f59d")
+	)
+	(symbol
+		(lib_id "Local:TP")
+		(at 254.00 299.72 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "3175e761-645b-440d-bdab-a341f7efc754")
+		(property "Reference" "TP1"
+			(at 254.00 295.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "3V3"
+			(at 254.00 303.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
+			(at 254.00 299.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "TestPoint:TestPoint_Pad_D1.0mm"
+			(at 254.00 301.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 254.00 299.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 254.00 299.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "3bdc79a5-12e5-41bb-b6a1-a0b2bc728f5e")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/725a030c-ac3d-4019-9b82-70e84a4dc94e"
+					(reference "TP1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 248.92 299.72) (xy 241.30 299.72)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "87fc776f-0f67-42ed-a8bb-13cc79aae8c9")
+	)
+	(label "3V3"
+		(at 241.30 299.72 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "ffdbed78-737f-4f99-ad55-3e0bb518af5a")
+	)
+	(symbol
+		(lib_id "Local:TP")
+		(at 309.88 299.72 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "27ce2b22-d097-43d1-a6d1-576223b4ded3")
+		(property "Reference" "TP2"
+			(at 309.88 295.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 309.88 303.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
+			(at 309.88 299.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "TestPoint:TestPoint_Pad_D1.0mm"
+			(at 309.88 301.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 309.88 299.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 309.88 299.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "0b9eee85-b2d4-48f3-9fb6-fa2ca2cb9261")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/34eaaf6d-7e43-4362-8249-89dda9d18bed"
+					(reference "TP2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 304.80 299.72) (xy 297.18 299.72)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "7d59f963-d0e6-45ed-9130-353c49feb48f")
+	)
+	(label "GND"
+		(at 297.18 299.72 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "95fafd74-45f4-4493-9d16-ceabab44aa9c")
+	)
+	(symbol
+		(lib_id "Local:TP")
+		(at 363.22 299.72 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "fdc596f6-7777-408c-9c89-70eb8e797d08")
+		(property "Reference" "TP3"
+			(at 363.22 295.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "VDDIO"
+			(at 363.22 303.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
+			(at 363.22 299.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "TestPoint:TestPoint_Pad_D1.0mm"
+			(at 363.22 301.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 363.22 299.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 363.22 299.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "38d06fa7-e0d0-4809-b8b4-7adc4801e548")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/c1686b47-b6af-40b1-a269-ee5be8448b0e"
+					(reference "TP3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 358.14 299.72) (xy 350.52 299.72)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "39bf096a-ffd7-4866-9482-f51f0a11769a")
+	)
+	(label "VDDIO"
+		(at 350.52 299.72 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "0ad4f425-06d6-4f2a-8f71-b00c21bd1838")
+	)
+	(symbol
+		(lib_id "Local:TP")
+		(at 419.10 299.72 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "74a14b1f-d180-4791-b838-2e609db980ba")
+		(property "Reference" "TP4"
+			(at 419.10 295.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "CSB"
+			(at 419.10 303.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
+			(at 419.10 299.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "TestPoint:TestPoint_Pad_D1.0mm"
+			(at 419.10 301.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 419.10 299.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 419.10 299.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "ceefe908-2cf2-4ae0-b4fd-77d64d6ba9b4")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/5b88f6c4-860f-4715-ad4c-370ad4764e0c"
+					(reference "TP4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 414.02 299.72) (xy 406.40 299.72)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "e59ec921-0178-4596-a318-3077ca3a83fc")
+	)
+	(label "CSB"
+		(at 406.40 299.72 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "c1f74508-e44e-4953-9bbe-be092e3c4284")
+	)
+	(symbol
+		(lib_id "Local:TP")
+		(at 254.00 314.96 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "599c595f-386a-4579-b672-1e08f738cd55")
+		(property "Reference" "TP5"
+			(at 254.00 310.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "SL_CSB"
+			(at 254.00 318.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
+			(at 254.00 314.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "封装" "TestPoint:TestPoint_Pad_D1.0mm"
+			(at 254.00 317.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 254.00 314.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 254.00 314.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "6f9306ec-415b-4acf-b3de-8f5f1f9e451f")
+		)
+		(instances
+			(project "mf1750_jlc_simplified"
+				(path "/6a9d64f8-4f63-4184-b3f4-09bdde1719c4"
+					(reference "TP5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 248.92 314.96) (xy 241.30 314.96)
+		)
+		(stroke (width 0) (type solid))
+		(uuid "038bf8f8-ca69-45fc-a097-b3575b9cac8c")
+	)
+	(label "SL_CSB"
+		(at 241.30 314.96 0)
+		(effects
+			(font (size 0.9 0.9))
+			(justify left)
+		)
+		(uuid "aee71cd8-0556-41c7-ba54-8b9737b2c7a0")
+	)
+	(text "Reference source: MF-1750/M009F-T specification page 10 reference circuit."
+		(exclude_from_sim no)
+		(at 35.00 370.00 0)
+		(effects (font (size 1.05 1.05)) (justify left))
+		(uuid "359e82ea-7a9a-44ed-a854-7322a469ed1d")
+	)
+	(text "Critical fix versus DESPI-C73: J1 pin 4 is SL_CSB and must route to an ESP32 GPIO as CS2."
+		(exclude_from_sim no)
+		(at 35.00 375.00 0)
+		(effects (font (size 1.05 1.05)) (justify left))
+		(uuid "e6bb115d-ad2f-4930-9595-754d0ef45e06")
+	)
+	(text "Default bus mode: BS0=0 and BS1=0 through R12/R13 for 4-wire SPI with D/C."
+		(exclude_from_sim no)
+		(at 35.00 380.00 0)
+		(effects (font (size 1.05 1.05)) (justify left))
+		(uuid "4fa2256a-7927-4c50-bcdf-0973ef0264a9")
+	)
+	(text "Diode polarity is assigned in BOM notes; match footprint pin A/K to those notes before PCB layout."
+		(exclude_from_sim no)
+		(at 35.00 385.00 0)
+		(effects (font (size 1.05 1.05)) (justify left))
+		(uuid "f72235a1-1272-4e5c-9fbc-c59b0b70e16f")
+	)
+	(text "Reserved FPC pins are routed only to isolated single test pads; pin1 NC is explicitly no-connect."
+		(exclude_from_sim no)
+		(at 35.00 390.00 0)
+		(effects (font (size 1.05 1.05)) (justify left))
+		(uuid "3860c1d2-5971-4f86-861f-1aa5f903e1d6")
+	)
+	(text "Footprints are intentionally mostly blank; assign real packages and ratings in KiCad before layout."
+		(exclude_from_sim no)
+		(at 35.00 395.00 0)
+		(effects (font (size 1.05 1.05)) (justify left))
+		(uuid "57e567a5-964e-4614-86b5-9c26b6db9986")
+	)
+	(text "After board bring-up, firmware should enable EPD_PIN_CS2 and drive both CSB and SL_CSB for full 1024x600 refresh."
+		(exclude_from_sim no)
+		(at 35.00 400.00 0)
+		(effects (font (size 1.05 1.05)) (justify left))
+		(uuid "20aac7ae-6674-4d24-a597-dccb0f1d9c30")
+	)
+	(sheet_instances
+		(path "/" (page "1"))
+	)
+)

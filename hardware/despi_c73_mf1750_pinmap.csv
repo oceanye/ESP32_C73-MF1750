@@ -1,0 +1,51 @@
+mf1750_pin,mf1750_signal,adapter_source,notes
+1,NC,NC,Do not connect DESPI-C73 VPP to panel NC
+2,TFT_VCOM,DESPI_C73_P1_2,pass through
+3,FPL_VCOM,DESPI_C73_P1_3,pass through
+4,SL_CSB,ESP32_GPIO10_HEADER,critical second chip select; do not connect to DESPI-C73 P1 pin 4 VDD
+5,GDRH,DESPI_C73_P1_5,pass through
+6,RESEH,DESPI_C73_P1_6,pass through
+7,GDRL,DESPI_C73_P1_7,pass through
+8,RESEL,DESPI_C73_P1_8_RESEL,pass through for C73-based interposer; do not hard-tie to GND
+9,GDRC,DESPI_C73_P1_9,pass through
+10,RESEC,DESPI_C73_P1_10,pass through
+11,VPC,DESPI_C73_P1_11,pass through
+12,GND,DESPI_C73_GND,pass through
+13,VGL,DESPI_C73_P1_13_PREVGL,C73 net name differs from panel name
+14,VPH,DESPI_C73_P1_14,pass through
+15,VSH,DESPI_C73_P1_15,pass through
+16,VSH_LV,DESPI_C73_P1_16,pass through
+17,VSH_LV2,DESPI_C73_P1_17,pass through
+18,VSL,DESPI_C73_P1_18,pass through
+19,VSL_LV,DESPI_C73_P1_19,pass through
+20,VSL_LV2,DESPI_C73_P1_20,pass through
+21,GNDA,DESPI_C73_GND,pass through
+22,REFN,DESPI_C73_P1_22,pass through
+23,REFP,DESPI_C73_P1_23,pass through
+24,TSCL,DESPI_C73_P1_24_TSCL,keep C73 behavior; optional pull-up only after verification
+25,TSDA,DESPI_C73_P1_25_TSDA,keep C73 behavior; C73 schematic marks this node NC
+26,BS0,DESPI_C73_P1_26_BS0,keep C73 mode strap behavior
+27,BS1,DESPI_C73_P1_27_BS1,keep C73 mode strap behavior
+28,RST_N,DESPI_C73_P1_28,pass through
+29,BUSY_N,DESPI_C73_P1_29,pass through
+30,DC,DESPI_C73_P1_30,pass through
+31,CSB,DESPI_C73_P1_31_CSB1,main chip select
+32,SCL,DESPI_C73_P1_32,pass through
+33,SI0,DESPI_C73_P1_33,pass through
+34,SI1,DESPI_C73_P1_34_SI1,keep C73 behavior; C73 schematic marks this node NC
+35,SI2,DESPI_C73_P1_35_SI2,keep C73 behavior; C73 schematic marks this node NC
+36,SI3,DESPI_C73_P1_36_SI3,keep C73 behavior; C73 schematic marks this node NC
+37,VDDD,DESPI_C73_P1_37,pass through
+38,VDD,DESPI_C73_P1_38,pass through
+39,GND,DESPI_C73_GND,pass through
+40,VDDIO,DESPI_C73_P1_40,pass through; use for pull-ups
+41,VCP2,DESPI_C73_P1_41,pass through
+42,CP2N,DESPI_C73_P1_42,pass through
+43,CP2P,DESPI_C73_P1_43,pass through
+44,VCP1,DESPI_C73_P1_44,pass through
+45,CP1N,DESPI_C73_P1_45,pass through
+46,CP1P,DESPI_C73_P1_46,pass through
+47,CGH1N,DESPI_C73_P1_47,pass through
+48,CGH1P,DESPI_C73_P1_48,pass through
+49,VGH,DESPI_C73_P1_49,pass through
+50,VCOMBD,DESPI_C73_P1_50,pass through

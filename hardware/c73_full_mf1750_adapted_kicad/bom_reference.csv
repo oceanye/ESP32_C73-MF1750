@@ -1,0 +1,50 @@
+ref,kind,value,net1,net2,footprint,note
+J1,connector,MF-1750 50pin FPC,,,Connector_FFC-FPC:Hirose_FH12-50S-0.5SH_1x50-1MP_P0.50mm_Horizontal,C73 P1 pin4 changed to SL_CSB
+J2,connector,C73 P2 plus CS2 10pin,,,Connector_PinHeader_2.54mm:PinHeader_1x10_P2.54mm_Vertical,pin9 added SL_CSB/CS2
+C2,C,4.7uF/25V/0603,V_B,GND,Capacitor_SMD:C_0603_1608Metric,C73 input cap near L1
+L1,L,10uH 1A,V_B,SW_H,Inductor_SMD:L_7.3x7.3_H4.5,
+D4,D_SCH,MBR0530,VPH,SW_H,Diode_SMD:D_SOD-123,C73 boost diode
+C5,C,10uF/25V/1210,VPH,GND,Capacitor_SMD:C_1210_3225Metric,
+R5,R,0R,VPH,PREVGH,Resistor_SMD:R_0603_1608Metric,
+C3,C,10uF/25V/1210,SW_H,NEG_PUMP_H,Capacitor_SMD:C_1210_3225Metric,
+D2,D_SCH,MBR0530,PREVGL,NEG_PUMP_H,Diode_SMD:D_SOD-123,C73 negative pump diode
+D3,D_SCH,MBR0530,NEG_PUMP_H,GND,Diode_SMD:D_SOD-123,C73 clamp diode
+C6,C,10uF/25V/1210,PREVGL,GND,Capacitor_SMD:C_1210_3225Metric,
+R2,R,1M,GDRH,GND,Resistor_SMD:R_0603_1608Metric,
+R4,R,0.22R 0.2W 1%,RESEH,GND,Resistor_SMD:R_0603_1608Metric,
+C1,C,4.7uF/25V/0603,V_B,GND,Capacitor_SMD:C_0603_1608Metric,C73 input cap near Q2
+R1,R,1M,V_B,GDRC,Resistor_SMD:R_1206_3216Metric,
+D1,D_SCH,MBR0530,SW_C,VPC,Diode_SMD:D_SOD-123,
+C4,C,10uF/25V/1210,VPC,GND,Capacitor_SMD:C_1210_3225Metric,
+L2,L,10uH 1A,SW_C,RESEC,Inductor_SMD:L_7.3x7.3_H4.5,
+R3,R,0.22R 0.2W 1%,RESEC,GND,Resistor_SMD:R_1206_3216Metric,
+L3,L,L0603 120R@100MHz,3V3,EPD_3V3,Inductor_SMD:L_7.3x7.3_H4.5,
+L4,L,L0603 120R@100MHz,3V3,EPD_3V3,Inductor_SMD:L_7.3x7.3_H4.5,
+R10,R,1R,EPD_3V3,V_B,Resistor_SMD:R_0603_1608Metric,
+C23,C,100uF/6.3V,V_B,GND,Capacitor_SMD:C_0603_1608Metric,
+C24,C,0.1uF/25V/0603,EPD_3V3,GND,Capacitor_SMD:C_0603_1608Metric,
+R11,R,0R,EPD_3V3,VDD,Resistor_SMD:R_0603_1608Metric,
+R12,R,0R,EPD_3V3,VDDIO,Resistor_SMD:R_0603_1608Metric,
+C15,C,4.7uF/25V/0603,TFT_VCOM,GND,Capacitor_SMD:C_0603_1608Metric,
+C7,C,0.47uF/25V/1210,FPL_VCOM,GND,Capacitor_SMD:C_1210_3225Metric,
+R8,R,0R,VDD,FPL_VCOM,Resistor_SMD:R_0603_1608Metric,
+C8,C,10uF/25V/1210,VSH,GND,Capacitor_SMD:C_1210_3225Metric,
+C9,C,10uF/25V/1210,VSH_LV,GND,Capacitor_SMD:C_1210_3225Metric,
+C10,C,10uF/25V/1210,VSH_LV2,GND,Capacitor_SMD:C_1210_3225Metric,
+C17,C,10uF/25V/1210,VSL,GND,Capacitor_SMD:C_1210_3225Metric,
+C18,C,10uF/25V/1210,VSL_LV,GND,Capacitor_SMD:C_1210_3225Metric,
+C19,C,10uF/25V/1210,VSL_LV2,GND,Capacitor_SMD:C_1210_3225Metric,
+C11,C,1uF/25V/0805,REFN,GND,Capacitor_SMD:C_0805_2012Metric,
+C20,C,1uF/25V/0805 NC,REFP,GND,Capacitor_SMD:C_0805_2012Metric,C73 drawing marks NC
+R6,R,0R,GND,BS0,Resistor_SMD:R_0603_1608Metric,"4-wire SPI mode strap; verify against final C73 ECO"
+R7,R,0R,GND,BS1,Resistor_SMD:R_0603_1608Metric,"4-wire SPI mode strap; verify against final C73 ECO"
+C12,C,2.2uF/25V/0603,VDDD,GND,Capacitor_SMD:C_0603_1608Metric,
+C13,C,1uF/25V/0805,VCP2,GND,Capacitor_SMD:C_0805_2012Metric,
+C21,C,1uF/25V/0805,CP2N,CP2P,Capacitor_SMD:C_0805_2012Metric,
+C14,C,1uF/25V/0805,VCP1,GND,Capacitor_SMD:C_0805_2012Metric,
+C22,C,1uF/25V/0805,CP1N,CP1P,Capacitor_SMD:C_0805_2012Metric,
+C16,C,0.47uF/25V/1210,VCOMBD,GND,Capacitor_SMD:C_1210_3225Metric,
+R9,R,0R,PREVGH,VCOMBD,Resistor_SMD:R_0603_1608Metric,"C73 VCOMBD/rail option; verify before layout"
+R_SL,R,47k DNP,SL_CSB,VDDIO,Resistor_SMD:R_0603_1608Metric,Optional CS2 pull-up for reset/default idle
+Q1,NMOS,Si1308EDL,"G=GDRH;S=RESEH;D=SW_H",,Package_TO_SOT_SMD:SOT-23-3,
+Q2,PMOS,SI2301,"G=GDRC;S=V_B;D=SW_C",,Package_TO_SOT_SMD:SOT-23-3,

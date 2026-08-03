@@ -1,0 +1,51 @@
+pin,c73_original,mf1750_target,adapter_net,action
+1,VPP,NC,,Do not pass through
+2,TFT_VCOM,TFT_VCOM,TFT_VCOM,Pass through
+3,FPL_VCOM,FPL_VCOM,FPL_VCOM,Pass through
+4,VDD,SL_CSB,SL_CSB,Panel pin 4 goes to new CS2 header, not C73 P1-4
+5,GDRH,GDRH,GDRH,Pass through
+6,RESEH,RESEH,RESEH,Pass through
+7,GDRL,GDRL,GDRL,Pass through; C73 original marks node NC
+8,RESEL,RESEL,RESEL,Pass through
+9,GDRC,GDRC,GDRC,Pass through
+10,RESEC,RESEC,RESEC,Pass through
+11,VPC,VPC,VPC,Pass through
+12,GND,GND,GND,Pass through
+13,VGL,VGL,PREVGL,Pass through; rail name alias
+14,VPH,VPH,VPH,Pass through
+15,VSH,VSH,VSH,Pass through
+16,VSH_LV,VSH_LV,VSH_LV,Pass through
+17,VSH_LV2,VSH_LV2,VSH_LV2,Pass through
+18,VSL,VSL,VSL,Pass through
+19,VSL_LV,VSL_LV,VSL_LV,Pass through
+20,VSL_LV2,VSL_LV2,VSL_LV2,Pass through
+21,GND,GNDA,GND,Pass through
+22,REFN,REFN,REFN,Pass through
+23,REFP,REFP,REFP,Pass through
+24,TSCL,TSCL,TSCL,Keep C73 behavior
+25,TSDA,TSDA,TSDA,Keep C73 behavior; C73 original marks node NC
+26,BS0,BS0,BS0,Keep C73 mode strap behavior
+27,BS1,BS1,BS1,Keep C73 mode strap behavior
+28,RST_N,RST_N,RST_N,Pass through
+29,BUSY_N,BUSY_N,BUSY_N,Pass through
+30,DC,DC,DC,Pass through
+31,CSB1,CSB,CSB,Pass through main chip select
+32,SCL,SCL,SCL,Pass through
+33,SI0,SI0,SI0,Pass through
+34,SI1,SI1,SI1,Keep C73 behavior; C73 original marks node NC
+35,SI2,SI2,SI2,Keep C73 behavior; C73 original marks node NC
+36,SI3,SI3,SI3,Keep C73 behavior; C73 original marks node NC
+37,VDDD,VDDD,VDDD,Pass through
+38,VDD,VDD,VDD,Pass through
+39,GND,GND,GND,Pass through
+40,VDDIO,VDDIO,VDDIO,Pass through
+41,VCP2,VCP2,VCP2,Pass through
+42,CP2N,CP2N,CP2N,Pass through
+43,CP2P,CP2P,CP2P,Pass through
+44,VCP1,VCP1,VCP1,Pass through
+45,CP1N,CP1N,CP1N,Pass through
+46,CP1P,CP1P,CP1P,Pass through
+47,CGH1N,CGH1N,CGH1N,Keep C73 behavior; C73 original marks node NC
+48,CGH1P,CGH1P,CGH1P,Keep C73 behavior; C73 original marks node NC
+49,VGH,VGH,PREVGH,Pass through; rail name alias
+50,VCOMBD,VCOMBD,VCOMBD,Pass through

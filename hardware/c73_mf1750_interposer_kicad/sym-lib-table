@@ -1,0 +1,3 @@
+(sym_lib_table
+	(lib (name "Local") (type "KiCad") (uri "${KIPRJMOD}/c73_mf1750_interposer_local.kicad_sym") (options "") (descr "Local symbols for C73 to MF-1750 interposer"))
+)

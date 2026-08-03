@@ -1,0 +1,61 @@
+{
+  "profile": {
+    "id": "7e6c45ba-418b-4a81-8241-55ff85bfd4f3",
+    "email": "",
+    "allow_telemetry": true,
+    "allow_contact": true
+  },
+  "gui": {
+    "enabled": true,
+    "input_directory": "",
+    "dialog_confirmation_timeout": 5
+  },
+  "router": {
+    "optimizer": {},
+    "scoring": {}
+  },
+  "drc": {
+    "include_warnings": true,
+    "include_errors": true
+  },
+  "usage_and_diagnostic_data": {
+    "disable_analytics": false
+  },
+  "feature_flags": {
+    "multi_threading": true,
+    "inspection_mode": false,
+    "other_menu": false,
+    "save_jobs": false
+  },
+  "api_server": {
+    "enabled": false,
+    "http_allowed": true,
+    "endpoints": [
+      "http://127.0.0.1:37864"
+    ],
+    "authentication": {
+      "enabled": true,
+      "providers": "",
+      "google_sheets": {}
+    },
+    "cors_origins": ""
+  },
+  "statistics": {
+    "start_time": "2026-07-13 07:18:17",
+    "sessions_total": 0,
+    "jobs_started": 0,
+    "jobs_completed": 0
+  },
+  "logging": {
+    "console": {
+      "enabled": true,
+      "level": "INFO"
+    },
+    "file": {
+      "enabled": true,
+      "level": "INFO",
+      "location": "C:\\Users\\Ye\\PycharmProjects\\ESP32_C73\\hardware\\mf1750_production_v1\\diag-reseh-user\\freerouting.log"
+    }
+  },
+  "version": "2.2.4"
+}

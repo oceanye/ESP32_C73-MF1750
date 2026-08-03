@@ -1,0 +1,493 @@
+(kicad_sch
+	(version 20250114)
+	(generator "eeschema")
+	(generator_version "9.0")
+	(uuid "f8738727-23aa-4b34-9ca5-a5151146afc2")
+	(paper "A3")
+	(title_block
+		(title "XIAO ePaper Dsiplay Board EE04")
+		(date "2025-10-20")
+		(rev "v1.2")
+		(company "Seeed Studio")
+	)
+	(lib_symbols
+		(symbol "ReSpeaker Mic Array-eagle-import:SEEDSTUDIO-SCH-MODLIST"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Value" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_locked" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "SEEDSTUDIO-SCH-MODLIST_1_0"
+				(polyline
+					(pts
+						(xy 0 0) (xy 7.62 0)
+					)
+					(stroke
+						(width 0.1524)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 -3.81) (xy 0 0)
+					)
+					(stroke
+						(width 0.1524)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 -3.81) (xy 182.88 -3.81)
+					)
+					(stroke
+						(width 0.1524)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 -111.76) (xy 0 -3.81)
+					)
+					(stroke
+						(width 0.1524)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 7.62 0) (xy 7.62 -111.76)
+					)
+					(stroke
+						(width 0.1524)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 7.62 0) (xy 143.51 0)
+					)
+					(stroke
+						(width 0.1524)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 7.62 -111.76) (xy 0 -111.76)
+					)
+					(stroke
+						(width 0.1524)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 143.51 0) (xy 143.51 -111.76)
+					)
+					(stroke
+						(width 0.1524)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 143.51 0) (xy 160.02 0)
+					)
+					(stroke
+						(width 0.1524)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 143.51 -111.76) (xy 7.62 -111.76)
+					)
+					(stroke
+						(width 0.1524)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 160.02 0) (xy 160.02 -111.76)
+					)
+					(stroke
+						(width 0.1524)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 160.02 0) (xy 182.88 0)
+					)
+					(stroke
+						(width 0.1524)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 160.02 -111.76) (xy 143.51 -111.76)
+					)
+					(stroke
+						(width 0.1524)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 182.88 0) (xy 182.88 -3.81)
+					)
+					(stroke
+						(width 0.1524)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 182.88 -3.81) (xy 182.88 -111.76)
+					)
+					(stroke
+						(width 0.1524)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 182.88 -111.76) (xy 160.02 -111.76)
+					)
+					(stroke
+						(width 0.1524)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(text "REV"
+					(at 1.27 -2.54 0)
+					(effects
+						(font
+							(size 1.778 1.5113)
+						)
+						(justify left bottom)
+					)
+				)
+				(text "Description"
+					(at 49.53 -2.54 0)
+					(effects
+						(font
+							(size 1.778 1.5113)
+						)
+						(justify left bottom)
+					)
+				)
+				(text "DATE"
+					(at 147.32 -2.54 0)
+					(effects
+						(font
+							(size 1.778 1.5113)
+						)
+						(justify left bottom)
+					)
+				)
+				(text "BY"
+					(at 172.72 -2.54 0)
+					(effects
+						(font
+							(size 1.778 1.5113)
+						)
+						(justify left bottom)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+	)
+	(text "2025.08.22"
+		(exclude_from_sim no)
+		(at 259.08 88.9 0)
+		(effects
+			(font
+				(size 1.27 1.0795)
+			)
+			(justify left bottom)
+		)
+		(uuid "22ad45a7-b531-4cc1-ac6e-15357531496e")
+	)
+	(text "2025.10.20"
+		(exclude_from_sim no)
+		(at 259.08 129.032 0)
+		(effects
+			(font
+				(size 1.27 1.0795)
+			)
+			(justify left bottom)
+		)
+		(uuid "3503168a-cec6-4a7b-8245-ac9c3ac20bc8")
+	)
+	(text "2025.10.10\n"
+		(exclude_from_sim no)
+		(at 259.334 108.966 0)
+		(effects
+			(font
+				(size 1.27 1.0795)
+			)
+			(justify left bottom)
+		)
+		(uuid "3f887858-bc94-4ae0-9c17-577aef0bf574")
+	)
+	(text "Modify the packaging dimensions of the buttons"
+		(exclude_from_sim no)
+		(at 145.034 107.696 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "7310e273-63b2-4543-800f-d68554d34b2a")
+	)
+	(text "Replace the PMIC with SY6974B."
+		(exclude_from_sim no)
+		(at 137.922 128.524 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "7da88e47-b934-4559-b708-4ecabef9ca83")
+	)
+	(text "V1.1"
+		(exclude_from_sim no)
+		(at 114.046 107.95 0)
+		(effects
+			(font
+				(size 1.27 1.0795)
+			)
+			(justify left bottom)
+		)
+		(uuid "93dc65fb-aa8e-44ac-b438-376980e846dd")
+	)
+	(text "Initial Release"
+		(exclude_from_sim no)
+		(at 128.016 87.122 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "9ae8b21f-dd24-4027-bbc5-006d294cd444")
+	)
+	(text "V1.0"
+		(exclude_from_sim no)
+		(at 114.3 87.63 0)
+		(effects
+			(font
+				(size 1.27 1.0795)
+			)
+			(justify left bottom)
+		)
+		(uuid "baf1717e-1643-4a88-87c6-ed6ae387e0c7")
+	)
+	(text "V1.2"
+		(exclude_from_sim no)
+		(at 114.046 129.032 0)
+		(effects
+			(font
+				(size 1.27 1.0795)
+			)
+			(justify left bottom)
+		)
+		(uuid "c89308ad-2329-4b17-895c-635eb6316d19")
+	)
+	(polyline
+		(pts
+			(xy 111.76 116.84) (xy 294.64 116.84)
+		)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(uuid "51b36e30-52e5-4076-a6fe-cac8d55f363b")
+	)
+	(polyline
+		(pts
+			(xy 111.76 137.16) (xy 294.64 137.16)
+		)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(uuid "a6e76dea-9023-45b0-8ab9-bb2fc9f090aa")
+	)
+	(polyline
+		(pts
+			(xy 111.76 96.52) (xy 294.64 96.52)
+		)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(uuid "e9160a96-c407-4b56-b17e-94c83bac5c01")
+	)
+	(symbol
+		(lib_id "ReSpeaker Mic Array-eagle-import:SEEDSTUDIO-SCH-MODLIST")
+		(at 111.76 74.93 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "063ab1da-a6e8-4d69-8f49-5c1b817ccf64")
+		(property "Reference" "#U$1"
+			(at 111.76 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "SEEDSTUDIO-SCH-MODLIST"
+			(at 111.76 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Footprint" ""
+			(at 111.76 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 111.76 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 111.76 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(instances
+			(project "XIAO ePaper Monitor Kit v1.0"
+				(path "/9bc97cbb-b02d-479b-989a-92495a26a53b/00684586-633f-42a1-8996-698b9bf747c9"
+					(reference "#U$1")
+					(unit 1)
+				)
+			)
+		)
+	)
+)

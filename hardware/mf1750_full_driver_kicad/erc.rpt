@@ -1,0 +1,16 @@
+ERC report (2026-06-15T08:19:08, Encoding UTF8)
+Report includes: Errors, Warnings
+
+***** Sheet /
+[multiple_net_names]: BS0 和 GND 都连接到同一项上; 将使用 BS0 作为网表中的网络名称
+    ; warning
+    @(261.62 mm, 58.42 mm): Label 'BS0'
+    @(436.88 mm, 45.72 mm): Label 'GND'
+
+ ** ERC messages: 1  Errors 0  Warnings 1
+
+ ** Ignored checks:
+    - Global label only appears once in the schematic
+    - Four connection points are joined together
+    - SPICE model issue
+    - Assigned footprint doesn't match footprint filters

@@ -1,0 +1,51 @@
+pin,name,net,note
+1,NC,,No connect; do not tie to other NC pins
+2,TFT_VCOM,TFT_VCOM,
+3,FPL_VCOM,FPL_VCOM,
+4,SL_CSB,SL_CSB,Second SPD1657B chip-select; missing on DESPI-C73
+5,GDRH,GDRH,
+6,RESEH,RESEH,
+7,GDRL,GDRL,Reserved; leave routed only if the panel reference requires it
+8,RESEL,RESEL,0-ohm to GND through R2
+9,GDRC,GDRC,
+10,RESEC,RESEC,
+11,VPC,VPC,
+12,GND,GND,
+13,VGL,PREVGL,Reference labels this rail PREVGL
+14,VPH,VPH,
+15,VSH,VSH,
+16,VSH_LV,VSH_LV,
+17,VSH_LV2,VSH_LV2,
+18,VSL,VSL,
+19,VSL_LV,VSL_LV,
+20,VSL_LV2,VSL_LV2,
+21,GNDA,GND,
+22,REFN,REFN,
+23,REFP,REFP,
+24,TSCL,TSCL,
+25,TSDA,TSDA,
+26,BS0,BS0,
+27,BS1,BS1,
+28,RST_N,RST_N,
+29,BUSY_N,BUSY_N,
+30,DC,DC,
+31,CSB,CSB,
+32,SCL,SCL,
+33,SI0,SI0,
+34,SI1,SI1,Reserved in 4-wire SPI
+35,SI2,SI2,Reserved in 4-wire SPI
+36,SI3,SI3,Reserved in 4-wire SPI
+37,VDDD,VDDD,
+38,VDD,VDD,
+39,GND,GND,
+40,VDDIO,VDDIO,
+41,VCP2,VCP2,
+42,CP2N,CP2N,
+43,CP2P,CP2P,
+44,VCP1,VCP1,
+45,CP1N,CP1N,
+46,CP1P,CP1P,
+47,CGH1N,CGH1N,Charge pump reserved
+48,CGH1P,CGH1P,Charge pump reserved
+49,VGH,PREVGH,Reference labels this rail PREVGH
+50,VCOMBD,VCOMBD,

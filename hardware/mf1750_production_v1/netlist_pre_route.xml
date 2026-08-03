@@ -1,0 +1,2007 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export version="E">
+  <design>
+    <source>C:\Users\Ye\PycharmProjects\ESP32_C73\hardware\mf1750_production_v1\mf1750_production_v1.kicad_sch</source>
+    <date>2026-07-12T22:24:26</date>
+    <tool>Eeschema 10.0.3</tool>
+    <sheet number="1" name="/" tstamps="/">
+      <title_block>
+        <title>MF-1750 / M009F-T Cascade Driver Rev A</title>
+        <company>Production prototype - MF-1750 A1 reference circuit</company>
+        <rev/>
+        <date/>
+        <source>mf1750_production_v1.kicad_sch</source>
+        <comment number="1" value=""/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+        <comment number="5" value=""/>
+        <comment number="6" value=""/>
+        <comment number="7" value=""/>
+        <comment number="8" value=""/>
+        <comment number="9" value=""/>
+      </title_block>
+    </sheet>
+  </design>
+  <components>
+    <comp ref="C0">
+      <value>4.7uF/25V/0603</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <fields>
+        <field name="封装">Capacitor_SMD:C_0603_1608Metric</field>
+        <field name="Footprint">Capacitor_SMD:C_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="C" description=""/>
+      <property name="封装" value="Capacitor_SMD:C_0603_1608Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>8c481a14-1ec6-5102-9d5a-f4a7d0e94ff5</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C1">
+      <value>2.2uF/25V/0603</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <fields>
+        <field name="封装">Capacitor_SMD:C_0603_1608Metric</field>
+        <field name="Footprint">Capacitor_SMD:C_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="C" description=""/>
+      <property name="封装" value="Capacitor_SMD:C_0603_1608Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>b3a53a2c-a178-52cd-aa0d-8adb0465f319</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C2">
+      <value>10uF/25V/1210</value>
+      <footprint>Capacitor_SMD:C_1210_3225Metric</footprint>
+      <fields>
+        <field name="封装">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Footprint">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="C" description=""/>
+      <property name="封装" value="Capacitor_SMD:C_1210_3225Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>97eed5b0-a99b-5057-8065-021d68641812</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C3">
+      <value>0.1uF/50V/0603</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <fields>
+        <field name="封装">Capacitor_SMD:C_0603_1608Metric</field>
+        <field name="Footprint">Capacitor_SMD:C_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="C" description=""/>
+      <property name="封装" value="Capacitor_SMD:C_0603_1608Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>c288a6ad-819c-5a96-b5ae-47041bb8ac96</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C4">
+      <value>10uF/25V/1210</value>
+      <footprint>Capacitor_SMD:C_1210_3225Metric</footprint>
+      <fields>
+        <field name="封装">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Footprint">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="C" description=""/>
+      <property name="封装" value="Capacitor_SMD:C_1210_3225Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>f43ebaa6-5883-515f-90c3-36634b23011d</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C5">
+      <value>10uF/25V/1210</value>
+      <footprint>Capacitor_SMD:C_1210_3225Metric</footprint>
+      <fields>
+        <field name="封装">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Footprint">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="C" description=""/>
+      <property name="封装" value="Capacitor_SMD:C_1210_3225Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>0ee3266d-929a-59ff-b5f0-f5be985f36aa</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C6">
+      <value>10uF/25V/1210</value>
+      <footprint>Capacitor_SMD:C_1210_3225Metric</footprint>
+      <fields>
+        <field name="封装">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Footprint">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="C" description=""/>
+      <property name="封装" value="Capacitor_SMD:C_1210_3225Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>074ea5bf-f98b-5366-9b3d-0550b09660f1</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C7">
+      <value>10uF/25V/1210</value>
+      <footprint>Capacitor_SMD:C_1210_3225Metric</footprint>
+      <fields>
+        <field name="封装">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Footprint">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="C" description=""/>
+      <property name="封装" value="Capacitor_SMD:C_1210_3225Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>9f28df31-61b5-51c2-9970-96d1cdcb1e41</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C8">
+      <value>10uF/25V/1210</value>
+      <footprint>Capacitor_SMD:C_1210_3225Metric</footprint>
+      <fields>
+        <field name="封装">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Footprint">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="C" description=""/>
+      <property name="封装" value="Capacitor_SMD:C_1210_3225Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>34f2a325-195b-5da8-b1e4-f7d6d4330c07</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C9">
+      <value>10uF/25V/1210</value>
+      <footprint>Capacitor_SMD:C_1210_3225Metric</footprint>
+      <fields>
+        <field name="封装">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Footprint">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="C" description=""/>
+      <property name="封装" value="Capacitor_SMD:C_1210_3225Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>362c8534-ee3e-5ad9-851e-9098275a1f4c</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C10">
+      <value>10uF/25V/1210</value>
+      <footprint>Capacitor_SMD:C_1210_3225Metric</footprint>
+      <fields>
+        <field name="封装">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Footprint">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="C" description=""/>
+      <property name="封装" value="Capacitor_SMD:C_1210_3225Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>0da0d0a4-cbf4-5067-8850-6af63a3274f1</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C11">
+      <value>10uF/25V/1210</value>
+      <footprint>Capacitor_SMD:C_1210_3225Metric</footprint>
+      <fields>
+        <field name="封装">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Footprint">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="C" description=""/>
+      <property name="封装" value="Capacitor_SMD:C_1210_3225Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>8d322304-8b27-5e2d-80fe-0b00d36795a5</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C12">
+      <value>10uF/25V/1210</value>
+      <footprint>Capacitor_SMD:C_1210_3225Metric</footprint>
+      <fields>
+        <field name="封装">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Footprint">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="C" description=""/>
+      <property name="封装" value="Capacitor_SMD:C_1210_3225Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>16e2a177-c3fe-5afb-8048-8da251d1b815</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C13">
+      <value>4.7uF/10V/0805</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
+      <fields>
+        <field name="封装">Capacitor_SMD:C_0805_2012Metric</field>
+        <field name="Footprint">Capacitor_SMD:C_0805_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="C" description=""/>
+      <property name="封装" value="Capacitor_SMD:C_0805_2012Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>a48c6166-9af4-59a4-be06-d805360e7352</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C14">
+      <value>0.47uF/50V/1210</value>
+      <footprint>Capacitor_SMD:C_1210_3225Metric</footprint>
+      <fields>
+        <field name="封装">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Footprint">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="C" description=""/>
+      <property name="封装" value="Capacitor_SMD:C_1210_3225Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>254b3aae-73da-55c8-a166-22cef9324776</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C15">
+      <value>0.47uF/50V/1210</value>
+      <footprint>Capacitor_SMD:C_1210_3225Metric</footprint>
+      <fields>
+        <field name="封装">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Footprint">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="C" description=""/>
+      <property name="封装" value="Capacitor_SMD:C_1210_3225Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>7928f36f-628d-5826-bd70-9dc755acc391</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C16">
+      <value>1uF/50V/0805</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
+      <fields>
+        <field name="封装">Capacitor_SMD:C_0805_2012Metric</field>
+        <field name="Footprint">Capacitor_SMD:C_0805_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="C" description=""/>
+      <property name="封装" value="Capacitor_SMD:C_0805_2012Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>999217b9-256c-5e57-8e2e-a6523b2cdd3a</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C17">
+      <value>1uF/50V/0805</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
+      <fields>
+        <field name="封装">Capacitor_SMD:C_0805_2012Metric</field>
+        <field name="Footprint">Capacitor_SMD:C_0805_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="C" description=""/>
+      <property name="封装" value="Capacitor_SMD:C_0805_2012Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>852b3747-24ea-5f1b-a9d0-f637131e327c</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C18">
+      <value>1uF/50V/0805</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
+      <fields>
+        <field name="封装">Capacitor_SMD:C_0805_2012Metric</field>
+        <field name="Footprint">Capacitor_SMD:C_0805_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="C" description=""/>
+      <property name="封装" value="Capacitor_SMD:C_0805_2012Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>57cdc128-7df3-521f-9648-628ae1ae61ca</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C19">
+      <value>1uF/50V/0805</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
+      <fields>
+        <field name="封装">Capacitor_SMD:C_0805_2012Metric</field>
+        <field name="Footprint">Capacitor_SMD:C_0805_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="C" description=""/>
+      <property name="封装" value="Capacitor_SMD:C_0805_2012Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>97ce75fc-a999-5e3e-9d01-18428682e620</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C20">
+      <value>1uF/50V/0805</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
+      <fields>
+        <field name="封装">Capacitor_SMD:C_0805_2012Metric</field>
+        <field name="Footprint">Capacitor_SMD:C_0805_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="C" description=""/>
+      <property name="封装" value="Capacitor_SMD:C_0805_2012Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>3f4beb3f-4c08-5a29-b8ef-0765636cf8a6</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C21">
+      <value>1uF/50V/0805</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
+      <fields>
+        <field name="封装">Capacitor_SMD:C_0805_2012Metric</field>
+        <field name="Footprint">Capacitor_SMD:C_0805_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="C" description=""/>
+      <property name="封装" value="Capacitor_SMD:C_0805_2012Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>8459192a-b66f-5953-85a1-150b4f03e391</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C22">
+      <value>4.7uF/25V/0603</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <fields>
+        <field name="封装">Capacitor_SMD:C_0603_1608Metric</field>
+        <field name="Footprint">Capacitor_SMD:C_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="C" description=""/>
+      <property name="封装" value="Capacitor_SMD:C_0603_1608Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>9c08c641-8de3-5546-875d-6bfd16f7353a</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C23">
+      <value>10uF/25V/1210</value>
+      <footprint>Capacitor_SMD:C_1210_3225Metric</footprint>
+      <fields>
+        <field name="封装">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Footprint">Capacitor_SMD:C_1210_3225Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="C" description=""/>
+      <property name="封装" value="Capacitor_SMD:C_1210_3225Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>2b6f798b-ea45-5b1c-9bcb-9f8aa304df05</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="D1">
+      <value>MBR0530</value>
+      <footprint>Diode_SMD:D_SOD-123</footprint>
+      <fields>
+        <field name="封装">Diode_SMD:D_SOD-123</field>
+        <field name="Footprint">Diode_SMD:D_SOD-123</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="D_SCH" description=""/>
+      <property name="封装" value="Diode_SMD:D_SOD-123"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>5638634e-9e27-5ccb-9a6a-a7c9f45656ae</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="D2">
+      <value>MBR0530</value>
+      <footprint>Diode_SMD:D_SOD-123</footprint>
+      <fields>
+        <field name="封装">Diode_SMD:D_SOD-123</field>
+        <field name="Footprint">Diode_SMD:D_SOD-123</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="D_SCH" description=""/>
+      <property name="封装" value="Diode_SMD:D_SOD-123"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>5aaa308e-8d78-5330-b5c2-5b74d4ee0f2e</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="D3">
+      <value>MBR0530</value>
+      <footprint>Diode_SMD:D_SOD-123</footprint>
+      <fields>
+        <field name="封装">Diode_SMD:D_SOD-123</field>
+        <field name="Footprint">Diode_SMD:D_SOD-123</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="D_SCH" description=""/>
+      <property name="封装" value="Diode_SMD:D_SOD-123"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>3bc2e98e-b1ff-5a1b-83e7-c93a71ced8bb</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="D4">
+      <value>MBR0530</value>
+      <footprint>Diode_SMD:D_SOD-123</footprint>
+      <fields>
+        <field name="封装">Diode_SMD:D_SOD-123</field>
+        <field name="Footprint">Diode_SMD:D_SOD-123</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="D_SCH" description=""/>
+      <property name="封装" value="Diode_SMD:D_SOD-123"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>bc54ce76-fa98-5663-8fa5-012957c28d2d</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="J1">
+      <value>MF-1750 50pin FPC</value>
+      <footprint>MF1750_Production:XUNPU_FPC-05FB-50PH20_1x50_P0.5mm_DualContact</footprint>
+      <fields>
+        <field name="封装">MF1750_Production:XUNPU_FPC-05FB-50PH20_1x50_P0.5mm_DualContact</field>
+        <field name="Footprint">MF1750_Production:XUNPU_FPC-05FB-50PH20_1x50_P0.5mm_DualContact</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="MF1750_FPC50" description=""/>
+      <property name="封装" value="MF1750_Production:XUNPU_FPC-05FB-50PH20_1x50_P0.5mm_DualContact"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>84bed51e-4dbd-5d7f-8431-0527b537d246</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+            <pin num="3"/>
+            <pin num="4"/>
+            <pin num="5"/>
+            <pin num="6"/>
+            <pin num="7"/>
+            <pin num="8"/>
+            <pin num="9"/>
+            <pin num="10"/>
+            <pin num="11"/>
+            <pin num="12"/>
+            <pin num="13"/>
+            <pin num="14"/>
+            <pin num="15"/>
+            <pin num="16"/>
+            <pin num="17"/>
+            <pin num="18"/>
+            <pin num="19"/>
+            <pin num="20"/>
+            <pin num="21"/>
+            <pin num="22"/>
+            <pin num="23"/>
+            <pin num="24"/>
+            <pin num="25"/>
+            <pin num="26"/>
+            <pin num="27"/>
+            <pin num="28"/>
+            <pin num="29"/>
+            <pin num="30"/>
+            <pin num="31"/>
+            <pin num="32"/>
+            <pin num="33"/>
+            <pin num="34"/>
+            <pin num="35"/>
+            <pin num="36"/>
+            <pin num="37"/>
+            <pin num="38"/>
+            <pin num="39"/>
+            <pin num="40"/>
+            <pin num="41"/>
+            <pin num="42"/>
+            <pin num="43"/>
+            <pin num="44"/>
+            <pin num="45"/>
+            <pin num="46"/>
+            <pin num="47"/>
+            <pin num="48"/>
+            <pin num="49"/>
+            <pin num="50"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="J2">
+      <value>ESP32 SPI 10pin</value>
+      <footprint>Connector_PinHeader_2.54mm:PinHeader_1x10_P2.54mm_Vertical</footprint>
+      <fields>
+        <field name="封装">Connector_PinHeader_2.54mm:PinHeader_1x10_P2.54mm_Vertical</field>
+        <field name="Footprint">Connector_PinHeader_2.54mm:PinHeader_1x10_P2.54mm_Vertical</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="ESP32_SPI_10PIN" description=""/>
+      <property name="封装" value="Connector_PinHeader_2.54mm:PinHeader_1x10_P2.54mm_Vertical"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>1ad43b7a-98f6-5b19-b837-ba8da84b4920</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+            <pin num="3"/>
+            <pin num="4"/>
+            <pin num="5"/>
+            <pin num="6"/>
+            <pin num="7"/>
+            <pin num="8"/>
+            <pin num="9"/>
+            <pin num="10"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="L1">
+      <value>15uH/3.1A SMMS0650</value>
+      <footprint>MF1750_Production:SXN_SMMS0650_7.1x6.6mm</footprint>
+      <fields>
+        <field name="封装">MF1750_Production:SXN_SMMS0650_7.1x6.6mm</field>
+        <field name="Footprint">MF1750_Production:SXN_SMMS0650_7.1x6.6mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="L" description=""/>
+      <property name="封装" value="MF1750_Production:SXN_SMMS0650_7.1x6.6mm"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>641b054c-2e09-5056-bf58-af750487571c</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="L2">
+      <value>15uH/3.1A SMMS0650</value>
+      <footprint>MF1750_Production:SXN_SMMS0650_7.1x6.6mm</footprint>
+      <fields>
+        <field name="封装">MF1750_Production:SXN_SMMS0650_7.1x6.6mm</field>
+        <field name="Footprint">MF1750_Production:SXN_SMMS0650_7.1x6.6mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="L" description=""/>
+      <property name="封装" value="MF1750_Production:SXN_SMMS0650_7.1x6.6mm"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>589cce93-76fb-5f99-9d46-40055b4c3986</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="Q1">
+      <value>Si1308EDL</value>
+      <footprint>Package_TO_SOT_SMD:SOT-323_SC-70</footprint>
+      <fields>
+        <field name="封装">Package_TO_SOT_SMD:SOT-323_SC-70</field>
+        <field name="Footprint">Package_TO_SOT_SMD:SOT-323_SC-70</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="NMOS" description=""/>
+      <property name="封装" value="Package_TO_SOT_SMD:SOT-323_SC-70"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>89c72bb2-c688-5f95-ac13-45167a7c2435</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="2"/>
+            <pin num="1"/>
+            <pin num="3"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="Q2">
+      <value>AO3401A</value>
+      <footprint>Package_TO_SOT_SMD:SOT-23-3</footprint>
+      <fields>
+        <field name="封装">Package_TO_SOT_SMD:SOT-23-3</field>
+        <field name="Footprint">Package_TO_SOT_SMD:SOT-23-3</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="PMOS" description=""/>
+      <property name="封装" value="Package_TO_SOT_SMD:SOT-23-3"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>7649eea2-4958-57df-b5a5-9608dea2c16b</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="3"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R1">
+      <value>0.2R 0.2W 1%</value>
+      <footprint>Resistor_SMD:R_1206_3216Metric</footprint>
+      <fields>
+        <field name="封装">Resistor_SMD:R_1206_3216Metric</field>
+        <field name="Footprint">Resistor_SMD:R_1206_3216Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="R" description=""/>
+      <property name="封装" value="Resistor_SMD:R_1206_3216Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>c004c11c-3648-5825-8288-2f5fa1f55856</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R2">
+      <value>0R</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="封装">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="R" description=""/>
+      <property name="封装" value="Resistor_SMD:R_0603_1608Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>84c7e0be-79fe-5407-8f8b-616d71ab90a1</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R3">
+      <value>0.22R 0.2W 1%</value>
+      <footprint>Resistor_SMD:R_1206_3216Metric</footprint>
+      <fields>
+        <field name="封装">Resistor_SMD:R_1206_3216Metric</field>
+        <field name="Footprint">Resistor_SMD:R_1206_3216Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="R" description=""/>
+      <property name="封装" value="Resistor_SMD:R_1206_3216Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>a9572d42-bc18-5453-9bd9-9d7fcd290187</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R4">
+      <value>0R</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="封装">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="R" description=""/>
+      <property name="封装" value="Resistor_SMD:R_0603_1608Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>ec0e7fc3-57fd-501b-b32a-1da5a010efc2</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R5">
+      <value>0R</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="封装">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="R" description=""/>
+      <property name="封装" value="Resistor_SMD:R_0603_1608Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>30b42890-47fa-5ae9-a655-518aa99f973f</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R6">
+      <value>0R</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="封装">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="R" description=""/>
+      <property name="封装" value="Resistor_SMD:R_0603_1608Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>068ff0e2-f90c-5731-8f49-0d42bc4ebb7b</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R7">
+      <value>0R</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="封装">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="R" description=""/>
+      <property name="封装" value="Resistor_SMD:R_0603_1608Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>daafef8d-e18e-5db5-9b53-06c5e1688b30</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R8">
+      <value>0R</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="封装">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="R" description=""/>
+      <property name="封装" value="Resistor_SMD:R_0603_1608Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>3c0dc116-1d31-59a2-870c-c70e190bdfd3</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R9">
+      <value>4.7k 1%</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="封装">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="R" description=""/>
+      <property name="封装" value="Resistor_SMD:R_0603_1608Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>d04137f7-306c-5d83-8e92-3bf955c2a1bc</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R10">
+      <value>4.7k 1%</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="封装">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="R" description=""/>
+      <property name="封装" value="Resistor_SMD:R_0603_1608Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>e12bf61a-59b7-5508-9297-b06c2c251acf</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R11">
+      <value>NC</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="封装">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="R" description=""/>
+      <property name="封装" value="Resistor_SMD:R_0603_1608Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <property name="dnp"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>36a44968-d501-5d32-8d9a-20e70bc63d2d</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R12">
+      <value>0R</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="封装">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="R" description=""/>
+      <property name="封装" value="Resistor_SMD:R_0603_1608Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>6243e2c4-a1a1-5311-a6cc-6ad29ccf8ad4</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R13">
+      <value>0R</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="封装">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="R" description=""/>
+      <property name="封装" value="Resistor_SMD:R_0603_1608Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>9be6fc8f-1d76-5275-bf82-703a00788d27</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R14">
+      <value>NC</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="封装">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="R" description=""/>
+      <property name="封装" value="Resistor_SMD:R_0603_1608Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <property name="dnp"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>953f1c79-0641-53d7-b4df-42eead5b3e56</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R15">
+      <value>0R</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="封装">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="R" description=""/>
+      <property name="封装" value="Resistor_SMD:R_0603_1608Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>a72b3564-5453-5535-ba10-5ad9f50f5898</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R16">
+      <value>0R DNP</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="封装">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="R" description=""/>
+      <property name="封装" value="Resistor_SMD:R_0603_1608Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <property name="dnp"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>28d7fc0c-846e-5827-9c16-235715a5bc72</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R17">
+      <value>47k DNP</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="封装">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="R" description=""/>
+      <property name="封装" value="Resistor_SMD:R_0603_1608Metric"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <property name="dnp"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>4d99e97f-c30b-5150-b7b4-546ad81fdf9f</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="TP1">
+      <value>3V3</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <fields>
+        <field name="封装">TestPoint:TestPoint_Pad_D1.0mm</field>
+        <field name="Footprint">TestPoint:TestPoint_Pad_D1.0mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="TP" description=""/>
+      <property name="封装" value="TestPoint:TestPoint_Pad_D1.0mm"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>e3deaecf-5376-56e4-b7a9-fbcced7c0fdd</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="TP2">
+      <value>GND</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <fields>
+        <field name="封装">TestPoint:TestPoint_Pad_D1.0mm</field>
+        <field name="Footprint">TestPoint:TestPoint_Pad_D1.0mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="TP" description=""/>
+      <property name="封装" value="TestPoint:TestPoint_Pad_D1.0mm"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>1681383e-ff1f-5a82-8e5e-5e352a9e2a3d</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="TP3">
+      <value>VPH</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <fields>
+        <field name="封装">TestPoint:TestPoint_Pad_D1.0mm</field>
+        <field name="Footprint">TestPoint:TestPoint_Pad_D1.0mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="TP" description=""/>
+      <property name="封装" value="TestPoint:TestPoint_Pad_D1.0mm"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>04392cdc-75b0-5f2b-a80b-dd31b56c70b6</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="TP4">
+      <value>PREVGH</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <fields>
+        <field name="封装">TestPoint:TestPoint_Pad_D1.0mm</field>
+        <field name="Footprint">TestPoint:TestPoint_Pad_D1.0mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="TP" description=""/>
+      <property name="封装" value="TestPoint:TestPoint_Pad_D1.0mm"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>8750f043-36bf-5126-a423-9ed07bdd2cf4</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="TP5">
+      <value>PREVGL</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <fields>
+        <field name="封装">TestPoint:TestPoint_Pad_D1.0mm</field>
+        <field name="Footprint">TestPoint:TestPoint_Pad_D1.0mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="TP" description=""/>
+      <property name="封装" value="TestPoint:TestPoint_Pad_D1.0mm"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>ff2645b0-0aa1-5eac-9294-b94ed639d41d</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="TP6">
+      <value>VPC</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <fields>
+        <field name="封装">TestPoint:TestPoint_Pad_D1.0mm</field>
+        <field name="Footprint">TestPoint:TestPoint_Pad_D1.0mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="TP" description=""/>
+      <property name="封装" value="TestPoint:TestPoint_Pad_D1.0mm"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>c8d0655e-2d1c-50ad-ac12-d206805140f0</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="TP7">
+      <value>VDDIO</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <fields>
+        <field name="封装">TestPoint:TestPoint_Pad_D1.0mm</field>
+        <field name="Footprint">TestPoint:TestPoint_Pad_D1.0mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="TP" description=""/>
+      <property name="封装" value="TestPoint:TestPoint_Pad_D1.0mm"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>25e8e879-59aa-526a-b85c-d74fa3c39b43</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="TP8">
+      <value>CSB</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <fields>
+        <field name="封装">TestPoint:TestPoint_Pad_D1.0mm</field>
+        <field name="Footprint">TestPoint:TestPoint_Pad_D1.0mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="TP" description=""/>
+      <property name="封装" value="TestPoint:TestPoint_Pad_D1.0mm"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>b88785fb-49a4-56de-a54f-c51690f8ba5f</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="TP9">
+      <value>SL_CSB</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <fields>
+        <field name="封装">TestPoint:TestPoint_Pad_D1.0mm</field>
+        <field name="Footprint">TestPoint:TestPoint_Pad_D1.0mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="TP" description=""/>
+      <property name="封装" value="TestPoint:TestPoint_Pad_D1.0mm"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>7b95d50c-2506-534e-b8ee-447dc4c54df6</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="TP10">
+      <value>BUSY_N</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
+      <fields>
+        <field name="封装">TestPoint:TestPoint_Pad_D1.0mm</field>
+        <field name="Footprint">TestPoint:TestPoint_Pad_D1.0mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Local" part="TP" description=""/>
+      <property name="封装" value="TestPoint:TestPoint_Pad_D1.0mm"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="mf1750_production_v1.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>b6c2ed54-07c3-54b3-8143-4699e22819e8</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+  </components>
+  <libparts>
+    <libpart lib="Local" part="C">
+      <fields>
+        <field name="Reference">C</field>
+        <field name="Value">C</field>
+        <field name="Footprint">Capacitor_SMD:C_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+        <pin num="2" name="2" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Local" part="D_SCH">
+      <fields>
+        <field name="Reference">D</field>
+        <field name="Value">D_SCH</field>
+        <field name="Footprint">Diode_SMD:D_SOD-123</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <pins>
+        <pin num="1" name="K" type="passive"/>
+        <pin num="2" name="A" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Local" part="ESP32_SPI_10PIN">
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">ESP32_SPI_10PIN</field>
+        <field name="Footprint">Connector_PinHeader_2.54mm:PinHeader_1x10_P2.54mm_Vertical</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <pins>
+        <pin num="1" name="3V3" type="passive"/>
+        <pin num="2" name="GND" type="passive"/>
+        <pin num="3" name="SDI/SI0" type="passive"/>
+        <pin num="4" name="SCLK/SCL" type="passive"/>
+        <pin num="5" name="CSB" type="passive"/>
+        <pin num="6" name="D/C" type="passive"/>
+        <pin num="7" name="RES/RST_N" type="passive"/>
+        <pin num="8" name="BUSY_N" type="passive"/>
+        <pin num="9" name="CS2_optional" type="passive"/>
+        <pin num="10" name="GND" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Local" part="L">
+      <fields>
+        <field name="Reference">L</field>
+        <field name="Value">L</field>
+        <field name="Footprint">MF1750_Production:SXN_SMMS0650_7.1x6.6mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+        <pin num="2" name="2" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Local" part="MF1750_FPC50">
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">MF1750_FPC50</field>
+        <field name="Footprint">MF1750_Production:XUNPU_FPC-05FB-50PH20_1x50_P0.5mm_DualContact</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <pins>
+        <pin num="1" name="NC" type="passive"/>
+        <pin num="2" name="TFT_VCOM" type="passive"/>
+        <pin num="3" name="FPL_VCOM" type="passive"/>
+        <pin num="4" name="SL_CSB" type="passive"/>
+        <pin num="5" name="GDRH" type="passive"/>
+        <pin num="6" name="RESEH" type="passive"/>
+        <pin num="7" name="GDRL" type="passive"/>
+        <pin num="8" name="RESEL" type="passive"/>
+        <pin num="9" name="GDRC" type="passive"/>
+        <pin num="10" name="RESEC" type="passive"/>
+        <pin num="11" name="VPC" type="passive"/>
+        <pin num="12" name="GND" type="passive"/>
+        <pin num="13" name="VGL" type="passive"/>
+        <pin num="14" name="VPH" type="passive"/>
+        <pin num="15" name="VSH" type="passive"/>
+        <pin num="16" name="VSH_LV" type="passive"/>
+        <pin num="17" name="VSH_LV2" type="passive"/>
+        <pin num="18" name="VSL" type="passive"/>
+        <pin num="19" name="VSL_LV" type="passive"/>
+        <pin num="20" name="VSL_LV2" type="passive"/>
+        <pin num="21" name="GNDA" type="passive"/>
+        <pin num="22" name="REFN" type="passive"/>
+        <pin num="23" name="REFP" type="passive"/>
+        <pin num="24" name="TSCL" type="passive"/>
+        <pin num="25" name="TSDA" type="passive"/>
+        <pin num="26" name="BS0" type="passive"/>
+        <pin num="27" name="BS1" type="passive"/>
+        <pin num="28" name="RST_N" type="passive"/>
+        <pin num="29" name="BUSY_N" type="passive"/>
+        <pin num="30" name="DC" type="passive"/>
+        <pin num="31" name="CSB" type="passive"/>
+        <pin num="32" name="SCL" type="passive"/>
+        <pin num="33" name="SI0" type="passive"/>
+        <pin num="34" name="SI1" type="passive"/>
+        <pin num="35" name="SI2" type="passive"/>
+        <pin num="36" name="SI3" type="passive"/>
+        <pin num="37" name="VDDD" type="passive"/>
+        <pin num="38" name="VDD" type="passive"/>
+        <pin num="39" name="GND" type="passive"/>
+        <pin num="40" name="VDDIO" type="passive"/>
+        <pin num="41" name="VCP2" type="passive"/>
+        <pin num="42" name="CP2N" type="passive"/>
+        <pin num="43" name="CP2P" type="passive"/>
+        <pin num="44" name="VCP1" type="passive"/>
+        <pin num="45" name="CP1N" type="passive"/>
+        <pin num="46" name="CP1P" type="passive"/>
+        <pin num="47" name="CGH1N" type="passive"/>
+        <pin num="48" name="CGH1P" type="passive"/>
+        <pin num="49" name="VGH" type="passive"/>
+        <pin num="50" name="VCOMBD" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Local" part="NMOS">
+      <fields>
+        <field name="Reference">Q</field>
+        <field name="Value">NMOS</field>
+        <field name="Footprint">Package_TO_SOT_SMD:SOT-323_SC-70</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <pins>
+        <pin num="1" name="S" type="passive"/>
+        <pin num="2" name="G" type="input"/>
+        <pin num="3" name="D" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Local" part="PMOS">
+      <fields>
+        <field name="Reference">Q</field>
+        <field name="Value">PMOS</field>
+        <field name="Footprint">Package_TO_SOT_SMD:SOT-23-3</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <pins>
+        <pin num="1" name="G" type="input"/>
+        <pin num="2" name="S" type="passive"/>
+        <pin num="3" name="D" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Local" part="R">
+      <fields>
+        <field name="Reference">R</field>
+        <field name="Value">R</field>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+        <pin num="2" name="2" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Local" part="TP">
+      <fields>
+        <field name="Reference">TP</field>
+        <field name="Value">TP</field>
+        <field name="Footprint">TestPoint:TestPoint_Pad_D1.0mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+      </pins>
+    </libpart>
+  </libparts>
+  <libraries>
+    <library logical="Local">
+      <uri>${KIPRJMOD}/mf1750_local.kicad_sym</uri>
+    </library>
+  </libraries>
+  <nets>
+    <net code="1" name="/3V3" class="Default">
+      <node ref="J2" pin="1" pinfunction="3V3_1" pintype="passive"/>
+      <node ref="R10" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="R4" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="R8" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="R9" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="TP1" pin="1" pinfunction="1_1" pintype="passive"/>
+    </net>
+    <net code="2" name="/BS0" class="Default">
+      <node ref="J1" pin="26" pinfunction="BS0_26" pintype="passive"/>
+      <node ref="R11" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="R12" pin="2" pinfunction="2_2" pintype="passive"/>
+    </net>
+    <net code="3" name="/BS1" class="Default">
+      <node ref="J1" pin="27" pinfunction="BS1_27" pintype="passive"/>
+      <node ref="R13" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="R14" pin="2" pinfunction="2_2" pintype="passive"/>
+    </net>
+    <net code="4" name="/BUSY_N" class="Default">
+      <node ref="J1" pin="29" pinfunction="BUSY_N_29" pintype="passive"/>
+      <node ref="J2" pin="8" pinfunction="BUSY_N_8" pintype="passive"/>
+      <node ref="TP10" pin="1" pinfunction="1_1" pintype="passive"/>
+    </net>
+    <net code="5" name="/CP1N" class="Default">
+      <node ref="C16" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="J1" pin="45" pinfunction="CP1N_45" pintype="passive"/>
+    </net>
+    <net code="6" name="/CP1P" class="Default">
+      <node ref="C16" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="J1" pin="46" pinfunction="CP1P_46" pintype="passive"/>
+    </net>
+    <net code="7" name="/CP2N" class="Default">
+      <node ref="C18" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="J1" pin="42" pinfunction="CP2N_42" pintype="passive"/>
+    </net>
+    <net code="8" name="/CP2P" class="Default">
+      <node ref="C18" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="J1" pin="43" pinfunction="CP2P_43" pintype="passive"/>
+    </net>
+    <net code="9" name="/CS2" class="Default">
+      <node ref="J2" pin="9" pinfunction="CS2_optional_9" pintype="passive"/>
+      <node ref="R16" pin="1" pinfunction="1_1" pintype="passive"/>
+    </net>
+    <net code="10" name="/CSB" class="Default">
+      <node ref="J1" pin="31" pinfunction="CSB_31" pintype="passive"/>
+      <node ref="J2" pin="5" pinfunction="CSB_5" pintype="passive"/>
+      <node ref="R15" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="TP8" pin="1" pinfunction="1_1" pintype="passive"/>
+    </net>
+    <net code="11" name="/DC" class="Default">
+      <node ref="J1" pin="30" pinfunction="DC_30" pintype="passive"/>
+      <node ref="J2" pin="6" pinfunction="D/C_6" pintype="passive"/>
+    </net>
+    <net code="12" name="/EPD_3V3" class="Default">
+      <node ref="C3" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="R4" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="R6" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="R7" pin="1" pinfunction="1_1" pintype="passive"/>
+    </net>
+    <net code="13" name="/FPL_VCOM" class="Default">
+      <node ref="C14" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="J1" pin="3" pinfunction="FPL_VCOM_3" pintype="passive"/>
+    </net>
+    <net code="14" name="/GDRC" class="Default">
+      <node ref="J1" pin="9" pinfunction="GDRC_9" pintype="passive"/>
+      <node ref="Q2" pin="1" pinfunction="G_1" pintype="input"/>
+    </net>
+    <net code="15" name="/GDRH" class="Default">
+      <node ref="J1" pin="5" pinfunction="GDRH_5" pintype="passive"/>
+      <node ref="Q1" pin="2" pinfunction="G_2" pintype="input"/>
+    </net>
+    <net code="16" name="/GND" class="Default">
+      <node ref="C0" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C1" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C10" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C11" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C12" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C13" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C14" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C15" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C17" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C19" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C2" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C20" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C21" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C22" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C23" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C3" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C5" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C6" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C7" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C8" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C9" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="D2" pin="2" pinfunction="A_2" pintype="passive"/>
+      <node ref="J1" pin="12" pinfunction="GND_12" pintype="passive"/>
+      <node ref="J1" pin="21" pinfunction="GNDA_21" pintype="passive"/>
+      <node ref="J1" pin="39" pinfunction="GND_39" pintype="passive"/>
+      <node ref="J2" pin="10" pinfunction="GND_10" pintype="passive"/>
+      <node ref="J2" pin="2" pinfunction="GND_2" pintype="passive"/>
+      <node ref="R1" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="R12" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="R13" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="R2" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="R3" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="TP2" pin="1" pinfunction="1_1" pintype="passive"/>
+    </net>
+    <net code="17" name="/NEG_PUMP_H" class="Default">
+      <node ref="C4" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="D2" pin="1" pinfunction="K_1" pintype="passive"/>
+      <node ref="D3" pin="1" pinfunction="K_1" pintype="passive"/>
+    </net>
+    <net code="18" name="/PREVGH" class="Default">
+      <node ref="J1" pin="49" pinfunction="VGH_49" pintype="passive"/>
+      <node ref="R5" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="TP4" pin="1" pinfunction="1_1" pintype="passive"/>
+    </net>
+    <net code="19" name="/PREVGL" class="Default">
+      <node ref="C5" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="D3" pin="2" pinfunction="A_2" pintype="passive"/>
+      <node ref="J1" pin="13" pinfunction="VGL_13" pintype="passive"/>
+      <node ref="TP5" pin="1" pinfunction="1_1" pintype="passive"/>
+    </net>
+    <net code="20" name="/REFN" class="Default">
+      <node ref="C21" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="J1" pin="22" pinfunction="REFN_22" pintype="passive"/>
+    </net>
+    <net code="21" name="/REFP" class="Default">
+      <node ref="C20" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="J1" pin="23" pinfunction="REFP_23" pintype="passive"/>
+    </net>
+    <net code="22" name="/RESEC" class="Default">
+      <node ref="J1" pin="10" pinfunction="RESEC_10" pintype="passive"/>
+      <node ref="L2" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="R3" pin="1" pinfunction="1_1" pintype="passive"/>
+    </net>
+    <net code="23" name="/RESEH" class="Default">
+      <node ref="J1" pin="6" pinfunction="RESEH_6" pintype="passive"/>
+      <node ref="Q1" pin="3" pinfunction="D_3" pintype="passive"/>
+      <node ref="R1" pin="1" pinfunction="1_1" pintype="passive"/>
+    </net>
+    <net code="24" name="/RESEL" class="Default">
+      <node ref="J1" pin="8" pinfunction="RESEL_8" pintype="passive"/>
+      <node ref="R2" pin="1" pinfunction="1_1" pintype="passive"/>
+    </net>
+    <net code="25" name="/RST_N" class="Default">
+      <node ref="J1" pin="28" pinfunction="RST_N_28" pintype="passive"/>
+      <node ref="J2" pin="7" pinfunction="RES/RST_N_7" pintype="passive"/>
+      <node ref="R17" pin="1" pinfunction="1_1" pintype="passive"/>
+    </net>
+    <net code="26" name="/SCL" class="Default">
+      <node ref="J1" pin="32" pinfunction="SCL_32" pintype="passive"/>
+      <node ref="J2" pin="4" pinfunction="SCLK/SCL_4" pintype="passive"/>
+    </net>
+    <net code="27" name="/SI0" class="Default">
+      <node ref="J1" pin="33" pinfunction="SI0_33" pintype="passive"/>
+      <node ref="J2" pin="3" pinfunction="SDI/SI0_3" pintype="passive"/>
+    </net>
+    <net code="28" name="/SL_CSB" class="Default">
+      <node ref="J1" pin="4" pinfunction="SL_CSB_4" pintype="passive"/>
+      <node ref="R15" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="R16" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="TP9" pin="1" pinfunction="1_1" pintype="passive"/>
+    </net>
+    <net code="29" name="/SW_C" class="Default">
+      <node ref="D4" pin="1" pinfunction="K_1" pintype="passive"/>
+      <node ref="L2" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="Q2" pin="2" pinfunction="S_2" pintype="passive"/>
+    </net>
+    <net code="30" name="/SW_H" class="Default">
+      <node ref="C4" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="D1" pin="2" pinfunction="A_2" pintype="passive"/>
+      <node ref="L1" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="Q1" pin="1" pinfunction="S_1" pintype="passive"/>
+    </net>
+    <net code="31" name="/TFT_VCOM" class="Default">
+      <node ref="C13" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="J1" pin="2" pinfunction="TFT_VCOM_2" pintype="passive"/>
+    </net>
+    <net code="32" name="/TSCL" class="Default">
+      <node ref="J1" pin="24" pinfunction="TSCL_24" pintype="passive"/>
+      <node ref="R9" pin="1" pinfunction="1_1" pintype="passive"/>
+    </net>
+    <net code="33" name="/TSDA" class="Default">
+      <node ref="J1" pin="25" pinfunction="TSDA_25" pintype="passive"/>
+      <node ref="R10" pin="1" pinfunction="1_1" pintype="passive"/>
+    </net>
+    <net code="34" name="/VCOMBD" class="Default">
+      <node ref="C15" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="J1" pin="50" pinfunction="VCOMBD_50" pintype="passive"/>
+    </net>
+    <net code="35" name="/VCP1" class="Default">
+      <node ref="C17" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="J1" pin="44" pinfunction="VCP1_44" pintype="passive"/>
+    </net>
+    <net code="36" name="/VCP2" class="Default">
+      <node ref="C19" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="J1" pin="41" pinfunction="VCP2_41" pintype="passive"/>
+    </net>
+    <net code="37" name="/VDD" class="Default">
+      <node ref="J1" pin="38" pinfunction="VDD_38" pintype="passive"/>
+      <node ref="R11" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="R14" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="R6" pin="2" pinfunction="2_2" pintype="passive"/>
+    </net>
+    <net code="38" name="/VDDD" class="Default">
+      <node ref="C1" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="J1" pin="37" pinfunction="VDDD_37" pintype="passive"/>
+    </net>
+    <net code="39" name="/VDDIO" class="Default">
+      <node ref="J1" pin="40" pinfunction="VDDIO_40" pintype="passive"/>
+      <node ref="R17" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="R7" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="TP7" pin="1" pinfunction="1_1" pintype="passive"/>
+    </net>
+    <net code="40" name="/VPC" class="Default">
+      <node ref="C6" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="D4" pin="2" pinfunction="A_2" pintype="passive"/>
+      <node ref="J1" pin="11" pinfunction="VPC_11" pintype="passive"/>
+      <node ref="TP6" pin="1" pinfunction="1_1" pintype="passive"/>
+    </net>
+    <net code="41" name="/VPH" class="Default">
+      <node ref="C2" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="D1" pin="1" pinfunction="K_1" pintype="passive"/>
+      <node ref="J1" pin="14" pinfunction="VPH_14" pintype="passive"/>
+      <node ref="R5" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="TP3" pin="1" pinfunction="1_1" pintype="passive"/>
+    </net>
+    <net code="42" name="/VSH" class="Default">
+      <node ref="C7" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="J1" pin="15" pinfunction="VSH_15" pintype="passive"/>
+    </net>
+    <net code="43" name="/VSH_LV" class="Default">
+      <node ref="C8" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="J1" pin="16" pinfunction="VSH_LV_16" pintype="passive"/>
+    </net>
+    <net code="44" name="/VSH_LV2" class="Default">
+      <node ref="C9" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="J1" pin="17" pinfunction="VSH_LV2_17" pintype="passive"/>
+    </net>
+    <net code="45" name="/VSL" class="Default">
+      <node ref="C10" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="J1" pin="18" pinfunction="VSL_18" pintype="passive"/>
+    </net>
+    <net code="46" name="/VSL_LV" class="Default">
+      <node ref="C11" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="J1" pin="19" pinfunction="VSL_LV_19" pintype="passive"/>
+    </net>
+    <net code="47" name="/VSL_LV2" class="Default">
+      <node ref="C12" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="J1" pin="20" pinfunction="VSL_LV2_20" pintype="passive"/>
+    </net>
+    <net code="48" name="/V_B" class="Default">
+      <node ref="C0" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="C22" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="C23" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="L1" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="Q2" pin="3" pinfunction="D_3" pintype="passive"/>
+      <node ref="R8" pin="2" pinfunction="2_2" pintype="passive"/>
+    </net>
+    <net code="49" name="unconnected-(J1-CGH1N-Pad47)" class="Default">
+      <node ref="J1" pin="47" pinfunction="CGH1N_47" pintype="passive+no_connect"/>
+    </net>
+    <net code="50" name="unconnected-(J1-CGH1P-Pad48)" class="Default">
+      <node ref="J1" pin="48" pinfunction="CGH1P_48" pintype="passive+no_connect"/>
+    </net>
+    <net code="51" name="unconnected-(J1-GDRL-Pad7)" class="Default">
+      <node ref="J1" pin="7" pinfunction="GDRL_7" pintype="passive+no_connect"/>
+    </net>
+    <net code="52" name="unconnected-(J1-NC-Pad1)" class="Default">
+      <node ref="J1" pin="1" pinfunction="NC_1" pintype="passive+no_connect"/>
+    </net>
+    <net code="53" name="unconnected-(J1-SI1-Pad34)" class="Default">
+      <node ref="J1" pin="34" pinfunction="SI1_34" pintype="passive+no_connect"/>
+    </net>
+    <net code="54" name="unconnected-(J1-SI2-Pad35)" class="Default">
+      <node ref="J1" pin="35" pinfunction="SI2_35" pintype="passive+no_connect"/>
+    </net>
+    <net code="55" name="unconnected-(J1-SI3-Pad36)" class="Default">
+      <node ref="J1" pin="36" pinfunction="SI3_36" pintype="passive+no_connect"/>
+    </net>
+  </nets>
+</export>

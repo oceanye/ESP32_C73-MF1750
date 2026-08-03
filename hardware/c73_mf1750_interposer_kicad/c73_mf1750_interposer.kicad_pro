@@ -1,0 +1,19 @@
+{
+  "meta": {
+    "version": 1,
+    "filename": "c73_mf1750_interposer.kicad_pro"
+  },
+  "schematic": {
+    "drawing": {
+      "default_line_thickness": 6,
+      "default_text_size": 50
+    },
+    "meta": {
+      "version": 1
+    }
+  },
+  "libraries": {
+    "pinned_footprint_libs": [],
+    "pinned_symbol_libs": []
+  }
+}

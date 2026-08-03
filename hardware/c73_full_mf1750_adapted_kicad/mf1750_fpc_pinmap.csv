@@ -1,0 +1,51 @@
+pin,mf1750_signal,net,c73_delta_note
+1,NC,,MF-1750 pin 1 NC; C73 original pin 1 VPP is not used
+2,TFT_VCOM,TFT_VCOM,
+3,FPL_VCOM,FPL_VCOM,
+4,SL_CSB,SL_CSB,MF-1750 critical change: replaces C73 original P1 pin 4 VDD
+5,GDRH,GDRH,
+6,RESEH,RESEH,
+7,GDRL,GDRL,C73 original marks this node NC
+8,RESEL,RESEL,
+9,GDRC,GDRC,
+10,RESEC,RESEC,
+11,VPC,VPC,
+12,GND,GND,
+13,VGL,PREVGL,C73 rail label PREVGL
+14,VPH,VPH,
+15,VSH,VSH,
+16,VSH_LV,VSH_LV,
+17,VSH_LV2,VSH_LV2,
+18,VSL,VSL,
+19,VSL_LV,VSL_LV,
+20,VSL_LV2,VSL_LV2,
+21,GNDA,GND,
+22,REFN,REFN,
+23,REFP,REFP,
+24,TSCL,TSCL,
+25,TSDA,TSDA,C73 original marks this node NC
+26,BS0,BS0,
+27,BS1,BS1,
+28,RST_N,RST_N,
+29,BUSY_N,BUSY_N,
+30,DC,DC,
+31,CSB,CSB,
+32,SCL,SCL,
+33,SI0,SI0,
+34,SI1,SI1,C73 original marks this node NC
+35,SI2,SI2,C73 original marks this node NC
+36,SI3,SI3,C73 original marks this node NC
+37,VDDD,VDDD,
+38,VDD,VDD,
+39,GND,GND,
+40,VDDIO,VDDIO,
+41,VCP2,VCP2,
+42,CP2N,CP2N,
+43,CP2P,CP2P,
+44,VCP1,VCP1,
+45,CP1N,CP1N,
+46,CP1P,CP1P,
+47,CGH1N,CGH1N,C73 original marks this node NC
+48,CGH1P,CGH1P,C73 original marks this node NC
+49,VGH,PREVGH,C73 rail label PREVGH
+50,VCOMBD,VCOMBD,

@@ -1,0 +1,915 @@
+(PCB "mf1750_jlc_simplified"
+  (parser
+    (host_cad "EasyEDA Pro")
+    (host_version "3.2.135")
+  )
+  (resolution mil 1000)
+  (structure
+    (boundary(path signal 0 0 3067.01 3352.91 3067.01 3352.91 0 0 0 0 3067.01 )
+    )
+    (via via0
+    )
+    (grid via   0.25)
+    (grid wire   0.25)
+    (grid place   0.25)
+    (rule(clear 6.03))
+    (rule(clear 6.03 (type default_smd)))
+    (rule(clear 6.03 (type smd_smd)))
+    (rule(width 10.05))
+    (layer TopLayer
+      (type signal)
+    )
+    (layer BottomLayer
+      (type signal)
+    )
+  )
+
+  (placement
+    (component u1
+      (place u1 0 0 front 0
+      )
+    )
+  )
+  (library
+    (image u1
+      (pin pi3ie5 i3ie5 1404.02 740.71)
+      (pin pi3ie5 i3ie6 1423.7 740.71)
+      (pin pi3ie5 i3ie7 1443.39 740.71)
+      (pin pi3ie5 i3ie8 1463.07 740.71)
+      (pin pi3ie5 i3ie9 1482.76 740.71)
+      (pin pi3ie5 i3ie10 1502.44 740.71)
+      (pin pi3ie5 i3ie11 1522.13 740.71)
+      (pin pi3ie5 i3ie12 1541.81 740.71)
+      (pin pi3ie5 i3ie13 1561.5 740.71)
+      (pin pi3ie5 i3ie14 1581.18 740.71)
+      (pin pi3ie5 i3ie15 1600.87 740.71)
+      (pin pi3ie5 i3ie16 1620.55 740.71)
+      (pin pi3ie5 i3ie17 1640.24 740.71)
+      (pin pi3ie5 i3ie18 1659.92 740.71)
+      (pin pi3ie5 i3ie19 1679.61 740.71)
+      (pin pi3ie5 i3ie20 1699.29 740.71)
+      (pin pi3ie5 i3ie21 1718.98 740.71)
+      (pin pi3ie5 i3ie22 1738.66 740.71)
+      (pin pi3ie5 i3ie23 1758.35 740.71)
+      (pin pi3ie5 i3ie24 1778.03 740.71)
+      (pin pi3ie5 i3ie25 1797.72 740.71)
+      (pin pi3ie5 i3ie26 1817.4 740.71)
+      (pin pi3ie5 i3ie27 1837.09 740.71)
+      (pin pi3ie5 i3ie28 1856.77 740.71)
+      (pin pi3ie5 i3ie29 1876.46 740.71)
+      (pin pi3ie5 i3ie30 1896.14 740.71)
+      (pin pi3ie5 i3ie31 1915.83 740.71)
+      (pin pi3ie5 i3ie32 1935.51 740.71)
+      (pin pi3ie5 i3ie33 1955.2 740.71)
+      (pin pi3ie5 i3ie34 1974.88 740.71)
+      (pin pi3ie5 i3ie35 1994.57 740.71)
+      (pin pi3ie5 i3ie36 2014.25 740.71)
+      (pin pi3ie5 i3ie37 2033.94 740.71)
+      (pin pi3ie5 i3ie38 2053.62 740.71)
+      (pin pi3ie5 i3ie39 2073.31 740.71)
+      (pin pi3ie5 i3ie40 2092.99 740.71)
+      (pin pi3ie5 i3ie41 2112.68 740.71)
+      (pin pi3ie5 i3ie42 2132.36 740.71)
+      (pin pi3ie5 i3ie43 2152.05 740.71)
+      (pin pi3ie5 i3ie44 2171.73 740.71)
+      (pin pi3ie5 i3ie45 2191.42 740.71)
+      (pin pi3ie5 i3ie46 2211.1 740.71)
+      (pin pi3ie5 i3ie47 2230.79 740.71)
+      (pin pi3ie5 i3ie48 2250.47 740.71)
+      (pin pi3ie5 i3ie49 2270.16 740.71)
+      (pin pi3ie5 i3ie50 2289.84 740.71)
+      (pin pi3ie5 i3ie51 2309.53 740.71)
+      (pin pi3ie5 i3ie52 2329.21 740.71)
+      (pin pi3ie5 i3ie53 2348.9 740.71)
+      (pin pi3ie5 i3ie54 2368.58 740.71)
+      (pin pi3ie55 i3ie55 1339.06 616.69)
+      (pin pi3ie55 i3ie56 2433.54 616.69)
+      (pin pi30ie16 i30ie16 481.3 2355.71)
+      (pin pi30ie17 i30ie17 481.3 2255.71)
+      (pin pi30ie17 i30ie18 481.3 2155.71)
+      (pin pi30ie17 i30ie19 481.3 2055.71)
+      (pin pi30ie17 i30ie20 481.3 1955.71)
+      (pin pi30ie17 i30ie21 481.3 1855.71)
+      (pin pi30ie17 i30ie22 481.3 1755.71)
+      (pin pi30ie17 i30ie23 481.3 1655.71)
+      (pin pi30ie17 i30ie24 481.3 1555.71)
+      (pin pi30ie17 i30ie25 481.3 1455.71)
+      (pin pi37ie8 i37ie8 1690.35 1234.96)
+      (pin pi37ie8 i37ie9 1751.37 1234.96)
+      (pin pi44ie22 i44ie22 2209 2471.32)
+      (pin pi44ie22 i44ie23 1957.04 2471.32)
+      (pin pi52ie22 i52ie22 1773.03 1099.18)
+      (pin pi52ie22 i52ie23 1773.03 969.26)
+      (pin pi60ie8 i60ie8 2418.65 1349.98)
+      (pin pi60ie8 i60ie9 2302.51 1349.98)
+      (pin pi67ie8 i67ie8 2067.07 1614.23)
+      (pin pi67ie8 i67ie9 2002.11 1614.23)
+      (pin pi60ie8 i74ie8 2418.65 907.06)
+      (pin pi60ie8 i74ie9 2302.51 907.06)
+      (pin pi81ie22 i81ie22 2042.55 2250.85)
+      (pin pi81ie22 i81ie23 1912.63 2250.85)
+      (pin pi81ie22 i89ie22 2042.55 2026.44)
+      (pin pi81ie22 i89ie23 1912.63 2026.44)
+      (pin pi60ie8 i97ie8 2418.65 2383.44)
+      (pin pi60ie8 i97ie9 2302.51 2383.44)
+      (pin pi104ie8 i104ie8 1490.93 1231.52)
+      (pin pi104ie8 i104ie9 1490.93 1116.36)
+      (pin pi111ie8 i111ie8 2588.27 1912.81)
+      (pin pi111ie8 i111ie9 2527.25 1912.81)
+      (pin pi118ie22 i118ie22 1114.32 1110.16)
+      (pin pi118ie22 i118ie23 1366.29 1110.16)
+      (pin pi81ie22 i126ie22 2042.55 2138.64)
+      (pin pi81ie22 i126ie23 1912.63 2138.64)
+      (pin pi60ie8 i134ie8 2418.65 1202.34)
+      (pin pi60ie8 i134ie9 2302.51 1202.34)
+      (pin pi141ie8 i141ie8 1926.51 1116.36)
+      (pin pi141ie8 i141ie9 1926.51 1231.52)
+      (pin pi148ie8 i148ie8 2498.57 1068.97)
+      (pin pi148ie8 i148ie9 2563.53 1068.97)
+      (pin pi148ie8 i155ie8 2498.57 1148.1)
+      (pin pi148ie8 i155ie9 2563.53 1148.1)
+      (pin pi60ie8 i162ie8 2418.65 1940.53)
+      (pin pi60ie8 i162ie9 2302.51 1940.53)
+      (pin pi148ie8 i169ie8 2498.57 1306.37)
+      (pin pi148ie8 i169ie9 2563.53 1306.37)
+      (pin pi67ie8 i176ie8 2067.07 1535.1)
+      (pin pi67ie8 i176ie9 2002.11 1535.1)
+      (pin pi111ie8 i183ie8 2203.3 1659.93)
+      (pin pi111ie8 i183ie9 2142.27 1659.93)
+      (pin pi148ie8 i190ie8 2002.11 1851.64)
+      (pin pi148ie8 i190ie9 2067.07 1851.64)
+      (pin pi67ie8 i197ie8 2067.07 1930.77)
+      (pin pi67ie8 i197ie9 2002.11 1930.77)
+      (pin pi148ie8 i204ie8 2498.57 1227.24)
+      (pin pi148ie8 i204ie9 2563.53 1227.24)
+      (pin pi67ie8 i211ie8 2067.07 1693.37)
+      (pin pi67ie8 i211ie9 2002.11 1693.37)
+      (pin pi218ie8 i218ie8 1544.01 1610.69)
+      (pin pi218ie8 i218ie9 1544.01 1535.89)
+      (pin pi60ie8 i225ie8 2418.65 1497.61)
+      (pin pi60ie8 i225ie9 2302.51 1497.61)
+      (pin pi67ie8 i232ie8 2067.07 1772.5)
+      (pin pi67ie8 i232ie9 2002.11 1772.5)
+      (pin pi60ie8 i239ie8 2418.65 1054.7)
+      (pin pi60ie8 i239ie9 2302.51 1054.7)
+      (pin pi60ie8 i246ie8 2418.65 2088.16)
+      (pin pi60ie8 i246ie9 2302.51 2088.16)
+      (pin pi60ie8 i253ie8 2418.65 2235.8)
+      (pin pi60ie8 i253ie9 2302.51 2235.8)
+      (pin pi60ie8 i260ie8 2621.4 1792.89)
+      (pin pi60ie8 i260ie9 2505.26 1792.89)
+      (pin pi60ie8 i267ie8 2418.65 1645.25)
+      (pin pi60ie8 i267ie9 2302.51 1645.25)
+      (pin pi60ie8 i274ie8 2621.4 1645.25)
+      (pin pi60ie8 i274ie9 2505.26 1645.25)
+      (pin pi281ie8 i281ie8 1946.78 958.19)
+      (pin pi281ie8 i281ie9 1946.78 1033)
+      (pin pi288ie8 i288ie8 2144.04 1847.72)
+      (pin pi288ie8 i288ie9 2218.85 1847.72)
+      (pin pi111ie8 i295ie8 2203.3 1580.79)
+      (pin pi111ie8 i295ie9 2142.27 1580.79)
+      (pin pi218ie8 i302ie8 2835.74 1526.05)
+      (pin pi218ie8 i302ie9 2835.74 1451.25)
+      (pin pi288ie8 i309ie8 2144.04 1946.54)
+      (pin pi288ie8 i309ie9 2218.85 1946.54)
+      (pin pi281ie8 i316ie8 2679.3 1913.6)
+      (pin pi281ie8 i316ie9 2679.3 1988.4)
+      (pin pi288ie8 i323ie8 2144.04 1748.9)
+      (pin pi288ie8 i323ie9 2218.85 1748.9)
+      (pin pi60ie8 i330ie8 2418.65 1792.89)
+      (pin pi60ie8 i330ie9 2302.51 1792.89)
+      (pin pi337ie29 i337ie29 1417.66 1697.8)
+      (pin pi337ie29 i337ie30 1492.47 1697.8)
+      (pin pi337ie29 i337ie31 1455.07 1787.36)
+      (pin pi344ie29 i344ie29 1580.61 1034.4)
+      (pin pi344ie29 i344ie30 1580.61 959.6)
+      (pin pi344ie29 i344ie31 1670.18 997)
+      (pin pi351ie4 i351ie4 2032.02 1224.33)
+      (pin pi351ie4 i359ie4 2209 1169.98)
+      (pin pi351ie4 i367ie4 2836.52 1338.43)
+      (pin pi351ie4 i375ie4 2540.48 1521.24)
+      (pin pi351ie4 i383ie4 1601.57 1224.33)
+    )
+
+    (padstack via0
+      (shape(circle TopLayer 24))
+      (shape(circle BottomLayer 24))
+    )
+
+    (padstack pi3ie5
+      (shape(polygon TopLayer 0.1 25.59 2.95 25.59 -2.95 25.59 -2.95 25.37 -4.08 24.73 -5.04 23.77 -5.68 22.64 -5.91 22.64 -5.91 -22.64 -5.91 -22.64 -5.91 -23.77 -5.68 -24.73 -5.04 -25.37 -4.08 -25.59 -2.95 -25.59 -2.95 -25.59 2.95 -25.59 2.95 -25.37 4.08 -24.73 5.04 -23.77 5.68 -22.64 5.91 -22.64 5.91 22.64 5.91 22.64 5.91 23.77 5.68 24.73 5.04 25.37 4.08 25.59 2.95))
+    )
+    (padstack pi3ie55
+      (shape(polygon TopLayer 0.1 -21.65 35.43 21.65 35.43 21.65 35.43 25.11 35.09 28.43 34.08 31.5 32.45 34.18 30.24 36.38 27.56 38.02 24.5 39.03 21.17 39.37 17.72 39.37 17.72 39.37 -17.72 39.37 -17.72 39.03 -21.17 38.02 -24.5 36.38 -27.56 34.18 -30.24 31.5 -32.45 28.43 -34.08 25.11 -35.09 21.65 -35.43 21.65 -35.43 -21.65 -35.43 -21.65 -35.43 -25.11 -35.09 -28.43 -34.08 -31.5 -32.45 -34.18 -30.24 -36.38 -27.56 -38.02 -24.5 -39.03 -21.17 -39.37 -17.72 -39.37 -17.72 -39.37 17.72 -39.37 17.72 -39.03 21.17 -38.02 24.5 -36.38 27.56 -34.18 30.24 -31.5 32.45 -28.43 34.08 -25.11 35.09 -21.65 35.43))
+    )
+    (padstack pi30ie16
+      (shape(polygon TopLayer 0.1 -33.46 -33.46 -33.46 33.46 -33.46 33.46 33.46 33.46 33.46 33.46 33.46 -33.46 33.46 -33.46 -33.46 -33.46))
+      (shape(polygon BottomLayer 0.1 -33.46 -33.46 -33.46 33.46 -33.46 33.46 33.46 33.46 33.46 33.46 33.46 -33.46 33.46 -33.46 -33.46 -33.46))
+    )
+    (padstack pi30ie17
+      (shape(circle TopLayer 66.93 0 0))
+      (shape(circle BottomLayer 66.93 0 0))
+    )
+    (padstack pi37ie8
+      (shape(polygon TopLayer 0.1 -17.72 -9.84 -17.72 9.84 -17.72 9.84 -17.41 12.14 -16.53 14.27 -15.12 16.11 -13.29 17.51 -11.15 18.4 -8.86 18.7 -8.86 18.7 8.86 18.7 8.86 18.7 11.15 18.4 13.29 17.51 15.12 16.11 16.53 14.27 17.41 12.14 17.72 9.84 17.72 9.84 17.72 -9.84 17.72 -9.84 17.41 -12.14 16.53 -14.27 15.12 -16.11 13.29 -17.51 11.15 -18.4 8.86 -18.7 8.86 -18.7 -8.86 -18.7 -8.86 -18.7 -11.15 -18.4 -13.29 -17.51 -15.12 -16.11 -16.53 -14.27 -17.41 -12.14 -17.72 -9.84))
+    )
+    (padstack pi44ie22
+      (shape(polygon TopLayer 0.1 29.53 43.31 29.53 -43.31 29.53 -43.31 -29.53 -43.31 -29.53 -43.31 -29.53 43.31 -29.53 43.31 29.53 43.31))
+    )
+    (padstack pi52ie22
+      (shape(polygon TopLayer 0.1 -14.76 17.72 14.76 17.72 14.76 17.72 17.06 17.41 19.19 16.53 21.03 15.12 22.44 13.29 23.32 11.15 23.62 8.86 23.62 8.86 23.62 -8.86 23.62 -8.86 23.32 -11.15 22.44 -13.29 21.03 -15.12 19.19 -16.53 17.06 -17.41 14.76 -17.72 14.76 -17.72 -14.76 -17.72 -14.76 -17.72 -17.06 -17.41 -19.19 -16.53 -21.03 -15.12 -22.44 -13.29 -23.32 -11.15 -23.62 -8.86 -23.62 -8.86 -23.62 8.86 -23.62 8.86 -23.32 11.15 -22.44 13.29 -21.03 15.12 -19.19 16.53 -17.06 17.41 -14.76 17.72))
+    )
+    (padstack pi60ie8
+      (shape(polygon TopLayer 0.1 22.64 43.31 22.64 -43.31 22.64 -43.31 22.3 -45.85 21.32 -48.23 19.75 -50.27 17.72 -51.83 15.34 -52.81 12.8 -53.15 12.8 -53.15 -12.8 -53.15 -12.8 -53.15 -15.34 -52.81 -17.72 -51.83 -19.75 -50.27 -21.32 -48.23 -22.3 -45.85 -22.64 -43.31 -22.64 -43.31 -22.64 43.31 -22.64 43.31 -22.3 45.85 -21.32 48.23 -19.75 50.27 -17.72 51.83 -15.34 52.81 -12.8 53.15 -12.8 53.15 12.8 53.15 12.8 53.15 15.34 52.81 17.72 51.83 19.75 50.27 21.32 48.23 22.3 45.85 22.64 43.31))
+    )
+    (padstack pi67ie8
+      (shape(polygon TopLayer 0.1 15.75 10.83 15.75 -10.83 15.75 -10.83 15.36 -13.26 14.24 -15.45 12.5 -17.2 10.31 -18.32 7.87 -18.7 7.87 -18.7 -7.87 -18.7 -7.87 -18.7 -10.31 -18.32 -12.5 -17.2 -14.24 -15.45 -15.36 -13.26 -15.75 -10.83 -15.75 -10.83 -15.75 10.83 -15.75 10.83 -15.36 13.26 -14.24 15.45 -12.5 17.2 -10.31 18.32 -7.87 18.7 -7.87 18.7 7.87 18.7 7.87 18.7 10.31 18.32 12.5 17.2 14.24 15.45 15.36 13.26 15.75 10.83))
+    )
+    (padstack pi81ie22
+      (shape(polygon TopLayer 0.1 17.72 14.76 17.72 -14.76 17.72 -14.76 17.41 -17.06 16.53 -19.19 15.12 -21.03 13.29 -22.44 11.15 -23.32 8.86 -23.62 8.86 -23.62 -8.86 -23.62 -8.86 -23.62 -11.15 -23.32 -13.29 -22.44 -15.12 -21.03 -16.53 -19.19 -17.41 -17.06 -17.72 -14.76 -17.72 -14.76 -17.72 14.76 -17.72 14.76 -17.41 17.06 -16.53 19.19 -15.12 21.03 -13.29 22.44 -11.15 23.32 -8.86 23.62 -8.86 23.62 8.86 23.62 8.86 23.62 11.15 23.32 13.29 22.44 15.12 21.03 16.53 19.19 17.41 17.06 17.72 14.76))
+    )
+    (padstack pi104ie8
+      (shape(polygon TopLayer 0.1 -24.61 22.15 24.61 22.15 24.61 22.15 27.15 21.81 29.53 20.83 31.57 19.26 33.13 17.22 34.11 14.85 34.45 12.3 34.45 12.3 34.45 -12.3 34.45 -12.3 34.11 -14.85 33.13 -17.22 31.57 -19.26 29.53 -20.83 27.15 -21.81 24.61 -22.15 24.61 -22.15 -24.61 -22.15 -24.61 -22.15 -27.15 -21.81 -29.53 -20.83 -31.57 -19.26 -33.13 -17.22 -34.11 -14.85 -34.45 -12.3 -34.45 -12.3 -34.45 12.3 -34.45 12.3 -34.11 14.85 -33.13 17.22 -31.57 19.26 -29.53 20.83 -27.15 21.81 -24.61 22.15))
+    )
+    (padstack pi111ie8
+      (shape(polygon TopLayer 0.1 17.72 9.84 17.72 -9.84 17.72 -9.84 17.41 -12.14 16.53 -14.27 15.12 -16.11 13.29 -17.51 11.15 -18.4 8.86 -18.7 8.86 -18.7 -8.86 -18.7 -8.86 -18.7 -11.15 -18.4 -13.29 -17.51 -15.12 -16.11 -16.53 -14.27 -17.41 -12.14 -17.72 -9.84 -17.72 -9.84 -17.72 9.84 -17.72 9.84 -17.41 12.14 -16.53 14.27 -15.12 16.11 -13.29 17.51 -11.15 18.4 -8.86 18.7 -8.86 18.7 8.86 18.7 8.86 18.7 11.15 18.4 13.29 17.51 15.12 16.11 16.53 14.27 17.41 12.14 17.72 9.84))
+    )
+    (padstack pi118ie22
+      (shape(polygon TopLayer 0.1 -29.53 -43.31 -29.53 43.31 -29.53 43.31 29.53 43.31 29.53 43.31 29.53 -43.31 29.53 -43.31 -29.53 -43.31))
+    )
+    (padstack pi141ie8
+      (shape(polygon TopLayer 0.1 24.61 -22.15 -24.61 -22.15 -24.61 -22.15 -27.15 -21.81 -29.53 -20.83 -31.57 -19.26 -33.13 -17.22 -34.11 -14.85 -34.45 -12.3 -34.45 -12.3 -34.45 12.3 -34.45 12.3 -34.11 14.85 -33.13 17.22 -31.57 19.26 -29.53 20.83 -27.15 21.81 -24.61 22.15 -24.61 22.15 24.61 22.15 24.61 22.15 27.15 21.81 29.53 20.83 31.57 19.26 33.13 17.22 34.11 14.85 34.45 12.3 34.45 12.3 34.45 -12.3 34.45 -12.3 34.11 -14.85 33.13 -17.22 31.57 -19.26 29.53 -20.83 27.15 -21.81 24.61 -22.15))
+    )
+    (padstack pi148ie8
+      (shape(polygon TopLayer 0.1 -15.75 -10.83 -15.75 10.83 -15.75 10.83 -15.36 13.26 -14.24 15.45 -12.5 17.2 -10.31 18.32 -7.87 18.7 -7.87 18.7 7.87 18.7 7.87 18.7 10.31 18.32 12.5 17.2 14.24 15.45 15.36 13.26 15.75 10.83 15.75 10.83 15.75 -10.83 15.75 -10.83 15.36 -13.26 14.24 -15.45 12.5 -17.2 10.31 -18.32 7.87 -18.7 7.87 -18.7 -7.87 -18.7 -7.87 -18.7 -10.31 -18.32 -12.5 -17.2 -14.24 -15.45 -15.36 -13.26 -15.75 -10.83))
+    )
+    (padstack pi218ie8
+      (shape(polygon TopLayer 0.1 -18.7 19.69 18.7 19.69 18.7 19.69 21.25 19.35 23.62 18.37 25.66 16.8 27.22 14.76 28.21 12.39 28.54 9.84 28.54 9.84 28.54 -9.84 28.54 -9.84 28.21 -12.39 27.22 -14.76 25.66 -16.8 23.62 -18.37 21.25 -19.35 18.7 -19.69 18.7 -19.69 -18.7 -19.69 -18.7 -19.69 -21.25 -19.35 -23.62 -18.37 -25.66 -16.8 -27.22 -14.76 -28.21 -12.39 -28.54 -9.84 -28.54 -9.84 -28.54 9.84 -28.54 9.84 -28.21 12.39 -27.22 14.76 -25.66 16.8 -23.62 18.37 -21.25 19.35 -18.7 19.69))
+    )
+    (padstack pi281ie8
+      (shape(polygon TopLayer 0.1 18.7 -19.69 -18.7 -19.69 -18.7 -19.69 -21.25 -19.35 -23.62 -18.37 -25.66 -16.8 -27.22 -14.76 -28.21 -12.39 -28.54 -9.84 -28.54 -9.84 -28.54 9.84 -28.54 9.84 -28.21 12.39 -27.22 14.76 -25.66 16.8 -23.62 18.37 -21.25 19.35 -18.7 19.69 -18.7 19.69 18.7 19.69 18.7 19.69 21.25 19.35 23.62 18.37 25.66 16.8 27.22 14.76 28.21 12.39 28.54 9.84 28.54 9.84 28.54 -9.84 28.54 -9.84 28.21 -12.39 27.22 -14.76 25.66 -16.8 23.62 -18.37 21.25 -19.35 18.7 -19.69))
+    )
+    (padstack pi288ie8
+      (shape(polygon TopLayer 0.1 -19.69 -18.7 -19.69 18.7 -19.69 18.7 -19.35 21.25 -18.37 23.62 -16.8 25.66 -14.76 27.22 -12.39 28.21 -9.84 28.54 -9.84 28.54 9.84 28.54 9.84 28.54 12.39 28.21 14.76 27.22 16.8 25.66 18.37 23.62 19.35 21.25 19.69 18.7 19.69 18.7 19.69 -18.7 19.69 -18.7 19.35 -21.25 18.37 -23.62 16.8 -25.66 14.76 -27.22 12.39 -28.21 9.84 -28.54 9.84 -28.54 -9.84 -28.54 -9.84 -28.54 -12.39 -28.21 -14.76 -27.22 -16.8 -25.66 -18.37 -23.62 -19.35 -21.25 -19.69 -18.7))
+    )
+    (padstack pi337ie29
+      (shape(polygon TopLayer 0.1 5.91 -26.08 -5.91 -26.08 -5.91 -26.08 -7.73 -25.79 -9.38 -24.95 -10.68 -23.65 -11.52 -22 -11.81 -20.18 -11.81 -20.18 -11.81 20.18 -11.81 20.18 -11.52 22 -10.68 23.65 -9.38 24.95 -7.73 25.79 -5.91 26.08 -5.91 26.08 5.91 26.08 5.91 26.08 7.73 25.79 9.38 24.95 10.68 23.65 11.52 22 11.81 20.18 11.81 20.18 11.81 -20.18 11.81 -20.18 11.52 -22 10.68 -23.65 9.38 -24.95 7.73 -25.79 5.91 -26.08))
+    )
+    (padstack pi344ie29
+      (shape(polygon TopLayer 0.1 -26.08 -5.91 -26.08 5.91 -26.08 5.91 -25.79 7.73 -24.95 9.38 -23.65 10.68 -22 11.52 -20.18 11.81 -20.18 11.81 20.18 11.81 20.18 11.81 22 11.52 23.65 10.68 24.95 9.38 25.79 7.73 26.08 5.91 26.08 5.91 26.08 -5.91 26.08 -5.91 25.79 -7.73 24.95 -9.38 23.65 -10.68 22 -11.52 20.18 -11.81 20.18 -11.81 -20.18 -11.81 -20.18 -11.81 -22 -11.52 -23.65 -10.68 -24.95 -9.38 -25.79 -7.73 -26.08 -5.91))
+    )
+    (padstack pi351ie4
+      (shape(circle TopLayer 39.37 0 0))
+    )
+  )
+  (network
+    (net TFT_VCOM
+      (pins u1-i3ie6 u1-i218ie8)
+    )
+    (net FPL_VCOM
+      (pins u1-i3ie7 u1-i225ie8)
+    )
+    (net SL_CSB
+      (pins u1-i3ie8 u1-i30ie21 u1-i383ie4)
+    )
+    (net GDRH
+      (pins u1-i3ie9 u1-i337ie29)
+    )
+    (net RESEH
+      (pins u1-i3ie10 u1-i104ie8 u1-i337ie30)
+    )
+    (net GDRL
+      (pins u1-i3ie11)
+    )
+    (net RESEL
+      (pins u1-i3ie12 u1-i232ie8)
+    )
+    (net GDRC
+      (pins u1-i3ie13 u1-i344ie29)
+    )
+    (net RESEC
+      (pins u1-i3ie14 u1-i118ie23 u1-i141ie8)
+    )
+    (net VPC
+      (pins u1-i3ie15 u1-i126ie23 u1-i134ie8)
+    )
+    (net GND
+      (pins u1-i3ie16 u1-i3ie25 u1-i3ie43 u1-i30ie17 u1-i30ie25 u1-i37ie9 u1-i60ie9 u1-i81ie23 u1-i97ie9 u1-i104ie9 u1-i111ie9 u1-i134ie9 u1-i141ie9 u1-i162ie9 u1-i183ie9 u1-i204ie8 u1-i211ie8 u1-i218ie9 u1-i225ie9 u1-i232ie9 u1-i239ie9 u1-i246ie9 u1-i253ie9 u1-i260ie9 u1-i267ie9 u1-i274ie9 u1-i281ie9 u1-i288ie9 u1-i295ie9 u1-i302ie9 u1-i316ie9 u1-i330ie9 u1-i359ie4)
+    )
+    (net PREVGL
+      (pins u1-i3ie17 u1-i89ie23 u1-i97ie8)
+    )
+    (net VPH
+      (pins u1-i3ie18 u1-i52ie22 u1-i60ie8 u1-i67ie8)
+    )
+    (net VSH
+      (pins u1-i3ie19 u1-i239ie8)
+    )
+    (net VSH_LV
+      (pins u1-i3ie20 u1-i246ie8)
+    )
+    (net VSH_LV2
+      (pins u1-i3ie21 u1-i253ie8)
+    )
+    (net VSL
+      (pins u1-i3ie22 u1-i260ie8)
+    )
+    (net VSL_LV
+      (pins u1-i3ie23 u1-i267ie8)
+    )
+    (net VSL_LV2
+      (pins u1-i3ie24 u1-i274ie8)
+    )
+    (net REFN
+      (pins u1-i3ie26 u1-i281ie8)
+    )
+    (net REFP
+      (pins u1-i3ie27 u1-i288ie8)
+    )
+    (net TSCL
+      (pins u1-i3ie28 u1-i190ie8)
+    )
+    (net TSDA
+      (pins u1-i3ie29 u1-i197ie8)
+    )
+    (net BS0
+      (pins u1-i3ie30 u1-i204ie9)
+    )
+    (net BS1
+      (pins u1-i3ie31 u1-i211ie9)
+    )
+    (net RST_N
+      (pins u1-i3ie32 u1-i30ie23)
+    )
+    (net BUSY_N
+      (pins u1-i3ie33 u1-i30ie24)
+    )
+    (net DC
+      (pins u1-i3ie34 u1-i30ie22)
+    )
+    (net CSB
+      (pins u1-i3ie35 u1-i30ie20 u1-i375ie4)
+    )
+    (net SCL
+      (pins u1-i3ie36 u1-i30ie19)
+    )
+    (net SI0
+      (pins u1-i3ie37 u1-i30ie18)
+    )
+    (net SI1
+      (pins u1-i3ie38)
+    )
+    (net SI2
+      (pins u1-i3ie39)
+    )
+    (net SI3
+      (pins u1-i3ie40)
+    )
+    (net VDDD
+      (pins u1-i3ie41 u1-i295ie8)
+    )
+    (net VDD
+      (pins u1-i3ie42 u1-i169ie9)
+    )
+    (net VDDIO
+      (pins u1-i3ie44 u1-i176ie9 u1-i367ie4)
+    )
+    (net VCP2
+      (pins u1-i3ie45 u1-i302ie8)
+    )
+    (net CP2N
+      (pins u1-i3ie46 u1-i309ie8)
+    )
+    (net CP2P
+      (pins u1-i3ie47 u1-i309ie9)
+    )
+    (net VCP1
+      (pins u1-i3ie48 u1-i316ie8)
+    )
+    (net CP1N
+      (pins u1-i3ie49 u1-i323ie8)
+    )
+    (net CP1P
+      (pins u1-i3ie50 u1-i323ie9)
+    )
+    (net CGH1N
+      (pins u1-i3ie51)
+    )
+    (net CGH1P
+      (pins u1-i3ie52)
+    )
+    (net PREVGH
+      (pins u1-i3ie53 u1-i67ie9)
+    )
+    (net VCOMBD
+      (pins u1-i3ie54 u1-i330ie8)
+    )
+    (net 3V3
+      (pins u1-i30ie16 u1-i148ie8 u1-i155ie8 u1-i190ie9 u1-i197ie9 u1-i351ie4)
+    )
+    (net V_B
+      (pins u1-i37ie8 u1-i44ie22 u1-i111ie8 u1-i155ie9 u1-i162ie8 u1-i344ie30)
+    )
+    (net SW_H
+      (pins u1-i44ie23 u1-i52ie23 u1-i74ie8 u1-i337ie31)
+    )
+    (net NEG_PUMP_H
+      (pins u1-i74ie9 u1-i81ie22 u1-i89ie22)
+    )
+    (net SW_C
+      (pins u1-i118ie22 u1-i126ie22 u1-i344ie31)
+    )
+    (net EPD_3V3
+      (pins u1-i148ie9 u1-i169ie8 u1-i176ie8 u1-i183ie8)
+    )
+    (class  ''
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class TFT_VCOM 'TFT_VCOM'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class FPL_VCOM 'FPL_VCOM'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class SL_CSB 'SL_CSB'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class GDRH 'GDRH'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class RESEH 'RESEH'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class GDRL 'GDRL'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class RESEL 'RESEL'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class GDRC 'GDRC'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class RESEC 'RESEC'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VPC 'VPC'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class GND 'GND'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class PREVGL 'PREVGL'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VPH 'VPH'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VSH 'VSH'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VSH_LV 'VSH_LV'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VSH_LV2 'VSH_LV2'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VSL 'VSL'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VSL_LV 'VSL_LV'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VSL_LV2 'VSL_LV2'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class REFN 'REFN'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class REFP 'REFP'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class TSCL 'TSCL'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class TSDA 'TSDA'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class BS0 'BS0'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class BS1 'BS1'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class RST_N 'RST_N'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class BUSY_N 'BUSY_N'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class DC 'DC'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class CSB 'CSB'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class SCL 'SCL'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class SI0 'SI0'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class SI1 'SI1'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class SI2 'SI2'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class SI3 'SI3'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VDDD 'VDDD'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VDD 'VDD'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VDDIO 'VDDIO'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VCP2 'VCP2'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class CP2N 'CP2N'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class CP2P 'CP2P'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VCP1 'VCP1'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class CP1N 'CP1N'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class CP1P 'CP1P'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class CGH1N 'CGH1N'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class CGH1P 'CGH1P'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class PREVGH 'PREVGH'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VCOMBD 'VCOMBD'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class 3V3 '3V3'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class V_B 'V_B'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class SW_H 'SW_H'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class NEG_PUMP_H 'NEG_PUMP_H'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class SW_C 'SW_C'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class EPD_3V3 'EPD_3V3'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+  )
+
+  (wiring
+  )
+)

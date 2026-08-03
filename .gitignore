@@ -1,0 +1,27 @@
+.pio/
+.vscode/.browse.c_cpp.db*
+.vscode/c_cpp_properties.json
+.vscode/launch.json
+.vscode/ipch
+
+# Local credentials and editor/build metadata.
+src/wifi_secrets.h
+compile_commands.json
+.agents/
+**/__pycache__/
+*.py[cod]
+**/.history/
+
+# Transient EDA/tool output. Frozen production inputs/outputs remain tracked.
+~*.lck
+*.log
+
+# Re-downloadable third-party mirrors and generated debug extracts are kept
+# locally but intentionally excluded from the project baseline.
+hardware/reference_epdiy_hardware/
+hardware/reference_seeed_wiki_documents/
+hardware/debug_crops/
+参考资料/**/Debug/
+e2802_pdf_text.txt
+e2802_stream.bin
+mf_contact.png

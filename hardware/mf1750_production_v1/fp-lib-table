@@ -1,0 +1,3 @@
+(fp_lib_table
+	(lib (name "MF1750_Production") (type "KiCad") (uri "${KIPRJMOD}/MF1750_Production.pretty") (options "") (descr "MF-1750 production local footprints"))
+)

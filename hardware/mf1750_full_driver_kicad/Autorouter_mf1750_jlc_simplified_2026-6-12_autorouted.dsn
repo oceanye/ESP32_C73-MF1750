@@ -1,0 +1,2324 @@
+(PCB "mf1750_jlc_simplified"
+  (parser
+    (host_cad "EasyEDA Pro")
+    (host_version "3.2.135")
+  )
+  (resolution mil 1000)
+  (structure
+    (boundary(path signal 0 0 3067.01 3352.91 3067.01 3352.91 0 0 0 0 3067.01 )
+    )
+    (via via0
+    )
+    (grid via   0.25)
+    (grid wire   0.25)
+    (grid place   0.25)
+    (rule(clear 6.03))
+    (rule(clear 6.03 (type default_smd)))
+    (rule(clear 6.03 (type smd_smd)))
+    (rule(width 10.05))
+    (layer TopLayer
+      (type signal)
+    )
+    (layer BottomLayer
+      (type signal)
+    )
+  )
+
+  (placement
+    (component u1
+      (place u1 0 0 front 0
+      )
+    )
+  )
+  (library
+    (image u1
+      (pin pi3ie5 i3ie5 1404.02 740.71)
+      (pin pi3ie5 i3ie6 1423.7 740.71)
+      (pin pi3ie5 i3ie7 1443.39 740.71)
+      (pin pi3ie5 i3ie8 1463.07 740.71)
+      (pin pi3ie5 i3ie9 1482.76 740.71)
+      (pin pi3ie5 i3ie10 1502.44 740.71)
+      (pin pi3ie5 i3ie11 1522.13 740.71)
+      (pin pi3ie5 i3ie12 1541.81 740.71)
+      (pin pi3ie5 i3ie13 1561.5 740.71)
+      (pin pi3ie5 i3ie14 1581.18 740.71)
+      (pin pi3ie5 i3ie15 1600.87 740.71)
+      (pin pi3ie5 i3ie16 1620.55 740.71)
+      (pin pi3ie5 i3ie17 1640.24 740.71)
+      (pin pi3ie5 i3ie18 1659.92 740.71)
+      (pin pi3ie5 i3ie19 1679.61 740.71)
+      (pin pi3ie5 i3ie20 1699.29 740.71)
+      (pin pi3ie5 i3ie21 1718.98 740.71)
+      (pin pi3ie5 i3ie22 1738.66 740.71)
+      (pin pi3ie5 i3ie23 1758.35 740.71)
+      (pin pi3ie5 i3ie24 1778.03 740.71)
+      (pin pi3ie5 i3ie25 1797.72 740.71)
+      (pin pi3ie5 i3ie26 1817.4 740.71)
+      (pin pi3ie5 i3ie27 1837.09 740.71)
+      (pin pi3ie5 i3ie28 1856.77 740.71)
+      (pin pi3ie5 i3ie29 1876.46 740.71)
+      (pin pi3ie5 i3ie30 1896.14 740.71)
+      (pin pi3ie5 i3ie31 1915.83 740.71)
+      (pin pi3ie5 i3ie32 1935.51 740.71)
+      (pin pi3ie5 i3ie33 1955.2 740.71)
+      (pin pi3ie5 i3ie34 1974.88 740.71)
+      (pin pi3ie5 i3ie35 1994.57 740.71)
+      (pin pi3ie5 i3ie36 2014.25 740.71)
+      (pin pi3ie5 i3ie37 2033.94 740.71)
+      (pin pi3ie5 i3ie38 2053.62 740.71)
+      (pin pi3ie5 i3ie39 2073.31 740.71)
+      (pin pi3ie5 i3ie40 2092.99 740.71)
+      (pin pi3ie5 i3ie41 2112.68 740.71)
+      (pin pi3ie5 i3ie42 2132.36 740.71)
+      (pin pi3ie5 i3ie43 2152.05 740.71)
+      (pin pi3ie5 i3ie44 2171.73 740.71)
+      (pin pi3ie5 i3ie45 2191.42 740.71)
+      (pin pi3ie5 i3ie46 2211.1 740.71)
+      (pin pi3ie5 i3ie47 2230.79 740.71)
+      (pin pi3ie5 i3ie48 2250.47 740.71)
+      (pin pi3ie5 i3ie49 2270.16 740.71)
+      (pin pi3ie5 i3ie50 2289.84 740.71)
+      (pin pi3ie5 i3ie51 2309.53 740.71)
+      (pin pi3ie5 i3ie52 2329.21 740.71)
+      (pin pi3ie5 i3ie53 2348.9 740.71)
+      (pin pi3ie5 i3ie54 2368.58 740.71)
+      (pin pi3ie55 i3ie55 1339.06 616.69)
+      (pin pi3ie55 i3ie56 2433.54 616.69)
+      (pin pi30ie16 i30ie16 481.3 2355.71)
+      (pin pi30ie17 i30ie17 481.3 2255.71)
+      (pin pi30ie17 i30ie18 481.3 2155.71)
+      (pin pi30ie17 i30ie19 481.3 2055.71)
+      (pin pi30ie17 i30ie20 481.3 1955.71)
+      (pin pi30ie17 i30ie21 481.3 1855.71)
+      (pin pi30ie17 i30ie22 481.3 1755.71)
+      (pin pi30ie17 i30ie23 481.3 1655.71)
+      (pin pi30ie17 i30ie24 481.3 1555.71)
+      (pin pi30ie17 i30ie25 481.3 1455.71)
+      (pin pi37ie8 i37ie8 1690.35 1234.96)
+      (pin pi37ie8 i37ie9 1751.37 1234.96)
+      (pin pi44ie22 i44ie22 2209 2471.32)
+      (pin pi44ie22 i44ie23 1957.04 2471.32)
+      (pin pi52ie22 i52ie22 1773.03 1099.18)
+      (pin pi52ie22 i52ie23 1773.03 969.26)
+      (pin pi60ie8 i60ie8 2418.65 1349.98)
+      (pin pi60ie8 i60ie9 2302.51 1349.98)
+      (pin pi67ie8 i67ie8 2067.07 1614.23)
+      (pin pi67ie8 i67ie9 2002.11 1614.23)
+      (pin pi60ie8 i74ie8 2418.65 907.06)
+      (pin pi60ie8 i74ie9 2302.51 907.06)
+      (pin pi81ie22 i81ie22 2042.55 2250.85)
+      (pin pi81ie22 i81ie23 1912.63 2250.85)
+      (pin pi81ie22 i89ie22 2042.55 2026.44)
+      (pin pi81ie22 i89ie23 1912.63 2026.44)
+      (pin pi60ie8 i97ie8 2418.65 2383.44)
+      (pin pi60ie8 i97ie9 2302.51 2383.44)
+      (pin pi104ie8 i104ie8 1490.93 1231.52)
+      (pin pi104ie8 i104ie9 1490.93 1116.36)
+      (pin pi111ie8 i111ie8 2588.27 1912.81)
+      (pin pi111ie8 i111ie9 2527.25 1912.81)
+      (pin pi118ie22 i118ie22 1114.32 1110.16)
+      (pin pi118ie22 i118ie23 1366.29 1110.16)
+      (pin pi81ie22 i126ie22 2042.55 2138.64)
+      (pin pi81ie22 i126ie23 1912.63 2138.64)
+      (pin pi60ie8 i134ie8 2418.65 1202.34)
+      (pin pi60ie8 i134ie9 2302.51 1202.34)
+      (pin pi141ie8 i141ie8 1926.51 1116.36)
+      (pin pi141ie8 i141ie9 1926.51 1231.52)
+      (pin pi148ie8 i148ie8 2498.57 1068.97)
+      (pin pi148ie8 i148ie9 2563.53 1068.97)
+      (pin pi148ie8 i155ie8 2498.57 1148.1)
+      (pin pi148ie8 i155ie9 2563.53 1148.1)
+      (pin pi60ie8 i162ie8 2418.65 1940.53)
+      (pin pi60ie8 i162ie9 2302.51 1940.53)
+      (pin pi148ie8 i169ie8 2498.57 1306.37)
+      (pin pi148ie8 i169ie9 2563.53 1306.37)
+      (pin pi67ie8 i176ie8 2067.07 1535.1)
+      (pin pi67ie8 i176ie9 2002.11 1535.1)
+      (pin pi111ie8 i183ie8 2203.3 1659.93)
+      (pin pi111ie8 i183ie9 2142.27 1659.93)
+      (pin pi148ie8 i190ie8 2002.11 1851.64)
+      (pin pi148ie8 i190ie9 2067.07 1851.64)
+      (pin pi67ie8 i197ie8 2067.07 1930.77)
+      (pin pi67ie8 i197ie9 2002.11 1930.77)
+      (pin pi148ie8 i204ie8 2498.57 1227.24)
+      (pin pi148ie8 i204ie9 2563.53 1227.24)
+      (pin pi67ie8 i211ie8 2067.07 1693.37)
+      (pin pi67ie8 i211ie9 2002.11 1693.37)
+      (pin pi218ie8 i218ie8 1544.01 1610.69)
+      (pin pi218ie8 i218ie9 1544.01 1535.89)
+      (pin pi60ie8 i225ie8 2418.65 1497.61)
+      (pin pi60ie8 i225ie9 2302.51 1497.61)
+      (pin pi67ie8 i232ie8 2067.07 1772.5)
+      (pin pi67ie8 i232ie9 2002.11 1772.5)
+      (pin pi60ie8 i239ie8 2418.65 1054.7)
+      (pin pi60ie8 i239ie9 2302.51 1054.7)
+      (pin pi60ie8 i246ie8 2418.65 2088.16)
+      (pin pi60ie8 i246ie9 2302.51 2088.16)
+      (pin pi60ie8 i253ie8 2418.65 2235.8)
+      (pin pi60ie8 i253ie9 2302.51 2235.8)
+      (pin pi60ie8 i260ie8 2621.4 1792.89)
+      (pin pi60ie8 i260ie9 2505.26 1792.89)
+      (pin pi60ie8 i267ie8 2418.65 1645.25)
+      (pin pi60ie8 i267ie9 2302.51 1645.25)
+      (pin pi60ie8 i274ie8 2621.4 1645.25)
+      (pin pi60ie8 i274ie9 2505.26 1645.25)
+      (pin pi281ie8 i281ie8 1946.78 958.19)
+      (pin pi281ie8 i281ie9 1946.78 1033)
+      (pin pi288ie8 i288ie8 2144.04 1847.72)
+      (pin pi288ie8 i288ie9 2218.85 1847.72)
+      (pin pi111ie8 i295ie8 2203.3 1580.79)
+      (pin pi111ie8 i295ie9 2142.27 1580.79)
+      (pin pi218ie8 i302ie8 2835.74 1526.05)
+      (pin pi218ie8 i302ie9 2835.74 1451.25)
+      (pin pi288ie8 i309ie8 2144.04 1946.54)
+      (pin pi288ie8 i309ie9 2218.85 1946.54)
+      (pin pi281ie8 i316ie8 2679.3 1913.6)
+      (pin pi281ie8 i316ie9 2679.3 1988.4)
+      (pin pi288ie8 i323ie8 2144.04 1748.9)
+      (pin pi288ie8 i323ie9 2218.85 1748.9)
+      (pin pi60ie8 i330ie8 2418.65 1792.89)
+      (pin pi60ie8 i330ie9 2302.51 1792.89)
+      (pin pi337ie29 i337ie29 1417.66 1697.8)
+      (pin pi337ie29 i337ie30 1492.47 1697.8)
+      (pin pi337ie29 i337ie31 1455.07 1787.36)
+      (pin pi344ie29 i344ie29 1580.61 1034.4)
+      (pin pi344ie29 i344ie30 1580.61 959.6)
+      (pin pi344ie29 i344ie31 1670.18 997)
+      (pin pi351ie4 i351ie4 2032.02 1224.33)
+      (pin pi351ie4 i359ie4 2209 1169.98)
+      (pin pi351ie4 i367ie4 2836.52 1338.43)
+      (pin pi351ie4 i375ie4 2540.48 1521.24)
+      (pin pi351ie4 i383ie4 1601.57 1224.33)
+    )
+
+    (padstack via0
+      (shape(circle TopLayer 24))
+      (shape(circle BottomLayer 24))
+    )
+
+    (padstack pi3ie5
+      (shape(polygon TopLayer 0.1 25.59 2.95 25.59 -2.95 25.59 -2.95 25.37 -4.08 24.73 -5.04 23.77 -5.68 22.64 -5.91 22.64 -5.91 -22.64 -5.91 -22.64 -5.91 -23.77 -5.68 -24.73 -5.04 -25.37 -4.08 -25.59 -2.95 -25.59 -2.95 -25.59 2.95 -25.59 2.95 -25.37 4.08 -24.73 5.04 -23.77 5.68 -22.64 5.91 -22.64 5.91 22.64 5.91 22.64 5.91 23.77 5.68 24.73 5.04 25.37 4.08 25.59 2.95))
+    )
+    (padstack pi3ie55
+      (shape(polygon TopLayer 0.1 -21.65 35.43 21.65 35.43 21.65 35.43 25.11 35.09 28.43 34.08 31.5 32.45 34.18 30.24 36.38 27.56 38.02 24.5 39.03 21.17 39.37 17.72 39.37 17.72 39.37 -17.72 39.37 -17.72 39.03 -21.17 38.02 -24.5 36.38 -27.56 34.18 -30.24 31.5 -32.45 28.43 -34.08 25.11 -35.09 21.65 -35.43 21.65 -35.43 -21.65 -35.43 -21.65 -35.43 -25.11 -35.09 -28.43 -34.08 -31.5 -32.45 -34.18 -30.24 -36.38 -27.56 -38.02 -24.5 -39.03 -21.17 -39.37 -17.72 -39.37 -17.72 -39.37 17.72 -39.37 17.72 -39.03 21.17 -38.02 24.5 -36.38 27.56 -34.18 30.24 -31.5 32.45 -28.43 34.08 -25.11 35.09 -21.65 35.43))
+    )
+    (padstack pi30ie16
+      (shape(polygon TopLayer 0.1 -33.46 -33.46 -33.46 33.46 -33.46 33.46 33.46 33.46 33.46 33.46 33.46 -33.46 33.46 -33.46 -33.46 -33.46))
+      (shape(polygon BottomLayer 0.1 -33.46 -33.46 -33.46 33.46 -33.46 33.46 33.46 33.46 33.46 33.46 33.46 -33.46 33.46 -33.46 -33.46 -33.46))
+    )
+    (padstack pi30ie17
+      (shape(circle TopLayer 66.93 0 0))
+      (shape(circle BottomLayer 66.93 0 0))
+    )
+    (padstack pi37ie8
+      (shape(polygon TopLayer 0.1 -17.72 -9.84 -17.72 9.84 -17.72 9.84 -17.41 12.14 -16.53 14.27 -15.12 16.11 -13.29 17.51 -11.15 18.4 -8.86 18.7 -8.86 18.7 8.86 18.7 8.86 18.7 11.15 18.4 13.29 17.51 15.12 16.11 16.53 14.27 17.41 12.14 17.72 9.84 17.72 9.84 17.72 -9.84 17.72 -9.84 17.41 -12.14 16.53 -14.27 15.12 -16.11 13.29 -17.51 11.15 -18.4 8.86 -18.7 8.86 -18.7 -8.86 -18.7 -8.86 -18.7 -11.15 -18.4 -13.29 -17.51 -15.12 -16.11 -16.53 -14.27 -17.41 -12.14 -17.72 -9.84))
+    )
+    (padstack pi44ie22
+      (shape(polygon TopLayer 0.1 29.53 43.31 29.53 -43.31 29.53 -43.31 -29.53 -43.31 -29.53 -43.31 -29.53 43.31 -29.53 43.31 29.53 43.31))
+    )
+    (padstack pi52ie22
+      (shape(polygon TopLayer 0.1 -14.76 17.72 14.76 17.72 14.76 17.72 17.06 17.41 19.19 16.53 21.03 15.12 22.44 13.29 23.32 11.15 23.62 8.86 23.62 8.86 23.62 -8.86 23.62 -8.86 23.32 -11.15 22.44 -13.29 21.03 -15.12 19.19 -16.53 17.06 -17.41 14.76 -17.72 14.76 -17.72 -14.76 -17.72 -14.76 -17.72 -17.06 -17.41 -19.19 -16.53 -21.03 -15.12 -22.44 -13.29 -23.32 -11.15 -23.62 -8.86 -23.62 -8.86 -23.62 8.86 -23.62 8.86 -23.32 11.15 -22.44 13.29 -21.03 15.12 -19.19 16.53 -17.06 17.41 -14.76 17.72))
+    )
+    (padstack pi60ie8
+      (shape(polygon TopLayer 0.1 22.64 43.31 22.64 -43.31 22.64 -43.31 22.3 -45.85 21.32 -48.23 19.75 -50.27 17.72 -51.83 15.34 -52.81 12.8 -53.15 12.8 -53.15 -12.8 -53.15 -12.8 -53.15 -15.34 -52.81 -17.72 -51.83 -19.75 -50.27 -21.32 -48.23 -22.3 -45.85 -22.64 -43.31 -22.64 -43.31 -22.64 43.31 -22.64 43.31 -22.3 45.85 -21.32 48.23 -19.75 50.27 -17.72 51.83 -15.34 52.81 -12.8 53.15 -12.8 53.15 12.8 53.15 12.8 53.15 15.34 52.81 17.72 51.83 19.75 50.27 21.32 48.23 22.3 45.85 22.64 43.31))
+    )
+    (padstack pi67ie8
+      (shape(polygon TopLayer 0.1 15.75 10.83 15.75 -10.83 15.75 -10.83 15.36 -13.26 14.24 -15.45 12.5 -17.2 10.31 -18.32 7.87 -18.7 7.87 -18.7 -7.87 -18.7 -7.87 -18.7 -10.31 -18.32 -12.5 -17.2 -14.24 -15.45 -15.36 -13.26 -15.75 -10.83 -15.75 -10.83 -15.75 10.83 -15.75 10.83 -15.36 13.26 -14.24 15.45 -12.5 17.2 -10.31 18.32 -7.87 18.7 -7.87 18.7 7.87 18.7 7.87 18.7 10.31 18.32 12.5 17.2 14.24 15.45 15.36 13.26 15.75 10.83))
+    )
+    (padstack pi81ie22
+      (shape(polygon TopLayer 0.1 17.72 14.76 17.72 -14.76 17.72 -14.76 17.41 -17.06 16.53 -19.19 15.12 -21.03 13.29 -22.44 11.15 -23.32 8.86 -23.62 8.86 -23.62 -8.86 -23.62 -8.86 -23.62 -11.15 -23.32 -13.29 -22.44 -15.12 -21.03 -16.53 -19.19 -17.41 -17.06 -17.72 -14.76 -17.72 -14.76 -17.72 14.76 -17.72 14.76 -17.41 17.06 -16.53 19.19 -15.12 21.03 -13.29 22.44 -11.15 23.32 -8.86 23.62 -8.86 23.62 8.86 23.62 8.86 23.62 11.15 23.32 13.29 22.44 15.12 21.03 16.53 19.19 17.41 17.06 17.72 14.76))
+    )
+    (padstack pi104ie8
+      (shape(polygon TopLayer 0.1 -24.61 22.15 24.61 22.15 24.61 22.15 27.15 21.81 29.53 20.83 31.57 19.26 33.13 17.22 34.11 14.85 34.45 12.3 34.45 12.3 34.45 -12.3 34.45 -12.3 34.11 -14.85 33.13 -17.22 31.57 -19.26 29.53 -20.83 27.15 -21.81 24.61 -22.15 24.61 -22.15 -24.61 -22.15 -24.61 -22.15 -27.15 -21.81 -29.53 -20.83 -31.57 -19.26 -33.13 -17.22 -34.11 -14.85 -34.45 -12.3 -34.45 -12.3 -34.45 12.3 -34.45 12.3 -34.11 14.85 -33.13 17.22 -31.57 19.26 -29.53 20.83 -27.15 21.81 -24.61 22.15))
+    )
+    (padstack pi111ie8
+      (shape(polygon TopLayer 0.1 17.72 9.84 17.72 -9.84 17.72 -9.84 17.41 -12.14 16.53 -14.27 15.12 -16.11 13.29 -17.51 11.15 -18.4 8.86 -18.7 8.86 -18.7 -8.86 -18.7 -8.86 -18.7 -11.15 -18.4 -13.29 -17.51 -15.12 -16.11 -16.53 -14.27 -17.41 -12.14 -17.72 -9.84 -17.72 -9.84 -17.72 9.84 -17.72 9.84 -17.41 12.14 -16.53 14.27 -15.12 16.11 -13.29 17.51 -11.15 18.4 -8.86 18.7 -8.86 18.7 8.86 18.7 8.86 18.7 11.15 18.4 13.29 17.51 15.12 16.11 16.53 14.27 17.41 12.14 17.72 9.84))
+    )
+    (padstack pi118ie22
+      (shape(polygon TopLayer 0.1 -29.53 -43.31 -29.53 43.31 -29.53 43.31 29.53 43.31 29.53 43.31 29.53 -43.31 29.53 -43.31 -29.53 -43.31))
+    )
+    (padstack pi141ie8
+      (shape(polygon TopLayer 0.1 24.61 -22.15 -24.61 -22.15 -24.61 -22.15 -27.15 -21.81 -29.53 -20.83 -31.57 -19.26 -33.13 -17.22 -34.11 -14.85 -34.45 -12.3 -34.45 -12.3 -34.45 12.3 -34.45 12.3 -34.11 14.85 -33.13 17.22 -31.57 19.26 -29.53 20.83 -27.15 21.81 -24.61 22.15 -24.61 22.15 24.61 22.15 24.61 22.15 27.15 21.81 29.53 20.83 31.57 19.26 33.13 17.22 34.11 14.85 34.45 12.3 34.45 12.3 34.45 -12.3 34.45 -12.3 34.11 -14.85 33.13 -17.22 31.57 -19.26 29.53 -20.83 27.15 -21.81 24.61 -22.15))
+    )
+    (padstack pi148ie8
+      (shape(polygon TopLayer 0.1 -15.75 -10.83 -15.75 10.83 -15.75 10.83 -15.36 13.26 -14.24 15.45 -12.5 17.2 -10.31 18.32 -7.87 18.7 -7.87 18.7 7.87 18.7 7.87 18.7 10.31 18.32 12.5 17.2 14.24 15.45 15.36 13.26 15.75 10.83 15.75 10.83 15.75 -10.83 15.75 -10.83 15.36 -13.26 14.24 -15.45 12.5 -17.2 10.31 -18.32 7.87 -18.7 7.87 -18.7 -7.87 -18.7 -7.87 -18.7 -10.31 -18.32 -12.5 -17.2 -14.24 -15.45 -15.36 -13.26 -15.75 -10.83))
+    )
+    (padstack pi218ie8
+      (shape(polygon TopLayer 0.1 -18.7 19.69 18.7 19.69 18.7 19.69 21.25 19.35 23.62 18.37 25.66 16.8 27.22 14.76 28.21 12.39 28.54 9.84 28.54 9.84 28.54 -9.84 28.54 -9.84 28.21 -12.39 27.22 -14.76 25.66 -16.8 23.62 -18.37 21.25 -19.35 18.7 -19.69 18.7 -19.69 -18.7 -19.69 -18.7 -19.69 -21.25 -19.35 -23.62 -18.37 -25.66 -16.8 -27.22 -14.76 -28.21 -12.39 -28.54 -9.84 -28.54 -9.84 -28.54 9.84 -28.54 9.84 -28.21 12.39 -27.22 14.76 -25.66 16.8 -23.62 18.37 -21.25 19.35 -18.7 19.69))
+    )
+    (padstack pi281ie8
+      (shape(polygon TopLayer 0.1 18.7 -19.69 -18.7 -19.69 -18.7 -19.69 -21.25 -19.35 -23.62 -18.37 -25.66 -16.8 -27.22 -14.76 -28.21 -12.39 -28.54 -9.84 -28.54 -9.84 -28.54 9.84 -28.54 9.84 -28.21 12.39 -27.22 14.76 -25.66 16.8 -23.62 18.37 -21.25 19.35 -18.7 19.69 -18.7 19.69 18.7 19.69 18.7 19.69 21.25 19.35 23.62 18.37 25.66 16.8 27.22 14.76 28.21 12.39 28.54 9.84 28.54 9.84 28.54 -9.84 28.54 -9.84 28.21 -12.39 27.22 -14.76 25.66 -16.8 23.62 -18.37 21.25 -19.35 18.7 -19.69))
+    )
+    (padstack pi288ie8
+      (shape(polygon TopLayer 0.1 -19.69 -18.7 -19.69 18.7 -19.69 18.7 -19.35 21.25 -18.37 23.62 -16.8 25.66 -14.76 27.22 -12.39 28.21 -9.84 28.54 -9.84 28.54 9.84 28.54 9.84 28.54 12.39 28.21 14.76 27.22 16.8 25.66 18.37 23.62 19.35 21.25 19.69 18.7 19.69 18.7 19.69 -18.7 19.69 -18.7 19.35 -21.25 18.37 -23.62 16.8 -25.66 14.76 -27.22 12.39 -28.21 9.84 -28.54 9.84 -28.54 -9.84 -28.54 -9.84 -28.54 -12.39 -28.21 -14.76 -27.22 -16.8 -25.66 -18.37 -23.62 -19.35 -21.25 -19.69 -18.7))
+    )
+    (padstack pi337ie29
+      (shape(polygon TopLayer 0.1 5.91 -26.08 -5.91 -26.08 -5.91 -26.08 -7.73 -25.79 -9.38 -24.95 -10.68 -23.65 -11.52 -22 -11.81 -20.18 -11.81 -20.18 -11.81 20.18 -11.81 20.18 -11.52 22 -10.68 23.65 -9.38 24.95 -7.73 25.79 -5.91 26.08 -5.91 26.08 5.91 26.08 5.91 26.08 7.73 25.79 9.38 24.95 10.68 23.65 11.52 22 11.81 20.18 11.81 20.18 11.81 -20.18 11.81 -20.18 11.52 -22 10.68 -23.65 9.38 -24.95 7.73 -25.79 5.91 -26.08))
+    )
+    (padstack pi344ie29
+      (shape(polygon TopLayer 0.1 -26.08 -5.91 -26.08 5.91 -26.08 5.91 -25.79 7.73 -24.95 9.38 -23.65 10.68 -22 11.52 -20.18 11.81 -20.18 11.81 20.18 11.81 20.18 11.81 22 11.52 23.65 10.68 24.95 9.38 25.79 7.73 26.08 5.91 26.08 5.91 26.08 -5.91 26.08 -5.91 25.79 -7.73 24.95 -9.38 23.65 -10.68 22 -11.52 20.18 -11.81 20.18 -11.81 -20.18 -11.81 -20.18 -11.81 -22 -11.52 -23.65 -10.68 -24.95 -9.38 -25.79 -7.73 -26.08 -5.91))
+    )
+    (padstack pi351ie4
+      (shape(circle TopLayer 39.37 0 0))
+    )
+  )
+  (network
+    (net TFT_VCOM
+      (pins u1-i3ie6 u1-i218ie8)
+    )
+    (net FPL_VCOM
+      (pins u1-i3ie7 u1-i225ie8)
+    )
+    (net SL_CSB
+      (pins u1-i3ie8 u1-i30ie21 u1-i383ie4)
+    )
+    (net GDRH
+      (pins u1-i3ie9 u1-i337ie29)
+    )
+    (net RESEH
+      (pins u1-i3ie10 u1-i104ie8 u1-i337ie30)
+    )
+    (net GDRL
+      (pins u1-i3ie11)
+    )
+    (net RESEL
+      (pins u1-i3ie12 u1-i232ie8)
+    )
+    (net GDRC
+      (pins u1-i3ie13 u1-i344ie29)
+    )
+    (net RESEC
+      (pins u1-i3ie14 u1-i118ie23 u1-i141ie8)
+    )
+    (net VPC
+      (pins u1-i3ie15 u1-i126ie23 u1-i134ie8)
+    )
+    (net GND
+      (pins u1-i3ie16 u1-i3ie25 u1-i3ie43 u1-i30ie17 u1-i30ie25 u1-i37ie9 u1-i60ie9 u1-i81ie23 u1-i97ie9 u1-i104ie9 u1-i111ie9 u1-i134ie9 u1-i141ie9 u1-i162ie9 u1-i183ie9 u1-i204ie8 u1-i211ie8 u1-i218ie9 u1-i225ie9 u1-i232ie9 u1-i239ie9 u1-i246ie9 u1-i253ie9 u1-i260ie9 u1-i267ie9 u1-i274ie9 u1-i281ie9 u1-i288ie9 u1-i295ie9 u1-i302ie9 u1-i316ie9 u1-i330ie9 u1-i359ie4)
+    )
+    (net PREVGL
+      (pins u1-i3ie17 u1-i89ie23 u1-i97ie8)
+    )
+    (net VPH
+      (pins u1-i3ie18 u1-i52ie22 u1-i60ie8 u1-i67ie8)
+    )
+    (net VSH
+      (pins u1-i3ie19 u1-i239ie8)
+    )
+    (net VSH_LV
+      (pins u1-i3ie20 u1-i246ie8)
+    )
+    (net VSH_LV2
+      (pins u1-i3ie21 u1-i253ie8)
+    )
+    (net VSL
+      (pins u1-i3ie22 u1-i260ie8)
+    )
+    (net VSL_LV
+      (pins u1-i3ie23 u1-i267ie8)
+    )
+    (net VSL_LV2
+      (pins u1-i3ie24 u1-i274ie8)
+    )
+    (net REFN
+      (pins u1-i3ie26 u1-i281ie8)
+    )
+    (net REFP
+      (pins u1-i3ie27 u1-i288ie8)
+    )
+    (net TSCL
+      (pins u1-i3ie28 u1-i190ie8)
+    )
+    (net TSDA
+      (pins u1-i3ie29 u1-i197ie8)
+    )
+    (net BS0
+      (pins u1-i3ie30 u1-i204ie9)
+    )
+    (net BS1
+      (pins u1-i3ie31 u1-i211ie9)
+    )
+    (net RST_N
+      (pins u1-i3ie32 u1-i30ie23)
+    )
+    (net BUSY_N
+      (pins u1-i3ie33 u1-i30ie24)
+    )
+    (net DC
+      (pins u1-i3ie34 u1-i30ie22)
+    )
+    (net CSB
+      (pins u1-i3ie35 u1-i30ie20 u1-i375ie4)
+    )
+    (net SCL
+      (pins u1-i3ie36 u1-i30ie19)
+    )
+    (net SI0
+      (pins u1-i3ie37 u1-i30ie18)
+    )
+    (net SI1
+      (pins u1-i3ie38)
+    )
+    (net SI2
+      (pins u1-i3ie39)
+    )
+    (net SI3
+      (pins u1-i3ie40)
+    )
+    (net VDDD
+      (pins u1-i3ie41 u1-i295ie8)
+    )
+    (net VDD
+      (pins u1-i3ie42 u1-i169ie9)
+    )
+    (net VDDIO
+      (pins u1-i3ie44 u1-i176ie9 u1-i367ie4)
+    )
+    (net VCP2
+      (pins u1-i3ie45 u1-i302ie8)
+    )
+    (net CP2N
+      (pins u1-i3ie46 u1-i309ie8)
+    )
+    (net CP2P
+      (pins u1-i3ie47 u1-i309ie9)
+    )
+    (net VCP1
+      (pins u1-i3ie48 u1-i316ie8)
+    )
+    (net CP1N
+      (pins u1-i3ie49 u1-i323ie8)
+    )
+    (net CP1P
+      (pins u1-i3ie50 u1-i323ie9)
+    )
+    (net CGH1N
+      (pins u1-i3ie51)
+    )
+    (net CGH1P
+      (pins u1-i3ie52)
+    )
+    (net PREVGH
+      (pins u1-i3ie53 u1-i67ie9)
+    )
+    (net VCOMBD
+      (pins u1-i3ie54 u1-i330ie8)
+    )
+    (net 3V3
+      (pins u1-i30ie16 u1-i148ie8 u1-i155ie8 u1-i190ie9 u1-i197ie9 u1-i351ie4)
+    )
+    (net V_B
+      (pins u1-i37ie8 u1-i44ie22 u1-i111ie8 u1-i155ie9 u1-i162ie8 u1-i344ie30)
+    )
+    (net SW_H
+      (pins u1-i44ie23 u1-i52ie23 u1-i74ie8 u1-i337ie31)
+    )
+    (net NEG_PUMP_H
+      (pins u1-i74ie9 u1-i81ie22 u1-i89ie22)
+    )
+    (net SW_C
+      (pins u1-i118ie22 u1-i126ie22 u1-i344ie31)
+    )
+    (net EPD_3V3
+      (pins u1-i148ie9 u1-i169ie8 u1-i176ie8 u1-i183ie8)
+    )
+    (class  ''
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class TFT_VCOM 'TFT_VCOM'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class FPL_VCOM 'FPL_VCOM'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class SL_CSB 'SL_CSB'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class GDRH 'GDRH'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class RESEH 'RESEH'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class GDRL 'GDRL'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class RESEL 'RESEL'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class GDRC 'GDRC'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class RESEC 'RESEC'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VPC 'VPC'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class GND 'GND'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class PREVGL 'PREVGL'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VPH 'VPH'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VSH 'VSH'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VSH_LV 'VSH_LV'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VSH_LV2 'VSH_LV2'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VSL 'VSL'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VSL_LV 'VSL_LV'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VSL_LV2 'VSL_LV2'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class REFN 'REFN'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class REFP 'REFP'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class TSCL 'TSCL'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class TSDA 'TSDA'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class BS0 'BS0'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class BS1 'BS1'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class RST_N 'RST_N'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class BUSY_N 'BUSY_N'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class DC 'DC'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class CSB 'CSB'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class SCL 'SCL'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class SI0 'SI0'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class SI1 'SI1'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class SI2 'SI2'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class SI3 'SI3'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VDDD 'VDDD'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VDD 'VDD'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VDDIO 'VDDIO'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VCP2 'VCP2'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class CP2N 'CP2N'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class CP2P 'CP2P'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VCP1 'VCP1'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class CP1N 'CP1N'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class CP1P 'CP1P'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class CGH1N 'CGH1N'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class CGH1P 'CGH1P'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class PREVGH 'PREVGH'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class VCOMBD 'VCOMBD'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class 3V3 '3V3'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class V_B 'V_B'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class SW_H 'SW_H'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class NEG_PUMP_H 'NEG_PUMP_H'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class SW_C 'SW_C'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+    (class EPD_3V3 'EPD_3V3'
+      (circuit 
+        (use_via via0)
+      )
+      (rule 
+        (width 10)
+        (clearance 4.02)
+      )
+    )
+  )
+
+  (wiring
+      (wire
+        (path BottomLayer 10 2002.11 1930.77 2065 1930 2065 1927.5 2067.5 1927.5 2067.07 1851.64)
+        (net 3V3)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2032.02 1224.33 2032.5 1530 2000 1530 2000 1537.5 2005 1537.5 2005 1612.5 2000 1612.5 2000 1615 1997.5 1615)
+        (net 3V3)
+        (type route)
+      )
+      (via via0 1997.5 1615
+        (net 3V3)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1997.5 1615 1997.5 1777.5 2000 1777.5 2000 1855 2067.5 1855 2067.07 1851.64)
+        (net 3V3)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2498.57 1148.1 2420 1147.5 2420 1205 2370 1205 2370 1227.5)
+        (net 3V3)
+        (type route)
+      )
+      (via via0 2370 1227.5
+        (net 3V3)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2370 1227.5 2115 1227.5 2115 1232.5)
+        (net 3V3)
+        (type route)
+      )
+      (via via0 2115 1232.5
+        (net 3V3)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2115 1232.5 2110 1232.5)
+        (net 3V3)
+        (type route)
+      )
+      (via via0 2110 1232.5
+        (net 3V3)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2110 1232.5 2032.5 1232.5 2032.02 1224.33)
+        (net 3V3)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2498.57 1068.97 2498.57 1148.1)
+        (net 3V3)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 481.3 2355.71 482.5 2257.5 480 2257.5 480 1952.5 2002.5 1952.5 2002.11 1930.77)
+        (net 3V3)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2563.53 1227.24 2500 1227.5 2500 1225 2035 1225 2035 1222.5 1895 1222.5 1896.14 740.71)
+        (net BS0)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2002.11 1693.37 1915 1692.5 1915.83 740.71)
+        (net BS1)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 481.3 1555.71 1912.5 1555 1912.5 737.5 1955 737.5 1955.2 740.71)
+        (net BUSY_N)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2144.04 1748.9 2217.5 1750 2217.5 1747.5 2270 1747.5 2270.16 740.71)
+        (net CP1N)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2218.85 1748.9 2290 1750 2289.84 740.71)
+        (net CP1P)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2211.1 740.71 2195 740 2195 742.5 2145 742.5 2145 1747.5 2142.5 1747.5 2142.5 1850 2145 1850 2144.04 1946.54)
+        (net CP2N)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2230.79 740.71 2222.5 740 2222.5 1745)
+        (net CP2P)
+        (type route)
+      )
+      (via via0 2222.5 1745
+        (net CP2P)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2222.5 1745 2222.5 1850 2220 1850 2218.85 1946.54)
+        (net CP2P)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1994.57 740.71 2012.5 740 2012.5 742.5 2110 742.5 2110 1230 2140 1230 2140 1520)
+        (net CSB)
+        (type route)
+      )
+      (via via0 2140 1520
+        (net CSB)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2140 1520 2540.48 1521.24)
+        (net CSB)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 481.3 1955.71 2415 1955 2415 1952.5)
+        (net CSB)
+        (type route)
+      )
+      (via via0 2415 1952.5
+        (net CSB)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2415 1952.5 2540 1952.5 2540 1585)
+        (net CSB)
+        (type route)
+      )
+      (via via0 2540 1585
+        (net CSB)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2540 1585 2540.48 1521.24)
+        (net CSB)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 481.3 1755.71 1892.5 1755 1892.5 737.5 1975 737.5 1974.88 740.71)
+        (net DC)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2563.53 1068.97 2500 1070 2500 1230 2497.5 1230 2498.57 1306.37)
+        (net EPD_3V3)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2203.3 1659.93 2220 1660 2220 1307.5)
+        (net EPD_3V3)
+        (type route)
+      )
+      (via via0 2220 1307.5
+        (net EPD_3V3)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2220 1307.5 2498.57 1306.37)
+        (net EPD_3V3)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2067.07 1535.1 2107.5 1535 2107.5 1547.5 2137.5 1547.5 2137.5 1610)
+        (net EPD_3V3)
+        (type route)
+      )
+      (via via0 2137.5 1610
+        (net EPD_3V3)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2137.5 1610 2202.5 1610 2202.5 1640)
+        (net EPD_3V3)
+        (type route)
+      )
+      (via via0 2202.5 1640
+        (net EPD_3V3)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2202.5 1640 2203.3 1659.93)
+        (net EPD_3V3)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2418.65 1497.61 2305 1497.5 2305 1495 2292.5 1495 2292.5 737.5 1957.5 737.5 1957.5 735 1442.5 735 1443.39 740.71)
+        (net FPL_VCOM)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1580.61 1034.4 1562.5 1035 1561.5 740.71)
+        (net GDRC)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1482.76 740.71 1465 740 1465 742.5 1417.5 742.5 1417.66 1697.8)
+        (net GDRH)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2142.27 1659.93 2142.27 1580.79)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2067.07 1693.37 2142.5 1692.5 2142.27 1659.93)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2002.11 1772.5 2065 1772.5 2065 1770 2067.5 1770 2067.07 1693.37)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2302.51 1645.25 2292.5 1645 2292.5 1640)
+        (net GND)
+        (type route)
+      )
+      (via via0 2292.5 1640
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2292.5 1640 2205 1640)
+        (net GND)
+        (type route)
+      )
+      (via via0 2205 1640
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2205 1640 2205 1657.5)
+        (net GND)
+        (type route)
+      )
+      (via via0 2205 1657.5
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2205 1657.5 2142.5 1657.5 2142.27 1659.93)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2302.51 1497.61 2302.51 1645.25)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2302.51 1349.98 2302.5 1492.5 2307.5 1492.5 2307.5 1495)
+        (net GND)
+        (type route)
+      )
+      (via via0 2307.5 1495
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2307.5 1495 2302.5 1495 2302.51 1497.61)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2302.51 1202.34 2302.51 1349.98)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2209 1169.98 2302.5 1170 2302.51 1202.34)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2302.51 1054.7 2302.51 1202.34)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2302.51 1792.89 2302.51 1645.25)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2218.85 1847.72 2302.5 1847.5 2302.51 1792.89)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2302.51 1940.53 2302.51 1792.89)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2302.51 2088.16 2302.51 1940.53)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2302.51 2235.8 2302.51 2088.16)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2302.51 2383.44 2302.51 2235.8)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2505.26 1792.89 2420 1792.5 2420 1795 2302.5 1795 2302.51 1792.89)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2527.25 1912.81 2505 1912.5 2505.26 1792.89)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2505.26 1645.25 2505.26 1792.89)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2498.57 1227.24 2372.5 1227.5 2372.5 1230 2302.5 1230)
+        (net GND)
+        (type route)
+      )
+      (via via0 2302.5 1230
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2302.5 1230 2302.51 1202.34)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2679.3 1988.4 2527.5 1987.5 2527.5 1917.5)
+        (net GND)
+        (type route)
+      )
+      (via via0 2527.5 1917.5
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2527.5 1917.5 2527.25 1912.81)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1926.51 1231.52 2030 1232.5 2030 1237.5)
+        (net GND)
+        (type route)
+      )
+      (via via0 2030 1237.5
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2030 1237.5 2110 1237.5)
+        (net GND)
+        (type route)
+      )
+      (via via0 2110 1237.5
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2110 1237.5 2135 1237.5)
+        (net GND)
+        (type route)
+      )
+      (via via0 2135 1237.5
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2135 1237.5 2135 1230 2210 1230)
+        (net GND)
+        (type route)
+      )
+      (via via0 2210 1230
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2210 1230 2209 1169.98)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1751.37 1234.96 1692.5 1235 1692.5 1237.5 1687.5 1237.5 1687.5 1235)
+        (net GND)
+        (type route)
+      )
+      (via via0 1687.5 1235
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1687.5 1235 1687.5 1230)
+        (net GND)
+        (type route)
+      )
+      (via via0 1687.5 1230
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1687.5 1230 1745 1230)
+        (net GND)
+        (type route)
+      )
+      (via via0 1745 1230
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1745 1230 1745 1227.5 1747.5 1227.5 1747.5 1220 1750 1220)
+        (net GND)
+        (type route)
+      )
+      (via via0 1750 1220
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1750 1220 1882.5 1220)
+        (net GND)
+        (type route)
+      )
+      (via via0 1882.5 1220
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1882.5 1220 1882.5 1237.5 1885 1237.5)
+        (net GND)
+        (type route)
+      )
+      (via via0 1885 1237.5
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1885 1237.5 1900 1237.5)
+        (net GND)
+        (type route)
+      )
+      (via via0 1900 1237.5
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1900 1237.5 1927.5 1237.5)
+        (net GND)
+        (type route)
+      )
+      (via via0 1927.5 1237.5
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1927.5 1237.5 1926.51 1231.52)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1946.78 1033 1930 1032.5 1930 1120 1927.5 1120 1926.51 1231.52)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1490.93 1116.36 1487.5 1117.5 1487.5 1235)
+        (net GND)
+        (type route)
+      )
+      (via via0 1487.5 1235
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1487.5 1235 1687.5 1235 1687.5 1237.5 1752.5 1237.5 1751.37 1234.96)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1912.63 2250.85 2040 2250 2040 2247.5 2302.5 2247.5 2302.51 2235.8)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1797.72 740.71 1797.5 737.5 1775 737.5 1775 742.5 1792.5 742.5 1792.5 745 1810 745 1810 747.5 1827.5 747.5 1827.5 750 1882.5 750 1882.5 1220)
+        (net GND)
+        (type route)
+      )
+      (via via0 1882.5 1220
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1882.5 1220 1882.5 1237.5 1885 1237.5)
+        (net GND)
+        (type route)
+      )
+      (via via0 1885 1237.5
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1885 1237.5 1900 1237.5)
+        (net GND)
+        (type route)
+      )
+      (via via0 1900 1237.5
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1900 1237.5 1947.5 1237.5)
+        (net GND)
+        (type route)
+      )
+      (via via0 1947.5 1237.5
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1947.5 1237.5 1946.78 1033)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1620.55 740.71 1637.5 740 1637.5 742.5 1675 742.5 1675 745 1712.5 745 1712.5 750)
+        (net GND)
+        (type route)
+      )
+      (via via0 1712.5 750
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1712.5 750 1750 750)
+        (net GND)
+        (type route)
+      )
+      (via via0 1750 750
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1750 750 1775 750 1775 737.5 1797.5 737.5 1797.72 740.71)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1544.01 1535.89 1545 1117.5)
+        (net GND)
+        (type route)
+      )
+      (via via0 1545 1117.5
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1545 1117.5 1490.93 1116.36)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2835.74 1451.25 2505 1450 2505.26 1645.25)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 481.3 1455.71 1545 1455 1544.01 1535.89)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 481.3 2255.71 482.5 2157.5 480 2157.5 480 2060 477.5 2060 477.5 1962.5 475 1962.5 475 1747.5 480 1747.5 480 1552.5 482.5 1552.5 481.3 1455.71)
+        (net GND)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2042.55 2250.85 2042.5 2140 2045 2140 2045 2135 2042.5 2135 2042.55 2026.44)
+        (net NEG_PUMP_H)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2302.51 907.06 2147.5 907.5 2147.5 1220)
+        (net NEG_PUMP_H)
+        (type route)
+      )
+      (via via0 2147.5 1220
+        (net NEG_PUMP_H)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2147.5 1220 2147.5 1747.5)
+        (net NEG_PUMP_H)
+        (type route)
+      )
+      (via via0 2147.5 1747.5
+        (net NEG_PUMP_H)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2147.5 1747.5 2070 1747.5 2070 1932.5 2042.5 1932.5 2042.55 2026.44)
+        (net NEG_PUMP_H)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2002.11 1614.23 2065 1615 2065 1612.5 2140 1612.5 2140 1577.5 2142.5 1577.5 2142.5 742.5)
+        (net PREVGH)
+        (type route)
+      )
+      (via via0 2142.5 742.5
+        (net PREVGH)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2142.5 742.5 2350 742.5 2348.9 740.71)
+        (net PREVGH)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2418.65 2383.44 2305 2382.5 2305 2380 1915 2380 1915 2135 1912.5 2135 1912.63 2026.44)
+        (net PREVGL)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1640.24 740.71 1657.5 740 1657.5 742.5 1715 742.5 1715 745 1755 745 1755 1232.5 1827.5 1232.5 1827.5 1747.5)
+        (net PREVGL)
+        (type route)
+      )
+      (via via0 1827.5 1747.5
+        (net PREVGL)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1827.5 1747.5 1827.5 1750 1885 1750 1885 1757.5 1892.5 1757.5 1892.5 1767.5)
+        (net PREVGL)
+        (type route)
+      )
+      (via via0 1892.5 1767.5
+        (net PREVGL)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1892.5 1767.5 1892.5 2027.5)
+        (net PREVGL)
+        (type route)
+      )
+      (via via0 1892.5 2027.5
+        (net PREVGL)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1892.5 2027.5 1912.63 2026.44)
+        (net PREVGL)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1817.4 740.71 1835 740 1835 742.5 1910 742.5 1910 957.5)
+        (net REFN)
+        (type route)
+      )
+      (via via0 1910 957.5
+        (net REFN)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1910 957.5 1946.78 958.19)
+        (net REFN)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1837.09 740.71 1855 740 1855 742.5 1890 742.5 1890 1752.5)
+        (net REFP)
+        (type route)
+      )
+      (via via0 1890 1752.5
+        (net REFP)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1890 1752.5 2140 1752.5 2140 1847.5)
+        (net REFP)
+        (type route)
+      )
+      (via via0 2140 1847.5
+        (net REFP)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2140 1847.5 2144.04 1847.72)
+        (net REFP)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1366.29 1110.16 1577.5 1110 1577.5 957.5 1580 957.5 1581.18 740.71)
+        (net RESEC)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1926.51 1116.36 1920 1117.5 1920 1232.5)
+        (net RESEC)
+        (type route)
+      )
+      (via via0 1920 1232.5
+        (net RESEC)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1920 1232.5 1900 1232.5)
+        (net RESEC)
+        (type route)
+      )
+      (via via0 1900 1232.5
+        (net RESEC)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1900 1232.5 1492.5 1232.5 1492.5 1230 1367.5 1230 1366.29 1110.16)
+        (net RESEC)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1492.47 1697.8 1490 1697.5 1490 1557.5)
+        (net RESEH)
+        (type route)
+      )
+      (via via0 1490 1557.5
+        (net RESEH)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1490 1557.5 1490.93 1231.52)
+        (net RESEH)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1502.44 740.71 1492.5 740 1492.5 1120 1490 1120 1490.93 1231.52)
+        (net RESEH)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2067.07 1772.5 2005 1772.5 2005 1770 1542.5 1770 1542.5 1557.5)
+        (net RESEL)
+        (type route)
+      )
+      (via via0 1542.5 1557.5
+        (net RESEL)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1542.5 1557.5 1541.81 740.71)
+        (net RESEL)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 481.3 1655.71 482.5 1557.5 480 1557.5 480 1552.5 1907.5 1552.5 1907.5 745)
+        (net RST_N)
+        (type route)
+      )
+      (via via0 1907.5 745
+        (net RST_N)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1907.5 745 1935 745 1935.51 740.71)
+        (net RST_N)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 481.3 2055.71 482.5 1957.5 480 1957.5 480 1752.5 1835 1752.5 1835 737.5 1890 737.5 1890 735 2015 735 2014.25 740.71)
+        (net SCL)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 481.3 2155.71 482.5 2057.5 480 2057.5 480 1960 477.5 1960 477.5 1750 1832.5 1750 1832.5 735 1887.5 735 1887.5 732.5 2035 732.5 2033.94 740.71)
+        (net SI0)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1463.07 740.71 1480 740 1480 737.5 1602.5 737.5 1601.57 1224.33)
+        (net SL_CSB)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 481.3 1855.71 1540 1855 1540 1560)
+        (net SL_CSB)
+        (type route)
+      )
+      (via via0 1540 1560
+        (net SL_CSB)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1540 1560 1602.5 1560 1601.57 1224.33)
+        (net SL_CSB)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1114.32 1110.16 1365 1110 1365 1107.5 1575 1107.5 1575 997.5)
+        (net SW_C)
+        (type route)
+      )
+      (via via0 1575 997.5
+        (net SW_C)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1575 997.5 1670.18 997)
+        (net SW_C)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2042.55 2138.64 1917.5 2137.5 1917.5 2132.5 1915 2132.5 1915 2025 1670 2025 1670 1957.5)
+        (net SW_C)
+        (type route)
+      )
+      (via via0 1670 1957.5
+        (net SW_C)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1670 1957.5 1670 1757.5)
+        (net SW_C)
+        (type route)
+      )
+      (via via0 1670 1757.5
+        (net SW_C)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1670 1757.5 1670 1557.5)
+        (net SW_C)
+        (type route)
+      )
+      (via via0 1670 1557.5
+        (net SW_C)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1670 1557.5 1670.18 997)
+        (net SW_C)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2418.65 907.06 2417.5 730 1772.5 730 1772.5 732.5 1692.5 732.5)
+        (net SW_H)
+        (type route)
+      )
+      (via via0 1692.5 732.5
+        (net SW_H)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1692.5 732.5 1692.5 735 1615 735 1615 737.5 1597.5 737.5 1597.5 742.5 1655 742.5 1655 745 1712.5 745 1712.5 747.5 1752.5 747.5 1752.5 970)
+        (net SW_H)
+        (type route)
+      )
+      (via via0 1752.5 970
+        (net SW_H)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1752.5 970 1773.03 969.26)
+        (net SW_H)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1455.07 1787.36 1537.5 1787.5 1537.5 1562.5)
+        (net SW_H)
+        (type route)
+      )
+      (via via0 1537.5 1562.5
+        (net SW_H)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1537.5 1562.5 1750 1562.5 1750 1232.5 1752.5 1232.5 1752.5 970)
+        (net SW_H)
+        (type route)
+      )
+      (via via0 1752.5 970
+        (net SW_H)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1752.5 970 1773.03 969.26)
+        (net SW_H)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1957.04 2471.32 1455 2472.5 1455.07 1787.36)
+        (net SW_H)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1544.01 1610.69 1485 1610 1485 737.5 1422.5 737.5 1423.7 740.71)
+        (net TFT_VCOM)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1856.77 740.71 1840 740 1840 737.5 1815 737.5 1815 742.5 1832.5 742.5 1832.5 745 1905 745 1905 1550)
+        (net TSCL)
+        (type route)
+      )
+      (via via0 1905 1550
+        (net TSCL)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1905 1550 2000 1550 2000 1775 2002.5 1775 2002.11 1851.64)
+        (net TSCL)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2067.07 1930.77 2005 1930 2005 1927.5 1897.5 1927.5 1897.5 1225)
+        (net TSDA)
+        (type route)
+      )
+      (via via0 1897.5 1225
+        (net TSDA)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1897.5 1225 1897.5 747.5)
+        (net TSDA)
+        (type route)
+      )
+      (via via0 1897.5 747.5
+        (net TSDA)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1897.5 747.5 1897.5 740)
+        (net TSDA)
+        (type route)
+      )
+      (via via0 1897.5 740
+        (net TSDA)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1897.5 740 1897.5 737.5 1877.5 737.5 1876.46 740.71)
+        (net TSDA)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2418.65 1792.89 2417.5 1647.5 2420 1647.5 2420 1495 2367.5 1495 2368.58 740.71)
+        (net VCOMBD)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2250.47 740.71 2267.5 740 2267.5 737.5 2680 737.5 2679.3 1913.6)
+        (net VCP1)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2191.42 740.71 2207.5 740 2207.5 737.5 2265 737.5 2265 735 2832.5 735 2832.5 1452.5 2835 1452.5 2835.74 1526.05)
+        (net VCP2)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2563.53 1306.37 2562.5 1230 2565 1230 2565 1225 2502.5 1225 2502.5 1222.5 2132.5 1222.5 2132.36 740.71)
+        (net VDD)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2203.3 1580.79 2145 1580 2145 1577.5 2112.5 1577.5 2112.5 1227.5)
+        (net VDDD)
+        (type route)
+      )
+      (via via0 2112.5 1227.5
+        (net VDDD)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2112.5 1227.5 2112.68 740.71)
+        (net VDDD)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2002.11 1535.1 2065 1535 2065 1532.5 2107.5 1532.5 2107.5 745)
+        (net VDDIO)
+        (type route)
+      )
+      (via via0 2107.5 745
+        (net VDDIO)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2107.5 745 2130 745 2130 742.5)
+        (net VDDIO)
+        (type route)
+      )
+      (via via0 2130 742.5
+        (net VDDIO)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2130 742.5 2140 742.5 2140 740 2150 740)
+        (net VDDIO)
+        (type route)
+      )
+      (via via0 2150 740
+        (net VDDIO)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2150 740 2150 737.5 2172.5 737.5 2171.73 740.71)
+        (net VDDIO)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2836.52 1338.43 2370 1337.5 2370 1492.5)
+        (net VDDIO)
+        (type route)
+      )
+      (via via0 2370 1492.5
+        (net VDDIO)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2370 1492.5 2115 1492.5 2115 1532.5)
+        (net VDDIO)
+        (type route)
+      )
+      (via via0 2115 1532.5
+        (net VDDIO)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2115 1532.5 2002.5 1532.5 2002.11 1535.1)
+        (net VDDIO)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1600.87 740.71 1617.5 740 1617.5 737.5 1695 737.5 1695 735 1827.5 735 1827.5 732.5)
+        (net VPC)
+        (type route)
+      )
+      (via via0 1827.5 732.5
+        (net VPC)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1827.5 732.5 2415 732.5 2415 1057.5 2417.5 1057.5 2418.65 1202.34)
+        (net VPC)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1912.63 2138.64 2040 2137.5 2040 2135 2287.5 2135 2287.5 1645)
+        (net VPC)
+        (type route)
+      )
+      (via via0 2287.5 1645
+        (net VPC)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2287.5 1645 2287.5 1205)
+        (net VPC)
+        (type route)
+      )
+      (via via0 2287.5 1205
+        (net VPC)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2287.5 1205 2417.5 1205 2418.65 1202.34)
+        (net VPC)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1659.92 740.71 1677.5 740 1677.5 742.5 1715 742.5 1715 1100)
+        (net VPH)
+        (type route)
+      )
+      (via via0 1715 1100
+        (net VPH)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1715 1100 1750 1100)
+        (net VPH)
+        (type route)
+      )
+      (via via0 1750 1100
+        (net VPH)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1750 1100 1773.03 1099.18)
+        (net VPH)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2067.07 1614.23 2067.5 1617.5 1917.5 1617.5 1917.5 1552.5)
+        (net VPH)
+        (type route)
+      )
+      (via via0 1917.5 1552.5
+        (net VPH)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1917.5 1552.5 1900 1552.5 1900 1547.5)
+        (net VPH)
+        (type route)
+      )
+      (via via0 1900 1547.5
+        (net VPH)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1900 1547.5 1837.5 1547.5 1837.5 1235)
+        (net VPH)
+        (type route)
+      )
+      (via via0 1837.5 1235
+        (net VPH)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1837.5 1235 1837.5 1100)
+        (net VPH)
+        (type route)
+      )
+      (via via0 1837.5 1100
+        (net VPH)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1837.5 1100 1773.03 1099.18)
+        (net VPH)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2418.65 1349.98 2417.5 1492.5 2422.5 1492.5 2422.5 1607.5)
+        (net VPH)
+        (type route)
+      )
+      (via via0 2422.5 1607.5
+        (net VPH)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2422.5 1607.5 2067.5 1607.5 2067.07 1614.23)
+        (net VPH)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1679.61 740.71 1697.5 740 1697.5 737.5 1830 737.5 1830 732.5 1885 732.5 1885 730 2140 730 2140 745 2415 745 2415 910 2417.5 910 2418.65 1054.7)
+        (net VSH)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1699.29 740.71 1717.5 740 1717.5 742.5 1830 742.5 1830 1747.5)
+        (net VSH_LV)
+        (type route)
+      )
+      (via via0 1830 1747.5
+        (net VSH_LV)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1830 1747.5 1887.5 1747.5 1887.5 1755 2137.5 1755 2137.5 1850 2140 1850 2140 1852.5 2142.5 1852.5 2142.5 1950 2417.5 1950 2418.65 2088.16)
+        (net VSH_LV)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2418.65 2235.8 2305 2235 2305 2232.5 1895 2232.5 1895 1225)
+        (net VSH_LV2)
+        (type route)
+      )
+      (via via0 1895 1225
+        (net VSH_LV2)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1895 1225 1720 1225 1718.98 740.71)
+        (net VSH_LV2)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1738.66 740.71 1722.5 740 1722.5 737.5 1717.5 737.5 1717.5 1227.5 1902.5 1227.5 1902.5 1547.5)
+        (net VSL)
+        (type route)
+      )
+      (via via0 1902.5 1547.5
+        (net VSL)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1902.5 1547.5 2110 1547.5 2110 1580 2140 1580 2140 1582.5 2620 1582.5 2620 1647.5 2622.5 1647.5 2621.4 1792.89)
+        (net VSL)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2418.65 1645.25 2305 1645 2305 1642.5 2005 1642.5 2005 1612.5 2002.5 1612.5 2002.5 1550)
+        (net VSL_LV)
+        (type route)
+      )
+      (via via0 2002.5 1550
+        (net VSL_LV)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2002.5 1550 1917.5 1550 1917.5 1230)
+        (net VSL_LV)
+        (type route)
+      )
+      (via via0 1917.5 1230
+        (net VSL_LV)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1917.5 1230 1900 1230)
+        (net VSL_LV)
+        (type route)
+      )
+      (via via0 1900 1230
+        (net VSL_LV)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1900 1230 1757.5 1230)
+        (net VSL_LV)
+        (type route)
+      )
+      (via via0 1757.5 1230
+        (net VSL_LV)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1757.5 1230 1757.5 745)
+        (net VSL_LV)
+        (type route)
+      )
+      (via via0 1757.5 745
+        (net VSL_LV)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1757.5 745 1758.35 740.71)
+        (net VSL_LV)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1778.03 740.71 1795 740 1795 742.5 1812.5 742.5 1812.5 745 1830 745 1830 747.5 1887.5 747.5 1887.5 1222.5)
+        (net VSL_LV2)
+        (type route)
+      )
+      (via via0 1887.5 1222.5
+        (net VSL_LV2)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1887.5 1222.5 1887.5 1545)
+        (net VSL_LV2)
+        (type route)
+      )
+      (via via0 1887.5 1545
+        (net VSL_LV2)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1887.5 1545 1900 1545)
+        (net VSL_LV2)
+        (type route)
+      )
+      (via via0 1900 1545
+        (net VSL_LV2)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1900 1545 2110 1545)
+        (net VSL_LV2)
+        (type route)
+      )
+      (via via0 2110 1545
+        (net VSL_LV2)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2110 1545 2140 1545 2140 1575)
+        (net VSL_LV2)
+        (type route)
+      )
+      (via via0 2140 1575
+        (net VSL_LV2)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2140 1575 2622.5 1575 2621.4 1645.25)
+        (net VSL_LV2)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2588.27 1912.81 2530 1912.5 2530 1915 2417.5 1915 2418.65 1940.53)
+        (net V_B)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2209 2471.32 2417.5 2472.5 2417.5 2385 2420 2385 2420 1947.5 2417.5 1947.5 2418.65 1940.53)
+        (net V_B)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2563.53 1148.1 2587.5 1147.5 2587.5 1572.5)
+        (net V_B)
+        (type route)
+      )
+      (via via0 2587.5 1572.5
+        (net V_B)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2587.5 1572.5 2588.27 1912.81)
+        (net V_B)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1690.35 1234.96 1747.5 1235 1747.5 1230 1750 1230 1750 1222.5)
+        (net V_B)
+        (type route)
+      )
+      (via via0 1750 1222.5
+        (net V_B)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1750 1222.5 1885 1222.5)
+        (net V_B)
+        (type route)
+      )
+      (via via0 1885 1222.5
+        (net V_B)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1885 1222.5 1885 1235)
+        (net V_B)
+        (type route)
+      )
+      (via via0 1885 1235
+        (net V_B)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 1885 1235 1900 1235)
+        (net V_B)
+        (type route)
+      )
+      (via via0 1900 1235
+        (net V_B)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1900 1235 2110 1235)
+        (net V_B)
+        (type route)
+      )
+      (via via0 2110 1235
+        (net V_B)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2110 1235 2137.5 1235 2137.5 1232.5)
+        (net V_B)
+        (type route)
+      )
+      (via via0 2137.5 1232.5
+        (net V_B)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 2137.5 1232.5 2560 1232.5 2560 1230)
+        (net V_B)
+        (type route)
+      )
+      (via via0 2560 1230
+        (net V_B)
+        (type route)
+      )
+      (wire
+        (path BottomLayer 10 2560 1230 2560 1225 2562.5 1225 2563.53 1148.1)
+        (net V_B)
+        (type route)
+      )
+      (wire
+        (path TopLayer 10 1580.61 959.6 1690 960 1690.35 1234.96)
+        (net V_B)
+        (type route)
+      )
+  )
+)

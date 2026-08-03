@@ -1,0 +1,153 @@
+{
+  "project": "mf1750_production_v1",
+  "board": "80 x 75 mm, 2 layers, 1.6 mm FR-4, 1 oz",
+  "checks": {
+    "ERC_errors": 0,
+    "ERC_warnings": 0,
+    "DRC_violations": 0,
+    "unconnected_pads": 0,
+    "schematic_parity_errors": 0
+  },
+  "files": [
+    {
+      "file": "BOM_full_reference.csv",
+      "bytes": 5187,
+      "sha256": "a764ecea05638dae6316e94759b03030fdd4c3c2aac213a9b8ca1d00680fcbc2"
+    },
+    {
+      "file": "BOM_mf1750_production_v1.csv",
+      "bytes": 2588,
+      "sha256": "06cfe61df14055d9ef3ea94f333c7e776e11984b8d0c519957dcd7439fb3bdf8"
+    },
+    {
+      "file": "BOM_mf1750_revA1_Q1FIX.csv",
+      "bytes": 2588,
+      "sha256": "06cfe61df14055d9ef3ea94f333c7e776e11984b8d0c519957dcd7439fb3bdf8"
+    },
+    {
+      "file": "CPL_mf1750_production_v1.csv",
+      "bytes": 1625,
+      "sha256": "ef9c46262f8689156fefc4724699522d60560ccb20ec6adfa33fc75b080f91ed"
+    },
+    {
+      "file": "CPL_mf1750_revA1_Q1FIX.csv",
+      "bytes": 1625,
+      "sha256": "ef9c46262f8689156fefc4724699522d60560ccb20ec6adfa33fc75b080f91ed"
+    },
+    {
+      "file": "DRC_zero.rpt",
+      "bytes": 649,
+      "sha256": "896bb68d6d9a529a381d7238de22996a8f4c9d1af8977e2fdef21266f1dd5435"
+    },
+    {
+      "file": "ERC_zero.rpt",
+      "bytes": 369,
+      "sha256": "6e35ac40af259b52cf1f95d4a18e94c9af95b447e1bbf92041228bb3bfb9c5db"
+    },
+    {
+      "file": "FINAL_PREFLIGHT_revA1.md",
+      "bytes": 1322,
+      "sha256": "af66973d8948e87fae4eab8bdb68dbcdc470835fd53179dac47028377bbdf914"
+    },
+    {
+      "file": "gerber/mf1750_production_v1-B_Cu.gbl",
+      "bytes": 65508,
+      "sha256": "a12df15bd253a50977b7c62f5c55db571aa5701b243d7495bdba9a297e8809cb"
+    },
+    {
+      "file": "gerber/mf1750_production_v1-B_Mask.gbs",
+      "bytes": 925,
+      "sha256": "d544e636ed17cd85a9da8ea0b49624f2c8601b9b675295bef3d9f639bd59c903"
+    },
+    {
+      "file": "gerber/mf1750_production_v1-Bottom Silkscreen.gbo",
+      "bytes": 7213,
+      "sha256": "16cb511e69495fbe934cce6aea71e4a4347e0cf1b8dc58fcc6b043497a533862"
+    },
+    {
+      "file": "gerber/mf1750_production_v1-Edge_Cuts.gm1",
+      "bytes": 591,
+      "sha256": "42aa6b13e3fa4d79eafdb3970f527ecb773ccca953e94edc849634c25410f625"
+    },
+    {
+      "file": "gerber/mf1750_production_v1-F_Cu.gtl",
+      "bytes": 236670,
+      "sha256": "40a0b0268df1a6b9333b0097ec6eb1efa93ec6439ecd0b641f6e7ea80926bd8f"
+    },
+    {
+      "file": "gerber/mf1750_production_v1-F_Mask.gts",
+      "bytes": 7821,
+      "sha256": "349dcb57b72ed793583ed591643df7e7774ced2791f2c7bb10530a67e99c7a6b"
+    },
+    {
+      "file": "gerber/mf1750_production_v1-job.gbrjob",
+      "bytes": 2493,
+      "sha256": "96b2346449b63dfe17c5e844b759b6493781086dc328ae24bb4bb70af21cc895"
+    },
+    {
+      "file": "gerber/mf1750_production_v1-NPTH-drl_map.pdf",
+      "bytes": 12304,
+      "sha256": "c89dec2e708ec21524ab7cfdd688a2c99734e7b949b421e104470e835d39e5a1"
+    },
+    {
+      "file": "gerber/mf1750_production_v1-NPTH.drl",
+      "bytes": 367,
+      "sha256": "bade6f4f112bac2ac8f028f4105db3d845d0177edbd81affd4fcdca34052044a"
+    },
+    {
+      "file": "gerber/mf1750_production_v1-PTH-drl_map.pdf",
+      "bytes": 14316,
+      "sha256": "3f1f9aebe1cf61d61eb541a25a8d133707f8b50b4f607f2ea829f3a4b3e0d0e2"
+    },
+    {
+      "file": "gerber/mf1750_production_v1-PTH.drl",
+      "bytes": 1487,
+      "sha256": "086747f8d909e911e159e8c565bd8560b6227c78da9c9bedb7e0879ab275e6cc"
+    },
+    {
+      "file": "gerber/mf1750_production_v1-Top Silkscreen.gto",
+      "bytes": 30147,
+      "sha256": "927c6c7048965459e0af98daa8044d7edb43fefec1ad50ba97c137c4ce0ac5fe"
+    },
+    {
+      "file": "Gerber_mf1750_production_v1.zip",
+      "bytes": 84183,
+      "sha256": "64931dec6c747119b3f4dffbc625d600d28be59d1be35d3213807106c5153f18"
+    },
+    {
+      "file": "Gerber_mf1750_revA1_Q1FIX.zip",
+      "bytes": 84183,
+      "sha256": "64931dec6c747119b3f4dffbc625d600d28be59d1be35d3213807106c5153f18"
+    },
+    {
+      "file": "kicad_positions.csv",
+      "bytes": 3459,
+      "sha256": "9adc200b7a78a51171ca1e7bb53b4ad5026ded28eed15431711361a9ada2b6a1"
+    },
+    {
+      "file": "mf1750_fpc_pinmap.csv",
+      "bytes": 972,
+      "sha256": "9a2e42ae3d1de5bc4b1d83ce56fbd73d420498512a4c2104b103b10518e848d1"
+    },
+    {
+      "file": "mf1750_production_v1_bottom.png",
+      "bytes": 136248,
+      "sha256": "178c250a5536a4ea3e2acf8d3710501f8946977645824e4805a7272a34caf2c5"
+    },
+    {
+      "file": "mf1750_production_v1_schematic.pdf",
+      "bytes": 175808,
+      "sha256": "4f3842586fec7c59ee0a54c6a0d7d00edfa4eb21593115e0bf3e1f4d1cf7d845"
+    },
+    {
+      "file": "mf1750_production_v1_top.png",
+      "bytes": 301865,
+      "sha256": "a22f4459d14189c1b4e6dc995e8aa2f6dd3035850c08c82199857c88e0ecb168"
+    },
+    {
+      "file": "PCB下单与首板检查.md",
+      "bytes": 2101,
+      "sha256": "9bf8f5c01af7541ce494707c6e98b0da147b66b43bd2d2f7fca1a9a75a3e33a0"
+    }
+  ]
+}
