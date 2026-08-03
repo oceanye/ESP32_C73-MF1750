@@ -72,12 +72,16 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _canonical_fingerprint(path: Path) -> tuple[int, str]:
-    """Return a Git-compatible LF fingerprint for cross-platform text checkouts."""
+def _text_fingerprints(path: Path) -> set[tuple[int, str]]:
+    """Return raw, LF, and CRLF fingerprints for a tracked text file."""
 
     data = path.read_bytes()
-    normalized = data.replace(b"\r\n", b"\n")
-    return len(normalized), hashlib.sha256(normalized).hexdigest()
+    normalized_lf = data.replace(b"\r\n", b"\n")
+    normalized_crlf = normalized_lf.replace(b"\n", b"\r\n")
+    return {
+        (len(candidate), hashlib.sha256(candidate).hexdigest())
+        for candidate in (data, normalized_lf, normalized_crlf)
+    }
 
 
 def _matches_fingerprint(path: Path, expected_bytes: int, expected_sha256: str) -> bool:
@@ -85,15 +89,12 @@ def _matches_fingerprint(path: Path, expected_bytes: int, expected_sha256: str) 
     actual_sha256 = _sha256(path)
     if actual_bytes == expected_bytes and actual_sha256.lower() == expected_sha256.lower():
         return True
-    # Git may materialize tracked text as CRLF on Windows. Only accept a second
-    # fingerprint after CRLF->LF normalization; all other byte changes fail.
+    # Git may materialize tracked text as LF on Linux or CRLF on Windows. Accept
+    # only those two line-ending forms; all other byte changes still fail.
     if path.suffix.lower() not in TEXT_SUFFIXES:
         return False
-    canonical_bytes, canonical_sha256 = _canonical_fingerprint(path)
-    return (
-        canonical_bytes == expected_bytes
-        and canonical_sha256.lower() == expected_sha256.lower()
-    )
+    expected = (expected_bytes, expected_sha256.lower())
+    return expected in _text_fingerprints(path)
 
 
 def _contained_file(base: Path, relative: str) -> Optional[Path]:
