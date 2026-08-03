@@ -40,3 +40,23 @@ python tools\mf1750_refresh_analyzer.py plan --include-20mhz --output sweep-20mh
 The tool always reports `waveform_fast_refresh_tested: false`; an SPI upload
 sweep is not evidence that DRF waveform time improved.
 
+## Controller-neutral partial-update planning
+
+Once two canonical raw frames are available, compare them without contacting a
+device:
+
+```powershell
+python -m tools.mf1750_partial_plan new.raw `
+  --old-frame old.raw `
+  --neighbor-radius 1 `
+  --output partial-plan.json
+```
+
+The report contains the changed-pixel count, a 6x6 old-to-new transition
+histogram, cardinal-neighbor protection, packed-byte-aligned bounding boxes,
+and separate CS1/CS2 regions. If the old state is unknown, omit `--old-frame`;
+the planner conservatively marks the full display changed and leaves the
+transition histogram null.
+
+This planner never creates SPI commands. Its output cannot be sent to the panel
+until the matching SPD1657B partial-update definition and waveform are supplied.
