@@ -186,4 +186,3 @@ Request: SPD1657B Rev 0x04 fast/partial refresh documentation for MF-17506-M009F
 - 不把提高 SPI 频率宣传为波形快速刷新。
 
 机器可读的证据与限制见 `research/fast_refresh/evidence_matrix.json`。
-

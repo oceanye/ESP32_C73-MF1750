@@ -71,4 +71,3 @@ The refresh preflight accepts only the exact build tag in the tool's safety
 allowlist; prefix or substring lookalikes are rejected before upload. Malformed
 URLs are reported as `FrameToolError`. Output protection also rejects `--force`
 when the destination is a hard-link alias of any frozen production file.
-

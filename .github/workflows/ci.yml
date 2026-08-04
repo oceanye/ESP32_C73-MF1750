@@ -106,4 +106,3 @@ jobs:
 
       - name: Build release firmware
         run: python -m platformio run
-

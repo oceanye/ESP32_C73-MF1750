@@ -84,4 +84,3 @@ u32 `operation_id`；job wrapper 的 `job_operation_id` 也独立要求为非零
 `MF1750_DRIVER_RC2B_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_2026-08-04`，driver
 API 为 `MF1750_R16_CASCADE_V2`。全部网络测试使用 mock；`Hardware tested`
 仍为 `NO`。
-

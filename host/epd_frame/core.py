@@ -307,4 +307,3 @@ def controller_stream_reference(
             output[output_index] = value
             output_index += 1
     return bytes(output)
-

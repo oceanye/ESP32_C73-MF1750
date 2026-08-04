@@ -171,4 +171,3 @@ def verify_fixture(name: str, frame: bytes | None = None) -> FixtureReport:
         and actual_hashes == EXPECTED_FIXTURE_HASHES[name]
         and counts_ok,
     )
-

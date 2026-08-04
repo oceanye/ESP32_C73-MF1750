@@ -61,4 +61,3 @@ __all__ = [
     "validate_frame",
     "verify_fixture",
 ]
-
