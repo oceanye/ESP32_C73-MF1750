@@ -110,6 +110,47 @@ class ManifestTests(unittest.TestCase):
 
 
 class StaticContractTests(unittest.TestCase):
+    def test_driver_api_reference_matches_registered_routes_and_identity(self) -> None:
+        api_reference = (REPO_ROOT / "docs" / "MF1750_DRIVER_API.md").read_text(
+            encoding="utf-8"
+        )
+        main_cpp = (REPO_ROOT / "src" / "main.cpp").read_text(encoding="utf-8")
+        registered_routes = {
+            (method, route)
+            for route, method in re.findall(
+                r'server\.on\("([^"]+)",\s*HTTP_(GET|POST)', main_cpp
+            )
+            if route.startswith("/api/")
+        }
+        documented_routes = {
+            (method, route)
+            for method, route in re.findall(
+                r"\|\s*(GET|POST)\s*\|\s*`(/api/[^`]+)`", api_reference
+            )
+        }
+        documented_routes.update(
+            re.findall(r"`(GET|POST) (/api/[^`]+)`", api_reference)
+        )
+
+        self.assertEqual(documented_routes, registered_routes)
+        self.assertIn(next(iter(ALLOWED_BUILD_TAGS)), api_reference)
+        self.assertIn(REQUIRED_DRIVER_API, api_reference)
+        self.assertIn("精确 `307200`", api_reference)
+        self.assertIn("`0x0` | 黑", api_reference)
+        self.assertIn("`0x6` | 绿", api_reference)
+        for public_function in (
+            "epdBegin",
+            "epdReadBusy",
+            "epdGetLastOperationReport",
+            "epdIsSupportedColorCode",
+            "epdValidateFrameColors",
+            "epdDisplayFrame",
+            "epdDisplayFrameAtFrequency",
+            "epdClearWhite",
+            "epdClearBlack",
+        ):
+            self.assertIn(f"{public_function}(", api_reference)
+
     def test_formal_frame_tool_preflight_matches_firmware_constants(self) -> None:
         main_cpp = (REPO_ROOT / "src" / "main.cpp").read_text(encoding="utf-8")
         driver_header = (REPO_ROOT / "src" / "epd_driver.h").read_text(

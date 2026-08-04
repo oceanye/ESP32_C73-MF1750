@@ -281,7 +281,7 @@ class OfflineAdapter(DeviceAdapter):
 
 
 class HttpDeviceAdapter(DeviceAdapter):
-    """Explicitly enabled adapter for the fixed RC2B/V2 protocol routes."""
+    """Explicitly enabled adapter for the accepted RC2C/V3 protocol routes."""
 
     def __init__(
         self,
@@ -780,7 +780,7 @@ class HttpDeviceAdapter(DeviceAdapter):
         return {
             "supported": False,
             "status": "unsupported",
-            "reason": "RC2B/V2 exposes no remote cancel route",
+            "reason": "RC2C/V3 exposes no remote cancel route",
             "remote_job_may_continue": self.refresh_in_flight,
             "artifact_identity": self._identity(),
             "hardware_tested": False,

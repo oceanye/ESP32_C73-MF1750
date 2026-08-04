@@ -5,13 +5,14 @@
 - 阶段一制造与固件交接：[`docs/STAGE1_REV_A1_HANDOFF_2026-07-13.md`](docs/STAGE1_REV_A1_HANDOFF_2026-07-13.md)
 - 阶段二 ESP32/电池整合设计输入：[`docs/STAGE2_ESP32_BATTERY_INTEGRATION_BRIEF.md`](docs/STAGE2_ESP32_BATTERY_INTEGRATION_BRIEF.md)
 - Rev A1 R16 级联整屏实测：[`docs/REV_A1_R16_CASCADE_FULLFRAME_TEST_2026-08-04.md`](docs/REV_A1_R16_CASCADE_FULLFRAME_TEST_2026-08-04.md)
+- 基础驱动与 API 参考：[`docs/MF1750_DRIVER_API.md`](docs/MF1750_DRIVER_API.md)
 - 主机快速刷新、CI 与六色流水线总集成：[`docs/HOST_REFRESH_COLOR_INTEGRATION_2026-08-04.md`](docs/HOST_REFRESH_COLOR_INTEGRATION_2026-08-04.md)
 - 多 AI TODO 与 Git 集成计划：[`docs/TODO_MULTI_AI_HANDOFF_PLAN_2026-08-04.md`](docs/TODO_MULTI_AI_HANDOFF_PLAN_2026-08-04.md)
 - 新对话启动提示：[`docs/NEXT_SESSION_PROMPT.md`](docs/NEXT_SESSION_PROMPT.md)
 - 1210 电容焊盘复核：[`docs/REV_A1_1210_PAD_AUDIT.md`](docs/REV_A1_1210_PAD_AUDIT.md)
 - Rev A1 最终生产检查：[`hardware/mf1750_production_v1/production/FINAL_PREFLIGHT_revA1.md`](hardware/mf1750_production_v1/production/FINAL_PREFLIGHT_revA1.md)
 
-当前状态：`MF1750 REV A1` 已完成加工与首板软件级联验证。生产冻结文件
+当前状态：`MF1750 REV A1` 已完成加工与基础驱动 D0 实机验收。生产冻结文件
 仍为带 `revA1_Q1FIX` 名称的 Gerber、BOM、CPL，禁止重新生成或覆盖。
 
 ## 2026-08-04 首板最新结论
@@ -24,26 +25,24 @@
   512 字节，CS1 取前 256 字节、CS2 取后 256 字节。
 - ESP32-S3 已由 esptool 与运行时共同确认约 8 MB OPI PSRAM；307200 字节
   规范帧的主机、设备生成器和非刷新 ingress 哈希均已通过。
-- 仓库当前构建候选为
+- 当前已验收固件为
   `MF1750_DRIVER_RC2C_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_2026-08-04`
   / driver API V3：HTTP ingress 与公开驱动 API 都会在任何面板 I/O 前拒绝
   `0x4/0x7..0xF` 非法像素码；PON/DRF/POF 未观察到 BUSY 会 fail closed，
   POF 后的 PSR 寄存器写入保留等待证据但不要求额外 BUSY assertion；诊断报告
   以匹配的 operation ID 与产生它的 job/build 绑定。
-- RC2B/V2 已在 100 kHz 真屏显示完整且正确的 MAP_ORIENT_V1；PON/DRF/POF
-  BUSY、完整/双 DTM 哈希均正确。RC2B 把 POF 后 PSR 写入也错误地设为严格 BUSY
-  门禁，导致画面完成后的软件假失败；RC2C/V3 是针对该实测证据的候选修正，
-  尚待重新刷入并复测。
-- 硬件步骤的前置门禁是提交并推送最终 `main`、对应 GitHub CI 成功，以及用户
-  明确许可刷写/上电；随后依次确认约 8 MB OPI PSRAM、MAP_ORIENT_V1 上下/角点，
-  再用同一规范帧完成 1 MHz 上传。当前无 Rev A1 硬件 ECO 证据。普通图片与
-  Web UI 属于后续 C4 应用验收，不再混入驱动 D0 定版。
-- 远端 `integration/host-fast-refresh-ci-color` @ `dd711c9` 已拉取并快进合入
-  本地 `main`，其 64 项历史 GitHub CI 成功；`dd711c9` 本身仍是 RC1/V1。
-  随后的 RC2B/V2 通过 100 kHz MAP 实屏并暴露 post-PSR 假门禁；当前本地
-  RC2C/V3、上传工具、抖动安全契约和 handoff 加固必须以最新全量回归、冻结
-  契约与 clean firmware build 为准。
-  发布仍以最终推送 SHA 对应的 `main` GitHub CI 为准；CI 不代表硬件验收。
+- RC2C/V3 已用同一 MAP_ORIENT_V1 完成 100 kHz 协议复验和正式 1 MHz
+  `/api/frame` 实屏验收；方向、中缝、颜色、完整/双 DTM 哈希、PON/DRF/POF
+  BUSY、电源、温度及断电安全状态均正确。1 MHz 总耗时 34.187 秒，其中两半
+  DTM 上传各 2.444 秒、DRF 约 21.7 秒。
+- 主机 PSRAM 预检修正点 `2b19f75` 的 203 项回归、repository contract、
+  PlatformIO build 与 GitHub CI run `30917129233` 全部通过；验收记录提交
+  `fd548e3` 的 CI run `30918209821` 也通过。当前干净重建的 `firmware.bin`
+  仍为 796272 字节、SHA-256 `F763FE…F45C475B`，与实测固件一致；当前无
+  Rev A1 硬件 ECO 证据。
+- 基础驱动 D0 已定版；普通图片与 Web UI 的软件合同已合入，但 calibrated palette
+  真屏色彩、设备端认证、更高 SPI 扫频、快速波形和局刷仍是独立后续工作，不能
+  由本次硬件通过自动提升状态。
 
 ## 构建与仓库边界
 
@@ -194,14 +193,14 @@ D2 修正为 `K=GND、A=NEG_PUMP_H`；下单时只使用带 `revA1_Q1FIX`
 
 固件优先接入 `wifi_secrets.h` 配置的现有 Wi-Fi，实际 URL 以串口打印的
 `WiFi STA IP` 为准；`192.168.4.1` 仅是 STA 失败后的 AP 回退地址，不是固定
-调试地址。RC2C/V3 当前待重新刷入，默认驱动板断电；未经用户明确确认，不刷写 COM8、
-不访问任何会触发刷新的 HTTP 路由。
+调试地址。RC2C/V3 已完成实机验收；默认驱动板断电，未经用户明确确认，不刷写
+COM8、不访问任何会触发刷新的 HTTP 路由。
 
 D0 的唯一正式实屏顺序和命令见
 [`docs/REV_A1_R16_CASCADE_FULLFRAME_TEST_2026-08-04.md`](docs/REV_A1_R16_CASCADE_FULLFRAME_TEST_2026-08-04.md)：
-先核对约 8 MB OPI PSRAM，再做低速 MAP_ORIENT_V1，最后用同一规范帧完成
-1 MHz 上传。历史 `/api/white`、`/api/black`、`/api/test` 和半屏上传流程只用于
-诊断溯源，不构成当前驱动验收。
+该顺序已经完成。正式调用方法与响应结构见
+[`docs/MF1750_DRIVER_API.md`](docs/MF1750_DRIVER_API.md)；历史 `/api/white`、
+`/api/black`、`/api/test` 和半屏上传流程只用于诊断溯源，不属于稳定应用 API。
 
 ## 2026-06-10 当时的已知限制（不要作为当前状态）
 

@@ -93,8 +93,9 @@ SPD1656 猜测 SPD1657B 的高压/LUT/局刷寄存器。
 
 工作区已经是可用 Git 仓库，`origin` 指向私有 GitHub 仓库。Rev A1 驱动 RC1、
 硬件源文件和冻结生产清单的基线为 `3033da0`；C1/C2/C5/R1/R2 的远端集成点为
-`dd711c9`，现已合入本地 `main`。即使本轮软件加固和远端 CI 完成，也不创建
-`mf1750-driver-v1.0-hw-verified` 标签，因为 RC2C/V3 尚未完成协议与 1 MHz 真屏验收。
+`dd711c9`，现已合入本地 `main`。RC2C/V3 已完成协议与 1 MHz 真屏验收；
+`mf1750-driver-v1.0-hw-verified` 标签仍只在用户明确授权创建 tag 后发布，不能仅由
+软件、文档或 CI 自动创建。
 
 后续规则：
 

@@ -16,7 +16,7 @@ Tests not run because environment was missing: 未运行 Playwright/Selenium 等
 Hardware tested: NO
 Known limitations: 默认 reference-srgb-v1 calibrated=false，因此默认 UI 只生成离线预览且刷新按钮不会获得正式上传授权；纯 Python CIEDE2000 整屏照片可能耗时数十秒；浏览器 Canvas 负责图片解码/EXIF 和生成规范 RGBA，其原文件 hash 是客户端声明，跨浏览器像素解码一致性尚无自动化证明；Python core 的 synthetic raster 路径是确定性的；HTTP adapter 为避免弱化判断直接调用 mf1750_frame_tool 的内部严格校验函数，未来工具重构需同步审查；RC2C/V3 没有远端 cancel 路由；job/recovery 状态只保存在当前 Python 进程，服务异常重启后不能自动恢复在途远端 job，因而必须先人工核对设备状态，不能直接重新提交；请求体有 1 秒 inactivity timeout，但没有跨多个慢分片的总连接期限；loopback token 只保护本地应用会话，ESP32 固件 API 本身仍无认证，因此设备仍只应位于可信隔离网络；palette canonical hash 与 calibration artifact SHA256 是审计指纹而非签名或 trust store；未做真实浏览器交互、设备 HTTP、真屏、BUSY、电流、CV 或温度验证。
 Risks requiring integrator review: 重点复核 measured palette 的 calibration artifact 与 calibrated 标记，防止错误色表获得上传授权；复核 final D0 controller mappings 并由用户显式填写，应用层没有也不得补偿镜像/翻转/nibble；mf1750_frame_tool 私有校验函数属于有意复用但有维护耦合；设备端当前无应用认证，正式发布前仍需 token/一次性 device-side arm 或关闭危险 legacy 路由；浏览器端原图 hash 的声明边界、Canvas 解码一致性和大图性能需要集成环境浏览器测试；任何 protocol_verified 仍必须保留 screen/CV/current/temperature 人工门禁。
-Suggested merge order: 当前 baseline 已含 C1/C5/C2，驱动候选已随实机证据提升为 RC2C/V3；D0 真屏与 H0 封存完成前保持应用设备功能禁用；之后再由集成负责人用 calibrated palette 和受控设备环境执行 C4/C2 端到端验收。不得由本分支推进 C3、R1/R2、H0 或 Rev B。
+Suggested merge order: 当前 baseline 已含 C1/C5/C2，RC2C/V3 的 D0 真屏已经完成；H0 封存和 calibrated palette 仍未完成，因此正式普通图片刷新继续保持禁用。后续由集成负责人在受控设备环境执行 C4/C2 端到端验收。不得由本分支推进 C3、R1/R2、H0 或 Rev B。
 Final commit SHA: 该字段所在文件提交后 SHA 才能确定，无法在同一 Git commit 内自引用；以 feature/application-api-ui 远端 branch tip 为准，精确 SHA 同时写在本次最终回复中。
 ```
 

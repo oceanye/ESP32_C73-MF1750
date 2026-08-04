@@ -12,6 +12,8 @@
 > `job_operation_id` / `operation_id` 不可变快照，后续 REV/诊断不能改贴旧报告。
 > 100 kHz MAP_ORIENT_V1 协议复验与正式 1 MHz `/api/frame` 均已通过，用户确认
 > 最终画面、电源与温度正常；断电后的 BUSY/RST/CS1/CS2 全为低。
+> 定版后的 C++、设备 HTTP 与 loopback 应用接口统一见
+> [`MF1750_DRIVER_API.md`](MF1750_DRIVER_API.md)。
 
 ## 1. 当前硬件与冻结边界
 

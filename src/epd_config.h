@@ -38,8 +38,8 @@ static constexpr uint32_t EPD_SPI_DIAGNOSTIC_HZ = 100000;
 // 1024x600 row-major frame with x=0/y=0 at logical top-left, even x in the
 // high nibble and odd x in the low nibble. The driver alone owns any physical
 // controller routing/orientation compensation.
-// 2026-08-04 global bars verified CS1=physical left, CS2=physical right and
-// no horizontal flip. MAP_ORIENT_V1 will close the remaining vertical check.
+// 2026-08-04 MAP_ORIENT_V1 at 100 kHz and 1 MHz verified CS1=physical left,
+// CS2=physical right, with no horizontal/vertical flip or nibble swap.
 static constexpr uint8_t EPD_CS1_SOURCE_HALF = 0; // 0=logical left, 1=logical right
 static constexpr bool EPD_CS1_FLIP_X = false;
 static constexpr bool EPD_CS1_FLIP_Y = false;

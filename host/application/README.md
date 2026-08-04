@@ -1,5 +1,8 @@
 # MF-1750 application layer
 
+The complete accepted driver, device HTTP, and loopback application API
+contract is documented in [`docs/MF1750_DRIVER_API.md`](../../docs/MF1750_DRIVER_API.md).
+
 This package accepts decoded, tightly packed RGB/RGBA rasters, normalizes them
 to 1024x600, delegates all six-colour conversion to `host.color_pipeline`, and
 revalidates output with `host.epd_frame`. It never applies controller mapping,
