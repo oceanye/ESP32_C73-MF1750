@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MF-1750 六色应用工作台</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">ESP32_C73 · C4A · 默认离线</p>
+      <h1>MF-1750 六色应用工作台</h1>
+      <p>图片规范化、C2 六色量化与可审计设备任务骨架。软件结果不等于真屏验收。</p>
+    </div>
+    <div class="scope-grid" aria-label="验证范围">
+      <div><span id="offlineBadge" class="badge pending">PENDING</span><strong>offline_verified</strong></div>
+      <div><span id="protocolBadge" class="badge pending">PENDING</span><strong>protocol_verified</strong></div>
+      <div><span class="badge no">NO</span><strong>hardware_tested · Hardware tested: NO</strong></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="card controls">
+      <div class="section-title"><span>01</span><div><h2>图片与量化</h2><p>浏览器解码；Python 应用层调用既有 C2 管线。</p></div></div>
+      <div class="form-grid">
+        <label class="file-drop">图片选择
+          <input id="imageInput" type="file" accept="image/*">
+          <small id="fileSummary">尚未选择图片</small>
+        </label>
+        <label>适配策略
+          <select id="fitPolicy">
+            <option value="contain">留白 contain</option>
+            <option value="cover">裁切 cover</option>
+            <option value="stretch">拉伸 stretch</option>
+          </select>
+        </label>
+        <label>抖动模式<select id="ditherMode"></select></label>
+        <label>Palette profile<select id="paletteMode" disabled></select></label>
+        <label class="toggle"><input id="whiteProtection" type="checkbox" checked> 白底保护</label>
+        <label class="toggle"><input id="textMode" type="checkbox"> 文本黑白模式</label>
+      </div>
+      <div id="paletteWarning" class="warning" role="status">正在读取 palette 状态…</div>
+      <button id="generateButton" class="primary" disabled>离线生成六色预览</button>
+    </section>
+
+    <section class="card preview-card">
+      <div class="section-title"><span>02</span><div><h2>六色预览与帧摘要</h2><p>预览仅是主机渲染结果，不代表面板色彩。</p></div></div>
+      <div class="preview-shell"><img id="previewImage" alt="六色离线预览将在这里显示"></div>
+      <dl class="metrics">
+        <div><dt>输出尺寸</dt><dd id="dimensions">1024 × 600</dd></div>
+        <div><dt>帧字节</dt><dd id="frameBytes">307200（待验证）</dd></div>
+        <div><dt>输入 SHA-256</dt><dd id="inputHash">—</dd></div>
+        <div><dt>输出 SHA-256</dt><dd id="frameHash">—</dd></div>
+        <div><dt>Palette</dt><dd id="paletteSummary">—</dd></div>
+      </dl>
+      <div id="usage" class="usage" aria-label="六色使用率"></div>
+    </section>
+
+    <section class="card device-card">
+      <div class="section-title"><span>03</span><div><h2>设备协议（显式启用）</h2><p>两级许可：先允许连接，再输入一次性确认短语。202 只表示排队。</p></div></div>
+      <div id="adapterNotice" class="notice">正在读取适配器模式…</div>
+      <div class="device-grid">
+        <div class="device-step">
+          <h3>A · 允许连接</h3>
+          <button id="allowConnection">显式允许连接设备</button>
+          <label>CS1 mapping<input id="cs1Mapping" placeholder="例如 0,0,0,0" autocomplete="off"></label>
+          <label>CS2 mapping<input id="cs2Mapping" placeholder="例如 1,0,0,0" autocomplete="off"></label>
+          <button id="preflightButton" disabled>version / preflight</button>
+        </div>
+        <div class="device-step">
+          <h3>B · 确认刷新</h3>
+          <label>输入 <code>ARM MF1750 REFRESH</code>
+            <input id="armPhrase" autocomplete="off">
+          </label>
+          <button id="armButton" disabled>一次性 arm</button>
+          <button id="refreshButton" class="danger" disabled>排队刷新</button>
+        </div>
+      </div>
+      <div class="job-panel">
+        <div><span>Job 状态</span><strong id="jobState">offline</strong></div>
+        <p id="jobDetail">未建立设备任务。</p>
+        <pre id="errorDetail" hidden></pre>
+        <div class="button-row">
+          <button id="recoverButton" hidden>网络异常后恢复</button>
+          <button id="cancelButton" disabled>查询取消支持</button>
+          <button id="abortButton" disabled>仅本地中止</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card manual">
+      <div class="section-title"><span>04</span><div><h2>仍需人工确认</h2><p>下列项目永远不会由离线预览、mock、HTTP 或 CI 自动置为通过。</p></div></div>
+      <ul>
+        <li>完整屏幕视觉结果、方向、中缝与残影</li>
+        <li>电源 CV 与刷新电流</li>
+        <li>L1 / L2 与驱动板温度</li>
+      </ul>
+    </section>
+  </main>
+
+  <canvas id="workCanvas" width="1024" height="600" hidden></canvas>
+  <script src="/app.js" defer></script>
+</body>
+</html>
