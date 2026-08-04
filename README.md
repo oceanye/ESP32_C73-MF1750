@@ -22,22 +22,27 @@
   并已实测完整 1024x600 连续六色色条。
 - 从左到右白/黑/红/黄/蓝/绿正确，中央红/黄中缝清晰；正式分帧为每行
   512 字节，CS1 取前 256 字节、CS2 取后 256 字节。
-- ESP32-S3 模组标称 N8R8，当前候选按 OPI PSRAM 构建；约 8 MB PSRAM 的实机
-  启动识别仍是 D0 门禁。307200 字节规范帧已完成主机侧字节数与 FNV-1a 校验。
+- ESP32-S3 已由 esptool 与运行时共同确认约 8 MB OPI PSRAM；307200 字节
+  规范帧的主机、设备生成器和非刷新 ingress 哈希均已通过。
 - 仓库当前构建候选为
-  `MF1750_DRIVER_RC2B_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_2026-08-04`
-  / driver API V2：HTTP ingress 与公开驱动 API 都会在任何面板 I/O 前拒绝
-  `0x4/0x7..0xF` 非法像素码；四个正式高压阶段未观察到 BUSY 会 fail closed，
-  诊断报告以匹配的 operation ID 与产生它的 job/build 绑定；本地编译已通过，
-  尚未刷入实机。
+  `MF1750_DRIVER_RC2C_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_2026-08-04`
+  / driver API V3：HTTP ingress 与公开驱动 API 都会在任何面板 I/O 前拒绝
+  `0x4/0x7..0xF` 非法像素码；PON/DRF/POF 未观察到 BUSY 会 fail closed，
+  POF 后的 PSR 寄存器写入保留等待证据但不要求额外 BUSY assertion；诊断报告
+  以匹配的 operation ID 与产生它的 job/build 绑定。
+- RC2B/V2 已在 100 kHz 真屏显示完整且正确的 MAP_ORIENT_V1；PON/DRF/POF
+  BUSY、完整/双 DTM 哈希均正确。RC2B 把 POF 后 PSR 写入也错误地设为严格 BUSY
+  门禁，导致画面完成后的软件假失败；RC2C/V3 是针对该实测证据的候选修正，
+  尚待重新刷入并复测。
 - 硬件步骤的前置门禁是提交并推送最终 `main`、对应 GitHub CI 成功，以及用户
   明确许可刷写/上电；随后依次确认约 8 MB OPI PSRAM、MAP_ORIENT_V1 上下/角点，
   再用同一规范帧完成 1 MHz 上传。当前无 Rev A1 硬件 ECO 证据。普通图片与
   Web UI 属于后续 C4 应用验收，不再混入驱动 D0 定版。
 - 远端 `integration/host-fast-refresh-ci-color` @ `dd711c9` 已拉取并快进合入
   本地 `main`，其 64 项历史 GitHub CI 成功；`dd711c9` 本身仍是 RC1/V1。
-  随后的本地 RC2B/V2、上传工具、抖动安全契约和 handoff 加固已通过 152 项
-  回归、冻结契约与 clean firmware build。
+  随后的 RC2B/V2 通过 100 kHz MAP 实屏并暴露 post-PSR 假门禁；当前本地
+  RC2C/V3、上传工具、抖动安全契约和 handoff 加固必须以最新全量回归、冻结
+  契约与 clean firmware build 为准。
   发布仍以最终推送 SHA 对应的 `main` GitHub CI 为准；CI 不代表硬件验收。
 
 ## 构建与仓库边界
@@ -189,7 +194,7 @@ D2 修正为 `K=GND、A=NEG_PUMP_H`；下单时只使用带 `revA1_Q1FIX`
 
 固件优先接入 `wifi_secrets.h` 配置的现有 Wi-Fi，实际 URL 以串口打印的
 `WiFi STA IP` 为准；`192.168.4.1` 仅是 STA 失败后的 AP 回退地址，不是固定
-调试地址。RC2B 尚未刷入，默认驱动板断电；未经用户明确确认，不刷写 COM8、
+调试地址。RC2C/V3 当前待重新刷入，默认驱动板断电；未经用户明确确认，不刷写 COM8、
 不访问任何会触发刷新的 HTTP 路由。
 
 D0 的唯一正式实屏顺序和命令见
@@ -201,8 +206,7 @@ D0 的唯一正式实屏顺序和命令见
 ## 2026-06-10 当时的已知限制（不要作为当前状态）
 
 - 当时使用的 ESP32-S3 没检测到 PSRAM，无法一次性分配 `307200` 字节全屏帧缓冲；
-  当前 esptool/模组标识为 N8R8，但 RC2B 运行时成功初始化约 8 MB OPI PSRAM
-  仍待正式启动日志确认，因此该历史限制尚不能只凭型号判定为已解除。
+  当前 esptool 与 RC2B 运行时均已确认约 8 MB OPI PSRAM，因此该历史限制已解除。
 - 当时的图片入口只上传 `512x600` 半屏；当前 Rev A1/R16 已改为规范
   `1024x600`、307200 字节完整帧入口。
 - E6 全彩 eInk 刷新需要几十秒，`DRF` 阶段 BUSY 拉低约 20 秒是正常现象。

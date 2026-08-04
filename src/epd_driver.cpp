@@ -358,7 +358,13 @@ bool epdPostDisplayPowerCut() {
   epdCommand(PSR);
   epdData(0x4F);
   epdData(0x6E);
-  const bool psrIdle = epdWaitBusyThenIdle("post-display PSR");
+  // The vendor sequence writes this power-saving register after POF, waits
+  // one second, and cuts the panel interface.  Rev A1 hardware confirmation
+  // on 2026-08-04 showed valid PON/DRF/POF BUSY pulses and a perfect frame,
+  // but no additional BUSY assertion for this post-POF register write.  Keep
+  // the idle/timing evidence informational; requiring a new assertion here
+  // creates a false failure after an otherwise completed safe refresh.
+  const bool psrIdle = epdWaitIdle("post-display PSR");
   delay(1000);
   // Rev A1 leaves the ESP32 powered from USB when J2-1 is removed.  Hold every
   // panel-facing digital output LOW so the unpowered panel cannot be back-fed;

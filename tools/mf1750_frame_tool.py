@@ -52,9 +52,9 @@ from host.epd_frame import (  # noqa: E402
 
 
 ALLOWED_BUILD_TAGS = frozenset(
-    {"MF1750_DRIVER_RC2B_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_2026-08-04"}
+    {"MF1750_DRIVER_RC2C_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_2026-08-04"}
 )
-REQUIRED_DRIVER_API = "MF1750_R16_CASCADE_V2"
+REQUIRED_DRIVER_API = "MF1750_R16_CASCADE_V3"
 REQUIRED_PSRAM_BYTES = 8 * 1024 * 1024
 REQUIRED_REFRESH_SPI_HZ = 1_000_000
 UINT32_MAX = 0xFFFFFFFF
@@ -581,8 +581,14 @@ def _validate_diagnostic(
     wait_ms: dict[str, int] = {}
     for stage in ("pon", "drf", "pof", "post_psr"):
         wait_ms[stage] = _require_int(data, f"{stage}_ms", label)
+    for stage in ("pon", "drf", "pof"):
         if _require_bool(data, f"{stage}_busy_seen", label) is not True:
             raise FrameToolError(f"diagnostic.{stage}_busy_seen is false")
+    # PON/DRF/POF are controller operations that must assert BUSY.  The
+    # post-display PSR write happens after POF in the vendor power-cut
+    # sequence; Rev A1 does not assert BUSY for it.  Preserve the sampled flag
+    # as evidence, but do not turn the expected false value into a failure.
+    post_psr_busy_seen = _require_bool(data, "post_psr_busy_seen", label)
     if not 10_000 <= wait_ms["drf"] <= 60_000:
         raise FrameToolError("diagnostic.drf_ms must be within 10000..60000")
     last_wait_ms = _require_int(data, "last_wait_ms", label)
@@ -593,7 +599,7 @@ def _validate_diagnostic(
     )
     if total_ms < minimum_total_ms:
         raise FrameToolError(
-            "diagnostic total_ms is shorter than uploads plus BUSY stages"
+            "diagnostic total_ms is shorter than uploads plus recorded wait stages"
         )
 
     raw_mapping = data.get("mapping")
@@ -627,6 +633,8 @@ def _validate_diagnostic(
         "job_operation_id": job_operation_id,
         "job_driver_operation_identity_matched": True,
         "sequence_verified": True,
+        "required_busy_stages_verified": True,
+        "post_psr_busy_seen": post_psr_busy_seen,
         "busy_timeout": False,
         "safe_finish_verified": True,
         "physical_controllers": physical,

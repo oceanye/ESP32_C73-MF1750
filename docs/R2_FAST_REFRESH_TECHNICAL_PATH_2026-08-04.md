@@ -96,7 +96,7 @@ E Ink 对彩色局刷的研究还说明：局刷需要旧/新状态信息，更�
 
 ### G1：只加速 DTM
 
-此前实机 RC1 与当前仓库未刷入的 RC2B 都还不能进入 G1：
+此前实机 RC1 与当前待重刷的 RC2C 都还不能进入 G1：
 `/api/diagnostic/map-orient-v1-slow` 固定为 100 kHz；
 普通 `/api/frame` 虽可完成 G0 的 1 MHz 验收，却不是可按档选择频率的 MAP 扫频入口。
 在独立实验分支提供受限的参数化 action，并让 job、diagnostic、serial 共享 operation

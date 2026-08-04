@@ -2,7 +2,7 @@
 
 #include <Arduino.h>
 
-static constexpr const char *EPD_DRIVER_API_VERSION = "MF1750_R16_CASCADE_V2";
+static constexpr const char *EPD_DRIVER_API_VERSION = "MF1750_R16_CASCADE_V3";
 
 struct EpdOperationReport {
   // Non-zero u32 sequence for this boot. A new value is allocated before

@@ -81,14 +81,14 @@ SPD1657B 已具备快速或局部波形。
 
 最终加固还要求 diagnostic schema/API、job/report 三个 u32 时间戳、driver
 `operation_id` 与 wrapper `job_operation_id` 精确绑定，且
-`busy_assertion_missing=false`、`busy_missing_stage=none`。四阶段 BUSY/等待时长
-必须同时出现在串口与 report 中并逐项相等，DRF 保持 10..60 秒。上述 analyzer
-专项 29 项、当前全仓 152 项回归均通过；仍为 `Hardware tested: NO`。
+`busy_assertion_missing=false`、`busy_missing_stage=none`。PON/DRF/POF BUSY 必须
+为 true；POF 后 PSR 的 BUSY 采样允许为 false。四阶段等待与采样仍须同时出现在
+串口与 report 中并逐项相等，DRF 保持 10..60 秒。analyzer 专项仍须保持全通过。
 
 实机此前的 RC1/旧 RC2 没有完整的 report/job/build 关联。仓库当前未刷入的
-`MF1750_DRIVER_RC2B_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_2026-08-04` /
-`MF1750_R16_CASCADE_V2` 已把 diagnostic report 绑定到 firmware build、driver API、job
+`MF1750_DRIVER_RC2C_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_2026-08-04` /
+`MF1750_R16_CASCADE_V3` 已把 diagnostic report 绑定到 firmware build、driver API、job
 id/action/state/result 和时间戳；但 MAP slow action 仍固定为 100 kHz，且没有独立
-参数化 `map_orient_v1_sweep` action。因此 RC2B 仍不能满足 schema v2 的正式升频
+参数化 `map_orient_v1_sweep` action。因此 RC2C 仍不能满足 schema v2 的正式升频
 证据合同。必须先在隔离硬件诊断分支实现受限 sweep action，并附实测 SCLK 证据，
 才允许 analyzer 输出任何频率 PASS。

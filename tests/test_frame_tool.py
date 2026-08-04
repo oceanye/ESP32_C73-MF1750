@@ -23,7 +23,7 @@ from tools import mf1750_frame_tool as tool
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-BUILD_TAG = "MF1750_DRIVER_RC2B_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_2026-08-04"
+BUILD_TAG = "MF1750_DRIVER_RC2C_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_2026-08-04"
 DEFAULT_MAPPINGS = (ControllerMapping(0), ControllerMapping(1))
 
 
@@ -48,7 +48,7 @@ def version_body(
         (
             BUILD_TAG,
             "Panel: 1024x600",
-            "Driver API: MF1750_R16_CASCADE_V2",
+            "Driver API: MF1750_R16_CASCADE_V3",
             "Frame bytes: 307200",
             "PSRAM bytes: 8388608",
             "Free PSRAM: 7900000",
@@ -121,12 +121,12 @@ def valid_refresh_responses(frame: bytes) -> dict[str, list[tuple[int, str] | Ex
         "pof_ms": 20,
         "pof_busy_seen": True,
         "post_psr_ms": 20,
-        "post_psr_busy_seen": True,
+        "post_psr_busy_seen": False,
         "last_wait_ms": 20,
         "last_wait_stage": "post-display PSR",
         "timeout_stage": "none",
         "firmware_build_tag": BUILD_TAG,
-        "driver_api_version": "MF1750_R16_CASCADE_V2",
+        "driver_api_version": "MF1750_R16_CASCADE_V3",
         "job_id": 7,
         "job_action": "uploaded_frame",
         "job_state": "completed",
@@ -370,6 +370,8 @@ class NetworkContractTests(unittest.TestCase):
             ],
         )
         self.assertTrue(report["diagnostic"]["safe_finish_verified"])
+        self.assertTrue(report["diagnostic"]["required_busy_stages_verified"])
+        self.assertFalse(report["diagnostic"]["post_psr_busy_seen"])
         self.assertEqual(report["diagnostic"]["operation_id"], 23)
         self.assertEqual(report["diagnostic"]["job_operation_id"], 23)
         self.assertTrue(
@@ -554,8 +556,8 @@ class NetworkContractTests(unittest.TestCase):
             )
 
         for bad_tag in (
-            BUILD_TAG.replace("RC2B", "RC1"),
-            BUILD_TAG.replace("RC2B", "RC20"),
+            BUILD_TAG.replace("RC2C", "RC2B"),
+            BUILD_TAG.replace("RC2C", "RC20"),
             BUILD_TAG.replace("COLORGUARD", "NOCOLORGUARD"),
         ):
             with self.subTest(bad_tag=bad_tag):
@@ -608,6 +610,7 @@ class NetworkContractTests(unittest.TestCase):
             ({"pon_busy_seen": False}, "pon_busy_seen"),
             ({"drf_ms": 9_999}, "drf_ms"),
             ({"drf_ms": 60_001}, "drf_ms"),
+            ({"post_psr_busy_seen": "false"}, "post_psr_busy_seen"),
             ({"post_psr_ms": 21}, "last_wait_ms"),
             ({"total_ms": 1}, "total_ms"),
         )

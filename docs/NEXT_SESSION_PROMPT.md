@@ -18,9 +18,12 @@
 > GPIO10=CS2；两颗 SPD1657B revision 均为 0x04，分别写 CCSET(0xE0)=0x01 后，
 > 100 kHz 完整 1024x600 六色色条、颜色顺序和中缝已经实屏通过。
 >
-> 当前未刷入候选的 build tag 为
-> `MF1750_DRIVER_RC2B_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_2026-08-04`，driver
-> API 为 `MF1750_R16_CASCADE_V2`。它增加了非法六色色码的双层拒绝，并把
+> 当前待重新刷入候选的 build tag 为
+> `MF1750_DRIVER_RC2C_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_2026-08-04`，
+> driver API 为 `MF1750_R16_CASCADE_V3`。RC2B/V2 已在 100 kHz 显示完全正确的
+> MAP_ORIENT_V1，并确认 PON/DRF/POF BUSY 与完整/双 DTM 哈希；实测同时证明
+> POF 后 PSR 写寄存器不会再次拉低 BUSY，RC2C/V3 因而把该采样改为信息证据。
+> 它保留非法六色色码的双层拒绝，并把
 > diagnostic report 以匹配 operation ID 的不可变快照与产生它的 job/build 绑定，
 > 未观察到正式阶段 BUSY 会 fail closed。先核对最终 `origin/main` SHA、
 > repository contract、152 项全仓 unittest、锁定 PlatformIO build 和对应 GitHub CI；

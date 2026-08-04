@@ -4,7 +4,7 @@
 
 | 工作包 | 当前状态 | 已合入来源 | 剩余门禁 |
 |---|---|---|---|
-| D0 驱动定版 | RC2B/V2 软件候选、协议门禁与 clean build 完成，未刷入 | 本地集成加固 | PSRAM 启动日志、MAP_ORIENT_V1、规范帧 1 MHz 真屏 |
+| D0 驱动定版 | RC2B/V2 低速 MAP 实屏正确但暴露 post-PSR 假门禁；RC2C/V3 修正待重刷 | 本地集成加固+真屏证据 | RC2C 低速协议复验、规范帧 1 MHz 真屏 |
 | C1 主机帧核心 | 软件、fixtures、严格上传/结果核验工具完成 | `feature/host-frame-core` / `cb0a03f` + 本地加固 | 随 D0 核对真屏物理映射 |
 | C2 六色量化与抖动 | 算法、schema v2、来源与整屏授权边界完成 | `feature/color-dither` / `7cc015e` + 本地加固 | 实测 D65/2deg 六色色板与真屏主观验收 |
 | C3 转移感知优化 | 保守区域/转移统计规划器完成；完整优化器未开始 | `research/fast-refresh` / `b03b7e1` | 可信旧帧状态和 6x6 实测转移矩阵 |
@@ -19,8 +19,9 @@
 [GitHub Actions run 30863009577](https://github.com/oceanye/ESP32_C73-MF1750/actions/runs/30863009577)
 成功。本机已经 fetch、独立复现 64 项原始回归，并把该分支快进合入本地
 `main`；冻结生产目录没有变化。`dd711c9` 本身仍是 RC1/V1；随后在本地集成的
-RC2B/V2、主机工具、颜色与契约加固已通过 152 项本地回归、repository contract、
-`compileall` 和 PlatformIO clean build；
+RC2B/V2、主机工具、颜色与契约加固已通过当时的本地回归、repository contract、
+`compileall` 和 PlatformIO clean build；随后 RC2B 真屏发现 post-PSR 假门禁，
+当前 RC2C/V3 结果必须以新一轮完整门禁为准；
 最终发布仍必须核对推送 SHA 对应的 `main` GitHub Actions。以上均未进行新的
 硬件操作，不得把合并、主机测试或 CI 结果写成真屏通过。
 
@@ -93,7 +94,7 @@ SPD1656 猜测 SPD1657B 的高压/LUT/局刷寄存器。
 工作区已经是可用 Git 仓库，`origin` 指向私有 GitHub 仓库。Rev A1 驱动 RC1、
 硬件源文件和冻结生产清单的基线为 `3033da0`；C1/C2/C5/R1/R2 的远端集成点为
 `dd711c9`，现已合入本地 `main`。即使本轮软件加固和远端 CI 完成，也不创建
-`mf1750-driver-v1.0-hw-verified` 标签，因为 RC2B 尚未真屏验收。
+`mf1750-driver-v1.0-hw-verified` 标签，因为 RC2C/V3 尚未完成协议与 1 MHz 真屏验收。
 
 后续规则：
 
@@ -146,8 +147,9 @@ analysis/revb-mini
 - 偶数 x 在高 nibble、奇数 x 在低 nibble；
 - 驱动层独占 source-half、flip-X、flip-Y、nibble-swap 映射；
 - CS1/CS2 实际 DTM 流分别计算 FNV-1a；
-- PON/DRF/POF/post-PSR 均先观察 BUSY assertion 再等待 idle；缺 assertion 或
-  超时都返回失败并执行安全收尾；
+- PON/DRF/POF 均先观察 BUSY assertion 再等待 idle；缺 assertion 或超时都返回
+  失败并执行安全收尾；POF 后的 PSR 写入记录等待与 BUSY 采样，但不要求再次
+  assertion；
 - result-bearing job 只发布匹配非零 u32 operation ID 的不可变完整报告快照；
 - 刷新结束后 SPI 释放且所有面板侧输出保持低电平；
 - 应用只需包含 `epd_driver.h`，诊断接口隔离到 `epd_diagnostics.h`。
@@ -160,9 +162,10 @@ analysis/revb-mini
 | global-h-bars | `0x7DD055C5` | `0x855679C5` | `0x855679C5` |
 | MAP_ORIENT_V1 | `0x9D04142D` | `0xF26832DD` | `0xFE199FF5` |
 
-当前已实测 global-v-bars 完整六色正确且中缝清晰。仓库 RC2B/V2 尚未刷入；
-剩余验收为启动日志确认约 8 MB OPI PSRAM、MAP_ORIENT_V1 低速方向检查，以及
-通过正式 1 MHz `/api/frame` 链路发送同一个 MAP_ORIENT_V1 规范帧。
+当前已实测 global-v-bars 完整六色正确且中缝清晰；RC2B/V2 的 100 kHz
+MAP_ORIENT_V1 方向、颜色、中缝、哈希和 PON/DRF/POF BUSY 也已通过，但其
+post-PSR 严格 BUSY 门禁造成软件假失败。剩余验收为 RC2C/V3 重新刷入后的低速
+协议复验，以及通过正式 1 MHz `/api/frame` 链路发送同一个规范帧。
 
 ## 7. C1：主机帧格式核心与 fixtures
 
@@ -313,7 +316,7 @@ MHz，只有官方时序明确且前述档位均稳定后才考虑更高频率�
 使用同一 MAP_ORIENT_V1，核对两个 DTM hash、屏幕、CV、温升和 BUSY。
 
 SPI 加速只缩短 DTM 上传，不缩短固定 DRF 波形。当前 100 kHz 实测两半上传各约
-14.9 秒，而显色 BUSY 约 21.7 秒；1 MHz 的线性估算约为每半 1.5 秒，但 RC2B
+14.9 秒，而显色 BUSY 约 21.7 秒；1 MHz 的线性估算约为每半 1.5 秒，但 RC2C
 规范帧 1 MHz 尚未完成真屏验收，不能把估算写成既成结果。
 
 ### R2：快速波形/局刷

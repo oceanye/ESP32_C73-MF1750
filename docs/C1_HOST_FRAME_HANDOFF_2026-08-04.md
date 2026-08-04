@@ -40,7 +40,7 @@ python -m unittest discover -s tests -v
 
 `EXPECTED_FIXTURE_HASHES` 的三项顺序明确为完整帧、逻辑左半、逻辑右半；
 `FixtureReport` 使用 `logical_left_fnv1a` / `logical_right_fnv1a`，不再把默认
-拆分误称为物理 CS1/CS2。帧工具直接复用本包，并对设备刷新执行 RC2B/V2/PSRAM
+拆分误称为物理 CS1/CS2。帧工具直接复用本包，并对设备刷新执行当前 RC2C/V3/PSRAM
 预检、202 job 终态与哈希核对、diagnostic job 关联、显式 mapping 后的双 DTM
 哈希核对，以及 BUSY/安全收尾检查。全部网络测试均为 mock，不包含硬件访问。
 
@@ -55,9 +55,10 @@ python -m unittest discover -s tests -v
 
 正式 PASS 还要求 ingress 响应显式包含 `epd_action:"none"`。刷新 diagnostic
 必须提供 `pon_ms`、`drf_ms`、`pof_ms`、`post_psr_ms` 及对应四项
-`*_busy_seen:true`；其中 `drf_ms` 必须处于 10000..60000 ms，`last_wait_ms`
-必须等于 `post_psr_ms`，且 `total_ms` 不得短于两次 controller upload 与四段
-BUSY wait 的耗时总和。仅有 `sequence_ok` 或最终阶段名称不构成 PASS。
+`*_busy_seen` 采样；PON/DRF/POF 必须为 `true`，POF 后 PSR 寄存器写入的采样
+仅作信息证据并允许为 `false`。其中 `drf_ms` 必须处于 10000..60000 ms，
+`last_wait_ms` 必须等于 `post_psr_ms`，且 `total_ms` 不得短于两次 controller
+upload 与四段记录等待的耗时总和。仅有 `sequence_ok` 或最终阶段名称不构成 PASS。
 
 所有工具 JSON 均显式声明 `hardware_tested:false`。离线自检使用
 `offline_verified`，网络链路使用 `protocol_verified`，并通过 `verified_scope`
@@ -79,8 +80,8 @@ u32 `operation_id`；job wrapper 的 `job_operation_id` 也独立要求为非零
 解析错误统一包装为 `FrameToolError`。输出保护除路径检查外，还会在 `--force`
 前使用 `samefile` 拒绝冻结生产目录中任一文件的 hard-link alias。
 
-当前集成工作树已通过 152 项全仓回归；frame contract/tool 相关专项为 45 项通过。
-精确 allowlist build tag 为
-`MF1750_DRIVER_RC2B_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_2026-08-04`，driver
-API 为 `MF1750_R16_CASCADE_V2`。全部网络测试使用 mock；`Hardware tested`
-仍为 `NO`。
+2026-08-04 RC2B 真屏证明 MAP_ORIENT_V1、PON/DRF/POF BUSY 与双 DTM 哈希
+正确，同时证明 POF 后的 PSR 写入不会再次 assert BUSY。精确 allowlist 已提升为
+`MF1750_DRIVER_RC2C_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_2026-08-04`，
+driver API 为 `MF1750_R16_CASCADE_V3`。主机工具协议报告仍只使用
+`protocol_verified`，不会把 mock 或协议检查冒充完整硬件验收。

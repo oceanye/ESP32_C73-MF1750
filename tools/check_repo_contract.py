@@ -372,8 +372,8 @@ def check_driver_frame_contract(driver_cpp: Path) -> CheckResult:
         "PON strict BUSY wait": 'epdWaitBusyThenIdle("PON")',
         "DRF strict BUSY wait": 'epdWaitBusyThenIdle("DRF")',
         "POF strict BUSY wait": 'epdWaitBusyThenIdle("POF")',
-        "post-PSR strict BUSY wait": (
-            'epdWaitBusyThenIdle("post-display PSR")'
+        "post-PSR informational idle wait": (
+            'epdWaitIdle("post-display PSR")'
         ),
         "BUSY assertion grace": "EPD_BUSY_ASSERT_GRACE_MS",
         "BUSY assertion failure": "diagnosticReport.busyAssertionMissing = true",
@@ -400,6 +400,8 @@ def check_driver_frame_contract(driver_cpp: Path) -> CheckResult:
     for label, marker in evidence_markers.items():
         if marker not in content:
             errors.append(f"missing {label} contract marker")
+    if 'epdWaitBusyThenIdle("post-display PSR")' in content:
+        errors.append("post-display PSR must not require a BUSY assertion after POF")
     solid_match = re.search(
         r"bool epdDiagnosticSolid\([^)]*\)\s*\{(?P<body>.*?)\n\}",
         content,

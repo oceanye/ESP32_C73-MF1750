@@ -48,9 +48,11 @@ accepted only when its response explicitly says `epd_action: "none"`.
 
 A refresh diagnostic is not accepted on sequence labels alone. It must report
 `pon_ms`, `drf_ms`, `pof_ms`, and `post_psr_ms`, with each matching
-`*_busy_seen` field true. `drf_ms` must be within 10000..60000 ms,
+its `*_busy_seen` field. PON, DRF, and POF must each report `busy_seen=true`;
+the post-POF PSR register write is informational and may remain false, as
+confirmed on Rev A1 hardware. `drf_ms` must be within 10000..60000 ms,
 `last_wait_ms` must equal `post_psr_ms`, and `total_ms` cannot be shorter than
-the two controller upload times plus all four BUSY-wait times.
+the two controller upload times plus all four recorded wait times.
 
 Tool reports never claim a hardware acceptance test: offline JSON uses
 `offline_verified`, network JSON uses `protocol_verified`, and both explicitly
@@ -65,7 +67,7 @@ them exactly. A schema-v2 diagnostic must also carry non-zero u32
 `operation_id` and `job_operation_id` values that match exactly; the accepted
 protocol report preserves this immutable job-to-driver operation identity.
 `busy_assertion_missing` must be strictly false and `busy_missing_stage` must
-be the literal `none`, independently of the four per-stage BUSY fields.
+be the literal `none`, independently of the four per-stage BUSY sample fields.
 
 The refresh preflight accepts only the exact build tag in the tool's safety
 allowlist; prefix or substring lookalikes are rejected before upload. Malformed

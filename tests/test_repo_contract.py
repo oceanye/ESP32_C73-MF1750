@@ -252,6 +252,22 @@ class StaticContractTests(unittest.TestCase):
         self.assertFalse(result.passed)
         self.assertTrue(any("DRF strict BUSY wait" in error for error in result.errors))
 
+    def test_driver_contract_rejects_strict_post_psr_busy_wait(self) -> None:
+        source = (REPO_ROOT / "src" / "epd_driver.cpp").read_text(encoding="utf-8")
+        source = source.replace(
+            'epdWaitIdle("post-display PSR")',
+            'epdWaitBusyThenIdle("post-display PSR")',
+            1,
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            driver_cpp = Path(temporary) / "epd_driver.cpp"
+            driver_cpp.write_text(source, encoding="utf-8")
+            result = check_driver_frame_contract(driver_cpp)
+        self.assertFalse(result.passed)
+        self.assertTrue(
+            any("must not require a BUSY assertion" in error for error in result.errors)
+        )
+
     def test_driver_contract_requires_operation_id_json(self) -> None:
         source = (REPO_ROOT / "src" / "epd_driver.cpp").read_text(encoding="utf-8")
         source = source.replace('\\"operation_id\\":', '\\"removed_id\\":', 1)

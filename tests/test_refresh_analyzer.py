@@ -25,7 +25,7 @@ from tools.mf1750_refresh_analyzer import (
 
 
 BUILD_TAG = "test-build"
-DRIVER_API = "MF1750_R16_CASCADE_V2"
+DRIVER_API = "MF1750_R16_CASCADE_V3"
 VERSION_REPORT = (
     f"{BUILD_TAG}\n"
     "Panel: 1024x600 Spectra 6\n"
@@ -78,6 +78,7 @@ def valid_log(
     action: str = SWEEP_ACTION,
     counts: str = "PASS",
     busy_seen: int = 1,
+    post_psr_busy_seen: int = 0,
     cs1_upload_ms: int | None = None,
     cs2_upload_ms: int | None = None,
     drf_ms: int = DRF_MS,
@@ -99,7 +100,7 @@ def valid_log(
         f"EPD idle: DRF after {drf_ms} ms, busy_seen={busy_seen}\n"
         f"EPD idle: POF after {POF_MS} ms, busy_seen={busy_seen}\n"
         f"EPD idle: post-display PSR after {POST_PSR_MS} ms, "
-        f"busy_seen={busy_seen}\n"
+        f"busy_seen={post_psr_busy_seen}\n"
         "EPD full-frame cascade refresh: PASS\n"
         f"EPD job {job_id} finished: state=completed result_known=1 result=1\n"
     )
@@ -154,7 +155,7 @@ def valid_diagnostic(
         "pof_ms": POF_MS,
         "pof_busy_seen": True,
         "post_psr_ms": POST_PSR_MS,
-        "post_psr_busy_seen": True,
+        "post_psr_busy_seen": False,
         "total_ms": total_ms,
         "last_wait_ms": POST_PSR_MS,
         "last_wait_stage": "post-display PSR",

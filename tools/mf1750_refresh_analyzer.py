@@ -1057,15 +1057,19 @@ def validate_run(run: Mapping[str, Any]) -> Tuple[List[str], List[str]]:
         "pon_busy_seen",
         "drf_busy_seen",
         "pof_busy_seen",
-        "post_psr_busy_seen",
         "report_pon_busy_seen",
         "report_drf_busy_seen",
         "report_pof_busy_seen",
-        "report_post_psr_busy_seen",
     ):
         _required_value(run, field, errors)
         if run.get(field) is not True:
             errors.append(f"{field} must be true")
+    # The power-saving-register write follows POF.  It is sampled and
+    # cross-checked for auditability, but Rev A1 correctly leaves BUSY idle.
+    for field in ("post_psr_busy_seen", "report_post_psr_busy_seen"):
+        value = _required_value(run, field, errors)
+        if value is not None and not isinstance(value, bool):
+            errors.append(f"{field} must be a boolean")
 
     for label, serial_field, report_field in (
         ("PON wait", "pon_ms", "report_pon_ms"),
@@ -1094,7 +1098,7 @@ def validate_run(run: Mapping[str, Any]) -> Tuple[List[str], List[str]]:
     upload_values = [run.get("cs1_upload_ms"), run.get("cs2_upload_ms")]
     if all(_is_finite_number(value) for value in (*upload_values, *stage_values, total_ms)):
         if total_ms < sum(upload_values) + sum(stage_values):
-            errors.append("total_ms cannot be shorter than uploads plus BUSY stages")
+            errors.append("total_ms cannot be shorter than uploads plus recorded wait stages")
     if job_duration is not None and _is_finite_number(total_ms):
         if job_duration < total_ms:
             errors.append("job duration cannot be shorter than diagnostic total_ms")

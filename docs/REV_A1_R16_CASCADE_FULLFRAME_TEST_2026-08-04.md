@@ -1,14 +1,14 @@
 # MF-1750 Rev A1 R16 级联整屏验证（2026-08-04）
 
-> 当前未刷入候选 build tag 为
-> `MF1750_DRIVER_RC2B_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_2026-08-04`，driver
-> API 为 `MF1750_R16_CASCADE_V2`。它增加六色帧输入门禁、可审计错误返回和
+> 当前待重新刷入候选 build tag 为
+> `MF1750_DRIVER_RC2C_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_2026-08-04`，
+> driver API 为 `MF1750_R16_CASCADE_V3`。它保留六色帧输入门禁、可审计错误返回和
 > diagnostic report 的 job/build 关联；HTTP ingress 和公开
-> `epdDisplayFrame*` 都会在初始化、DTM、PON 之前拒绝非法 nibble。全仓回归、
-> repository contract 与 PlatformIO 构建属于软件验证；RC2B 尚未刷入，下文
-> 已有实屏结果仍来自此前固件，最终 MAP/1 MHz 必须核对该精确 build/API。
-> RC2B 的 PON/DRF/POF/post-PSR 还必须在 250 ms 内观察到 BUSY assertion；缺失
-> 即 fail closed、安全 POF/SPI stop/面板引脚拉低。正式报告使用匹配的非零 u32
+> `epdDisplayFrame*` 都会在初始化、DTM、PON 之前拒绝非法 nibble。RC2B/V2 已
+> 完成 100 kHz MAP_ORIENT_V1 真屏；画面、哈希、PON/DRF/POF BUSY 均正确，但
+> POF 后 PSR 写入不会再次 assert BUSY，暴露了 RC2B 的软件假失败。RC2C/V3 仅把
+> 该 post-PSR 采样改为信息证据；PON/DRF/POF 仍必须在 250 ms 内观察到 BUSY，
+> 缺失即 fail closed、安全 POF/SPI stop/面板引脚拉低。正式报告使用匹配的非零 u32
 > `job_operation_id` / `operation_id` 不可变快照，后续 REV/诊断不能改贴旧报告。
 
 ## 1. 当前硬件与冻结边界
@@ -72,6 +72,52 @@ POST /api/diagnostic/cascade-global-bars-slow
 逐行左右分帧正确，中缝没有缺列、重复或明显错位。R16 路径与 CCSET 初始化
 已经实现完整 1024x600，不需要据此对 Rev A1 做硬件 ECO。
 
+### 3.1 RC2B MAP_ORIENT_V1 首次实机结果与 RC2C 修正
+
+2026-08-04 将主线 SHA `99941690fa2f649fcf10d6df7f67576e01208ec6`
+对应的 RC2B/V2 刷入 COM8；GitHub 主线 CI run `30913097544` 已成功。刷写时
+J2-1 断电，esptool 确认 ESP32-S3、8 MB embedded PSRAM 且所有写入区块哈希
+通过。启动后的版本、映射与状态为 307200 字节、1 MHz、CS1=`0,0,0,0`、
+CS2=`1,0,0,0`、约 8 MB PSRAM、面板控制脚低电平。
+
+设备生成器和主机非刷新 ingress 均返回 MAP_ORIENT_V1 FNV-1a
+`2634290221`，且明确 `epd_action="none"`。随后在用户确认 3.3 V / 1 A、CV、
+L1/L2 正常后，只执行一次 100 kHz `map_orient_v1_slow`。实屏与参考 PNG 完全
+一致，用户判定“非常完美”：四角方向、左右身份、nibble 探针、中央标尺和跨缝桥
+全部正确。没有记录可用于 R1 的定量峰值电流或最高温度，因此本次只关闭 D0 的
+低速视觉映射门禁，不构成扫频电气证据。
+
+RC2B 报告中的有效证据为：
+
+```json
+{
+  "job_id": 1,
+  "operation_id": 1,
+  "spi_hz": 100000,
+  "input_fnv1a": 2634290221,
+  "cs1_dtm_fnv1a": 4066915037,
+  "cs2_dtm_fnv1a": 4263092213,
+  "cs1_upload_ms": 14895,
+  "cs2_upload_ms": 14896,
+  "pon_ms": 181,
+  "pon_busy_seen": true,
+  "drf_ms": 21700,
+  "drf_busy_seen": true,
+  "pof_ms": 140,
+  "pof_busy_seen": true,
+  "post_psr_ms": 250,
+  "post_psr_busy_seen": false,
+  "busy_missing_stage": "post-display PSR"
+}
+```
+
+画面完成、POF 也有真实 BUSY 后，RC2B 仍因 post-PSR 未再次 assert BUSY 将 job
+标记 failed。对比 RC1 与随附样例可见：该步骤是 POF 后等待 6 秒、写 PSR、等待
+1 秒并切断接口；RC2B 提交 `514bb4a` 才把原有非严格 idle wait 改成严格
+BUSY-then-idle。RC2C/V3 恢复 post-PSR 的非严格 idle/timing 记录，同时继续严格
+要求 PON/DRF/POF BUSY、1 秒等待、SPI stop 和所有面板输出拉低。RC2C 必须重新
+刷入并得到 completed job/report 后，才进入 1 MHz 正式帧。
+
 ## 4. 下一张唯一必要的诊断图：MAP_ORIENT_V1
 
 `MAP_ORIENT_V1` 是直接生成、未经 canvas 缩放或抗锯齿的白底 1024x600
@@ -121,7 +167,7 @@ nibble-swap 的全部 16 种组合下逐字节比较。
 
 0. 先完成候选审查、提交、推送并确认最终 `main` CI；取得用户明确刷写/上电
    许可后，才执行以下步骤。
-1. 驱动板保持断电，刷入上述精确 RC2B build；确认启动日志识别约 8 MB PSRAM，且
+1. 驱动板保持断电，刷入上述精确 RC2C build；确认启动日志识别约 8 MB PSRAM，且
    `/api/diagnostic/status` 中 RST/CS1/CS2 均为 0。
 2. 驱动板仍断电，只检查二进制入口，不刷新：
 
@@ -149,7 +195,7 @@ nibble-swap 的全部 16 种组合下逐字节比较。
 4. MAP_ORIENT_V1 低速方向通过后，再冷启动一次，用主机工具通过正式 1 MHz
    `/api/frame` 链路发送同一个规范帧。两项 mapping 必须显式提供，工具会在
    POST 前核对固件 build/API/PSRAM/SPI/mapping，随后核对最终 job、四阶段 BUSY
-   证据和双 DTM hash：
+   采样（PON/DRF/POF 必须 assertion，post-PSR 仅作信息证据）和双 DTM hash：
 
    ```powershell
    python tools\mf1750_frame_tool.py --pattern map-orient-v1 `
