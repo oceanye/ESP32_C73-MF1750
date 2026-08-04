@@ -8,18 +8,31 @@ version, frame, job, and diagnostic routes; callers cannot supply a path.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from contextlib import contextmanager
+from copy import deepcopy
 from enum import Enum
+import hashlib
 import math
 import time
-from typing import Any, Callable, Mapping, Optional, Sequence
+from typing import Any, Callable, Iterator, Mapping, Optional, Sequence
 
 from host.epd_frame import FRAME_BYTES, ControllerMapping, fnv1a
 from tools import mf1750_frame_tool as frame_tool
 
-from .pipeline import ApplicationArtifact, validate_application_frame
+from .pipeline import ApplicationArtifact, ApplicationError, validate_application_frame
 
 
 ARM_CONFIRMATION = "ARM MF1750 REFRESH"
+ARM_TTL_S = 120.0
+_REFRESH_VERIFIED_SCOPE = (
+    "canonical_frame_dimensions_and_physical_color_codes",
+    "firmware_build_api_spi_psram_and_mapping_preflight",
+    "frame_upload_bytes_and_fnv1a",
+    "job_identity_state_result_and_frame_hash",
+    "diagnostic_immutable_driver_operation_identity",
+    "diagnostic_build_api_job_mapping_and_dtm_hashes",
+    "diagnostic_sequence_busy_timing_and_safe_finish_evidence",
+)
 _ALLOWED_HTTP_ROUTES = frozenset(
     {
         ("GET", "/api/version"),
@@ -57,7 +70,70 @@ class AdapterState(str, Enum):
     LOCAL_ABORTED = "local_aborted"
 
 
+def _validated_artifact_identity(
+    artifact: ApplicationArtifact,
+) -> tuple[ApplicationArtifact, dict[str, Any]]:
+    """Rebuild the frame identity and match it to both report and artifact."""
+
+    if type(artifact) is not ApplicationArtifact:
+        raise AdapterError("refresh requires an ApplicationArtifact")
+    try:
+        snapshot = artifact.validated_snapshot()
+    except (ApplicationError, AttributeError, TypeError) as error:
+        raise AdapterError(
+            f"application artifact failed complete revalidation "
+            f"(SHA256/FNV/report): {error}"
+        ) from error
+    frame = snapshot.frame
+    frame_sha256 = hashlib.sha256(frame).hexdigest()
+    frame_fnv1a = fnv1a(frame)
+    expected_identity = {
+        "frame_sha256": frame_sha256,
+        "frame_fnv1a": frame_fnv1a,
+        "frame_bytes": len(frame),
+    }
+    try:
+        raw_identity = artifact.identity
+    except (AttributeError, TypeError, ValueError) as error:
+        raise AdapterError("application artifact does not expose a valid bound identity") from error
+    if not isinstance(raw_identity, Mapping):
+        raise AdapterError("application artifact identity must be an object")
+    required_keys = {*expected_identity, "report_sha256"}
+    if set(raw_identity) != required_keys:
+        raise AdapterError("application artifact identity has unexpected fields")
+    for key, expected in expected_identity.items():
+        if raw_identity.get(key) != expected:
+            raise AdapterError(f"application artifact identity {key} is stale")
+    report_sha256 = raw_identity.get("report_sha256")
+    if (
+        not isinstance(report_sha256, str)
+        or len(report_sha256) != 64
+        or any(character not in "0123456789abcdef" for character in report_sha256)
+    ):
+        raise AdapterError("application artifact report_sha256 is invalid")
+
+    output = snapshot.report.get("output")
+    if not isinstance(output, Mapping):
+        raise AdapterError("application report output must be an object")
+    if output.get("sha256") != frame_sha256:
+        raise AdapterError("application report SHA256 does not match the current frame")
+    if output.get("fnv1a") != f"0x{frame_fnv1a:08X}":
+        raise AdapterError("application report FNV1a does not match the current frame")
+    if output.get("bytes") != FRAME_BYTES:
+        raise AdapterError("application report byte count does not match the current frame")
+    identity = {**expected_identity, "report_sha256": report_sha256}
+    return snapshot, identity
+
+
 class DeviceAdapter(ABC):
+    @abstractmethod
+    def bind_artifact(
+        self, artifact: Optional[ApplicationArtifact]
+    ) -> Mapping[str, Any]:
+        """Bind (or explicitly clear) the artifact used by later device actions."""
+
+        raise NotImplementedError
+
     def allow_connection(self, allowed: bool) -> Mapping[str, Any]:
         del allowed
         raise UnsupportedOperationError("this adapter cannot connect to a device")
@@ -111,6 +187,30 @@ class OfflineAdapter(DeviceAdapter):
     state = AdapterState.OFFLINE
     network_requests = 0
 
+    def __init__(self) -> None:
+        self._artifact_identity: Optional[dict[str, Any]] = None
+
+    def _identity(self) -> Optional[dict[str, Any]]:
+        return deepcopy(self._artifact_identity)
+
+    def bind_artifact(
+        self, artifact: Optional[ApplicationArtifact]
+    ) -> Mapping[str, Any]:
+        if artifact is not None and type(artifact) is not ApplicationArtifact:
+            raise AdapterError("artifact must be an ApplicationArtifact or None")
+        self._artifact_identity = (
+            None if artifact is None else _validated_artifact_identity(artifact)[1]
+        )
+        return {
+            "adapter": "offline",
+            "artifact_bound": artifact is not None,
+            "artifact_identity": self._identity(),
+            "request_sent": False,
+            "protocol_verified": False,
+            "hardware_tested": False,
+            "network_requests": 0,
+        }
+
     def version_preflight(
         self, expected_mappings: Sequence[ControllerMapping]
     ) -> Mapping[str, Any]:
@@ -118,6 +218,7 @@ class OfflineAdapter(DeviceAdapter):
         return {
             "adapter": "offline",
             "state": self.state.value,
+            "artifact_identity": self._identity(),
             "protocol_verified": False,
             "hardware_tested": False,
         }
@@ -128,6 +229,7 @@ class OfflineAdapter(DeviceAdapter):
             "adapter": "offline",
             "bytes": len(validated),
             "fnv1a": fnv1a(validated),
+            "artifact_identity": self._identity(),
             "offline_verified": True,
             "protocol_verified": False,
             "hardware_tested": False,
@@ -156,6 +258,7 @@ class OfflineAdapter(DeviceAdapter):
             "supported": False,
             "status": "unsupported",
             "reason": "offline adapter has no remote job",
+            "artifact_identity": self._identity(),
             "hardware_tested": False,
         }
 
@@ -164,6 +267,7 @@ class OfflineAdapter(DeviceAdapter):
             "supported": True,
             "status": "local_only",
             "remote_cancelled": False,
+            "artifact_identity": self._identity(),
             "hardware_tested": False,
         }
 
@@ -171,6 +275,7 @@ class OfflineAdapter(DeviceAdapter):
         return {
             "supported": False,
             "status": "not_required",
+            "artifact_identity": self._identity(),
             "hardware_tested": False,
         }
 
@@ -203,17 +308,77 @@ class HttpDeviceAdapter(DeviceAdapter):
         self._clock = clock
         self.state = AdapterState.DISCONNECTED
         self.network_requests = 0
+        self._connection_allowed = False
+        self._artifact_identity: Optional[dict[str, Any]] = None
+        self._preflight_identity: Optional[dict[str, Any]] = None
+        self._preflight_mappings: Optional[
+            tuple[ControllerMapping, ControllerMapping]
+        ] = None
+        self._preflight_version: Optional[dict[str, Any]] = None
         self._armed = False
+        self._arm_identity: Optional[dict[str, Any]] = None
+        self._arm_mappings: Optional[tuple[ControllerMapping, ControllerMapping]] = None
+        self._arm_version: Optional[dict[str, Any]] = None
+        self._arm_expires_at: Optional[float] = None
         self._resume_state: Optional[AdapterState] = None
         self._frame: Optional[bytes] = None
         self._frame_hash: Optional[int] = None
         self._mappings: Optional[tuple[ControllerMapping, ControllerMapping]] = None
         self._version: Optional[Mapping[str, Any]] = None
         self._job_id: Optional[int] = None
+        self._job_identity: Optional[dict[str, Any]] = None
         self._job: Optional[Mapping[str, Any]] = None
         self._diagnostic: Optional[Mapping[str, Any]] = None
         self._enqueue_attempted = False
         self._job_deadline: Optional[float] = None
+        self._route_capability: Optional[tuple[str, str]] = None
+
+    def _identity(self) -> Optional[dict[str, Any]]:
+        return deepcopy(self._artifact_identity)
+
+    def _clear_protocol_context(self) -> None:
+        self._preflight_identity = None
+        self._preflight_mappings = None
+        self._preflight_version = None
+        self._armed = False
+        self._arm_identity = None
+        self._arm_mappings = None
+        self._arm_version = None
+        self._arm_expires_at = None
+        self._resume_state = None
+        self._frame = None
+        self._frame_hash = None
+        self._mappings = None
+        self._version = None
+        self._job_id = None
+        self._job_identity = None
+        self._job = None
+        self._diagnostic = None
+        self._enqueue_attempted = False
+        self._job_deadline = None
+
+    def bind_artifact(
+        self, artifact: Optional[ApplicationArtifact]
+    ) -> Mapping[str, Any]:
+        if self.refresh_in_flight:
+            raise AdapterError("cannot replace the artifact while a refresh is active")
+        if artifact is None:
+            identity = None
+        else:
+            _, identity = _validated_artifact_identity(artifact)
+        self._clear_protocol_context()
+        self._artifact_identity = deepcopy(identity)
+        self.state = (
+            AdapterState.READY if self._connection_allowed else AdapterState.DISCONNECTED
+        )
+        return {
+            "artifact_bound": identity is not None,
+            "artifact_identity": self._identity(),
+            "connection_allowed": self._connection_allowed,
+            "request_sent": False,
+            "protocol_verified": False,
+            "hardware_tested": False,
+        }
 
     @property
     def refresh_in_flight(self) -> bool:
@@ -231,9 +396,12 @@ class HttpDeviceAdapter(DeviceAdapter):
             raise AdapterError("device connection requires explicit allow=true")
         if self.refresh_in_flight:
             raise AdapterError("connection policy cannot change during an active refresh")
+        self._clear_protocol_context()
+        self._connection_allowed = True
         self.state = AdapterState.READY
         return {
             "connection_allowed": True,
+            "artifact_identity": self._identity(),
             "request_sent": False,
             "protocol_verified": False,
             "hardware_tested": False,
@@ -245,30 +413,61 @@ class HttpDeviceAdapter(DeviceAdapter):
             raise AdapterError("cannot arm while another refresh is active")
         if confirmation != ARM_CONFIRMATION:
             raise AdapterError(f"refresh confirmation must exactly equal {ARM_CONFIRMATION!r}")
-        # A new arm starts a fresh protocol identity.  Completed evidence may
-        # remain in the caller's report, but it must never seed the next job.
+        if self._artifact_identity is None:
+            raise AdapterError("refresh arm requires a bound application artifact")
+        if (
+            self._preflight_identity != self._artifact_identity
+            or self._preflight_mappings is None
+            or self._preflight_version is None
+        ):
+            raise AdapterError(
+                "refresh arm requires a preflight for the current artifact and mappings"
+            )
         self._frame = None
         self._frame_hash = None
         self._mappings = None
         self._version = None
         self._job_id = None
+        self._job_identity = None
         self._job = None
         self._diagnostic = None
         self._enqueue_attempted = False
         self._job_deadline = None
         self._resume_state = None
         self._armed = True
+        self._arm_identity = deepcopy(self._preflight_identity)
+        self._arm_mappings = self._preflight_mappings
+        self._arm_version = deepcopy(self._preflight_version)
+        self._arm_expires_at = self._clock() + ARM_TTL_S
+        # The preflight capability is moved into this one-shot arm.  It cannot
+        # be reused to create another arm after expiry, rejection, or success.
+        self._preflight_identity = None
+        self._preflight_mappings = None
+        self._preflight_version = None
         self.state = AdapterState.ARMED
         return {
             "armed": True,
             "one_shot": True,
+            "ttl_s": ARM_TTL_S,
+            "artifact_identity": self._identity(),
+            "preflight": deepcopy(self._arm_version),
             "request_sent": False,
             "hardware_tested": False,
         }
 
     def _require_connected(self) -> None:
-        if self.state is AdapterState.DISCONNECTED:
+        if not self._connection_allowed:
             raise AdapterError("device connection has not been explicitly allowed")
+
+    @contextmanager
+    def _route_scope(self, method: str, endpoint: str) -> Iterator[None]:
+        if self._route_capability is not None:
+            raise AdapterError("nested device route capability is not allowed")
+        self._route_capability = (method, endpoint)
+        try:
+            yield
+        finally:
+            self._route_capability = None
 
     def _request(self, base_url: str, endpoint: str, **kwargs: Any) -> tuple[int, str]:
         if base_url != self._base_url:
@@ -276,6 +475,10 @@ class HttpDeviceAdapter(DeviceAdapter):
         method = kwargs.get("method", "GET")
         if (method, endpoint) not in _ALLOWED_HTTP_ROUTES:
             raise AdapterError("device route is not in the fixed application safety allowlist")
+        if self._route_capability != (method, endpoint):
+            raise AdapterError(
+                "device route is not enabled by the current adapter state transition"
+            )
         self.network_requests += 1
         try:
             return self._requester(self._base_url, endpoint, **kwargs)
@@ -291,18 +494,34 @@ class HttpDeviceAdapter(DeviceAdapter):
         self._require_connected()
         if self.refresh_in_flight:
             raise AdapterError("preflight cannot replace an active refresh context")
+        if self._artifact_identity is None:
+            raise AdapterError("preflight requires a bound application artifact")
+        self._preflight_identity = None
+        self._preflight_mappings = None
+        self._preflight_version = None
+        self._armed = False
+        self._arm_identity = None
+        self._arm_mappings = None
+        self._arm_version = None
+        self._arm_expires_at = None
+        self.state = AdapterState.READY
         try:
             mappings = frame_tool._require_refresh_mapping_pair(expected_mappings)
-            version = frame_tool._preflight_version(self._base_url, self._request, mappings)
+            with self._route_scope("GET", "/api/version"):
+                version = frame_tool._preflight_version(
+                    self._base_url, self._request, mappings
+                )
         except AdapterNetworkError:
             raise
         except frame_tool.FrameToolError as error:
             raise AdapterError(str(error)) from error
-        self._mappings = mappings
-        self._version = version
-        self.state = AdapterState.ARMED if self._armed else AdapterState.READY
+        self._preflight_identity = self._identity()
+        self._preflight_mappings = mappings
+        self._preflight_version = deepcopy(version)
+        self.state = AdapterState.READY
         return {
-            **version,
+            **deepcopy(version),
+            "artifact_identity": self._identity(),
             "protocol_verified": False,
             "hardware_tested": False,
             "verified_scope": ["firmware_build_api_spi_psram_and_mapping_preflight"],
@@ -312,14 +531,25 @@ class HttpDeviceAdapter(DeviceAdapter):
         self._require_connected()
         if self.refresh_in_flight:
             raise AdapterError("safe ingress is locked while a refresh is active")
+        if self._artifact_identity is None:
+            raise AdapterError("safe ingress requires a bound application artifact")
+        validated = validate_application_frame(frame)
+        if (
+            hashlib.sha256(validated).hexdigest()
+            != self._artifact_identity["frame_sha256"]
+            or fnv1a(validated) != self._artifact_identity["frame_fnv1a"]
+        ):
+            raise AdapterError("safe ingress frame differs from the bound artifact")
         try:
-            return frame_tool.perform_ingress(
-                self._base_url, frame, requester=self._request
-            )
+            with self._route_scope("POST", "/api/diagnostic/frame-ingress"):
+                result = frame_tool.perform_ingress(
+                    self._base_url, validated, requester=self._request
+                )
         except frame_tool.FrameToolNetworkError as error:
             raise AdapterNetworkError(str(error)) from error
         except frame_tool.FrameToolError as error:
             raise AdapterError(str(error)) from error
+        return {**result, "artifact_identity": self._identity()}
 
     def refresh_enqueue(
         self,
@@ -329,25 +559,79 @@ class HttpDeviceAdapter(DeviceAdapter):
         self._require_connected()
         if self.refresh_in_flight:
             raise AdapterError("a refresh is already active; duplicate submission is locked")
-        if not isinstance(artifact, ApplicationArtifact):
-            raise AdapterError("refresh requires an ApplicationArtifact")
-        if not artifact.upload_authorized:
-            raise AdapterError("frame is not authorized for formal upload by a calibrated palette")
-        frame = validate_application_frame(artifact.frame)
-        try:
-            mappings = frame_tool._require_refresh_mapping_pair(expected_mappings)
-        except frame_tool.FrameToolError as error:
-            raise AdapterError(str(error)) from error
         if not self._armed:
             raise AdapterError("refresh requires a one-shot explicit arm confirmation")
+        # Consume the one-shot capability before validating any caller-supplied
+        # submission field.  A malformed, stale, rejected, or interrupted
+        # attempt therefore always requires a fresh preflight and confirmation.
+        arm_identity = deepcopy(self._arm_identity)
+        arm_mappings = self._arm_mappings
+        arm_version = deepcopy(self._arm_version)
+        arm_expires_at = self._arm_expires_at
         self._armed = False
+        self._arm_identity = None
+        self._arm_mappings = None
+        self._arm_version = None
+        self._arm_expires_at = None
         try:
-            version = frame_tool._preflight_version(self._base_url, self._request, mappings)
-            frame_hash = fnv1a(frame)
+            snapshot, identity = _validated_artifact_identity(artifact)
+            if not snapshot.upload_authorized:
+                raise AdapterError(
+                    "frame is not authorized for formal upload by a calibrated palette"
+                )
+            frame = snapshot.frame
+            mappings = frame_tool._require_refresh_mapping_pair(expected_mappings)
+        except AdapterError:
+            self.state = AdapterState.READY
+            raise
+        except frame_tool.FrameToolError as error:
+            self.state = AdapterState.READY
+            raise AdapterError(str(error)) from error
+        if arm_expires_at is None or self._clock() >= arm_expires_at:
+            self.state = AdapterState.READY
+            raise AdapterError("refresh arm has expired; run preflight and arm again")
+        if self._artifact_identity is None or identity != self._artifact_identity:
+            self.state = AdapterState.READY
+            raise AdapterError("refresh artifact differs from the currently bound artifact")
+        if arm_identity != identity:
+            self.state = AdapterState.READY
+            raise AdapterError("refresh artifact differs from the armed artifact")
+        if mappings != arm_mappings:
+            self.state = AdapterState.READY
+            raise AdapterError("refresh mappings differ from the armed preflight mapping")
+        if arm_version is None:
+            self.state = AdapterState.READY
+            raise AdapterError("refresh preflight evidence is stale for this artifact")
+
+        self._frame = frame
+        self._frame_hash = identity["frame_fnv1a"]
+        self._mappings = mappings
+        self._version = deepcopy(arm_version)
+        self._job_identity = deepcopy(identity)
+        self._job_id = None
+        self._job = None
+        self._diagnostic = None
+        self._enqueue_attempted = False
+        self._job_deadline = None
+        try:
+            with self._route_scope("GET", "/api/version"):
+                version = frame_tool._preflight_version(
+                    self._base_url, self._request, mappings
+                )
+            if version != arm_version:
+                raise AdapterError(
+                    "firmware preflight changed after arm; refresh was not submitted"
+                )
+            frame_hash = identity["frame_fnv1a"]
             self._enqueue_attempted = True
-            status, body = self._request(
-                self._base_url, "/api/frame", method="POST", data=frame, timeout=20.0
-            )
+            with self._route_scope("POST", "/api/frame"):
+                status, body = self._request(
+                    self._base_url,
+                    "/api/frame",
+                    method="POST",
+                    data=frame,
+                    timeout=20.0,
+                )
             frame_tool._expect_status(status, 202, body, "frame refresh enqueue")
             queued = frame_tool._json_object(body, "frame refresh enqueue")
             frame_tool._validate_transfer_response(
@@ -358,16 +642,14 @@ class HttpDeviceAdapter(DeviceAdapter):
             )
         except AdapterNetworkError:
             raise
+        except AdapterError:
+            self.state = AdapterState.FAILED
+            raise
         except frame_tool.FrameToolError as error:
             self.state = AdapterState.FAILED
             raise AdapterError(str(error)) from error
-        self._frame = frame
-        self._frame_hash = frame_hash
-        self._mappings = mappings
-        self._version = version
+        self._version = deepcopy(version)
         self._job_id = job_id
-        self._job = None
-        self._diagnostic = None
         self._enqueue_attempted = True
         self._job_deadline = self._clock() + self._job_timeout_s
         self.state = AdapterState.QUEUED
@@ -376,6 +658,7 @@ class HttpDeviceAdapter(DeviceAdapter):
             "http_status": 202,
             "state": self.state.value,
             "job_id": job_id,
+            "artifact_identity": deepcopy(self._job_identity),
             "protocol_verified": False,
             "hardware_tested": False,
             "statement": "HTTP 202 means queued only; final job and diagnostic are pending",
@@ -391,6 +674,10 @@ class HttpDeviceAdapter(DeviceAdapter):
         if self.state is AdapterState.NETWORK_ERROR:
             raise AdapterError("call recover before polling after a network error")
         assert self._job_id is not None and self._frame_hash is not None
+        assert self._job_identity is not None
+        if self._artifact_identity != self._job_identity:
+            self.state = AdapterState.FAILED
+            raise AdapterError("active job artifact identity no longer matches its binding")
         if self._job_deadline is None or self._clock() >= self._job_deadline:
             self.state = AdapterState.FAILED
             raise AdapterError(
@@ -398,9 +685,10 @@ class HttpDeviceAdapter(DeviceAdapter):
                 f"{self._job_timeout_s:g} seconds"
             )
         try:
-            status, body = self._request(
-                self._base_url, "/api/job", method="GET", data=None, timeout=20.0
-            )
+            with self._route_scope("GET", "/api/job"):
+                status, body = self._request(
+                    self._base_url, "/api/job", method="GET", data=None, timeout=20.0
+                )
             frame_tool._expect_status(status, 200, body, "job poll")
             job = frame_tool._json_object(body, "job poll")
             job_state = frame_tool._validate_job(job, self._job_id, self._frame_hash)
@@ -409,7 +697,7 @@ class HttpDeviceAdapter(DeviceAdapter):
         except frame_tool.FrameToolError as error:
             self.state = AdapterState.FAILED
             raise AdapterError(str(error)) from error
-        self._job = job
+        self._job = deepcopy(job)
         if job_state == "queued":
             self.state = AdapterState.QUEUED
         elif job_state == "running":
@@ -418,7 +706,8 @@ class HttpDeviceAdapter(DeviceAdapter):
             self.state = AdapterState.COMPLETED_PENDING_REPORT
         return {
             "state": self.state.value,
-            "job": job,
+            "job": deepcopy(self._job),
+            "artifact_identity": deepcopy(self._job_identity),
             "protocol_verified": False,
             "hardware_tested": False,
         }
@@ -430,17 +719,32 @@ class HttpDeviceAdapter(DeviceAdapter):
         assert self._mappings is not None
         assert self._version is not None
         assert self._job is not None
+        assert self._job_id is not None
+        assert self._frame_hash is not None
+        assert self._job_identity is not None
+        if self._artifact_identity != self._job_identity:
+            self.state = AdapterState.FAILED
+            raise AdapterError("completed job artifact identity no longer matches its binding")
         try:
-            status, body = self._request(
-                self._base_url,
-                "/api/diagnostic/report",
-                method="GET",
-                data=None,
-                timeout=20.0,
+            job_state = frame_tool._validate_job(
+                self._job, self._job_id, self._frame_hash
             )
+            if job_state != "completed":
+                raise frame_tool.FrameToolError(
+                    "diagnostic retrieval requires a privately validated completed job"
+                )
+            with self._route_scope("GET", "/api/diagnostic/report"):
+                status, body = self._request(
+                    self._base_url,
+                    "/api/diagnostic/report",
+                    method="GET",
+                    data=None,
+                    timeout=20.0,
+                )
             frame_tool._expect_status(status, 200, body, "diagnostic report")
-            diagnostic = frame_tool._validate_diagnostic(
-                frame_tool._json_object(body, "diagnostic report"),
+            raw_diagnostic = frame_tool._json_object(body, "diagnostic report")
+            diagnostic_validation = frame_tool._validate_diagnostic(
+                raw_diagnostic,
                 self._frame,
                 self._mappings,
                 self._version,
@@ -451,15 +755,20 @@ class HttpDeviceAdapter(DeviceAdapter):
         except frame_tool.FrameToolError as error:
             self.state = AdapterState.FAILED
             raise AdapterError(str(error)) from error
-        self._diagnostic = diagnostic
+        self._diagnostic = deepcopy(raw_diagnostic)
         self.state = AdapterState.PROTOCOL_VERIFIED
         return {
+            "mode": "refresh",
             "state": self.state.value,
             "protocol_verified": True,
             "hardware_tested": False,
             "job_id": self._job_id,
-            "job": self._job,
-            "diagnostic": diagnostic,
+            "artifact_identity": deepcopy(self._job_identity),
+            "preflight": deepcopy(self._version),
+            "job": deepcopy(self._job),
+            "diagnostic": deepcopy(self._diagnostic),
+            "diagnostic_validation": deepcopy(diagnostic_validation),
+            "verified_scope": list(_REFRESH_VERIFIED_SCOPE),
             "manual_observation_required": [
                 "full_panel_visual_result",
                 "power_supply_cv_and_current",
@@ -473,6 +782,7 @@ class HttpDeviceAdapter(DeviceAdapter):
             "status": "unsupported",
             "reason": "RC2B/V2 exposes no remote cancel route",
             "remote_job_may_continue": self.refresh_in_flight,
+            "artifact_identity": self._identity(),
             "hardware_tested": False,
         }
 
@@ -481,17 +791,7 @@ class HttpDeviceAdapter(DeviceAdapter):
             AdapterState.FAILED,
             AdapterState.COMPLETED_PENDING_REPORT,
         }
-        self._frame = None
-        self._frame_hash = None
-        self._mappings = None
-        self._version = None
-        self._job_id = None
-        self._job = None
-        self._diagnostic = None
-        self._enqueue_attempted = False
-        self._job_deadline = None
-        self._resume_state = None
-        self._armed = False
+        self._clear_protocol_context()
         self.state = AdapterState.LOCAL_ABORTED
         return {
             "supported": True,
@@ -499,6 +799,7 @@ class HttpDeviceAdapter(DeviceAdapter):
             "local_context_cleared": True,
             "remote_cancelled": False,
             "remote_job_may_continue": was_active,
+            "artifact_identity": self._identity(),
             "hardware_tested": False,
         }
 
@@ -517,6 +818,7 @@ class HttpDeviceAdapter(DeviceAdapter):
         return {
             "recovered": True,
             "state": self.state.value,
+            "artifact_identity": self._identity(),
             "request_sent": False,
             "hardware_tested": False,
         }
