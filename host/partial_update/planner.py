@@ -1,8 +1,13 @@
 """Build controller-neutral old-frame/new-frame transition plans.
 
-The output is deliberately not a controller command stream. It captures the
+The output is deliberately not a controller command stream.  It captures the
 information a documented partial-update interface would need: changed pixels,
-transition counts, protected border pixels, and controller-local regions.
+transition counts, protected border pixels, and *logical-half* regions.
+
+Supplying an old-frame file is not proof that those pixels are currently on the
+panel.  A transition comparison is therefore enabled only when the caller also
+supplies matching, explicitly trusted provenance for the last successful
+display operation.
 """
 
 from __future__ import annotations
@@ -10,16 +15,22 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
+from host.epd_frame import (
+    FRAME_BYTES,
+    HEIGHT,
+    PHYSICAL_COLOR_CODES,
+    WIDTH,
+    ControllerMapping,
+    FrameContractError,
+    fnv1a,
+    validate_frame,
+)
 
-WIDTH = 1024
-HEIGHT = 600
-ROW_BYTES = WIDTH // 2
-FRAME_BYTES = ROW_BYTES * HEIGHT
-COLOR_CODES = (0x0, 0x1, 0x2, 0x3, 0x5, 0x6)
+
+COLOR_CODES = tuple(sorted(PHYSICAL_COLOR_CODES))
 COLOR_NAMES = ("black", "white", "yellow", "red", "blue", "green")
+MAX_NEIGHBOR_RADIUS = 32
 _COLOR_INDEX = {color: index for index, color in enumerate(COLOR_CODES)}
-_FNV1A_OFFSET = 0x811C9DC5
-_FNV1A_PRIME = 0x01000193
 
 
 class PartialUpdateContractError(ValueError):
@@ -27,63 +38,121 @@ class PartialUpdateContractError(ValueError):
 
 
 @dataclass(frozen=True)
-class ControllerRegion:
-    """Half-open global and controller-local rectangle for one controller."""
+class LogicalHalfRegion:
+    """Half-open canonical rectangle belonging to one logical frame half.
 
-    controller: int
+    Physical-controller coordinates are absent unless the caller explicitly
+    supplies the frozen pair of :class:`ControllerMapping` objects.  The order
+    of that pair identifies physical controllers 1 and 2; it is never inferred
+    from left/right position.
+    """
+
+    logical_half: int
     global_x0: int
     global_y0: int
     global_x1: int
     global_y1: int
-    local_x0: int
-    local_x1: int
+    logical_local_x0: int
+    logical_local_x1: int
+    physical_controller: Optional[int] = None
+    physical_local_x0: Optional[int] = None
+    physical_local_y0: Optional[int] = None
+    physical_local_x1: Optional[int] = None
+    physical_local_y1: Optional[int] = None
+    physical_mapping: Optional[ControllerMapping] = None
 
-    def to_dict(self) -> Dict[str, int]:
-        return {
-            "controller": self.controller,
+    def to_dict(self) -> Dict[str, Any]:
+        result: Dict[str, Any] = {
+            "logical_half": self.logical_half,
             "global_x0": self.global_x0,
             "global_y0": self.global_y0,
             "global_x1": self.global_x1,
             "global_y1": self.global_y1,
-            "local_x0": self.local_x0,
-            "local_x1": self.local_x1,
+            "logical_local_x0": self.logical_local_x0,
+            "logical_local_x1": self.logical_local_x1,
         }
+        if self.physical_controller is not None:
+            mapping = self.physical_mapping
+            if mapping is None:  # Defensive: invalid objects should never serialize.
+                raise PartialUpdateContractError("physical region is missing its mapping")
+            result.update(
+                {
+                    "physical_controller": self.physical_controller,
+                    "physical_local_x0": self.physical_local_x0,
+                    "physical_local_y0": self.physical_local_y0,
+                    "physical_local_x1": self.physical_local_x1,
+                    "physical_local_y1": self.physical_local_y1,
+                    "physical_mapping": {
+                        "source_half": mapping.source_half,
+                        "flip_x": mapping.flip_x,
+                        "flip_y": mapping.flip_y,
+                        "nibble_swap": mapping.nibble_swap,
+                    },
+                }
+            )
+        return result
 
 
 @dataclass(frozen=True)
 class TransitionPlan:
     width: int
     height: int
-    old_state_known: bool
-    old_frame_fnv1a: Optional[int]
+    old_frame_supplied: bool
+    supplied_old_frame_fnv1a: Optional[int]
+    last_success_operation_id: Optional[str]
+    last_success_frame_fnv1a: Optional[int]
+    last_success_trusted: bool
+    last_success_matches_old_frame: Optional[bool]
+    transition_comparison_performed: bool
     new_frame_fnv1a: int
-    changed_pixels: int
+    changed_pixels: Optional[int]
     protected_pixels: int
-    unchanged_pixels: int
+    unchanged_pixels: Optional[int]
     neighbor_radius: int
     bounding_box: Optional[Tuple[int, int, int, int]]
-    controller_regions: Tuple[ControllerRegion, ...]
+    logical_half_regions: Tuple[LogicalHalfRegion, ...]
+    physical_mapping_supplied: bool
     transition_histogram: Optional[Tuple[Tuple[int, ...], ...]]
 
     def to_dict(self) -> Dict[str, Any]:
+        pixel_total = self.width * self.height
         return {
-            "schema_version": 1,
+            "schema_version": 2,
             "kind": "mf1750-partial-update-plan",
             "hardware_tested": False,
             "controller_commands_generated": False,
             "width": self.width,
             "height": self.height,
-            "old_state_known": self.old_state_known,
-            "old_frame_fnv1a": self.old_frame_fnv1a,
+            "old_frame_supplied": self.old_frame_supplied,
+            "supplied_old_frame_fnv1a": self.supplied_old_frame_fnv1a,
+            "last_success_provenance": {
+                "operation_id": self.last_success_operation_id,
+                "frame_fnv1a": self.last_success_frame_fnv1a,
+                "trusted": self.last_success_trusted,
+                "matches_supplied_old_frame": self.last_success_matches_old_frame,
+            },
+            "transition_comparison_performed": self.transition_comparison_performed,
+            "planning_mode": (
+                "trusted_transition"
+                if self.transition_comparison_performed
+                else "conservative_full_screen"
+            ),
             "new_frame_fnv1a": self.new_frame_fnv1a,
             "changed_pixels": self.changed_pixels,
             "protected_pixels": self.protected_pixels,
             "unchanged_pixels": self.unchanged_pixels,
-            "changed_fraction": self.changed_pixels / (self.width * self.height),
-            "protected_fraction": self.protected_pixels / (self.width * self.height),
+            "changed_pixels_known": self.transition_comparison_performed,
+            "changed_fraction": (
+                self.changed_pixels / pixel_total
+                if self.changed_pixels is not None
+                else None
+            ),
+            "protected_fraction": self.protected_pixels / pixel_total,
             "neighbor_radius": self.neighbor_radius,
+            "max_neighbor_radius": MAX_NEIGHBOR_RADIUS,
             "bounding_box": list(self.bounding_box) if self.bounding_box is not None else None,
-            "controller_regions": [region.to_dict() for region in self.controller_regions],
+            "logical_half_regions": [region.to_dict() for region in self.logical_half_regions],
+            "physical_mapping_supplied": self.physical_mapping_supplied,
             "color_order": list(COLOR_NAMES),
             "color_codes": list(COLOR_CODES),
             "transition_histogram": (
@@ -103,45 +172,46 @@ def _validate_dimensions(width: int, height: int) -> None:
     if width <= 0 or height <= 0:
         raise PartialUpdateContractError("width and height must be positive")
     if width % 4:
-        raise PartialUpdateContractError("two packed controller halves require width divisible by 4")
+        raise PartialUpdateContractError("two packed logical halves require width divisible by 4")
 
 
 def _validated_frame(
     frame: bytes | bytearray | memoryview, width: int, height: int, label: str
 ) -> memoryview:
     try:
-        view = memoryview(frame)
-        if view.ndim != 1 or view.itemsize != 1:
-            view = view.cast("B")
-    except (TypeError, ValueError) as error:
-        raise PartialUpdateContractError(f"{label} must be contiguous bytes-like data") from error
-    expected = width * height // 2
-    if len(view) != expected:
-        raise PartialUpdateContractError(f"{label} has {len(view)} bytes; expected {expected}")
-    for byte_index, value in enumerate(view):
-        high = value >> 4
-        low = value & 0xF
-        if high not in _COLOR_INDEX:
-            raise PartialUpdateContractError(
-                f"{label} pixel {byte_index * 2} has unsupported color 0x{high:X}"
-            )
-        if low not in _COLOR_INDEX:
-            raise PartialUpdateContractError(
-                f"{label} pixel {byte_index * 2 + 1} has unsupported color 0x{low:X}"
-            )
-    return view
+        return validate_frame(frame, width, height)
+    except FrameContractError as error:
+        raise PartialUpdateContractError(f"{label}: {error}") from error
 
 
-def fnv1a(frame: bytes | bytearray | memoryview) -> int:
-    value = _FNV1A_OFFSET
-    try:
-        view = memoryview(frame).cast("B")
-    except (TypeError, ValueError) as error:
-        raise PartialUpdateContractError("frame must be contiguous bytes-like data") from error
-    for byte in view:
-        value ^= byte
-        value = (value * _FNV1A_PRIME) & 0xFFFFFFFF
+def _validate_hash(value: Optional[int]) -> Optional[int]:
+    if value is None:
+        return None
+    if not isinstance(value, int) or isinstance(value, bool) or not 0 <= value <= 0xFFFFFFFF:
+        raise PartialUpdateContractError("last_success_frame_fnv1a must be a 32-bit unsigned integer")
     return value
+
+
+def _validated_mappings(
+    mappings: Optional[Sequence[ControllerMapping]],
+) -> Optional[Tuple[ControllerMapping, ControllerMapping]]:
+    if mappings is None:
+        return None
+    try:
+        frozen = tuple(mappings)
+    except TypeError as error:
+        raise PartialUpdateContractError(
+            "frozen_controller_mappings must contain two ControllerMapping objects"
+        ) from error
+    if len(frozen) != 2 or any(not isinstance(mapping, ControllerMapping) for mapping in frozen):
+        raise PartialUpdateContractError(
+            "frozen_controller_mappings must contain two ControllerMapping objects"
+        )
+    if {mapping.source_half for mapping in frozen} != {0, 1}:
+        raise PartialUpdateContractError(
+            "frozen_controller_mappings must route logical halves 0 and 1 exactly once"
+        )
+    return frozen[0], frozen[1]
 
 
 def _pixel(view: memoryview, row_bytes: int, x: int, y: int) -> int:
@@ -151,6 +221,11 @@ def _pixel(view: memoryview, row_bytes: int, x: int, y: int) -> int:
 
 def _dilate_cardinal(mask: bytearray, width: int, height: int, radius: int) -> bytearray:
     expanded = bytearray(mask)
+    if radius == 0 or not expanded:
+        return expanded
+    # In particular, avoid radius full passes in conservative/full-change mode.
+    if expanded.count(1) == width * height:
+        return expanded
     for _ in range(radius):
         source = expanded
         target = bytearray(source)
@@ -169,6 +244,8 @@ def _dilate_cardinal(mask: bytearray, width: int, height: int, radius: int) -> b
                 if y + 1 < height:
                     target[index + width] = 1
         expanded = target
+        if expanded.count(1) == width * height:
+            break
     return expanded
 
 
@@ -195,13 +272,118 @@ def _bounding_box(mask: bytearray, width: int, height: int) -> Optional[Tuple[in
     return min_x, min_y, max_x_exclusive, max_y + 1
 
 
-def _controller_regions(
-    mask: bytearray, width: int, height: int
-) -> Tuple[ControllerRegion, ...]:
+def _physical_coordinates(
+    logical_half: int,
+    local_x0: int,
+    global_y0: int,
+    local_x1: int,
+    global_y1: int,
+    half_width: int,
+    height: int,
+    mappings: Optional[Tuple[ControllerMapping, ControllerMapping]],
+) -> Tuple[
+    Optional[int],
+    Optional[int],
+    Optional[int],
+    Optional[int],
+    Optional[int],
+    Optional[ControllerMapping],
+]:
+    if mappings is None:
+        return None, None, None, None, None, None
+    for index, mapping in enumerate(mappings):
+        if mapping.source_half != logical_half:
+            continue
+        physical_x0, physical_x1 = (
+            (half_width - local_x1, half_width - local_x0)
+            if mapping.flip_x
+            else (local_x0, local_x1)
+        )
+        physical_y0, physical_y1 = (
+            (height - global_y1, height - global_y0)
+            if mapping.flip_y
+            else (global_y0, global_y1)
+        )
+        return (
+            index + 1,
+            physical_x0,
+            physical_y0,
+            physical_x1,
+            physical_y1,
+            mapping,
+        )
+    raise PartialUpdateContractError("logical half is absent from frozen controller mappings")
+
+
+def _make_region(
+    logical_half: int,
+    global_x0: int,
+    global_y0: int,
+    global_x1: int,
+    global_y1: int,
+    width: int,
+    height: int,
+    mappings: Optional[Tuple[ControllerMapping, ControllerMapping]],
+) -> LogicalHalfRegion:
     half_width = width // 2
-    regions: List[ControllerRegion] = []
-    for controller in (1, 2):
-        half_start = (controller - 1) * half_width
+    local_x0 = global_x0 - logical_half * half_width
+    local_x1 = global_x1 - logical_half * half_width
+    (
+        physical_controller,
+        physical_local_x0,
+        physical_local_y0,
+        physical_local_x1,
+        physical_local_y1,
+        physical_mapping,
+    ) = _physical_coordinates(
+        logical_half,
+        local_x0,
+        global_y0,
+        local_x1,
+        global_y1,
+        half_width,
+        height,
+        mappings,
+    )
+    return LogicalHalfRegion(
+        logical_half=logical_half,
+        global_x0=global_x0,
+        global_y0=global_y0,
+        global_x1=global_x1,
+        global_y1=global_y1,
+        logical_local_x0=local_x0,
+        logical_local_x1=local_x1,
+        physical_controller=physical_controller,
+        physical_local_x0=physical_local_x0,
+        physical_local_y0=physical_local_y0,
+        physical_local_x1=physical_local_x1,
+        physical_local_y1=physical_local_y1,
+        physical_mapping=physical_mapping,
+    )
+
+
+def _full_screen_regions(
+    width: int,
+    height: int,
+    mappings: Optional[Tuple[ControllerMapping, ControllerMapping]],
+) -> Tuple[LogicalHalfRegion, LogicalHalfRegion]:
+    half_width = width // 2
+    return (
+        _make_region(0, 0, 0, half_width, height, width, height, mappings),
+        _make_region(1, half_width, 0, width, height, width, height, mappings),
+    )
+
+
+def _logical_half_regions(
+    mask: bytearray,
+    width: int,
+    height: int,
+    mappings: Optional[Tuple[ControllerMapping, ControllerMapping]],
+) -> Tuple[LogicalHalfRegion, ...]:
+    half_width = width // 2
+    regions: List[LogicalHalfRegion] = []
+    for logical_half in (0, 1):
+        half_start = logical_half * half_width
         half_end = half_start + half_width
         min_x = half_end
         min_y = height
@@ -221,14 +403,15 @@ def _controller_regions(
         min_x &= ~1
         max_x_exclusive = min(half_end, (max_x + 2) & ~1)
         regions.append(
-            ControllerRegion(
-                controller=controller,
-                global_x0=min_x,
-                global_y0=min_y,
-                global_x1=max_x_exclusive,
-                global_y1=max_y + 1,
-                local_x0=min_x - half_start,
-                local_x1=max_x_exclusive - half_start,
+            _make_region(
+                logical_half,
+                min_x,
+                min_y,
+                max_x_exclusive,
+                max_y + 1,
+                width,
+                height,
+                mappings,
             )
         )
     return tuple(regions)
@@ -241,11 +424,22 @@ def build_transition_plan(
     width: int = WIDTH,
     height: int = HEIGHT,
     neighbor_radius: int = 1,
+    last_success_operation_id: Optional[str] = None,
+    last_success_frame_fnv1a: Optional[int] = None,
+    last_success_trusted: bool = False,
+    frozen_controller_mappings: Optional[Sequence[ControllerMapping]] = None,
 ) -> TransitionPlan:
-    """Compare frames and build a conservative controller-neutral plan.
+    """Build a conservative partial-update research plan.
 
-    ``old_frame=None`` selects conservative unknown-state mode: every pixel is
-    marked changed and no transition histogram is invented.
+    ``old_frame`` alone only records a candidate previous frame.  Pixel-level
+    transitions are calculated only when all three last-success provenance
+    fields are supplied, the trust flag is true, and the provenance hash
+    matches the supplied old frame.  Otherwise the plan safely covers the
+    complete screen and does not invent a transition histogram.
+
+    ``frozen_controller_mappings`` is optional and must contain the mappings
+    for physical controllers 1 and 2 in that order.  Without it, regions remain
+    purely logical and no physical controller is named.
     """
 
     _validate_dimensions(width, height)
@@ -253,49 +447,124 @@ def build_transition_plan(
         raise PartialUpdateContractError("neighbor_radius must be an integer")
     if neighbor_radius < 0:
         raise PartialUpdateContractError("neighbor_radius cannot be negative")
+    if neighbor_radius > MAX_NEIGHBOR_RADIUS:
+        raise PartialUpdateContractError(
+            f"neighbor_radius cannot exceed {MAX_NEIGHBOR_RADIUS} pixels"
+        )
+    if not isinstance(last_success_trusted, bool):
+        raise PartialUpdateContractError("last_success_trusted must be a boolean")
+    if last_success_operation_id is not None:
+        if not isinstance(last_success_operation_id, str) or not last_success_operation_id.strip():
+            raise PartialUpdateContractError(
+                "last_success_operation_id must be a non-empty string when supplied"
+            )
+        last_success_operation_id = last_success_operation_id.strip()
+    last_success_frame_fnv1a = _validate_hash(last_success_frame_fnv1a)
+    mappings = _validated_mappings(frozen_controller_mappings)
+
     new_view = _validated_frame(new_frame, width, height, "new_frame")
     old_view = (
         _validated_frame(old_frame, width, height, "old_frame")
         if old_frame is not None
         else None
     )
+    old_hash = fnv1a(old_view) if old_view is not None else None
+    provenance_matches = (
+        old_hash == last_success_frame_fnv1a
+        if old_hash is not None and last_success_frame_fnv1a is not None
+        else None
+    )
+
+    if last_success_trusted:
+        if old_view is None:
+            raise PartialUpdateContractError(
+                "trusted last-success provenance requires old_frame"
+            )
+        if last_success_operation_id is None:
+            raise PartialUpdateContractError(
+                "trusted last-success provenance requires last_success_operation_id"
+            )
+        if last_success_frame_fnv1a is None:
+            raise PartialUpdateContractError(
+                "trusted last-success provenance requires last_success_frame_fnv1a"
+            )
+        if not provenance_matches:
+            raise PartialUpdateContractError(
+                "last_success_frame_fnv1a does not match the supplied old_frame"
+            )
+
+    transition_comparison_performed = bool(last_success_trusted and provenance_matches)
     pixel_total = width * height
+    new_hash = fnv1a(new_view)
+
+    # Unknown or untrusted panel state: do not spend time constructing/dilating
+    # an all-one mask, and do not derive transitions from a merely present file.
+    if not transition_comparison_performed:
+        return TransitionPlan(
+            width=width,
+            height=height,
+            old_frame_supplied=old_view is not None,
+            supplied_old_frame_fnv1a=old_hash,
+            last_success_operation_id=last_success_operation_id,
+            last_success_frame_fnv1a=last_success_frame_fnv1a,
+            last_success_trusted=last_success_trusted,
+            last_success_matches_old_frame=provenance_matches,
+            transition_comparison_performed=False,
+            new_frame_fnv1a=new_hash,
+            changed_pixels=None,
+            protected_pixels=pixel_total,
+            unchanged_pixels=None,
+            neighbor_radius=neighbor_radius,
+            bounding_box=(0, 0, width, height),
+            logical_half_regions=_full_screen_regions(width, height, mappings),
+            physical_mapping_supplied=mappings is not None,
+            transition_histogram=None,
+        )
+
+    # Provenance checks above guarantee old_view is present here.
+    assert old_view is not None
     row_bytes = width // 2
     changed_mask = bytearray(pixel_total)
-    histogram: Optional[List[List[int]]] = (
-        [[0 for _ in COLOR_CODES] for _ in COLOR_CODES] if old_view is not None else None
-    )
+    histogram = [[0 for _ in COLOR_CODES] for _ in COLOR_CODES]
     changed_pixels = 0
+    for y in range(height):
+        for x in range(width):
+            old_color = _pixel(old_view, row_bytes, x, y)
+            new_color = _pixel(new_view, row_bytes, x, y)
+            histogram[_COLOR_INDEX[old_color]][_COLOR_INDEX[new_color]] += 1
+            if old_color != new_color:
+                changed_mask[y * width + x] = 1
+                changed_pixels += 1
 
-    if old_view is None:
-        changed_mask[:] = b"\x01" * pixel_total
-        changed_pixels = pixel_total
+    # A full-change transition is common in diagnostics.  Bypass up to 32
+    # redundant dilation and region-scan passes.
+    if changed_pixels == pixel_total:
+        protected_pixels = pixel_total
+        bounding_box: Optional[Tuple[int, int, int, int]] = (0, 0, width, height)
+        regions: Tuple[LogicalHalfRegion, ...] = _full_screen_regions(width, height, mappings)
     else:
-        for y in range(height):
-            for x in range(width):
-                old_color = _pixel(old_view, row_bytes, x, y)
-                new_color = _pixel(new_view, row_bytes, x, y)
-                histogram[_COLOR_INDEX[old_color]][_COLOR_INDEX[new_color]] += 1
-                if old_color != new_color:
-                    changed_mask[y * width + x] = 1
-                    changed_pixels += 1
+        protected_mask = _dilate_cardinal(changed_mask, width, height, neighbor_radius)
+        protected_pixels = sum(protected_mask)
+        bounding_box = _bounding_box(protected_mask, width, height)
+        regions = _logical_half_regions(protected_mask, width, height, mappings)
 
-    protected_mask = _dilate_cardinal(changed_mask, width, height, neighbor_radius)
-    protected_pixels = sum(protected_mask)
     return TransitionPlan(
         width=width,
         height=height,
-        old_state_known=old_view is not None,
-        old_frame_fnv1a=fnv1a(old_view) if old_view is not None else None,
-        new_frame_fnv1a=fnv1a(new_view),
+        old_frame_supplied=True,
+        supplied_old_frame_fnv1a=old_hash,
+        last_success_operation_id=last_success_operation_id,
+        last_success_frame_fnv1a=last_success_frame_fnv1a,
+        last_success_trusted=True,
+        last_success_matches_old_frame=True,
+        transition_comparison_performed=True,
+        new_frame_fnv1a=new_hash,
         changed_pixels=changed_pixels,
         protected_pixels=protected_pixels,
         unchanged_pixels=pixel_total - changed_pixels,
         neighbor_radius=neighbor_radius,
-        bounding_box=_bounding_box(protected_mask, width, height),
-        controller_regions=_controller_regions(protected_mask, width, height),
-        transition_histogram=(
-            tuple(tuple(row) for row in histogram) if histogram is not None else None
-        ),
+        bounding_box=bounding_box,
+        logical_half_regions=regions,
+        physical_mapping_supplied=mappings is not None,
+        transition_histogram=tuple(tuple(row) for row in histogram),
     )
-
