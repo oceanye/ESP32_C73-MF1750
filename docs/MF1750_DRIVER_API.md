@@ -430,4 +430,7 @@ false，最终物理验收必须在应用报告之外人工记录。
   面板 GPIO 安全状态的变更，都必须提升 build/API 并重新实机验收。
 - 当前设备 API 无认证、无 TLS、无 cancel、无持久 job 历史。
 - H0 archive/hash 与硬件验收 tag 是发布封存工作；创建 tag 前仍需用户明确授权。
+- 网络照片源、随机选择与定时刷新按
+  [`TODO_NETWORK_RANDOM_PHOTO_PIPELINE.md`](TODO_NETWORK_RANDOM_PHOTO_PIPELINE.md)
+  分阶段执行；当前尚未实现，也不得直接在 ESP32 上猜测式扩展。
 - 完整实测数据见 `docs/REV_A1_R16_CASCADE_FULLFRAME_TEST_2026-08-04.md`。

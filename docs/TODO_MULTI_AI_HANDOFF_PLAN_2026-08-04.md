@@ -10,6 +10,7 @@
 | C3 转移感知优化 | 保守区域/转移统计规划器完成；完整优化器未开始 | `research/fast-refresh` / `b03b7e1` | 可信旧帧状态和 6x6 实测转移矩阵 |
 | C4 应用 API/Web UI | 应用 API/Web UI、HTTP adapter 与一次性硬件授权的软件合同完成 | 本地集成加固 | 设备端认证方案、普通图片端到端实刷 |
 | C5 CI 与回归门禁 | 203 项回归、合同、PlatformIO 与主线 CI run 30917129233 通过 | `feature/host-ci` / `c59a1f2` + 本地加固 | 后续变更继续逐提交运行；CI 不替代硬件结论 |
+| N0-N6 网络随机照片 | 待执行；已建立来源、下载、随机、量化、投递、调度与无人值守门禁 | `docs/TODO_NETWORK_RANDOM_PHOTO_PIPELINE.md` | 用户确认数据源、调度主机、周期、电源方式和 calibrated palette |
 | R1 SPI 扫频 | 严格离线分析器完成；参数化固件 action 未实现 | `research/fast-refresh` / `b03b7e1` + 本地加固 | 独立诊断固件及 1/2/4/8/10 MHz 冷启动扫频 |
 | R2 快速波形/局刷 | 证据边界与控制器中立规划器完成 | `research/fast-refresh` / `b03b7e1` | SPD1657B/面板 OTP 厂商资料；取得前禁止实装 |
 | H0 阶段备份 | Git/冻结文件基线已建立；D0 已通过但硬件 v1.0 快照未封版 | RC1/冻结基线 `3033da0` | 生成 archive/hash；tag 需用户明确授权 |
