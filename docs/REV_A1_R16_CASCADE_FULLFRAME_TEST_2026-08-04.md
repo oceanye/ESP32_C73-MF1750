@@ -1,6 +1,6 @@
 # MF-1750 Rev A1 R16 级联整屏验证（2026-08-04）
 
-> 当前待重新刷入候选 build tag 为
+> 当前已完成实机验收的 build tag 为
 > `MF1750_DRIVER_RC2C_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_2026-08-04`，
 > driver API 为 `MF1750_R16_CASCADE_V3`。它保留六色帧输入门禁、可审计错误返回和
 > diagnostic report 的 job/build 关联；HTTP ingress 和公开
@@ -10,6 +10,8 @@
 > 该 post-PSR 采样改为信息证据；PON/DRF/POF 仍必须在 250 ms 内观察到 BUSY，
 > 缺失即 fail closed、安全 POF/SPI stop/面板引脚拉低。正式报告使用匹配的非零 u32
 > `job_operation_id` / `operation_id` 不可变快照，后续 REV/诊断不能改贴旧报告。
+> 100 kHz MAP_ORIENT_V1 协议复验与正式 1 MHz `/api/frame` 均已通过，用户确认
+> 最终画面、电源与温度正常；断电后的 BUSY/RST/CS1/CS2 全为低。
 
 ## 1. 当前硬件与冻结边界
 
@@ -115,8 +117,79 @@ RC2B 报告中的有效证据为：
 标记 failed。对比 RC1 与随附样例可见：该步骤是 POF 后等待 6 秒、写 PSR、等待
 1 秒并切断接口；RC2B 提交 `514bb4a` 才把原有非严格 idle wait 改成严格
 BUSY-then-idle。RC2C/V3 恢复 post-PSR 的非严格 idle/timing 记录，同时继续严格
-要求 PON/DRF/POF BUSY、1 秒等待、SPI stop 和所有面板输出拉低。RC2C 必须重新
-刷入并得到 completed job/report 后，才进入 1 MHz 正式帧。
+要求 PON/DRF/POF BUSY、1 秒等待、SPI stop 和所有面板输出拉低。RC2C 随后已
+重新刷入，并完成以下 100 kHz 协议复验与 1 MHz 正式帧验收。
+
+### 3.2 RC2C/V3 最终 D0 实机验收
+
+修正提交 `2427833ac2c637a24f046ef63156b9f96577f267` 的 201 项主机测试、
+repository contract、PlatformIO build 与 GitHub CI run `30915602776` 均通过；
+J2-1 断电时刷入 COM8 并完成写入哈希复核。RC2C 的 100 kHz
+`map_orient_v1_slow` 返回 completed=true，完整帧与双 DTM 哈希分别为
+`2634290221/4066915037/4263092213`。本次报告为：
+
+```json
+{
+  "total_ms": 59093,
+  "cs1_upload_ms": 14896,
+  "cs2_upload_ms": 14894,
+  "pon_ms": 180,
+  "pon_busy_seen": true,
+  "drf_ms": 21701,
+  "drf_busy_seen": true,
+  "pof_ms": 140,
+  "pof_busy_seen": true,
+  "post_psr_ms": 5,
+  "post_psr_busy_seen": false,
+  "wait_timeout": false,
+  "busy_assertion_missing": false
+}
+```
+
+用户确认画面正常后断电。正式 1 MHz 首次尝试被主机在任何 POST 前安全拦截：
+实机的受管 PSRAM 堆上报 `8385847` 字节，原门禁错误地要求必须等于或高于物理
+标称 `8388608` 字节；旧 job 未改变，也没有刷新。主机修正
+`2b19f75620e2138edc8421056f65037bce828838` 只允许最多 64 KiB 的堆元数据开销，
+同时保留完整 build/API/SPI/mapping、4 MiB 排除和至少一帧可用空间门禁；新增两项
+边界回归后全仓 203 项测试、PlatformIO build 与 GitHub CI run `30917129233`
+全部通过，固件未因此重刷。
+
+面板断电超过 10 秒并重新确认电源正常后，只提交一次正式 1 MHz
+MAP_ORIENT_V1。主机工具、最终 job 和 immutable diagnostic report 全部通过；
+用户确认显示正确、电源与 L1/L2 温度正常后断开 J2-1。最终记录为：
+
+```json
+{
+  "job_id": 1,
+  "operation_id": 1,
+  "job_action": "uploaded_frame",
+  "job_state": "completed",
+  "job_result": true,
+  "spi_hz": 1000000,
+  "input_fnv1a": 2634290221,
+  "cs1_dtm_fnv1a": 4066915037,
+  "cs2_dtm_fnv1a": 4263092213,
+  "total_ms": 34187,
+  "cs1_upload_ms": 2444,
+  "cs2_upload_ms": 2444,
+  "pon_ms": 181,
+  "pon_busy_seen": true,
+  "drf_ms": 21700,
+  "drf_busy_seen": true,
+  "pof_ms": 140,
+  "pof_busy_seen": true,
+  "post_psr_ms": 5,
+  "post_psr_busy_seen": false,
+  "wait_timeout": false,
+  "busy_assertion_missing": false,
+  "timeout_stage": "none",
+  "busy_missing_stage": "none"
+}
+```
+
+断电后的只读状态为 `busy=0,rst=0,cs=0,cs2=0`。因此 D0 的颜色、方向、中缝、
+双控制器映射、正式 1 MHz 数据链、BUSY 时序和安全收尾已经验收通过。本结论不
+包含更高频率扫频、未知快速波形、局刷或未校准普通图片的真屏验收。
 
 ## 4. 下一张唯一必要的诊断图：MAP_ORIENT_V1
 
@@ -161,7 +234,7 @@ python tools\mf1750_frame_tool.py --pattern map-orient-v1
 并让字节级映射算法与独立像素级参考在 source-half、flip-X、flip-Y、
 nibble-swap 的全部 16 种组合下逐字节比较。
 
-## 5. 用户回来后的最小测试顺序
+## 5. 已执行的最小测试顺序
 
 每次可见刷新之间，J2-1 必须断电至少 10 秒；FPC 禁止带电插拔。
 

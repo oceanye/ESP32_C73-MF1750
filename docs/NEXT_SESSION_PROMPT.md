@@ -18,20 +18,20 @@
 > GPIO10=CS2；两颗 SPD1657B revision 均为 0x04，分别写 CCSET(0xE0)=0x01 后，
 > 100 kHz 完整 1024x600 六色色条、颜色顺序和中缝已经实屏通过。
 >
-> 当前待重新刷入候选的 build tag 为
+> 当前已完成实机验收的 build tag 为
 > `MF1750_DRIVER_RC2C_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_2026-08-04`，
-> driver API 为 `MF1750_R16_CASCADE_V3`。RC2B/V2 已在 100 kHz 显示完全正确的
-> MAP_ORIENT_V1，并确认 PON/DRF/POF BUSY 与完整/双 DTM 哈希；实测同时证明
+> driver API 为 `MF1750_R16_CASCADE_V3`。RC2C/V3 已在 100 kHz 与正式 1 MHz
+> 显示完全正确的 MAP_ORIENT_V1，并确认 PON/DRF/POF BUSY、完整/双 DTM 哈希、
+> 电源、温度与断电安全状态；实测同时证明
 > POF 后 PSR 写寄存器不会再次拉低 BUSY，RC2C/V3 因而把该采样改为信息证据。
 > 它保留非法六色色码的双层拒绝，并把
 > diagnostic report 以匹配 operation ID 的不可变快照与产生它的 job/build 绑定，
-> 未观察到正式阶段 BUSY 会 fail closed。先核对最终 `origin/main` SHA、
-> repository contract、152 项全仓 unittest、锁定 PlatformIO build 和对应 GitHub CI；
-> 这些软件结果不等于硬件验收。默认认为驱动板断电，未经我明确确认，不得刷写
+> 未观察到正式阶段 BUSY 会 fail closed。主机修正点 `2b19f75` 已通过 repository
+> contract、203 项全仓 unittest、PlatformIO build 和 GitHub CI run `30917129233`；
+> D0 实测详见级联整屏验证文档。默认认为驱动板断电，未经我明确确认，不得刷写
 > COM8、访问设备 HTTP 刷新接口或要求上电。
-> 经授权后依次确认启动日志约 8 MB OPI PSRAM、低速 MAP_ORIENT_V1 方向，以及
-> 通过正式 1 MHz `/api/frame` 发送同一个 MAP_ORIENT_V1；完成 D0 后先生成 H0
-> 只读 archive、SHA256 manifest 和硬件验收 tag。随后在独立
+> 下一步先生成 H0 只读 archive、SHA256 manifest，并由用户明确授权后创建硬件
+> 验收 tag。随后在独立
 > 硬件诊断分支按 1/2/4/8/10 MHz 冷启动扫频，使用仓库分析器记录 DTM hash、
 > BUSY、CV、温升和画面。10 MHz 全部门禁通过前不测试 20 MHz。不得根据
 > SPD1656 猜测 SPD1657B LUT/局刷命令；取得厂商资料前不改波形、高压或

@@ -32,9 +32,8 @@ Suggested merge order: D0 baseline -> C1 -> R1 offline tooling；R2 文档可独
 
 ## 家中集成负责人下一步
 
-1. 先提交并推送最终 `main`、确认对应 GitHub CI；取得用户明确刷写/上电许可后，
-   再复核约 8 MB OPI PSRAM 启动日志、低速检查 MAP_ORIENT_V1 方向，最后使用
-   同一 MAP_ORIENT_V1 完成规范帧 1 MHz 验收；
+1. D0 已完成：约 8 MB OPI PSRAM、100 kHz MAP_ORIENT_V1 和正式 1 MHz
+   规范帧均已实机通过；先封存 H0，再评审任何独立加速实验；
 2. 审查 `docs/R2_FAST_REFRESH_TECHNICAL_PATH_2026-08-04.md` 的证据矩阵与排除路线；
 3. 在独立硬件诊断分支新增受限的参数化 `1/2/4/8/10 MHz` MAP_ORIENT_V1 sweep
    action；现有普通 `/api/frame` 1 MHz 只用于 D0，不冒充该 sweep 入口；
@@ -85,10 +84,11 @@ SPD1657B 已具备快速或局部波形。
 为 true；POF 后 PSR 的 BUSY 采样允许为 false。四阶段等待与采样仍须同时出现在
 串口与 report 中并逐项相等，DRF 保持 10..60 秒。analyzer 专项仍须保持全通过。
 
-实机此前的 RC1/旧 RC2 没有完整的 report/job/build 关联。仓库当前未刷入的
+实机此前的 RC1/旧 RC2 没有完整的 report/job/build 关联。当前已实测的
 `MF1750_DRIVER_RC2C_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_2026-08-04` /
 `MF1750_R16_CASCADE_V3` 已把 diagnostic report 绑定到 firmware build、driver API、job
-id/action/state/result 和时间戳；但 MAP slow action 仍固定为 100 kHz，且没有独立
+id/action/state/result 和时间戳；RC2C 的正式 1 MHz `/api/frame` 已完成 D0 验收，
+但 MAP slow action 仍固定为 100 kHz，且没有独立
 参数化 `map_orient_v1_sweep` action。因此 RC2C 仍不能满足 schema v2 的正式升频
 证据合同。必须先在隔离硬件诊断分支实现受限 sweep action，并附实测 SCLK 证据，
-才允许 analyzer 输出任何频率 PASS。
+才允许 analyzer 输出 G1 扫频 PASS。
