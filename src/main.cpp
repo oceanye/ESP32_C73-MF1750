@@ -10,7 +10,7 @@
 WebServer server(80);
 
 static constexpr const char *FW_BUILD_TAG =
-    "MF1750_DRIVER_RC2E_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_TRANSFORM_2026-08-04";
+    "MF1750_DRIVER_RC2F_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_PHYSICAL_2026-08-05";
 static constexpr uint32_t FNV1A_OFFSET_BASIS = 2166136261UL;
 static constexpr uint32_t FNV1A_PRIME = 16777619UL;
 static constexpr uint32_t MAP_ORIENT_V1_EXPECTED_FNV1A = 2634290221UL;
@@ -120,7 +120,15 @@ static constexpr char INDEX_HTML[] PROGMEM = R"HTML(
     canvas { max-width:100%; border:2px solid var(--line); background:white; }
     #source-preview { cursor:grab; touch-action:none; }
     #source-preview.dragging { cursor:grabbing; }
-    #preview { image-rendering:pixelated; }
+    .eink-viewport { max-width:100%; overflow:auto; border:1px solid var(--line); background:#d8d3c5; padding:8px; box-sizing:border-box; }
+    .eink-active { position:relative; width:100%; aspect-ratio:163.84 / 97.20; background:#f4f1e8; box-shadow:0 0 0 1px #756f61; flex:none; }
+    #preview { display:block; width:100%; height:100%; max-width:none; border:0; image-rendering:pixelated; }
+    .pixel-grid { display:none; position:absolute; inset:0; pointer-events:none;
+      background-image:linear-gradient(to right,rgba(20,20,20,.28) .35px,transparent .35px),
+                       linear-gradient(to bottom,rgba(20,20,20,.28) .35px,transparent .35px);
+      background-size:var(--pixel-x, 1px) var(--pixel-y, 1px); }
+    .eink-active.grid-visible .pixel-grid { display:block; }
+    .preview-meta { font:0.88rem/1.45 system-ui,sans-serif; color:#3d493f; }
     code { background:#fff4c6; padding:2px 5px; }
     #status { font-weight:700; min-height:1.4em; }
   </style>
@@ -157,7 +165,26 @@ static constexpr char INDEX_HTML[] PROGMEM = R"HTML(
     </div>
     <div class="preview-grid">
       <figure><figcaption>原图构图（可拖动）</figcaption><canvas id="source-preview"></canvas></figure>
-      <figure><figcaption>实际六色上传预览</figcaption><canvas id="preview"></canvas></figure>
+      <figure>
+        <figcaption>MF-1750 实际六色上传预览</figcaption>
+        <div class="controls">
+          <label>像素检查倍率
+            <select id="preview-scale">
+              <option value="fit" selected>适应窗口</option>
+              <option value="1">1×（1 CSS px / 横向像素）</option>
+              <option value="2">2×</option>
+              <option value="4">4×</option>
+            </select>
+          </label>
+          <label><input id="pixel-grid" type="checkbox"> 显示像素边界</label>
+        </div>
+        <div class="eink-viewport">
+          <div id="eink-active" class="eink-active">
+            <canvas id="preview"></canvas><div class="pixel-grid"></div>
+          </div>
+        </div>
+        <div id="preview-meta" class="preview-meta"></div>
+      </figure>
     </div>
     <div id="status"></div>
   </section>
@@ -180,6 +207,10 @@ const zoomValueEl = document.getElementById('zoom-value');
 const rotateLeftEl = document.getElementById('rotate-left');
 const rotateRightEl = document.getElementById('rotate-right');
 const resetViewEl = document.getElementById('reset-view');
+const previewScaleEl = document.getElementById('preview-scale');
+const pixelGridEl = document.getElementById('pixel-grid');
+const einkActiveEl = document.getElementById('eink-active');
+const previewMetaEl = document.getElementById('preview-meta');
 document.getElementById('size').textContent = `${UPLOAD_W} x ${H}`;
 sourceCanvas.width = canvas.width = UPLOAD_W;
 sourceCanvas.height = canvas.height = H;
@@ -197,8 +228,45 @@ let viewOffsetY = 0;
 let dragState = null;
 let transformRenderTimer = null;
 
+const EINK_ACTIVE_WIDTH_MM = 163.84;
+const EINK_ACTIVE_HEIGHT_MM = 97.20;
+const EINK_PIXEL_PITCH_X_MM = 0.160;
+const EINK_PIXEL_PITCH_Y_MM = 0.162;
+const EINK_PPI = 158;
+
 function setStatus(text) { statusEl.textContent = text; }
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+function updatePhysicalPreview() {
+  const selected = previewScaleEl.value;
+  if (selected === 'fit') {
+    einkActiveEl.style.width = '100%';
+    einkActiveEl.style.removeProperty('--pixel-x');
+    einkActiveEl.style.removeProperty('--pixel-y');
+    einkActiveEl.classList.remove('grid-visible');
+    pixelGridEl.checked = false;
+    pixelGridEl.disabled = true;
+  } else {
+    const scale = Number(selected);
+    einkActiveEl.style.width = `${UPLOAD_W * scale}px`;
+    einkActiveEl.style.setProperty('--pixel-x', `${scale}px`);
+    einkActiveEl.style.setProperty(
+      '--pixel-y', `${scale * EINK_PIXEL_PITCH_Y_MM / EINK_PIXEL_PITCH_X_MM}px`);
+    pixelGridEl.disabled = false;
+    einkActiveEl.classList.toggle('grid-visible', pixelGridEl.checked);
+  }
+  previewMetaEl.textContent =
+    `${UPLOAD_W}×${H}；有效区 ${EINK_ACTIVE_WIDTH_MM.toFixed(2)}×${EINK_ACTIVE_HEIGHT_MM.toFixed(2)} mm；` +
+    `像素间距 ${EINK_PIXEL_PITCH_X_MM.toFixed(3)}×${EINK_PIXEL_PITCH_Y_MM.toFixed(3)} mm；约 ${EINK_PPI} PPI。` +
+    `网页已校正非正方形像素比例；显示器上的毫米尺寸不是物理 1:1 标尺。`;
+}
+
+previewScaleEl.addEventListener('change', updatePhysicalPreview);
+pixelGridEl.addEventListener('change', () => {
+  einkActiveEl.classList.toggle(
+    'grid-visible', previewScaleEl.value !== 'fit' && pixelGridEl.checked);
+});
+updatePhysicalPreview();
 
 function fnv1a(bytes) {
   let hash = 0x811c9dc5;

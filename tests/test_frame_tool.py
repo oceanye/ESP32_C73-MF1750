@@ -23,7 +23,7 @@ from tools import mf1750_frame_tool as tool
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-BUILD_TAG = "MF1750_DRIVER_RC2E_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_TRANSFORM_2026-08-04"
+BUILD_TAG = "MF1750_DRIVER_RC2F_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_PHYSICAL_2026-08-05"
 DEFAULT_MAPPINGS = (ControllerMapping(0), ControllerMapping(1))
 
 
@@ -557,8 +557,8 @@ class NetworkContractTests(unittest.TestCase):
             )
 
         for bad_tag in (
-            BUILD_TAG.replace("RC2E", "RC2D"),
-            BUILD_TAG.replace("RC2E", "RC20"),
+            BUILD_TAG.replace("RC2F", "RC2E"),
+            BUILD_TAG.replace("RC2F", "RC20"),
             BUILD_TAG.replace("COLORGUARD", "NOCOLORGUARD"),
         ):
             with self.subTest(bad_tag=bad_tag):

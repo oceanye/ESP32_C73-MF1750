@@ -21,9 +21,10 @@
 > 100 kHz 完整 1024x600 六色色条、颜色顺序和中缝已经实屏通过。
 >
 > 当前源码候选 build tag 为
-> `MF1750_DRIVER_RC2E_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_TRANSFORM_2026-08-04`，
-> driver API 为 `MF1750_R16_CASCADE_V3`；RC2E 在 RC2D 照片工具上增加拖动、缩放、
-> 90° 旋转和重置构图，尚未刷写。RC2D 已完成断电刷写与 Wi-Fi/网页运行验证，
+> `MF1750_DRIVER_RC2F_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_PHYSICAL_2026-08-05`，
+> driver API 为 `MF1750_R16_CASCADE_V3`；RC2F 在 RC2E 交互构图上增加
+> `163.84×97.20 mm` 有效区、`0.160×0.162 mm` 非正方形像素和 158 PPI 预览，
+> 尚未刷写。RC2D 已完成断电刷写与 Wi-Fi/网页运行验证，
 > 但没有在该 build 上执行面板刷新。
 > 最近完成实机验收的 RC2C/V3 已在 100 kHz 与正式 1 MHz
 > 显示完全正确的 MAP_ORIENT_V1，并确认 PON/DRF/POF BUSY、完整/双 DTM 哈希、

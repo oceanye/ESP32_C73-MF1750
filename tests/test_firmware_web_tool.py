@@ -40,6 +40,10 @@ class FirmwarePhotoToolTests(unittest.TestCase):
             "rotate-left",
             "rotate-right",
             "reset-view",
+            "preview-scale",
+            "pixel-grid",
+            "eink-active",
+            "preview-meta",
             "send",
         ):
             self.assertIn(f'id="{element_id}"', self.html)
@@ -84,6 +88,22 @@ class FirmwarePhotoToolTests(unittest.TestCase):
         self.assertIn("sourceCtx.rotate", self.javascript)
         self.assertIn("sourceCtx.scale", self.javascript)
         self.assertIn("scheduleTransformPreview", self.javascript)
+        self.assertEqual(self.javascript.count("fetch('/api/frame'"), 1)
+
+    def test_physical_preview_uses_panel_geometry_and_rectangular_pixels(self) -> None:
+        for contract in (
+            "EINK_ACTIVE_WIDTH_MM = 163.84",
+            "EINK_ACTIVE_HEIGHT_MM = 97.20",
+            "EINK_PIXEL_PITCH_X_MM = 0.160",
+            "EINK_PIXEL_PITCH_Y_MM = 0.162",
+            "EINK_PPI = 158",
+            "aspect-ratio:163.84 / 97.20",
+            "UPLOAD_W * scale",
+            "EINK_PIXEL_PITCH_Y_MM / EINK_PIXEL_PITCH_X_MM",
+        ):
+            self.assertIn(contract, self.html)
+        self.assertIn("previewScaleEl.addEventListener('change'", self.javascript)
+        self.assertIn("pixelGridEl.addEventListener('change'", self.javascript)
         self.assertEqual(self.javascript.count("fetch('/api/frame'"), 1)
 
     def test_embedded_javascript_has_valid_syntax_when_node_is_available(self) -> None:
