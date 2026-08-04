@@ -20,9 +20,10 @@
 > GPIO10=CS2；两颗 SPD1657B revision 均为 0x04，分别写 CCSET(0xE0)=0x01 后，
 > 100 kHz 完整 1024x600 六色色条、颜色顺序和中缝已经实屏通过。
 >
-> 当前已完成实机验收的 build tag 为
-> `MF1750_DRIVER_RC2C_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_2026-08-04`，
-> driver API 为 `MF1750_R16_CASCADE_V3`。RC2C/V3 已在 100 kHz 与正式 1 MHz
+> 当前源码候选 build tag 为
+> `MF1750_DRIVER_RC2D_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_2026-08-04`，
+> driver API 为 `MF1750_R16_CASCADE_V3`；RC2D 只增加浏览器照片工具，尚未刷写。
+> 最近完成实机验收的 RC2C/V3 已在 100 kHz 与正式 1 MHz
 > 显示完全正确的 MAP_ORIENT_V1，并确认 PON/DRF/POF BUSY、完整/双 DTM 哈希、
 > 电源、温度与断电安全状态；实测同时证明
 > POF 后 PSR 写寄存器不会再次拉低 BUSY，RC2C/V3 因而把该采样改为信息证据。

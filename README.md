@@ -26,9 +26,11 @@
   512 字节，CS1 取前 256 字节、CS2 取后 256 字节。
 - ESP32-S3 已由 esptool 与运行时共同确认约 8 MB OPI PSRAM；307200 字节
   规范帧的主机、设备生成器和非刷新 ingress 哈希均已通过。
-- 当前已验收固件为
-  `MF1750_DRIVER_RC2C_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_2026-08-04`
-  / driver API V3：HTTP ingress 与公开驱动 API 都会在任何面板 I/O 前拒绝
+- 当前源码候选固件为
+  `MF1750_DRIVER_RC2D_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_2026-08-04`
+  / driver API V3；它只在 RC2C 基础上增加浏览器端照片预处理与真实六色预览，
+  clean build 为 803120 字节、SHA-256 `AE7427…943DAD`，尚待断电刷写和实屏复验。
+  HTTP ingress 与公开驱动 API 都会在任何面板 I/O 前拒绝
   `0x4/0x7..0xF` 非法像素码；PON/DRF/POF 未观察到 BUSY 会 fail closed，
   POF 后的 PSR 寄存器写入保留等待证据但不要求额外 BUSY assertion；诊断报告
   以匹配的 operation ID 与产生它的 job/build 绑定。
@@ -38,9 +40,9 @@
   DTM 上传各 2.444 秒、DRF 约 21.7 秒。
 - 主机 PSRAM 预检修正点 `2b19f75` 的 203 项回归、repository contract、
   PlatformIO build 与 GitHub CI run `30917129233` 全部通过；验收记录提交
-  `fd548e3` 的 CI run `30918209821` 也通过。当前干净重建的 `firmware.bin`
-  仍为 796272 字节、SHA-256 `F763FE…F45C475B`，与实测固件一致；当前无
-  Rev A1 硬件 ECO 证据。
+  `fd548e3` 的 CI run `30918209821` 也通过。RC2C 实测 `firmware.bin` 为
+  796272 字节、SHA-256 `F763FE…F45C475B`；RC2D 构建指纹以 API 文档为准，
+  在重新实屏验收前不得与 RC2C 的硬件证据混用。当前无 Rev A1 硬件 ECO 证据。
 - 基础驱动 D0 已定版；普通图片与 Web UI 的软件合同已合入，但 calibrated palette
   真屏色彩、设备端认证、更高 SPI 扫频、快速波形和局刷仍是独立后续工作，不能
   由本次硬件通过自动提升状态。
@@ -196,6 +198,12 @@ D2 修正为 `K=GND、A=NEG_PUMP_H`；下单时只使用带 `revA1_Q1FIX`
 `WiFi STA IP` 为准；`192.168.4.1` 仅是 STA 失败后的 AP 回退地址，不是固定
 调试地址。RC2C/V3 已完成实机验收；默认驱动板断电，未经用户明确确认，不刷写
 COM8、不访问任何会触发刷新的 HTTP 路由。
+
+RC2D 候选固件的设备首页加入照片工具模式：选择一次原图后，可在 Atkinson、
+Floyd–Steinberg、无抖动和 8x8 有序抖动间切换，同时对比原图构图与实际六色
+上传预览；照片优化、裁剪和处理方式的变化只在浏览器本地重算，点击“上传并刷新”
+后才提交当前帧。该网页仍使用未校准 reference RGB 色板，属于便捷实验入口，不
+替代 calibrated host pipeline。
 
 D0 的唯一正式实屏顺序和命令见
 [`docs/REV_A1_R16_CASCADE_FULLFRAME_TEST_2026-08-04.md`](docs/REV_A1_R16_CASCADE_FULLFRAME_TEST_2026-08-04.md)：

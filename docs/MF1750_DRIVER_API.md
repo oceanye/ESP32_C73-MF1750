@@ -5,11 +5,12 @@
 
 ## 1. 发布状态与适用范围
 
-| 项目 | 已验收值 |
+| 项目 | 当前值 |
 |---|---|
-| 固件 build | `MF1750_DRIVER_RC2C_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_2026-08-04` |
+| 源码候选 build | `MF1750_DRIVER_RC2D_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_2026-08-04` |
+| 最近实机验收 build | `MF1750_DRIVER_RC2C_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_2026-08-04` |
 | C++ Driver API | `MF1750_R16_CASCADE_V3` |
-| `firmware.bin` | 796272 字节；SHA-256 `F763FE0518DE00040990C85C510B077EC67C0270C5909BB6A4CEF619F45C475B` |
+| RC2D `firmware.bin` | 803120 字节；SHA-256 `AE7427DC7A5B3DC6F69103CEDC63F24E7D9C06FF84E6669D6B16911A46943DAD`；尚未刷写验收 |
 | 硬件 | MF-1750 Rev A1，R15 拆除、R16=0 Ω |
 | 控制器 | 双 SPD1657B，revision `0x04` |
 | 面板 | 1024x600，双 512x600 控制器 |
@@ -137,7 +138,7 @@ POF 后 PSR 写入不会在当前实板再次拉低 BUSY，因此该阶段只要
 5. 最后由人确认画面、电源和温度。
 
 网络超时后不得盲目重发 `/api/frame`。先查询 `/api/job` 和
-`/api/diagnostic/report`；RC2C/V3 没有远端 cancel API。
+`/api/diagnostic/report`；RC2D/V3 没有远端 cancel API。
 
 ### 4.2 稳定的应用协议路由
 
@@ -167,7 +168,7 @@ GET /api/version
 成功返回 `200 text/plain`：
 
 ```text
-MF1750_DRIVER_RC2C_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_2026-08-04
+MF1750_DRIVER_RC2D_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_2026-08-04
 Panel: 1024x600
 Driver API: MF1750_R16_CASCADE_V3
 Frame bytes: 307200
@@ -217,7 +218,27 @@ POST /api/frame
 {"ok":true,"bytes":307200,"fnv1a":2634290221,"free_psram":8060000,"job_id":1}
 ```
 
-### 4.5 Job 状态
+### 4.5 设备内置照片工具网页
+
+`GET /` 返回完全在浏览器内运行的照片工具，不会把原始图片上传到 ESP32。选择
+一次原图后可反复切换以下六色处理方式：
+
+- `none`：无抖动，形成平滑但细节较少的色块；
+- `floyd-steinberg`：误差扩散，细节最多、颗粒也最密；
+- `atkinson`：较轻的误差扩散，作为默认照片模式；
+- `ordered-bayer-8x8`：固定 8x8 网点，输出可复现但可能出现规则纹理。
+
+网页并排显示缩放/裁剪后的原图与“实际六色上传预览”。照片优化会用固定 gamma
+提亮暗部并轻微降低饱和度；关闭后使用解码后的 sRGB 像素。所有模式都使用
+`0/1/2/3/5/6` 六个物理码，同时由同一次颜色选择生成预览像素和 4bpp 帧，避免
+原图预览与实际上传不一致。
+
+切换裁剪、照片优化或抖动模式只在浏览器中重新计算，绝不访问 `/api/frame`。
+只有点击“上传并刷新”才提交当前 `packed` 帧；网页必须核对设备响应的 `bytes`
+与 FNV-1a 后才轮询对应 job。该内置工具使用固定 reference RGB 色板，仍属于方便
+调试的近似照片模式，不替代带 provenance 的 calibrated host pipeline。
+
+### 4.6 Job 状态
 
 ```http
 GET /api/job
@@ -240,7 +261,7 @@ GET /api/job
 `null`。三个时间戳是本次启动内的 u32 `millis()`，可能回绕；job id 也是本次启动
 内序号，MCU 重启后可以重新从 1 开始。
 
-### 4.6 Immutable diagnostic
+### 4.7 Immutable diagnostic
 
 ```http
 GET /api/diagnostic/report
@@ -267,7 +288,7 @@ GET /api/diagnostic/report
 `sequence_ok=true`，PON/DRF/POF BUSY 为 true，无 timeout/missing stage，SPI/mapping
 和三个哈希与提交内容一致，`last_wait_stage="post-display PSR"`。
 
-### 4.7 HTTP 错误
+### 4.8 HTTP 错误
 
 | 状态 | 典型 error | 含义 |
 |---:|---|---|
@@ -283,7 +304,7 @@ PSRAM 分配失败通过 400 `frame_buffer_allocation_failed` 返回。错误响
 
 ## 5. 维护诊断路由
 
-以下路由存在于 RC2C 固件，但不属于稳定应用 API，也不在
+以下路由继续存在于 RC2D 固件，但不属于稳定应用 API，也不在
 `HttpDeviceAdapter` allowlist 中。它们可能切换 GPIO、复位控制器、启动高压或
 显示历史非规范尺寸；只有在面板供电条件、冷启动间隔和人工授权明确时才可调用。
 
@@ -404,7 +425,7 @@ python -m app.server --enable-device --device-url http://DEVICE-IP
 | POST | `/application/device/report` | `{}` |
 | POST | `/application/device/recover` | `{}` |
 | POST | `/application/device/local-abort` | `{}` |
-| POST | `/application/device/cancel` | `{}`；RC2C 明确返回 unsupported |
+| POST | `/application/device/cancel` | `{}`；RC2D/V3 明确返回 unsupported |
 
 mapping JSON：
 
@@ -424,8 +445,8 @@ false，最终物理验收必须在应用报告之外人工记录。
 
 ## 8. 已知边界与版本策略
 
-- RC2C/V3 是已实测的不可变固件身份；仅修改文档或主机代码不应伪造新的固件
-  build tag。
+- RC2C/V3 是底层驱动已实测的不可变固件身份；RC2D/V3 只增加设备内置网页照片
+  工具，必须以新的 build、构建指纹和刷写复验记录管理，不能继承 RC2C 的固件哈希。
 - 任何改变初始化、CCSET、mapping、颜色码、PON/DRF/POF/PSR、BUSY 门禁或
   面板 GPIO 安全状态的变更，都必须提升 build/API 并重新实机验收。
 - 当前设备 API 无认证、无 TLS、无 cancel、无持久 job 历史。

@@ -10,7 +10,7 @@
 WebServer server(80);
 
 static constexpr const char *FW_BUILD_TAG =
-    "MF1750_DRIVER_RC2C_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_2026-08-04";
+    "MF1750_DRIVER_RC2D_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_2026-08-04";
 static constexpr uint32_t FNV1A_OFFSET_BASIS = 2166136261UL;
 static constexpr uint32_t FNV1A_PRIME = 16777619UL;
 static constexpr uint32_t MAP_ORIENT_V1_EXPECTED_FNV1A = 2634290221UL;
@@ -111,8 +111,13 @@ static constexpr char INDEX_HTML[] PROGMEM = R"HTML(
     .controls { display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
     button, input::file-selector-button { border:2px solid var(--ink); background:var(--accent); color:white; padding:10px 14px;
       font-weight:700; cursor:pointer; }
-    input, label { font-size:1rem; }
-    canvas { max-width:100%; border:2px solid var(--line); background:white; image-rendering:pixelated; }
+    input, label, select { font-size:1rem; }
+    select { border:2px solid var(--ink); background:#fffdf4; padding:8px; }
+    .preview-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+    figure { margin:0; display:grid; gap:7px; }
+    figcaption { font-weight:700; }
+    canvas { max-width:100%; border:2px solid var(--line); background:white; }
+    #preview { image-rendering:pixelated; }
     code { background:#fff4c6; padding:2px 5px; }
     #status { font-weight:700; min-height:1.4em; }
   </style>
@@ -121,33 +126,64 @@ static constexpr char INDEX_HTML[] PROGMEM = R"HTML(
 <main>
   <h1>ESP32-S3<br>eInk Upload</h1>
   <section class="panel">
-    <p>选择图片后会在浏览器端缩放到 <code id="size"></code>，量化为 6 色 E Ink 调色板，再发送到 ESP32 刷新墨水屏。</p>
+    <p>选择图片后会在浏览器端缩放到 <code id="size"></code>。切换处理方式只更新真实六色预览；只有点击上传才会刷新屏幕。</p>
     <div class="controls">
       <input id="file" type="file" accept="image/*">
       <label><input id="crop" type="checkbox" checked> 居中裁剪填满</label>
+      <label><input id="enhance" type="checkbox" checked> 照片优化</label>
+      <label>处理方式
+        <select id="dither">
+          <option value="atkinson" selected>Atkinson（推荐，颗粒较轻）</option>
+          <option value="floyd-steinberg">Floyd–Steinberg（细节较多）</option>
+          <option value="none">无抖动（平滑色块）</option>
+          <option value="ordered-bayer-8x8">8×8 有序抖动（规则网点）</option>
+        </select>
+      </label>
       <button id="send" disabled>上传并刷新</button>
       <button id="test">MAP_ORIENT_V1 驱动验收</button>
     </div>
-    <canvas id="preview"></canvas>
+    <div class="preview-grid">
+      <figure><figcaption>原图构图</figcaption><canvas id="source-preview"></canvas></figure>
+      <figure><figcaption>实际六色上传预览</figcaption><canvas id="preview"></canvas></figure>
+    </div>
     <div id="status"></div>
   </section>
 </main>
 <script>
 const W = %EPD_WIDTH%, H = %EPD_HEIGHT%;
 const UPLOAD_W = %UPLOAD_WIDTH%;
+const sourceCanvas = document.getElementById('source-preview');
+const sourceCtx = sourceCanvas.getContext('2d', { willReadFrequently: true });
 const canvas = document.getElementById('preview');
 const ctx = canvas.getContext('2d');
 const statusEl = document.getElementById('status');
 const fileEl = document.getElementById('file');
 const sendEl = document.getElementById('send');
 const cropEl = document.getElementById('crop');
+const enhanceEl = document.getElementById('enhance');
+const ditherEl = document.getElementById('dither');
 document.getElementById('size').textContent = `${UPLOAD_W} x ${H}`;
-canvas.width = UPLOAD_W; canvas.height = H;
+sourceCanvas.width = canvas.width = UPLOAD_W;
+sourceCanvas.height = canvas.height = H;
 let packed = null;
+let packedHash = null;
 let loadedImage = null;
+let sourceObjectUrl = null;
+let renderGeneration = 0;
+let imageGeneration = 0;
+let uploadPending = false;
 
 function setStatus(text) { statusEl.textContent = text; }
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+function fnv1a(bytes) {
+  let hash = 0x811c9dc5;
+  for (const value of bytes) {
+    hash ^= value;
+    hash = Math.imul(hash, 0x01000193) >>> 0;
+  }
+  return hash >>> 0;
+}
 
 async function readJsonResponse(resp) {
   const text = await resp.text();
@@ -191,30 +227,130 @@ function nearestColor(r, g, b) {
       best = item;
     }
   }
-  return best.code;
+  return best;
+}
+
+function nearestTwo(r, g, b) {
+  let first = palette[0], second = palette[1];
+  let firstDist = Infinity, secondDist = Infinity;
+  for (const item of palette) {
+    const dr = r - item.rgb[0], dg = g - item.rgb[1], db = b - item.rgb[2];
+    const dist = dr * dr + dg * dg + db * db;
+    if (dist < firstDist) {
+      second = first; secondDist = firstDist;
+      first = item; firstDist = dist;
+    } else if (dist < secondDist) {
+      second = item; secondDist = dist;
+    }
+  }
+  return [first, firstDist, second, secondDist];
+}
+
+const bayer8 = [
+   0,48,12,60, 3,51,15,63, 32,16,44,28,35,19,47,31,
+   8,56, 4,52,11,59, 7,55, 40,24,36,20,43,27,39,23,
+   2,50,14,62, 1,49,13,61, 34,18,46,30,33,17,45,29,
+  10,58, 6,54, 9,57, 5,53, 42,26,38,22,41,25,37,21
+];
+
+const photoLut = Uint8Array.from({ length: 256 }, (_, value) =>
+  Math.round(Math.pow(value / 255, 0.82) * 255));
+
+function addError(work, x, y, er, eg, eb, weight) {
+  if (x < 0 || x >= UPLOAD_W || y < 0 || y >= H) return;
+  const offset = (y * UPLOAD_W + x) * 3;
+  work[offset] += er * weight;
+  work[offset + 1] += eg * weight;
+  work[offset + 2] += eb * weight;
 }
 
 function quantizeAndPack() {
-  const img = ctx.getImageData(0, 0, UPLOAD_W, H);
+  const img = sourceCtx.getImageData(0, 0, UPLOAD_W, H);
+  const preview = ctx.createImageData(UPLOAD_W, H);
   const out = new Uint8Array(Math.ceil(UPLOAD_W * H / 2));
+  const work = new Float32Array(UPLOAD_W * H * 3);
+  const optimize = enhanceEl.checked;
+  const mode = ditherEl.value;
+
+  for (let pixel = 0; pixel < UPLOAD_W * H; pixel++) {
+    const rgba = pixel * 4;
+    let r = img.data[rgba], g = img.data[rgba + 1], b = img.data[rgba + 2];
+    if (optimize) {
+      r = photoLut[r]; g = photoLut[g]; b = photoLut[b];
+      const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      r = luminance + (r - luminance) * 0.90;
+      g = luminance + (g - luminance) * 0.90;
+      b = luminance + (b - luminance) * 0.90;
+    }
+    const offset = pixel * 3;
+    work[offset] = r; work[offset + 1] = g; work[offset + 2] = b;
+  }
+
   for (let y = 0; y < H; y++) {
-    for (let x = 0; x < UPLOAD_W; x++) {
+    const reverse = (mode === 'floyd-steinberg' || mode === 'atkinson') && (y & 1);
+    for (let step = 0; step < UPLOAD_W; step++) {
+      const x = reverse ? UPLOAD_W - 1 - step : step;
+      const direction = reverse ? -1 : 1;
       const pixel = y * UPLOAD_W + x;
-      const rgba = pixel * 4;
-      const code = nearestColor(img.data[rgba], img.data[rgba + 1], img.data[rgba + 2]) & 0x0f;
+      const workOffset = pixel * 3;
+      const r = Math.max(0, Math.min(255, work[workOffset]));
+      const g = Math.max(0, Math.min(255, work[workOffset + 1]));
+      const b = Math.max(0, Math.min(255, work[workOffset + 2]));
+      let selected;
+      if (mode === 'ordered-bayer-8x8') {
+        const [first, firstDist, second, secondDist] = nearestTwo(r, g, b);
+        const mix = firstDist / Math.max(1, firstDist + secondDist);
+        const threshold = (bayer8[(y & 7) * 8 + (x & 7)] + 0.5) / 64;
+        selected = mix > threshold ? second : first;
+      } else {
+        selected = nearestColor(r, g, b);
+      }
+      const code = selected.code & 0x0f;
       const byteIndex = pixel >> 1;
       if (pixel & 1) out[byteIndex] = (out[byteIndex] & 0xf0) | code;
       else out[byteIndex] = (code << 4) | (out[byteIndex] & 0x0f);
+
+      const rgba = pixel * 4;
+      preview.data[rgba] = selected.rgb[0];
+      preview.data[rgba + 1] = selected.rgb[1];
+      preview.data[rgba + 2] = selected.rgb[2];
+      preview.data[rgba + 3] = 255;
+
+      if (mode === 'floyd-steinberg' || mode === 'atkinson') {
+        const er = work[workOffset] - selected.rgb[0];
+        const eg = work[workOffset + 1] - selected.rgb[1];
+        const eb = work[workOffset + 2] - selected.rgb[2];
+        if (mode === 'floyd-steinberg') {
+          addError(work, x + direction, y, er, eg, eb, 7 / 16);
+          addError(work, x - direction, y + 1, er, eg, eb, 3 / 16);
+          addError(work, x, y + 1, er, eg, eb, 5 / 16);
+          addError(work, x + direction, y + 1, er, eg, eb, 1 / 16);
+        } else {
+          addError(work, x + direction, y, er, eg, eb, 1 / 8);
+          addError(work, x + 2 * direction, y, er, eg, eb, 1 / 8);
+          addError(work, x - direction, y + 1, er, eg, eb, 1 / 8);
+          addError(work, x, y + 1, er, eg, eb, 1 / 8);
+          addError(work, x + direction, y + 1, er, eg, eb, 1 / 8);
+          addError(work, x, y + 2, er, eg, eb, 1 / 8);
+        }
+      }
     }
   }
+  ctx.putImageData(preview, 0, 0);
   return out;
 }
 
 function renderLoadedImage() {
   const img = loadedImage;
   if (!img) return;
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, UPLOAD_W, H);
+    const generation = ++renderGeneration;
+    packed = null;
+    packedHash = null;
+    sendEl.disabled = true;
+    sourceCtx.imageSmoothingEnabled = true;
+    sourceCtx.imageSmoothingQuality = 'high';
+    sourceCtx.fillStyle = 'white';
+    sourceCtx.fillRect(0, 0, UPLOAD_W, H);
     if (cropEl.checked) {
       const srcRatio = img.width / img.height;
       const dstRatio = UPLOAD_W / H;
@@ -226,44 +362,72 @@ function renderLoadedImage() {
         sh = Math.round(img.width / dstRatio);
         sy = Math.floor((img.height - sh) / 2);
       }
-      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, UPLOAD_W, H);
+      sourceCtx.drawImage(img, sx, sy, sw, sh, 0, 0, UPLOAD_W, H);
     } else {
       const scale = Math.min(UPLOAD_W / img.width, H / img.height);
       const dw = Math.round(img.width * scale);
       const dh = Math.round(img.height * scale);
-      ctx.drawImage(img, Math.floor((UPLOAD_W - dw) / 2), Math.floor((H - dh) / 2), dw, dh);
+      sourceCtx.drawImage(img, Math.floor((UPLOAD_W - dw) / 2), Math.floor((H - dh) / 2), dw, dh);
     }
-    packed = quantizeAndPack();
-    sendEl.disabled = false;
-    setStatus(`已生成 ${packed.length} 字节 6-color raw frame`);
+    setStatus('正在生成真实六色预览...');
+    requestAnimationFrame(() => {
+      if (generation !== renderGeneration) return;
+      packed = quantizeAndPack();
+      packedHash = fnv1a(packed);
+      if (generation !== renderGeneration) return;
+      sendEl.disabled = uploadPending;
+      const modeName = ditherEl.options[ditherEl.selectedIndex].text;
+      setStatus(`预览完成：${modeName}，${packed.length} 字节，FNV-1a 0x${packedHash.toString(16).padStart(8, '0')}；尚未上传`);
+    });
 }
 
 fileEl.addEventListener('change', async () => {
   const file = fileEl.files[0];
   if (!file) return;
+  const generation = ++imageGeneration;
+  const objectUrl = URL.createObjectURL(file);
   const img = new Image();
   img.onload = () => {
+    if (generation !== imageGeneration) {
+      URL.revokeObjectURL(objectUrl);
+      return;
+    }
+    if (sourceObjectUrl) URL.revokeObjectURL(sourceObjectUrl);
+    sourceObjectUrl = objectUrl;
     loadedImage = img;
     renderLoadedImage();
   };
-  img.src = URL.createObjectURL(file);
+  img.onerror = () => {
+    URL.revokeObjectURL(objectUrl);
+    if (generation === imageGeneration) setStatus('失败：浏览器无法解码该图片');
+  };
+  img.src = objectUrl;
 });
 
 cropEl.addEventListener('change', renderLoadedImage);
+enhanceEl.addEventListener('change', renderLoadedImage);
+ditherEl.addEventListener('change', renderLoadedImage);
 
 sendEl.addEventListener('click', async () => {
-  if (!packed) return;
+  if (!packed || packedHash === null || uploadPending) return;
+  const frame = packed;
+  const frameHash = packedHash;
+  uploadPending = true;
   sendEl.disabled = true;
   try {
     setStatus('上传 307200 字节中...');
     const data = await readJsonResponse(await fetch('/api/frame', {
-      method: 'POST', headers: { 'Content-Type': 'application/octet-stream' }, body: packed
+      method: 'POST', headers: { 'Content-Type': 'application/octet-stream' }, body: frame
     }));
+    if (data.bytes !== frame.length || data.fnv1a !== frameHash) {
+      throw new Error('设备接收的帧长度或哈希与当前预览不一致');
+    }
     await waitForJob(data.job_id);
   } catch (error) {
     setStatus(`失败：${error.message}`);
   } finally {
-    sendEl.disabled = false;
+    uploadPending = false;
+    sendEl.disabled = packed === null;
   }
 });
 
