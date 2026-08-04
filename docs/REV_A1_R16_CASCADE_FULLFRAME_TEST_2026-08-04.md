@@ -1,5 +1,16 @@
 # MF-1750 Rev A1 R16 级联整屏验证（2026-08-04）
 
+> 当前未刷入候选 build tag 为
+> `MF1750_DRIVER_RC2B_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_2026-08-04`，driver
+> API 为 `MF1750_R16_CASCADE_V2`。它增加六色帧输入门禁、可审计错误返回和
+> diagnostic report 的 job/build 关联；HTTP ingress 和公开
+> `epdDisplayFrame*` 都会在初始化、DTM、PON 之前拒绝非法 nibble。全仓回归、
+> repository contract 与 PlatformIO 构建属于软件验证；RC2B 尚未刷入，下文
+> 已有实屏结果仍来自此前固件，最终 MAP/1 MHz 必须核对该精确 build/API。
+> RC2B 的 PON/DRF/POF/post-PSR 还必须在 250 ms 内观察到 BUSY assertion；缺失
+> 即 fail closed、安全 POF/SPI stop/面板引脚拉低。正式报告使用匹配的非零 u32
+> `job_operation_id` / `operation_id` 不可变快照，后续 REV/诊断不能改贴旧报告。
+
 ## 1. 当前硬件与冻结边界
 
 - Rev A1 已生产完成；制造目录及带 `revA1_Q1FIX` 名称的 Gerber/BOM/CPL
@@ -108,12 +119,14 @@ nibble-swap 的全部 16 种组合下逐字节比较。
 
 每次可见刷新之间，J2-1 必须断电至少 10 秒；FPC 禁止带电插拔。
 
-1. 驱动板保持断电，刷入测试套件；确认启动日志识别约 8 MB PSRAM，且
+0. 先完成候选审查、提交、推送并确认最终 `main` CI；取得用户明确刷写/上电
+   许可后，才执行以下步骤。
+1. 驱动板保持断电，刷入上述精确 RC2B build；确认启动日志识别约 8 MB PSRAM，且
    `/api/diagnostic/status` 中 RST/CS1/CS2 均为 0。
 2. 驱动板仍断电，只检查二进制入口，不刷新：
 
    ```powershell
-   python tools\mf1750_frame_tool.py --pattern map-orient-v1 --url http://192.168.1.14
+   python tools\mf1750_frame_tool.py --pattern map-orient-v1 --url http://<device-ip>
    ```
 
    必须返回 `bytes=307200`、`fnv1a=2634290221`。
@@ -133,8 +146,20 @@ nibble-swap 的全部 16 种组合下逐字节比较。
 
    四角、上下方向和黑/红跨缝桥必须与第 4 节一致；任务状态见
    `GET /api/job`，驱动时序见 `GET /api/diagnostic/report`。
-4. MAP_ORIENT_V1 通过后，再冷启动一次，从网页上传一张普通图片。这一步使用正式
-   1 MHz `/api/frame` 链路，验证浏览器量化、PSRAM、逐行拆分和刷新闭环。
+4. MAP_ORIENT_V1 低速方向通过后，再冷启动一次，用主机工具通过正式 1 MHz
+   `/api/frame` 链路发送同一个规范帧。两项 mapping 必须显式提供，工具会在
+   POST 前核对固件 build/API/PSRAM/SPI/mapping，随后核对最终 job、四阶段 BUSY
+   证据和双 DTM hash：
+
+   ```powershell
+   python tools\mf1750_frame_tool.py --pattern map-orient-v1 `
+     --url http://<device-ip> --refresh --confirm-cold-start `
+     --controller-mapping 0,0,0,0 `
+     --controller-mapping 1,0,0,0
+   ```
+
+   只有工具报告通过且用户确认画面、CV 和温度正常，才完成 D0 的 1 MHz 门禁。
+   普通图片、量化与 Web UI 属于 C4/C2 应用验收，不再混入驱动定版结论。
 
 若 MAP_ORIENT_V1 正确，不再重复旧 800x480、512x600、无 CCSET 纯色或 nibble-swap
 矩阵；这些接口只保留为历史诊断，不作为正式驱动验收依据。

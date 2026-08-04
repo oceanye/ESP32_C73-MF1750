@@ -1,28 +1,40 @@
 # ESP32_C73 后续 TODO 与多 AI 协作计划（2026-08-04）
 
-## 0. 进度快照（2026-08-04 更新）
+## 0. 进度快照（2026-08-04 集成复审）
 
-| 工作包 | 状态 | 远端分支 / 提交 | 剩余硬件门禁 |
+| 工作包 | 当前状态 | 已合入来源 | 剩余门禁 |
 |---|---|---|---|
-| C1 主机帧核心 | 已完成 | `feature/host-frame-core` / `cb0a03f` | MAP_ORIENT_V1 实屏方向复核 |
-| C2 六色量化与抖动 | 主机代码已完成 | `feature/color-dither` / `7cc015e` | 实测 D65/2deg 六色色板与主观验收 |
-| C3 转移感知优化 | 参数规划器已在 R1/R2 提供，完整优化器待办 | 尚未建立独立 C3 分支 | 6x6 转移实测矩阵 |
-| C4 应用 API/Web UI | 待办 | 尚未建立独立 C4 分支 | 普通图片端到端实刷 |
-| C5 CI 与回归门禁 | 已完成 | `feature/host-ci` / `c59a1f2` | 无；CI 不等于硬件通过 |
-| R1 SPI 扫频工具 | 离线部分已完成 | `research/fast-refresh` / `b03b7e1` | 家中 1/2/4/8/10 MHz 冷启动扫频 |
-| R2 快速波形/局刷研究 | 证据边界与规划器已完成 | `research/fast-refresh` / `b03b7e1` | SPD1657B/OTP 厂商资料，取得前禁止实装 |
+| D0 驱动定版 | RC2B/V2 软件候选、协议门禁与 clean build 完成，未刷入 | 本地集成加固 | PSRAM 启动日志、MAP_ORIENT_V1、规范帧 1 MHz 真屏 |
+| C1 主机帧核心 | 软件、fixtures、严格上传/结果核验工具完成 | `feature/host-frame-core` / `cb0a03f` + 本地加固 | 随 D0 核对真屏物理映射 |
+| C2 六色量化与抖动 | 算法、schema v2、来源与整屏授权边界完成 | `feature/color-dither` / `7cc015e` + 本地加固 | 实测 D65/2deg 六色色板与真屏主观验收 |
+| C3 转移感知优化 | 保守区域/转移统计规划器完成；完整优化器未开始 | `research/fast-refresh` / `b03b7e1` | 可信旧帧状态和 6x6 实测转移矩阵 |
+| C4 应用 API/Web UI | D0 验收用上传/轮询工具完成；正式应用/UI 未开始 | 本地集成加固 | 设备端认证方案、普通图片端到端实刷 |
+| C5 CI 与回归门禁 | 本地完成：工具链/Action/冻结 manifest、152 项回归与 clean build | `feature/host-ci` / `c59a1f2` + 本地加固 | 最终 `main` SHA 的 GitHub Actions；CI 不等于硬件通过 |
+| R1 SPI 扫频 | 严格离线分析器完成；参数化固件 action 未实现 | `research/fast-refresh` / `b03b7e1` + 本地加固 | 独立诊断固件及 1/2/4/8/10 MHz 冷启动扫频 |
+| R2 快速波形/局刷 | 证据边界与控制器中立规划器完成 | `research/fast-refresh` / `b03b7e1` | SPD1657B/面板 OTP 厂商资料；取得前禁止实装 |
+| H0 阶段备份 | Git/冻结文件基线已建立；硬件 v1.0 快照未封版 | RC1/冻结基线 `3033da0` | D0 真屏验收后生成 archive/hash/tag |
+| H1/H2 Rev B-mini | TODO，未开始设计 | 无 | 先完成 H0，并由用户确认模块、电池、USB-C、天线、机械约束 |
 
-完整代码集成候选为 `integration/host-fast-refresh-ci-color`，代码与集成说明点
-`aa006c4` 已通过 64 项联合回归和 GitHub Actions 的主机门禁/PlatformIO
-release 编译。详情见 `docs/HOST_REFRESH_COLOR_INTEGRATION_2026-08-04.md`。
-`main` 仍保持 `3033da0`，本机未进行硬件测试或自动合并主线。
+远端完整集成分支 `integration/host-fast-refresh-ci-color` 的最新点为 `dd711c9`，
+[GitHub Actions run 30863009577](https://github.com/oceanye/ESP32_C73-MF1750/actions/runs/30863009577)
+成功。本机已经 fetch、独立复现 64 项原始回归，并把该分支快进合入本地
+`main`；冻结生产目录没有变化。`dd711c9` 本身仍是 RC1/V1；随后在本地集成的
+RC2B/V2、主机工具、颜色与契约加固已通过 152 项本地回归、repository contract、
+`compileall` 和 PlatformIO clean build；
+最终发布仍必须核对推送 SHA 对应的 `main` GitHub Actions。以上均未进行新的
+硬件操作，不得把合并、主机测试或 CI 结果写成真屏通过。
 
 ## 1. 目的与当前优先级
 
-本计划制定时的唯一主任务是完成并验收 MF-1750 Rev A1 驱动层。当前已经建立
-`main` 基线，主机侧 C1/C2/C5 与 R1/R2 离线工作已按上方快照完成；MAP_ORIENT、
-SPI 扫频、实测色板和任何快速波形仍由家中硬件环境验收。剩余 TODO 不得修改
-已冻结的 Rev A1 生产文件，也不得绕过硬件/厂商资料门禁。
+本计划当前的唯一主任务仍是完成并验收 MF-1750 Rev A1 驱动层。执行顺序固定为：
+
+1. 完成本地软件加固、完整回归、固件编译和远端主线 CI；
+2. 经用户明确上电/刷写许可后完成 D0 的三项真屏验收；
+3. 固化 H0 驱动快照、hash 与硬件验收标签，再移交应用团队；
+4. C2 色板、R1 扫频和 C4 应用验收分开执行，不能互相冒充通过；
+5. C3 等待实测转移矩阵，R2 等待厂商资料，H1/H2 等待用户输入。
+
+剩余 TODO 不得修改已冻结的 Rev A1 生产文件，也不得绕过硬件或厂商资料门禁。
 
 后续可把不依赖实物的代码工作交给其他 AI。其他 AI 只提交独立分支或补丁、
 测试输出和移交说明；最终代码审查、实机验证和 Git 合并由当前硬件环境的
@@ -76,19 +88,22 @@ hardware/mf1750_revB_mini/
 不得宣称实屏通过，不得调用 `/api/frame`，不得刷写 COM8，也不得根据
 SPD1656 猜测 SPD1657B 的高压/LUT/局刷寄存器。
 
-## 4. Git 前置状态与集成策略
+## 4. Git 当前状态与集成策略
 
-当前工作区的 `.git` 目录为空，不是可用仓库。驱动实屏验收前不建立多人
-分支，避免把未定版驱动当成基线。
+工作区已经是可用 Git 仓库，`origin` 指向私有 GitHub 仓库。Rev A1 驱动 RC1、
+硬件源文件和冻结生产清单的基线为 `3033da0`；C1/C2/C5/R1/R2 的远端集成点为
+`dd711c9`，现已合入本地 `main`。即使本轮软件加固和远端 CI 完成，也不创建
+`mf1750-driver-v1.0-hw-verified` 标签，因为 RC2B 尚未真屏验收。
 
-驱动验收后由集成负责人执行：
+后续规则：
 
-1. 对 Rev A1 冻结文件重新计算并核对 manifest；
-2. 建立初始 Git 仓库和 `.gitignore`；
-3. 提交只包含已验收驱动、工具、文档和原有硬件文件的 baseline commit；
-4. 创建受保护标签，例如 `mf1750-driver-v1.0-hw-verified`；
-5. 其他 AI 必须基于该 commit SHA 建分支，不得基于聊天中间状态开发；
-6. 每个分支只负责一个工作包，最终由集成负责人逐个 cherry-pick 或 merge。
+1. 每次提交和推送前运行 repository contract，冻结目录的文件集合、manifest
+   基线指纹和二进制 hash 必须全部通过；
+2. 每个新工作包基于已推送的明确 commit SHA 建分支，不得基于聊天中间状态；
+3. 其他 AI 不直接刷写、调用设备刷新接口或推送 `main`；
+4. 集成负责人审查授权路径、测试和 handoff 后才合并；
+5. D0 真屏验收完成后另建只读快照和硬件验收标签；
+6. 应用、算法或 CI 通过不得提前创建硬件 v1.0 标签。
 
 建议分支名：
 
@@ -106,7 +121,7 @@ analysis/revb-mini
 
 | ID | 工作包 | 无硬件 AI 可完成 | 依赖 | 最终硬件门禁 |
 |---|---|---|---|---|
-| D0 | 驱动 v1.0 定版 | 否，只读复审可委托 | 当前任务 | 两次实屏验收 |
+| D0 | 驱动 v1.0 定版 | 否，只读复审可委托 | 当前任务 | PSRAM 日志、MAP_ORIENT_V1、1 MHz 规范帧 |
 | C1 | 主机帧格式核心与 fixtures | 是 | D0 API/格式冻结 | 无 |
 | C2 | 六色量化与空间抖动 | 是 | C1 | 实屏颜色主观验收 |
 | C3 | 转移感知抖动优化器 | 是，先做参数化代码 | C1/C2 | 6x6 实测矩阵 |
@@ -131,7 +146,9 @@ analysis/revb-mini
 - 偶数 x 在高 nibble、奇数 x 在低 nibble；
 - 驱动层独占 source-half、flip-X、flip-Y、nibble-swap 映射；
 - CS1/CS2 实际 DTM 流分别计算 FNV-1a；
-- PON/DRF/POF/BUSY 超时返回到调用方；
+- PON/DRF/POF/post-PSR 均先观察 BUSY assertion 再等待 idle；缺 assertion 或
+  超时都返回失败并执行安全收尾；
+- result-bearing job 只发布匹配非零 u32 operation ID 的不可变完整报告快照；
 - 刷新结束后 SPI 释放且所有面板侧输出保持低电平；
 - 应用只需包含 `epd_driver.h`，诊断接口隔离到 `epd_diagnostics.h`。
 
@@ -143,8 +160,9 @@ analysis/revb-mini
 | global-h-bars | `0x7DD055C5` | `0x855679C5` | `0x855679C5` |
 | MAP_ORIENT_V1 | `0x9D04142D` | `0xF26832DD` | `0xFE199FF5` |
 
-当前已实测 global-v-bars 完整六色正确且中缝清晰。剩余两次验收为
-MAP_ORIENT_V1 低速方向检查和同帧 1 MHz 正式上传。
+当前已实测 global-v-bars 完整六色正确且中缝清晰。仓库 RC2B/V2 尚未刷入；
+剩余验收为启动日志确认约 8 MB OPI PSRAM、MAP_ORIENT_V1 低速方向检查，以及
+通过正式 1 MHz `/api/frame` 链路发送同一个 MAP_ORIENT_V1 规范帧。
 
 ## 7. C1：主机帧格式核心与 fixtures
 
@@ -280,6 +298,10 @@ const EpdOperationReport &epdGetLastOperationReport();
 - 检查公共头 `epd_driver.h` 不重新暴露 legacy 单控制器函数；
 - 生成机器可读测试报告。
 
+当前实现会在 CI artifact `host-contract-reports` 中同时保存
+`host-test-report.json` 与 `repo-contract-report.json`；二者都固定声明
+`hardware_tested:false`。
+
 CI 只能编译和主机测试，不能把“编译通过”标记成“硬件通过”。
 
 ## 12. R1/R2：高速刷新研究边界
@@ -290,8 +312,9 @@ CI 只能编译和主机测试，不能把“编译通过”标记成“硬件�
 MHz，只有官方时序明确且前述档位均稳定后才考虑更高频率。每个频率必须冷启动，
 使用同一 MAP_ORIENT_V1，核对两个 DTM hash、屏幕、CV、温升和 BUSY。
 
-SPI 加速只缩短 DTM 上传，不缩短固定 DRF 波形。当前 100 kHz 两半上传各约
-14.9 秒，而显色 BUSY 约 21.7 秒；正常 1 MHz 已把上传降到次要部分。
+SPI 加速只缩短 DTM 上传，不缩短固定 DRF 波形。当前 100 kHz 实测两半上传各约
+14.9 秒，而显色 BUSY 约 21.7 秒；1 MHz 的线性估算约为每半 1.5 秒，但 RC2B
+规范帧 1 MHz 尚未完成真屏验收，不能把估算写成既成结果。
 
 ### R2：快速波形/局刷
 
@@ -308,7 +331,9 @@ SPI 加速只缩短 DTM 上传，不缩短固定 DRF 波形。当前 100 kHz 两
 
 ### H0 阶段备份
 
-驱动定版后由集成负责人创建只读快照和 SHA256 manifest。快照至少包含：
+当前私有 Git 基线和冻结生产 manifest 已构成阶段性可追溯备份，但还不是
+“硬件 v1.0 已验收”快照。D0 通过后由集成负责人创建只读 archive、SHA256
+manifest 和硬件标签。快照至少包含：
 
 - `hardware/mf1750_production_v1/`；
 - 驱动 v1.0 源码与固件 build tag；
@@ -367,11 +392,16 @@ Suggested merge order:
 3. 本机重新运行全部测试，不采信复制的“通过”文字；
 4. PlatformIO clean build；
 5. 核对冻结生产文件 hash；
-6. 对涉及固件的分支，在 J2-1 断电时刷写并做 GPIO/PSRAM/HTTP 安全检查；
+6. 对涉及固件的分支，仅在用户明确确认后、J2-1 断电时刷写，并做
+   GPIO/PSRAM/HTTP 安全检查；
 7. 只有确实需要的变更才安排冷启动实屏测试；
 8. 合并后再运行完整回归并记录 commit SHA；
 9. 应用层、算法层通过不自动提升驱动/硬件版本号；
 10. 任何 LUT、高压、局刷或 PCB 变更必须单独审查，不能混入应用 PR。
 
-推荐合并顺序：D0 baseline -> C1 -> C5 -> C2 -> C3 -> C4。R1/R2 与 H 系列
-保持独立，不阻塞应用层开发，也不得反向修改已验收驱动，除非形成新的硬件版本。
+现有 C1/C2/C5 与 R1/R2 离线代码已经进入集成线，本地软件门禁已完成；下一步
+审查并提交当前工作树、推送并确认最终 `main` CI，再执行 D0 真屏验收并封存 H0。
+之后优先移交 C4 应用层；C2
+真屏色彩验收和 R1 扫频可独立推进。C3 必须等待可信 6x6 转移矩阵，R2 必须等待
+厂商资料，H1/H2 必须等待用户确认 Rev B 输入。任何后续工作不得反向修改已验收
+驱动，除非形成独立且有证据支持的新硬件/固件版本。

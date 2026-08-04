@@ -80,18 +80,28 @@ E Ink 对彩色局刷的研究还说明：局刷需要旧/新状态信息，更�
 | 10 MHz | 245.8 ms | 2211.8 ms |
 | 20 MHz | 122.9 ms | 2334.7 ms |
 
-当前实测 100 kHz 时每半约 14.9 秒，1 MHz 已把上传降至约每半 1.5 秒；因此继续
-提高 SPI 的实际收益预计约 2–3 秒，而不是把 20 多秒显色过程变成秒级。工具必须分别
+当前实测 100 kHz 时每半约 14.9 秒；按该结果近似线性估算，1 MHz 约为每半
+1.5 秒，但尚未完成 1 MHz 实屏验收。因此继续提高 SPI 的实际收益预计约 2–3 秒，
+而不是把 20 多秒显色过程变成秒级。工具必须分别
 报告 `CS1 upload`、`CS2 upload`、`DRF BUSY` 和总时间，禁止只报总时间后误判来源。
 
 ## 4. 分阶段决策门
 
 ### G0：冻结基线
 
-先在家中完成 D0 的 MAP_ORIENT_V1 方向验收与 1 MHz 普通图片上传。两个 DTM hash、
+先提交并推送最终 `main`、确认对应 GitHub CI，并取得用户明确刷写/上电许可；
+随后完成 D0 的 MAP_ORIENT_V1 低速方向验收，再通过正式 1 MHz `/api/frame`
+发送同一个 MAP_ORIENT_V1。两个 DTM hash、
 颜色、方向、中缝和安全收尾全部通过后，才开始加速实验。
 
 ### G1：只加速 DTM
+
+此前实机 RC1 与当前仓库未刷入的 RC2B 都还不能进入 G1：
+`/api/diagnostic/map-orient-v1-slow` 固定为 100 kHz；
+普通 `/api/frame` 虽可完成 G0 的 1 MHz 验收，却不是可按档选择频率的 MAP 扫频入口。
+在独立实验分支提供受限的参数化 action，并让 job、diagnostic、serial 共享 operation
+ID/build tag 之前，离线 analyzer 只能作为合同和负例检查器，不得给出现有固件的升频
+PASS。
 
 按 `1 -> 2 -> 4 -> 8 -> 10 MHz` 逐级测试。每档必须：
 
@@ -99,9 +109,19 @@ E Ink 对彩色局刷的研究还说明：局刷需要旧/新状态信息，更�
 - 使用同一 MAP_ORIENT_V1；
 - full/CS1/CS2 hash 完全一致；
 - 记录两个上传时间、PON/DRF/POF BUSY、总时间；
+- 保存同一次运行的 firmware build tag、`/api/job`、诊断报告和单次串口日志指纹；
+- 用示波器或逻辑分析仪记录实际 SCLK，而不是只信固件请求值；
+- 运行前先成功显示一张哈希冻结、与目标不同的已知画面，避免残留的旧 MAP 造成
+  “看起来已刷新”的假阳性；
 - 人工确认方向、颜色、中缝、噪点和残影；
 - 记录 3.3 V、电流/CV、温升和异常声响；
 - 任一档失败即停止升频。
+
+扫频门禁使用 schema version 2：串口日志中每个必要 marker 必须恰好出现一次，
+job/diagnostic/serial 的 operation ID、build tag 和重叠字段必须一致，且正式 PASS 必须
+满足 `valid=true`、`running=false`、
+`mapping_applied=true`、`timeout_stage=none`、安全收尾阶段正确。所有人工门禁均可用
+显式 `--no-...` 记录失败；失败尝试必须输出 FAIL，不能伪装成 PENDING。
 
 10 MHz 全部通过后，结合逻辑分析仪确认 CS setup/hold、SCLK 高低脉宽和数据建立保持，
 才允许单独评审 20 MHz。不能因为规格理论上限为 20 MHz 就跳过中间档。
