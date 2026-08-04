@@ -4,10 +4,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from functools import lru_cache
+import hashlib
 import json
 import math
 from pathlib import Path
-from typing import Any, Dict, Mapping, Sequence, Tuple
+import re
+from typing import Any, Dict, Mapping, Optional, Sequence, Tuple
 
 from host.epd_frame import PHYSICAL_COLOR_CODES
 
@@ -16,6 +18,47 @@ from .color import Lab, LinearRGB, lab_to_linear_rgb, lab_to_srgb8
 
 class PaletteError(ValueError):
     """Raised when palette data is incomplete or internally inconsistent."""
+
+
+PALETTE_SCHEMA_VERSION = 2
+PALETTE_CANONICAL_HASH_SCOPE = (
+    "effective normalized palette schema v2; UTF-8 JSON with sorted keys, "
+    "no whitespace, ensure_ascii=false, allow_nan=false"
+)
+_SHA256_PATTERN = re.compile(r"[0-9a-fA-F]{64}\Z")
+
+
+# These names are part of the physical frame contract, not editable display
+# labels.  In particular, code 0 is black and code 1 is white; allowing a
+# profile to exchange those names would make white protection drive black ink.
+_PHYSICAL_COLOR_NAMES = {
+    0x0: "black",
+    0x1: "white",
+    0x2: "yellow",
+    0x3: "red",
+    0x5: "blue",
+    0x6: "green",
+}
+
+
+@dataclass(frozen=True)
+class CalibrationProvenance:
+    """Auditable measurement artifact reference for a calibrated palette."""
+
+    measurement_id: str
+    artifact_sha256: str
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.measurement_id, str) or not self.measurement_id.strip():
+            raise PaletteError("calibration measurement_id must be a non-empty string")
+        if any(ord(character) < 0x20 for character in self.measurement_id):
+            raise PaletteError("calibration measurement_id must not contain controls")
+        if not isinstance(self.artifact_sha256, str) or not _SHA256_PATTERN.fullmatch(
+            self.artifact_sha256
+        ):
+            raise PaletteError("calibration artifact_sha256 must be exactly 64 hex digits")
+        object.__setattr__(self, "measurement_id", self.measurement_id.strip())
+        object.__setattr__(self, "artifact_sha256", self.artifact_sha256.lower())
 
 
 def _finite_triple(values: Sequence[Any], label: str) -> Tuple[float, float, float]:
@@ -79,6 +122,7 @@ class Palette:
     illuminant: str = "D65"
     observer: str = "2deg"
     notes: str = ""
+    calibration: Optional[CalibrationProvenance] = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.calibrated, bool):
@@ -95,6 +139,13 @@ class Palette:
             raise PaletteError("illuminant and observer must be strings")
         if not isinstance(self.notes, str):
             raise PaletteError("notes must be a string")
+        if self.calibrated:
+            if type(self.calibration) is not CalibrationProvenance:
+                raise PaletteError(
+                    "calibrated palette requires structured calibration provenance"
+                )
+        elif self.calibration is not None:
+            raise PaletteError("uncalibrated palette must use calibration=null")
         if self.illuminant != "D65" or self.observer != "2deg":
             raise PaletteError(
                 "this pipeline requires Lab values measured or adapted to D65/2deg"
@@ -105,15 +156,28 @@ class Palette:
         if set(codes) != set(PHYSICAL_COLOR_CODES) or len(codes) != len(set(codes)):
             expected = sorted(PHYSICAL_COLOR_CODES)
             raise PaletteError(f"palette codes must be exactly {expected}")
-        names = [entry.name.casefold() for entry in self.entries]
-        if any(not name for name in names) or len(names) != len(set(names)):
-            raise PaletteError("palette entry names must be non-empty and unique")
+        for entry in self.entries:
+            expected_name = _PHYSICAL_COLOR_NAMES[entry.code]
+            if entry.name != expected_name:
+                raise PaletteError(
+                    f"physical colour code {entry.code} must be named "
+                    f"'{expected_name}', not '{entry.name}'"
+                )
+        entries_by_code = {entry.code: entry for entry in self.entries}
+        if entries_by_code[0x0].lab[0] >= entries_by_code[0x1].lab[0]:
+            raise PaletteError("black Lab L* must be lower than white Lab L*")
+        if entries_by_code[0x3].lab[1] <= entries_by_code[0x6].lab[1]:
+            raise PaletteError("red Lab a* must be greater than green Lab a*")
+        if entries_by_code[0x2].lab[2] <= entries_by_code[0x5].lab[2]:
+            raise PaletteError("yellow Lab b* must be greater than blue Lab b*")
         # Keep tie-breaking and reports stable even when JSON entries are reordered.
         object.__setattr__(self, "palette_id", self.palette_id.strip())
         object.__setattr__(self, "source", self.source.strip())
         object.__setattr__(self, "entries", tuple(sorted(self.entries, key=lambda entry: entry.code)))
 
     def entry(self, code: int) -> PaletteEntry:
+        if type(code) is not int:
+            raise PaletteError("physical colour code must be an integer and not boolean")
         for entry in self.entries:
             if entry.code == code:
                 return entry
@@ -123,10 +187,60 @@ class Palette:
     def by_code(self) -> Dict[int, PaletteEntry]:
         return {entry.code: entry for entry in self.entries}
 
+    def canonical_mapping(self) -> Dict[str, Any]:
+        """Return the complete normalized palette payload used for hashing."""
+
+        return {
+            "schema_version": PALETTE_SCHEMA_VERSION,
+            "palette_id": self.palette_id,
+            "calibrated": self.calibrated,
+            "source": self.source,
+            "illuminant": self.illuminant,
+            "observer": self.observer,
+            "notes": self.notes,
+            "calibration": (
+                None
+                if self.calibration is None
+                else {
+                    "measurement_id": self.calibration.measurement_id,
+                    "artifact_sha256": self.calibration.artifact_sha256,
+                }
+            ),
+            "entries": [
+                {
+                    "code": entry.code,
+                    "name": entry.name,
+                    "lab": list(entry.lab),
+                    "preview_rgb": list(entry.preview_rgb),
+                }
+                for entry in self.entries
+            ],
+        }
+
+    def canonical_bytes(self) -> bytes:
+        return json.dumps(
+            self.canonical_mapping(),
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8")
+
+    @property
+    def canonical_sha256(self) -> str:
+        """Audit fingerprint; this is not a signature or trust-store result."""
+
+        return hashlib.sha256(self.canonical_bytes()).hexdigest()
+
 
 def palette_from_mapping(data: Mapping[str, Any]) -> Palette:
-    if data.get("schema_version") != 1:
-        raise PaletteError("palette schema_version must be 1")
+    if not isinstance(data, Mapping):
+        raise PaletteError("palette document must be an object")
+    schema_version = data.get("schema_version")
+    if type(schema_version) is not int or schema_version != PALETTE_SCHEMA_VERSION:
+        raise PaletteError(
+            f"palette schema_version must be integer {PALETTE_SCHEMA_VERSION}"
+        )
     palette_id = data.get("palette_id")
     source = data.get("source")
     calibrated = data.get("calibrated")
@@ -140,6 +254,24 @@ def palette_from_mapping(data: Mapping[str, Any]) -> Palette:
         raise PaletteError("calibrated must be an explicit boolean")
     if not isinstance(illuminant, str) or not isinstance(observer, str):
         raise PaletteError("illuminant and observer must be explicit strings")
+    if "calibration" not in data:
+        raise PaletteError("palette schema v2 requires an explicit calibration field")
+    raw_calibration = data.get("calibration")
+    calibration: Optional[CalibrationProvenance]
+    if raw_calibration is None:
+        calibration = None
+    elif isinstance(raw_calibration, Mapping):
+        expected_calibration_fields = {"measurement_id", "artifact_sha256"}
+        if set(raw_calibration) != expected_calibration_fields:
+            raise PaletteError(
+                "calibration must contain exactly measurement_id and artifact_sha256"
+            )
+        calibration = CalibrationProvenance(
+            raw_calibration.get("measurement_id"),  # type: ignore[arg-type]
+            raw_calibration.get("artifact_sha256"),  # type: ignore[arg-type]
+        )
+    else:
+        raise PaletteError("calibration must be an object or null")
     raw_entries = data.get("entries")
     if not isinstance(raw_entries, list):
         raise PaletteError("entries must be a list")
@@ -149,7 +281,7 @@ def palette_from_mapping(data: Mapping[str, Any]) -> Palette:
             raise PaletteError(f"entry {index} must be an object")
         code = raw.get("code")
         name = raw.get("name")
-        if not isinstance(code, int) or isinstance(code, bool):
+        if type(code) is not int:
             raise PaletteError(f"entry {index} code must be an integer")
         if not isinstance(name, str):
             raise PaletteError(f"entry {index} name must be a string")
@@ -172,6 +304,7 @@ def palette_from_mapping(data: Mapping[str, Any]) -> Palette:
         illuminant.strip(),
         observer.strip(),
         notes,
+        calibration,
     )
 
 

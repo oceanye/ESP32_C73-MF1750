@@ -23,19 +23,37 @@ class ColorValueError(ValueError):
 
 
 def _triple(values: Sequence[float], label: str) -> Tuple[float, float, float]:
-    if len(values) != 3:
+    try:
+        length = len(values)
+    except TypeError as error:
+        raise ColorValueError(f"{label} must contain exactly three components") from error
+    if length != 3:
         raise ColorValueError(f"{label} must contain exactly three components")
+    if any(
+        isinstance(value, bool) or not isinstance(value, (int, float))
+        for value in values
+    ):
+        raise ColorValueError(f"{label} components must be numeric and not boolean")
     result = tuple(float(value) for value in values)
     if not all(math.isfinite(value) for value in result):
         raise ColorValueError(f"{label} components must be finite")
     return result  # type: ignore[return-value]
 
 
+def _finite_channel(channel: float, label: str) -> float:
+    if isinstance(channel, bool) or not isinstance(channel, (int, float)):
+        raise ColorValueError(f"{label} must be numeric and not boolean")
+    result = float(channel)
+    if not math.isfinite(result):
+        raise ColorValueError(f"{label} must be finite")
+    return result
+
+
 def srgb_channel_to_linear(channel: float) -> float:
     """Convert one normalized sRGB channel to normalized linear light."""
 
-    channel = float(channel)
-    if not math.isfinite(channel) or not 0.0 <= channel <= 1.0:
+    channel = _finite_channel(channel, "normalized sRGB channel")
+    if not 0.0 <= channel <= 1.0:
         raise ColorValueError("normalized sRGB channel must be finite and in [0, 1]")
     if channel <= 0.04045:
         return channel / 12.92
@@ -45,7 +63,8 @@ def srgb_channel_to_linear(channel: float) -> float:
 def linear_channel_to_srgb(channel: float) -> float:
     """Convert one normalized linear-light channel to normalized sRGB."""
 
-    channel = min(1.0, max(0.0, float(channel)))
+    channel = _finite_channel(channel, "linear-light channel")
+    channel = min(1.0, max(0.0, channel))
     if channel <= 0.0031308:
         return 12.92 * channel
     return 1.055 * (channel ** (1.0 / 2.4)) - 0.055
@@ -57,7 +76,11 @@ SRGB8_TO_LINEAR = tuple(srgb_channel_to_linear(value / 255.0) for value in range
 def srgb8_to_linear_rgb(rgb: Sequence[int]) -> LinearRGB:
     """Convert an 8-bit sRGB triple to normalized linear-light RGB."""
 
-    if len(rgb) != 3:
+    try:
+        length = len(rgb)
+    except TypeError as error:
+        raise ColorValueError("8-bit sRGB must contain exactly three components") from error
+    if length != 3:
         raise ColorValueError("8-bit sRGB must contain exactly three components")
     converted = []
     for channel in rgb:
@@ -126,6 +149,8 @@ def linear_rgb_to_lab(rgb: Sequence[float]) -> Lab:
 
 
 def lab_to_linear_rgb(lab: Sequence[float], *, clamp: bool = True) -> LinearRGB:
+    if type(clamp) is not bool:
+        raise ColorValueError("clamp must be boolean")
     result = xyz_to_linear_rgb(lab_to_xyz(lab))
     if clamp:
         return tuple(min(1.0, max(0.0, value)) for value in result)  # type: ignore[return-value]

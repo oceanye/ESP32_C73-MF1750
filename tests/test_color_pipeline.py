@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import binascii
+import copy
 import hashlib
+import json
 import math
 from pathlib import Path
 import struct
@@ -10,7 +12,9 @@ import unittest
 import zlib
 
 from host.color_pipeline import (
+    CalibrationProvenance,
     ColorPipelineError,
+    ColorValueError,
     DitherMode,
     Palette,
     PaletteEntry,
@@ -25,7 +29,8 @@ from host.color_pipeline import (
     reference_palette,
     srgb8_to_lab,
 )
-from host.color_pipeline.color import srgb_channel_to_linear
+from host.color_pipeline import color as color_math
+from host.color_pipeline.color import linear_channel_to_srgb, srgb_channel_to_linear
 from host.color_pipeline.pipeline import _clamp_rgb, _edge_mask, _nearest_two, _pixel_linear
 from host.epd_frame import FRAME_BYTES, HEIGHT, WIDTH, unpack_pixels
 
@@ -97,11 +102,58 @@ class ColorMathTests(unittest.TestCase):
             self.assertAlmostEqual(forward, reverse, delta=1e-12)
         self.assertEqual(delta_e_ciede2000((42, 1, -2), (42, 1, -2)), 0.0)
 
+    def test_public_numeric_inputs_reject_bool_strings_and_nonfinite_values(self) -> None:
+        for invalid in (True, "0.5", math.nan, math.inf, -math.inf):
+            with self.subTest(channel=invalid):
+                with self.assertRaises(ColorValueError):
+                    srgb_channel_to_linear(invalid)  # type: ignore[arg-type]
+                with self.assertRaises(ColorValueError):
+                    linear_channel_to_srgb(invalid)  # type: ignore[arg-type]
+
+        triple_functions = (
+            color_math.linear_rgb_to_xyz,
+            color_math.xyz_to_linear_rgb,
+            color_math.xyz_to_lab,
+            color_math.lab_to_xyz,
+            color_math.linear_rgb_to_lab,
+            color_math.lab_to_linear_rgb,
+            color_math.lab_to_srgb8,
+        )
+        invalid_triples = (
+            (True, 0.0, 0.0),
+            ("0", 0.0, 0.0),
+            (math.nan, 0.0, 0.0),
+            (math.inf, 0.0, 0.0),
+        )
+        for function in triple_functions:
+            for invalid in invalid_triples:
+                with self.subTest(function=function.__name__, triple=invalid):
+                    with self.assertRaises(ColorValueError):
+                        function(invalid)  # type: ignore[arg-type]
+        for invalid in invalid_triples:
+            with self.assertRaises(ColorValueError):
+                delta_e_ciede2000(invalid, (0.0, 0.0, 0.0))  # type: ignore[arg-type]
+            with self.assertRaises(ColorValueError):
+                color_math.srgb8_to_linear_rgb(invalid)  # type: ignore[arg-type]
+            with self.assertRaises(ColorValueError):
+                color_math.srgb8_to_lab(invalid)  # type: ignore[arg-type]
+
+        self.assertEqual(linear_channel_to_srgb(-1.0), 0.0)
+        self.assertAlmostEqual(linear_channel_to_srgb(2.0), 1.0)
+        for invalid_clamp in (1, "yes", None):
+            with self.assertRaisesRegex(ColorValueError, "clamp must be boolean"):
+                color_math.lab_to_linear_rgb(
+                    (0.0, 0.0, 0.0), clamp=invalid_clamp  # type: ignore[arg-type]
+                )
+
 
 class PaletteTests(unittest.TestCase):
     def test_reference_palette_is_explicitly_uncalibrated_d65_2deg(self) -> None:
         palette = reference_palette()
         self.assertFalse(palette.calibrated)
+        self.assertIsNone(palette.calibration)
+        self.assertEqual(palette.canonical_mapping()["schema_version"], 2)
+        self.assertIsNone(palette.canonical_mapping()["calibration"])
         self.assertEqual(palette.illuminant, "D65")
         self.assertEqual(palette.observer, "2deg")
         self.assertIn("not MF-1750", palette.source)
@@ -110,12 +162,16 @@ class PaletteTests(unittest.TestCase):
     def test_palette_loader_accepts_measured_profile_and_rejects_wrong_observer(self) -> None:
         reference = reference_palette()
         mapping = {
-            "schema_version": 1,
+            "schema_version": 2,
             "palette_id": "measured-example",
             "calibrated": True,
             "source": "controlled patch measurement 2026-08-04",
             "illuminant": "D65",
             "observer": "2deg",
+            "calibration": {
+                "measurement_id": "mf1750-test-measurement-2026-08-04",
+                "artifact_sha256": "a" * 64,
+            },
             "entries": [
                 {
                     "code": entry.code,
@@ -132,6 +188,87 @@ class PaletteTests(unittest.TestCase):
         mapping["observer"] = "10deg"
         with self.assertRaisesRegex(PaletteError, "D65/2deg"):
             palette_from_mapping(mapping)
+
+    def test_calibrated_palette_cannot_swap_physical_black_and_white_codes(self) -> None:
+        reference = reference_palette()
+        swapped_codes = {0: 1, 1: 0}
+        mapping = {
+            "schema_version": 2,
+            "palette_id": "invalid-swapped-black-white",
+            "calibrated": True,
+            "source": "negative regression fixture",
+            "illuminant": "D65",
+            "observer": "2deg",
+            "calibration": {
+                "measurement_id": "invalid-swap",
+                "artifact_sha256": "b" * 64,
+            },
+            "entries": [
+                {
+                    "code": swapped_codes.get(entry.code, entry.code),
+                    "name": entry.name,
+                    "lab": list(entry.lab),
+                    "preview_rgb": list(entry.preview_rgb),
+                }
+                for entry in reference.entries
+            ],
+        }
+        with self.assertRaisesRegex(
+            PaletteError, "physical colour code [01] must be named"
+        ):
+            palette_from_mapping(mapping)
+
+    def test_palette_rejects_lab_only_semantic_swaps(self) -> None:
+        reference_mapping = reference_palette().canonical_mapping()
+        cases = (
+            (0, 1, "black Lab L\\* must be lower"),
+            (3, 6, "red Lab a\\* must be greater"),
+            (2, 5, "yellow Lab b\\* must be greater"),
+        )
+        for first_code, second_code, message in cases:
+            mapping = copy.deepcopy(reference_mapping)
+            mapping["palette_id"] = f"invalid-lab-swap-{first_code}-{second_code}"
+            entries = {entry["code"]: entry for entry in mapping["entries"]}
+            entries[first_code]["lab"], entries[second_code]["lab"] = (
+                entries[second_code]["lab"],
+                entries[first_code]["lab"],
+            )
+            with self.subTest(codes=(first_code, second_code)):
+                with self.assertRaisesRegex(PaletteError, message):
+                    palette_from_mapping(mapping)
+
+    def test_palette_schema_v2_requires_structured_calibration_provenance(self) -> None:
+        reference_mapping = reference_palette().canonical_mapping()
+        for invalid_version in (True, 1.0, 2.0, 1):
+            mapping = copy.deepcopy(reference_mapping)
+            mapping["schema_version"] = invalid_version
+            with self.subTest(schema_version=invalid_version):
+                with self.assertRaisesRegex(PaletteError, "integer 2"):
+                    palette_from_mapping(mapping)
+
+        missing = copy.deepcopy(reference_mapping)
+        del missing["calibration"]
+        with self.assertRaisesRegex(PaletteError, "explicit calibration"):
+            palette_from_mapping(missing)
+
+        calibrated = copy.deepcopy(reference_mapping)
+        calibrated["calibrated"] = True
+        calibrated["source"] = "controlled test measurement"
+        with self.assertRaisesRegex(PaletteError, "structured calibration"):
+            palette_from_mapping(calibrated)
+        calibrated["calibration"] = {
+            "measurement_id": "mf1750-test-measurement",
+            "artifact_sha256": "not-a-sha256",
+        }
+        with self.assertRaisesRegex(PaletteError, "64 hex digits"):
+            palette_from_mapping(calibrated)
+        calibrated["calibration"]["artifact_sha256"] = "C" * 64
+        palette = palette_from_mapping(calibrated)
+        self.assertTrue(palette.calibrated)
+        self.assertEqual(
+            palette.calibration,
+            CalibrationProvenance("mf1750-test-measurement", "c" * 64),
+        )
 
     def test_palette_file_errors_are_wrapped(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -154,15 +291,20 @@ class PaletteTests(unittest.TestCase):
             Palette("bad", reference.entries, 1, "test")  # type: ignore[arg-type]
         with self.assertRaisesRegex(PaletteError, "exactly"):
             Palette("missing", reference.entries[:-1], False, "test")
+        with self.assertRaisesRegex(PaletteError, "structured calibration"):
+            Palette("missing-calibration", reference.entries, True, "test")
+        with self.assertRaisesRegex(PaletteError, "not boolean"):
+            reference.entry(True)
         with self.assertRaisesRegex(PaletteError, "numeric"):
             palette_from_mapping(
                 {
-                    "schema_version": 1,
+                    "schema_version": 2,
                     "palette_id": "bad-lab-type",
                     "calibrated": False,
                     "source": "test",
                     "illuminant": "D65",
                     "observer": "2deg",
+                    "calibration": None,
                     "entries": [
                         {
                             "code": entry.code,
@@ -299,6 +441,69 @@ class QuantizationTests(unittest.TestCase):
         self.assertAlmostEqual(alpha, 128 / 255)
         for component in linear:
             self.assertAlmostEqual(component, 127 / 255)
+        input_report = result.report.to_dict()["input_raster"]
+        self.assertEqual(input_report["mode"], "RGBA")
+        self.assertEqual(input_report["alpha"]["representation"], "straight")
+        self.assertEqual(
+            input_report["alpha"]["background_srgb8"],
+            [255, 255, 255],
+        )
+        self.assertEqual(input_report["alpha"]["compositing_space"], "linear-light")
+        self.assertTrue(input_report["alpha"]["applied"])
+        self.assertTrue(input_report["caller_declaration"]["decoded_srgb8"])
+        self.assertTrue(
+            input_report["caller_declaration"]["rgba_alpha_is_straight"]
+        )
+
+    def test_report_v2_canonical_hash_and_palette_fingerprint_are_frozen(self) -> None:
+        image = RasterImage(
+            2,
+            1,
+            "RGBA",
+            bytes((255, 0, 0, 128, 0, 0, 255, 0)),
+        )
+        result = quantize_image(
+            image,
+            options=PipelineOptions(DitherMode.NONE, preserve_edges=False),
+        )
+        report = result.report.to_dict()
+        self.assertEqual(report["schema_version"], 2)
+        self.assertEqual(report["pipeline"]["version"], "2.0.0")
+        self.assertEqual(
+            report["pipeline"]["build_id"],
+            "mf1750-color-pipeline-v2-2026-08-04",
+        )
+        self.assertEqual(
+            report["palette"]["canonical_sha256"],
+            "181770a2de3bb23bcc31666573279c8cde8225d2f4c27a24c9c1345dba54965e",
+        )
+        self.assertEqual(
+            report["palette"]["fingerprint_trust"],
+            "audit fingerprint only; not a digital signature or trust-store decision",
+        )
+        integrity = report["report_integrity"]
+        self.assertEqual(
+            integrity["canonical_sha256"],
+            "eb89dfe7edd0fe9cb1a3949de95bfaa5723ec7a63274fbfbed12fa5740c64cd1",
+        )
+        self.assertEqual(
+            integrity["canonical_sha256_scope"],
+            "entire report object excluding report_integrity; UTF-8 JSON with sorted "
+            "keys, no whitespace, ensure_ascii=false, allow_nan=false",
+        )
+        unsigned_report = copy.deepcopy(report)
+        del unsigned_report["report_integrity"]
+        canonical_bytes = json.dumps(
+            unsigned_report,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8")
+        self.assertEqual(
+            integrity["canonical_sha256"],
+            hashlib.sha256(canonical_bytes).hexdigest(),
+        )
 
     def test_white_protection_and_text_mode(self) -> None:
         whiteish = RasterImage(4, 1, "RGB", bytes((250, 250, 250)) * 4)
@@ -344,7 +549,42 @@ class QuantizationTests(unittest.TestCase):
             self.assertEqual(first.frame, second.frame)
             self.assertEqual(first.preview_png(), second.preview_png())
             report = first.report.to_dict()
+            self.assertEqual(report["schema_version"], 2)
+            self.assertEqual(report["pipeline"]["version"], "2.0.0")
+            self.assertEqual(
+                report["pipeline"]["build_id"],
+                "mf1750-color-pipeline-v2-2026-08-04",
+            )
+            self.assertEqual(report["input_raster"]["mode"], "RGB")
+            self.assertEqual(report["input_raster"]["pixel_bytes"], len(image.pixels))
+            self.assertEqual(
+                report["input_raster"]["sha256"],
+                hashlib.sha256(image.pixels).hexdigest(),
+            )
+            self.assertEqual(
+                report["input_raster"]["transfer_function"],
+                "IEC 61966-2-1 sRGB",
+            )
+            self.assertTrue(
+                report["input_raster"]["caller_declaration"]["decoded_srgb8"]
+            )
+            self.assertIsNone(
+                report["input_raster"]["caller_declaration"][
+                    "rgba_alpha_is_straight"
+                ]
+            )
+            self.assertEqual(report["input_raster"]["alpha"]["representation"], "absent")
+            self.assertFalse(report["input_raster"]["alpha"]["applied"])
+            self.assertFalse(report["safety"]["canonical_panel_dimensions"])
+            self.assertFalse(report["safety"]["panel_frame_bytes_output"])
+            self.assertFalse(report["safety"]["allow_uncalibrated_palette"])
+            self.assertEqual(
+                report["safety"]["authorization_reason"],
+                "offline_non_panel_frame",
+            )
+            self.assertNotIn("panel_palette_authorized", report["safety"])
             self.assertFalse(report["hardware_tested"])
+            self.assertEqual(report["palette"]["schema_version"], 2)
             self.assertFalse(report["palette"]["calibrated"])
             self.assertEqual(sum(item["count"] for item in report["usage"]), 16 * 12)
             self.assertAlmostEqual(sum(item["ratio"] for item in report["usage"]), 1.0)
@@ -453,12 +693,58 @@ class QuantizationTests(unittest.TestCase):
 
     def test_panel_entry_returns_exact_307200_byte_white_frame(self) -> None:
         image = RasterImage(WIDTH, HEIGHT, "RGB", bytes((255, 255, 255)) * WIDTH * HEIGHT)
+        for entry_point in (quantize_image, quantize_panel_image):
+            with self.assertRaisesRegex(
+                ColorPipelineError, "allow_uncalibrated_palette=True"
+            ):
+                entry_point(
+                    image,
+                    options=PipelineOptions(DitherMode.NONE, preserve_edges=False),
+                )
         result = quantize_panel_image(
             image,
             options=PipelineOptions(DitherMode.NONE, preserve_edges=False),
+            allow_uncalibrated_palette=True,
         )
         self.assertEqual(len(result.frame), FRAME_BYTES)
         self.assertEqual(result.frame, bytes((0x11,)) * FRAME_BYTES)
+        safety = result.report.to_dict()["safety"]
+        self.assertTrue(safety["canonical_panel_dimensions"])
+        self.assertTrue(safety["panel_frame_bytes_output"])
+        self.assertTrue(safety["allow_uncalibrated_palette"])
+        self.assertEqual(
+            safety["authorization_reason"],
+            "explicit_uncalibrated_palette_opt_in",
+        )
+        self.assertNotIn("panel_palette_authorized", safety)
+
+    def test_calibrated_panel_records_measurement_and_authorization_reason(self) -> None:
+        image = RasterImage(WIDTH, HEIGHT, "RGB", bytes((255, 255, 255)) * WIDTH * HEIGHT)
+        reference = reference_palette()
+        calibrated = Palette(
+            "controlled-test-palette",
+            reference.entries,
+            True,
+            "controlled test measurement",
+            calibration=CalibrationProvenance("test-measurement", "d" * 64),
+        )
+        result = quantize_panel_image(
+            image,
+            palette=calibrated,
+            options=PipelineOptions(DitherMode.NONE, preserve_edges=False),
+        )
+        report = result.report.to_dict()
+        self.assertEqual(
+            report["safety"]["authorization_reason"], "calibrated_palette"
+        )
+        self.assertFalse(report["safety"]["allow_uncalibrated_palette"])
+        self.assertEqual(
+            report["palette"]["calibration"],
+            {
+                "measurement_id": "test-measurement",
+                "artifact_sha256": "d" * 64,
+            },
+        )
 
 
 class PreviewTests(unittest.TestCase):
@@ -512,6 +798,29 @@ class ValidationTests(unittest.TestCase):
             PipelineOptions(seed=-1)
         with self.assertRaisesRegex(ColorPipelineError, "not boolean"):
             PipelineOptions(edge_threshold=True)
+        with self.assertRaisesRegex(ColorPipelineError, "must be boolean"):
+            quantize_image(
+                RasterImage(2, 1, "RGB", bytes(6)),
+                allow_uncalibrated_palette=1,  # type: ignore[arg-type]
+            )
+
+    def test_palette_and_options_require_exact_public_types(self) -> None:
+        image = RasterImage(2, 1, "RGB", bytes(6))
+        with self.assertRaisesRegex(ColorPipelineError, "palette must be a Palette"):
+            quantize_image(image, palette=False)  # type: ignore[arg-type]
+        with self.assertRaisesRegex(ColorPipelineError, "options must be a PipelineOptions"):
+            quantize_image(image, options=False)  # type: ignore[arg-type]
+
+    def test_noncanonical_dimensions_cannot_alias_panel_frame_byte_count(self) -> None:
+        pixels = bytes(WIDTH * HEIGHT * 3)
+        for width, height in ((2048, 300), (512, 1200)):
+            image = RasterImage(width, height, "RGB", pixels)
+            with self.subTest(dimensions=(width, height)):
+                with self.assertRaisesRegex(
+                    ColorPipelineError,
+                    f"{FRAME_BYTES}-byte output is reserved for canonical",
+                ):
+                    quantize_image(image, allow_uncalibrated_palette=True)
 
 
 if __name__ == "__main__":

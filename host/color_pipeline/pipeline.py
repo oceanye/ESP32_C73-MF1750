@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 import hashlib
+import json
 import math
 from array import array
 from typing import Any, Dict, List, Optional, Sequence, Tuple
@@ -12,12 +13,29 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 from host.epd_frame import FRAME_BYTES, HEIGHT, WIDTH, fnv1a, pack_pixels, validate_frame
 
 from .color import LinearRGB, SRGB8_TO_LINEAR, delta_e_ciede2000, linear_rgb_to_lab
-from .palette import Palette, PaletteEntry, reference_palette
+from .palette import (
+    PALETTE_CANONICAL_HASH_SCOPE,
+    PALETTE_SCHEMA_VERSION,
+    Palette,
+    PaletteEntry,
+    reference_palette,
+)
 from .preview import encode_rgb_png
 
 
 class ColorPipelineError(ValueError):
     """Raised when a raster or pipeline option violates the host contract."""
+
+
+REPORT_SCHEMA_VERSION = 2
+PIPELINE_VERSION = "2.0.0"
+PIPELINE_BUILD_ID = "mf1750-color-pipeline-v2-2026-08-04"
+INPUT_TRANSFER_FUNCTION = "IEC 61966-2-1 sRGB"
+ALPHA_BACKGROUND_SRGB8 = (255, 255, 255)
+REPORT_CANONICAL_HASH_SCOPE = (
+    "entire report object excluding report_integrity; UTF-8 JSON with sorted "
+    "keys, no whitespace, ensure_ascii=false, allow_nan=false"
+)
 
 
 class DitherMode(str, Enum):
@@ -30,6 +48,8 @@ class DitherMode(str, Enum):
 
 @dataclass(frozen=True)
 class RasterImage:
+    """Decoded bytes whose construction declares 8-bit straight-alpha sRGB."""
+
     width: int
     height: int
     mode: str
@@ -108,12 +128,21 @@ class QuantizationReport:
     frame_bytes: int
     frame_sha256: str
     frame_fnv1a: str
+    input_mode: str
+    input_raster_bytes: int
+    input_raster_sha256: str
+    canonical_panel_dimensions: bool
+    panel_frame_bytes_output: bool
+    authorization_reason: str
+    allow_uncalibrated_palette: bool
     palette_id: str
     palette_calibrated: bool
     palette_source: str
     palette_illuminant: str
     palette_observer: str
     palette_notes: str
+    palette_canonical_sha256: str
+    palette_calibration: Optional[Tuple[str, str]]
     palette_entries: Tuple[
         Tuple[int, str, Tuple[float, float, float], Tuple[int, int, int]], ...
     ]
@@ -133,21 +162,68 @@ class QuantizationReport:
 
     def to_dict(self) -> Dict[str, Any]:
         total = self.width * self.height
-        return {
-            "schema_version": 1,
+        report: Dict[str, Any] = {
+            "schema_version": REPORT_SCHEMA_VERSION,
             "kind": "mf1750-color-quantization-report",
+            "pipeline": {
+                "version": PIPELINE_VERSION,
+                "build_id": PIPELINE_BUILD_ID,
+            },
             "width": self.width,
             "height": self.height,
             "frame_bytes": self.frame_bytes,
             "frame_sha256": self.frame_sha256,
             "frame_fnv1a": self.frame_fnv1a,
+            "input_raster": {
+                "width": self.width,
+                "height": self.height,
+                "mode": self.input_mode,
+                "pixel_bytes": self.input_raster_bytes,
+                "sha256": self.input_raster_sha256,
+                "sha256_scope": "decoded tightly-packed pixel bytes only",
+                "row_order": "top-left row-major",
+                "transfer_function": INPUT_TRANSFER_FUNCTION,
+                "caller_declaration": {
+                    "decoded_srgb8": True,
+                    "rgba_alpha_is_straight": (
+                        True if self.input_mode == "RGBA" else None
+                    ),
+                    "statement": (
+                        "caller declares decoded 8-bit IEC sRGB input and, for "
+                        "RGBA, straight (unassociated) alpha"
+                    ),
+                },
+                "alpha": {
+                    "representation": (
+                        "straight" if self.input_mode == "RGBA" else "absent"
+                    ),
+                    "background_srgb8": list(ALPHA_BACKGROUND_SRGB8),
+                    "compositing_space": "linear-light",
+                    "applied": self.input_mode == "RGBA",
+                },
+            },
             "palette": {
+                "schema_version": PALETTE_SCHEMA_VERSION,
                 "id": self.palette_id,
                 "calibrated": self.palette_calibrated,
                 "source": self.palette_source,
                 "illuminant": self.palette_illuminant,
                 "observer": self.palette_observer,
                 "notes": self.palette_notes,
+                "calibration": (
+                    None
+                    if self.palette_calibration is None
+                    else {
+                        "measurement_id": self.palette_calibration[0],
+                        "artifact_sha256": self.palette_calibration[1],
+                    }
+                ),
+                "canonical_sha256": self.palette_canonical_sha256,
+                "canonical_sha256_scope": PALETTE_CANONICAL_HASH_SCOPE,
+                "fingerprint_trust": (
+                    "audit fingerprint only; not a digital signature or "
+                    "trust-store decision"
+                ),
                 "entries": [
                     {
                         "code": code,
@@ -172,6 +248,13 @@ class QuantizationReport:
                 "requested_edge_preservation": self.requested_edge_preservation,
                 "edge_threshold": self.edge_threshold,
             },
+            "safety": {
+                "canonical_panel_dimensions": self.canonical_panel_dimensions,
+                "panel_frame_bytes_output": self.panel_frame_bytes_output,
+                "palette_calibrated": self.palette_calibrated,
+                "allow_uncalibrated_palette": self.allow_uncalibrated_palette,
+                "authorization_reason": self.authorization_reason,
+            },
             "usage": [
                 {
                     "code": code,
@@ -183,6 +266,22 @@ class QuantizationReport:
             ],
             "hardware_tested": False,
         }
+        canonical_bytes = json.dumps(
+            report,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8")
+        report["report_integrity"] = {
+            "canonical_sha256": hashlib.sha256(canonical_bytes).hexdigest(),
+            "canonical_sha256_scope": REPORT_CANONICAL_HASH_SCOPE,
+            "fingerprint_trust": (
+                "audit fingerprint only; not a digital signature or "
+                "trust-store decision"
+            ),
+        }
+        return report
 
 
 @dataclass(frozen=True)
@@ -463,13 +562,56 @@ def quantize_image(
     *,
     palette: Optional[Palette] = None,
     options: Optional[PipelineOptions] = None,
+    allow_uncalibrated_palette: bool = False,
 ) -> QuantizationResult:
-    """Quantize any even-width RGB/RGBA raster to canonical packed 4bpp."""
+    """Quantize an even-width RGB/RGBA raster to canonical packed 4bpp.
+
+    Small rasters remain an offline/test entry point.  A panel-sized raster is
+    a production-capable frame and therefore rejects an uncalibrated palette
+    unless the caller records an explicit ``allow_uncalibrated_palette=True``
+    opt-in.
+    """
 
     if image.width % 2:
         raise ColorPipelineError("4bpp output requires an even image width")
-    selected_palette = palette or reference_palette()
-    selected_options = options or PipelineOptions()
+    if not isinstance(allow_uncalibrated_palette, bool):
+        raise ColorPipelineError("allow_uncalibrated_palette must be boolean")
+    if palette is None:
+        selected_palette = reference_palette()
+    elif type(palette) is Palette:
+        selected_palette = palette
+    else:
+        raise ColorPipelineError("palette must be a Palette instance or None")
+    if options is None:
+        selected_options = PipelineOptions()
+    elif type(options) is PipelineOptions:
+        selected_options = options
+    else:
+        raise ColorPipelineError("options must be a PipelineOptions instance or None")
+    canonical_panel_dimensions = (image.width, image.height) == (WIDTH, HEIGHT)
+    expected_frame_bytes = image.width * image.height // 2
+    panel_frame_bytes_output = expected_frame_bytes == FRAME_BYTES
+    if panel_frame_bytes_output and not canonical_panel_dimensions:
+        raise ColorPipelineError(
+            f"{FRAME_BYTES}-byte output is reserved for canonical "
+            f"{WIDTH}x{HEIGHT} panel dimensions; got {image.width}x{image.height}"
+        )
+    if (
+        canonical_panel_dimensions
+        and not selected_palette.calibrated
+        and not allow_uncalibrated_palette
+    ):
+        raise ColorPipelineError(
+            "panel-sized output requires a calibrated palette; pass "
+            "allow_uncalibrated_palette=True only for an explicitly authorized "
+            "uncalibrated panel experiment"
+        )
+    if not canonical_panel_dimensions:
+        authorization_reason = "offline_non_panel_frame"
+    elif selected_palette.calibrated:
+        authorization_reason = "calibrated_palette"
+    else:
+        authorization_reason = "explicit_uncalibrated_palette_opt_in"
     codes = _quantize_codes(image, selected_palette, selected_options)
     frame = pack_pixels(codes, image.width, image.height)
     counts_by_code = {entry.code: 0 for entry in selected_palette.entries}
@@ -485,12 +627,28 @@ def quantize_image(
         frame_bytes=len(frame),
         frame_sha256=hashlib.sha256(frame).hexdigest(),
         frame_fnv1a=f"0x{fnv1a(frame):08X}",
+        input_mode=image.mode,
+        input_raster_bytes=len(image.pixels),
+        input_raster_sha256=hashlib.sha256(image.pixels).hexdigest(),
+        canonical_panel_dimensions=canonical_panel_dimensions,
+        panel_frame_bytes_output=panel_frame_bytes_output,
+        authorization_reason=authorization_reason,
+        allow_uncalibrated_palette=allow_uncalibrated_palette,
         palette_id=selected_palette.palette_id,
         palette_calibrated=selected_palette.calibrated,
         palette_source=selected_palette.source,
         palette_illuminant=selected_palette.illuminant,
         palette_observer=selected_palette.observer,
         palette_notes=selected_palette.notes,
+        palette_canonical_sha256=selected_palette.canonical_sha256,
+        palette_calibration=(
+            None
+            if selected_palette.calibration is None
+            else (
+                selected_palette.calibration.measurement_id,
+                selected_palette.calibration.artifact_sha256,
+            )
+        ),
         palette_entries=tuple(
             (entry.code, entry.name, entry.lab, entry.preview_rgb)
             for entry in selected_palette.entries
@@ -528,14 +686,24 @@ def quantize_panel_image(
     *,
     palette: Optional[Palette] = None,
     options: Optional[PipelineOptions] = None,
+    allow_uncalibrated_palette: bool = False,
 ) -> QuantizationResult:
-    """Quantize exactly one MF-1750 1024x600 image to a 307200-byte frame."""
+    """Quantize exactly one MF-1750 1024x600 image to a 307200-byte frame.
+
+    Uncalibrated palettes are rejected by default.  The explicit opt-in is for
+    controlled panel experiments and is preserved in report schema v2.
+    """
 
     if (image.width, image.height) != (WIDTH, HEIGHT):
         raise ColorPipelineError(
             f"panel input must be {WIDTH}x{HEIGHT}; got {image.width}x{image.height}"
         )
-    result = quantize_image(image, palette=palette, options=options)
+    result = quantize_image(
+        image,
+        palette=palette,
+        options=options,
+        allow_uncalibrated_palette=allow_uncalibrated_palette,
+    )
     if len(result.frame) != FRAME_BYTES:
         raise AssertionError("panel frame length invariant failed")
     validate_frame(result.frame)
