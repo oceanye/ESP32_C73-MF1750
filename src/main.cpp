@@ -9,7 +9,8 @@
 
 WebServer server(80);
 
-static constexpr const char *FW_BUILD_TAG = "MF1750_DRIVER_RC1_R16_CCSET_MAPHASH_2026-08-04";
+static constexpr const char *FW_BUILD_TAG =
+    "MF1750_DRIVER_RC2B_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_2026-08-04";
 static constexpr uint32_t FNV1A_OFFSET_BASIS = 2166136261UL;
 static constexpr uint32_t FNV1A_PRIME = 16777619UL;
 static constexpr uint32_t MAP_ORIENT_V1_EXPECTED_FNV1A = 2634290221UL;
@@ -20,6 +21,8 @@ static uint32_t frameUploadHash = FNV1A_OFFSET_BASIS;
 static bool frameUploadAccepted = false;
 static bool frameUploadComplete = false;
 static String frameUploadError;
+static size_t frameUploadInvalidPixel = static_cast<size_t>(-1);
+static uint8_t frameUploadInvalidCode = 0;
 enum class PendingEpdAction : uint8_t {
   None,
   UploadedFrame,
@@ -74,11 +77,20 @@ static uint32_t epdJobFinishedAtMs = 0;
 static bool epdJobResultKnown = false;
 static bool epdJobResult = false;
 static uint32_t epdJobFrameHash = 0;
+// Published as one immutable String only after a result-bearing job has a
+// fresh, completed driver report. Later Test/REV diagnostics may update the
+// driver's live report, but cannot relabel or mutate this job snapshot.
+static uint32_t epdPublishedOperationId = 0;
+static String epdPublishedReportJson =
+    "{\"schema_version\":2,\"valid\":false,\"error\":\"no_completed_job_report\"}";
 static uint32_t generatedFrameHash = 0;
 
 static bool ensureFrameBuffer(size_t requiredSize);
 static bool queueEpdJob(PendingEpdAction action, const char *name, uint32_t frameHash = 0);
 static String epdJobStatusJson();
+static String epdDiagnosticReportWithJobJson();
+static String epdBuildCompletedJobReportJson(const String &driverReport,
+                                             uint32_t operationId);
 
 static constexpr char INDEX_HTML[] PROGMEM = R"HTML(
 <!doctype html>
@@ -449,7 +461,12 @@ static bool generateMapOrientV1() {
 }
 
 static bool drawAndDisplayMapOrientV1(uint32_t spiHz) {
-  if (!generateMapOrientV1()) return false;
+  if (!generateMapOrientV1()) {
+    // Allocate and complete a rejected driver operation too, so every
+    // result-bearing job has a fresh report even if host-frame generation
+    // fails before panel I/O.
+    return epdDisplayFrameAtFrequency(nullptr, 0, spiHz);
+  }
   epdJobFrameHash = generatedFrameHash;
   return epdDisplayFrameAtFrequency(frameBuffer, EPD_FRAME_BYTES, spiHz);
 }
@@ -582,6 +599,30 @@ static String epdJobStatusJson() {
          ",\"frame_fnv1a\":" + String(epdJobFrameHash) + "}";
 }
 
+static String epdDiagnosticReportWithJobJson() {
+  return epdPublishedReportJson;
+}
+
+static String epdBuildCompletedJobReportJson(const String &completedDriverReport,
+                                             uint32_t operationId) {
+  String driverReport = completedDriverReport;
+  if (!driverReport.startsWith("{")) {
+    return "{\"schema_version\":2,\"valid\":false,\"error\":\"invalid_driver_report\"}";
+  }
+  driverReport.remove(0, 1);
+  return String("{\"schema_version\":2,\"firmware_build_tag\":\"") + FW_BUILD_TAG +
+         "\",\"driver_api_version\":\"" + EPD_DRIVER_API_VERSION +
+         "\",\"job_id\":" + String(epdJobId) +
+         ",\"job_action\":\"" + epdJobName +
+         "\",\"job_state\":\"" + epdJobStateName(epdJobState) +
+         "\",\"job_result\":" + String(epdJobResult ? "true" : "false") +
+         ",\"job_operation_id\":" + String(operationId) +
+         ",\"job_queued_at_ms\":" + String(epdJobQueuedAtMs) +
+         ",\"job_started_at_ms\":" + String(epdJobStartedAtMs) +
+         ",\"job_finished_at_ms\":" + String(epdJobFinishedAtMs) +
+         "," + driverReport;
+}
+
 static void queueEpdJobAndRespond(PendingEpdAction action, const char *name) {
   if (!queueEpdJob(action, name)) {
     server.send(409, "application/json",
@@ -606,18 +647,19 @@ static void handleFrameUploadRaw() {
     frameUploadHash = FNV1A_OFFSET_BASIS;
     frameUploadComplete = false;
     frameUploadError = "";
+    frameUploadInvalidPixel = static_cast<size_t>(-1);
+    frameUploadInvalidCode = 0;
     if (server.clientContentLength() != static_cast<int>(EPD_FRAME_BYTES)) {
       frameUploadAccepted = false;
       frameUploadError = "frame_size_mismatch";
       return;
     }
-    frameUploadAccepted = !epdJobActive() &&
-                          pendingEpdAction == PendingEpdAction::None &&
-                          ensureFrameBuffer(EPD_FRAME_BYTES);
+    const bool actionPending = epdJobActive() ||
+                               pendingEpdAction != PendingEpdAction::None;
+    frameUploadAccepted = !actionPending && ensureFrameBuffer(EPD_FRAME_BYTES);
     if (!frameUploadAccepted) {
-      frameUploadError = pendingEpdAction == PendingEpdAction::None
-                             ? "frame_buffer_allocation_failed"
-                             : "epd_action_pending";
+      frameUploadError = actionPending ? "epd_action_pending"
+                                       : "frame_buffer_allocation_failed";
     }
     return;
   }
@@ -630,6 +672,21 @@ static void handleFrameUploadRaw() {
       frameUploadError = "frame_too_large";
       return;
     }
+    for (size_t i = 0; i < raw.currentSize; ++i) {
+      const uint8_t packed = raw.buf[i];
+      const uint8_t high = (packed >> 4) & 0x0F;
+      const uint8_t low = packed & 0x0F;
+      if (!epdIsSupportedColorCode(high) || !epdIsSupportedColorCode(low)) {
+        frameUploadAccepted = false;
+        frameUploadComplete = false;
+        frameUploadError = "unsupported_color_code";
+        const bool highInvalid = !epdIsSupportedColorCode(high);
+        frameUploadInvalidPixel = (offset + i) * 2 + (highInvalid ? 0 : 1);
+        frameUploadInvalidCode = highInvalid ? high : low;
+        frameUploadReceived = offset + i;
+        return;
+      }
+    }
     memcpy(frameBuffer + offset, raw.buf, raw.currentSize);
     for (size_t i = 0; i < raw.currentSize; ++i) {
       frameUploadHash ^= raw.buf[i];
@@ -640,7 +697,7 @@ static void handleFrameUploadRaw() {
   }
 
   if (raw.status == RAW_END) {
-    frameUploadReceived = raw.totalSize;
+    if (frameUploadAccepted) frameUploadReceived = raw.totalSize;
     frameUploadComplete = frameUploadAccepted && raw.totalSize == EPD_FRAME_BYTES;
     if (!frameUploadComplete && frameUploadError.length() == 0) {
       frameUploadError = "frame_size_mismatch";
@@ -674,10 +731,15 @@ static void finishFrameUpload(bool enqueueRefresh) {
   }
   if (!frameUploadComplete) {
     const int status = frameUploadError == "epd_action_pending" ? 409 : 400;
-    server.send(status, "application/json",
-                String("{\"ok\":false,\"error\":\"") + frameUploadError +
-                    "\",\"received\":" + String(frameUploadReceived) +
-                    ",\"expected\":" + String(EPD_FRAME_BYTES) + "}");
+    String errorResult = String("{\"ok\":false,\"error\":\"") + frameUploadError +
+                         "\",\"received\":" + String(frameUploadReceived) +
+                         ",\"expected\":" + String(EPD_FRAME_BYTES);
+    if (frameUploadInvalidPixel != static_cast<size_t>(-1)) {
+      errorResult += ",\"invalid_pixel\":" + String(frameUploadInvalidPixel) +
+                     ",\"invalid_code\":" + String(frameUploadInvalidCode);
+    }
+    errorResult += "}";
+    server.send(status, "application/json", errorResult);
     return;
   }
 
@@ -685,7 +747,10 @@ static void finishFrameUpload(bool enqueueRefresh) {
                         ",\"fnv1a\":" + String(frameUploadHash) +
                         ",\"free_psram\":" + String(ESP.getFreePsram()) + "}";
   if (!enqueueRefresh) {
-    server.send(200, "application/json", result);
+    String ingressResult = result;
+    ingressResult.remove(ingressResult.length() - 1);
+    ingressResult += ",\"epd_action\":\"none\"}";
+    server.send(200, "application/json", ingressResult);
     return;
   }
   if (!queueEpdJob(PendingEpdAction::UploadedFrame, "uploaded_frame", frameUploadHash)) {
@@ -731,11 +796,20 @@ static void startServer() {
   });
   server.on("/api/version", HTTP_GET, []() {
     server.send(200, "text/plain; charset=utf-8",
-                String(FW_BUILD_TAG) + "\nPanel: " + String(EPD_WIDTH) + "x" + String(EPD_HEIGHT) +
-                    "\nDriver API: " + String(EPD_DRIVER_API_VERSION) +
-                    "\nFrame bytes: " + String(EPD_FRAME_BYTES) +
-                    "\nPSRAM bytes: " + String(ESP.getPsramSize()) +
-                    "\nFree PSRAM: " + String(ESP.getFreePsram()));
+                 String(FW_BUILD_TAG) + "\nPanel: " + String(EPD_WIDTH) + "x" + String(EPD_HEIGHT) +
+                     "\nDriver API: " + String(EPD_DRIVER_API_VERSION) +
+                     "\nFrame bytes: " + String(EPD_FRAME_BYTES) +
+                     "\nRefresh SPI Hz: " + String(EPD_SPI_DEFAULT_HZ) +
+                     "\nCS1 Mapping: " + String(EPD_CS1_SOURCE_HALF) + "," +
+                     String(EPD_CS1_FLIP_X ? 1 : 0) + "," +
+                     String(EPD_CS1_FLIP_Y ? 1 : 0) + "," +
+                     String(EPD_CS1_NIBBLE_SWAP ? 1 : 0) +
+                     "\nCS2 Mapping: " + String(EPD_CS2_SOURCE_HALF) + "," +
+                     String(EPD_CS2_FLIP_X ? 1 : 0) + "," +
+                     String(EPD_CS2_FLIP_Y ? 1 : 0) + "," +
+                     String(EPD_CS2_NIBBLE_SWAP ? 1 : 0) +
+                     "\nPSRAM bytes: " + String(ESP.getPsramSize()) +
+                     "\nFree PSRAM: " + String(ESP.getFreePsram()));
   });
   server.on("/api/diagnostic/status", HTTP_GET, []() {
     server.send(200, "application/json",
@@ -752,7 +826,7 @@ static void startServer() {
     server.send(200, "application/json", epdDiagnosticReadRevisionsJson());
   });
   server.on("/api/diagnostic/report", HTTP_GET, []() {
-    server.send(200, "application/json", epdDiagnosticReportJson());
+    server.send(200, "application/json", epdDiagnosticReportWithJobJson());
   });
   server.on("/api/diagnostic/map-orient-v1-generate", HTTP_POST, []() {
     if (epdJobActive() || pendingEpdAction != PendingEpdAction::None) {
@@ -969,6 +1043,7 @@ void loop() {
     pendingEpdAction = PendingEpdAction::None;
     epdJobState = EpdJobState::Running;
     epdJobStartedAtMs = millis();
+    const uint32_t operationIdBefore = epdGetLastOperationReport().operationId;
     bool resultKnown = false;
     bool result = false;
     Serial.printf("Running EPD job %lu action %u (%s)\n",
@@ -1098,10 +1173,44 @@ void loop() {
       case PendingEpdAction::None:
         break;
     }
+    bool freshCompletedReport = false;
+    uint32_t completedOperationId = 0;
+    String completedDriverReport;
+    if (resultKnown) {
+      const EpdOperationReport &report = epdGetLastOperationReport();
+      freshCompletedReport = report.valid && !report.running &&
+                             report.operationId > operationIdBefore &&
+                             report.operationId > epdPublishedOperationId &&
+                             report.sequenceOk == result;
+      if (freshCompletedReport) {
+        completedOperationId = report.operationId;
+        completedDriverReport = epdDiagnosticReportJson();
+        if (!completedDriverReport.startsWith("{\"operation_id\":")) {
+          freshCompletedReport = false;
+          result = false;
+          Serial.println("EPD job rejected: completed report serialization failed");
+        }
+      } else {
+        // Never publish or return success for an action that reused, omitted,
+        // or left a report running. The previous immutable snapshot remains
+        // bound to its original job.
+        Serial.printf("EPD job %lu rejected: missing fresh completed driver report\n",
+                      static_cast<unsigned long>(epdJobId));
+        result = false;
+      }
+    }
     epdJobResultKnown = resultKnown;
     epdJobResult = result;
     epdJobFinishedAtMs = millis();
     epdJobState = resultKnown && !result ? EpdJobState::Failed : EpdJobState::Completed;
+    if (freshCompletedReport) {
+      const String completedJobSnapshot =
+          epdBuildCompletedJobReportJson(completedDriverReport, completedOperationId);
+      // One assignment publishes the complete job+driver snapshot. GET never
+      // reads the driver's mutable live global.
+      epdPublishedReportJson = completedJobSnapshot;
+      epdPublishedOperationId = completedOperationId;
+    }
     Serial.printf("EPD job %lu finished: state=%s result_known=%d result=%d\n",
                   static_cast<unsigned long>(epdJobId), epdJobStateName(epdJobState),
                   resultKnown ? 1 : 0, result ? 1 : 0);

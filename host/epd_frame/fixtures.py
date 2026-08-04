@@ -25,6 +25,9 @@ from .core import (
 
 FIXTURE_NAMES = ("global-v-bars", "global-h-bars", "map-orient-v1")
 BAR_COLORS = (WHITE, BLACK, RED, YELLOW, BLUE, GREEN)
+# Tuple order is always ``(full frame, logical left half, logical right half)``.
+# Physical CS1/CS2 hashes require an explicit ControllerMapping and do not
+# belong in this controller-neutral fixture table.
 EXPECTED_FIXTURE_HASHES: Dict[str, Tuple[int, int, int]] = {
     "global-v-bars": (0x908478A5, 0x61BCF1C5, 0xA3446735),
     "global-h-bars": (0x7DD055C5, 0x855679C5, 0x855679C5),
@@ -46,8 +49,8 @@ class FixtureReport:
     name: str
     byte_count: int
     full_fnv1a: int
-    cs1_fnv1a: int
-    cs2_fnv1a: int
+    logical_left_fnv1a: int
+    logical_right_fnv1a: int
     pixel_counts: Tuple[int, ...]
     verified: bool
 
@@ -152,17 +155,17 @@ def verify_fixture(name: str, frame: bytes | None = None) -> FixtureReport:
         frame = generate_fixture(name)
     if name not in EXPECTED_FIXTURE_HASHES:
         raise ValueError(f"unknown fixture {name!r}; choose one of {FIXTURE_NAMES}")
-    cs1 = controller_stream(frame, ControllerMapping(0))
-    cs2 = controller_stream(frame, ControllerMapping(1))
-    actual_hashes = (fnv1a(frame), fnv1a(cs1), fnv1a(cs2))
+    logical_left = controller_stream(frame, ControllerMapping(0))
+    logical_right = controller_stream(frame, ControllerMapping(1))
+    actual_hashes = (fnv1a(frame), fnv1a(logical_left), fnv1a(logical_right))
     counts = pixel_counts(frame)
     counts_ok = name != "map-orient-v1" or counts == MAP_ORIENT_V1_PIXEL_COUNTS
     return FixtureReport(
         name=name,
         byte_count=len(frame),
         full_fnv1a=actual_hashes[0],
-        cs1_fnv1a=actual_hashes[1],
-        cs2_fnv1a=actual_hashes[2],
+        logical_left_fnv1a=actual_hashes[1],
+        logical_right_fnv1a=actual_hashes[2],
         pixel_counts=counts,
         verified=len(frame) == FRAME_BYTES
         and actual_hashes == EXPECTED_FIXTURE_HASHES[name]

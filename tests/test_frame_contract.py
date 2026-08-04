@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from array import array
 import itertools
 import unittest
 
@@ -38,6 +39,8 @@ class PackingTests(unittest.TestCase):
     def test_fnv1a_known_vector(self) -> None:
         self.assertEqual(fnv1a(b""), 0x811C9DC5)
         self.assertEqual(fnv1a(b"hello"), 0x4F9F2CAB)
+        signed = memoryview(array("b", [-1, 0, 1]))
+        self.assertEqual(fnv1a(signed), fnv1a(b"\xFF\x00\x01"))
 
     def test_validate_frame_returns_zero_copy_view(self) -> None:
         packed = bytearray((0x01, 0x23))
@@ -83,7 +86,11 @@ class FixtureTests(unittest.TestCase):
                 report = verify_fixture(name, frame)
                 self.assertEqual(len(frame), FRAME_BYTES)
                 self.assertEqual(
-                    (report.full_fnv1a, report.cs1_fnv1a, report.cs2_fnv1a),
+                    (
+                        report.full_fnv1a,
+                        report.logical_left_fnv1a,
+                        report.logical_right_fnv1a,
+                    ),
                     EXPECTED_FIXTURE_HASHES[name],
                 )
                 self.assertTrue(report.verified)
@@ -166,6 +173,20 @@ class ValidationTests(unittest.TestCase):
     def test_invalid_source_half_is_rejected(self) -> None:
         with self.assertRaisesRegex(FrameContractError, "source_half"):
             ControllerMapping(2)
+        for invalid in (True, False, 0.0, 1.0, "0"):
+            with self.subTest(invalid=invalid):
+                with self.assertRaisesRegex(FrameContractError, "source_half"):
+                    ControllerMapping(invalid)  # type: ignore[arg-type]
+
+    def test_mapping_flags_require_real_booleans(self) -> None:
+        for field, kwargs in (
+            ("flip_x", {"flip_x": 1}),
+            ("flip_y", {"flip_y": "false"}),
+            ("nibble_swap", {"nibble_swap": None}),
+        ):
+            with self.subTest(field=field):
+                with self.assertRaisesRegex(FrameContractError, field):
+                    ControllerMapping(0, **kwargs)  # type: ignore[arg-type]
 
     def test_unknown_fixture_is_rejected(self) -> None:
         with self.assertRaisesRegex(ValueError, "unknown fixture"):

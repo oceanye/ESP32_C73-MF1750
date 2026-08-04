@@ -36,9 +36,11 @@ static uint32_t activeSpiHz = EPD_SPI_DEFAULT_HZ;
 static bool hardwareSpiStarted = false;
 
 static EpdOperationReport diagnosticReport;
+static uint32_t operationIdCounter = 0;
 
 static constexpr uint32_t FNV1A_OFFSET_BASIS = 2166136261UL;
 static constexpr uint32_t FNV1A_PRIME = 16777619UL;
+static constexpr uint32_t EPD_BUSY_ASSERT_GRACE_MS = 250;
 
 struct ControllerMapping {
   uint8_t sourceHalf;
@@ -72,6 +74,41 @@ void copyStage(char *destination, size_t destinationSize, const char *stage) {
   if (destinationSize == 0) return;
   std::strncpy(destination, stage, destinationSize - 1);
   destination[destinationSize - 1] = '\0';
+}
+
+void recordWaitEvidence(const char *stage, uint32_t elapsedMs, bool busySeen) {
+  if (!diagnosticReport.running) return;
+  if (std::strcmp(stage, "PON") == 0) {
+    diagnosticReport.ponWaitMs = elapsedMs;
+    diagnosticReport.ponBusySeen = busySeen;
+  } else if (std::strcmp(stage, "DRF") == 0) {
+    diagnosticReport.drfWaitMs = elapsedMs;
+    diagnosticReport.drfBusySeen = busySeen;
+  } else if (std::strcmp(stage, "POF") == 0) {
+    diagnosticReport.pofWaitMs = elapsedMs;
+    diagnosticReport.pofBusySeen = busySeen;
+  } else if (std::strcmp(stage, "post-display PSR") == 0) {
+    diagnosticReport.postPsrWaitMs = elapsedMs;
+    diagnosticReport.postPsrBusySeen = busySeen;
+  }
+}
+
+uint32_t epdBeginOperation(uint32_t spiHz) {
+  ++operationIdCounter;
+  if (operationIdCounter == 0) ++operationIdCounter;
+  diagnosticReport = EpdOperationReport{};
+  diagnosticReport.operationId = operationIdCounter;
+  diagnosticReport.valid = true;
+  diagnosticReport.running = true;
+  diagnosticReport.spiHz = spiHz;
+  return millis();
+}
+
+bool epdFinishOperation(uint32_t startedAtMs, bool sequenceOk) {
+  diagnosticReport.sequenceOk = sequenceOk;
+  diagnosticReport.totalMs = millis() - startedAtMs;
+  diagnosticReport.running = false;
+  return sequenceOk;
 }
 
 inline void setPinIfConnected(int pin, uint8_t value) {
@@ -210,25 +247,62 @@ uint8_t epdBitBangRead8() {
   return value;
 }
 
-bool epdWaitIdle(const char *stage, uint32_t timeoutMs = 60000) {
+bool epdWaitIdle(const char *stage,
+                 uint32_t timeoutMs = 60000,
+                 bool requireBusyAssertion = false) {
   // The supplied sample waits for BUSY_N to become HIGH. The panel datasheet
   // text says the opposite, but reset/refresh measurements on this panel show
-  // LOW while busy and HIGH while idle. Keep the empirical/sample-code polarity
-  // and log whether a real busy interval was observed.
-  delay(5);
+  // LOW while busy and HIGH while idle. Formal high-voltage stages first wait
+  // for BUSY to assert, then wait for it to return idle. This prevents an
+  // unplugged/miswired BUSY input from turning an immediate idle level into a
+  // false successful refresh.
   const uint32_t started = millis();
   bool sawBusy = digitalRead(EPD_PIN_BUSY) != EPD_BUSY_IDLE_LEVEL;
+  if (requireBusyAssertion && !sawBusy) {
+    while (millis() - started < EPD_BUSY_ASSERT_GRACE_MS) {
+      if (digitalRead(EPD_PIN_BUSY) != EPD_BUSY_IDLE_LEVEL) {
+        sawBusy = true;
+        break;
+      }
+      delay(1);
+    }
+    if (!sawBusy) {
+      const uint32_t elapsed = millis() - started;
+      if (diagnosticReport.running) {
+        diagnosticReport.lastWaitMs = elapsed;
+        copyStage(diagnosticReport.lastWaitStage,
+                  sizeof(diagnosticReport.lastWaitStage), stage);
+        recordWaitEvidence(stage, elapsed, false);
+        diagnosticReport.busyAssertionMissing = true;
+        copyStage(diagnosticReport.busyMissingStage,
+                  sizeof(diagnosticReport.busyMissingStage), stage);
+      }
+      Serial.printf("EPD busy assertion missing at %s after %lu ms, BUSY=%d\n",
+                    stage, static_cast<unsigned long>(elapsed),
+                    digitalRead(EPD_PIN_BUSY));
+      return false;
+    }
+  } else if (!requireBusyAssertion) {
+    delay(5);
+    sawBusy = sawBusy || digitalRead(EPD_PIN_BUSY) != EPD_BUSY_IDLE_LEVEL;
+  }
   Serial.printf("EPD wait idle: %s, BUSY=%d, idle=%d\n",
                 stage, digitalRead(EPD_PIN_BUSY), EPD_BUSY_IDLE_LEVEL);
   uint32_t lastLog = started;
   while (digitalRead(EPD_PIN_BUSY) != EPD_BUSY_IDLE_LEVEL) {
     sawBusy = true;
     if (millis() - started > timeoutMs) {
-      diagnosticReport.lastWaitMs = millis() - started;
-      copyStage(diagnosticReport.lastWaitStage, sizeof(diagnosticReport.lastWaitStage), stage);
-      if (diagnosticReport.running && !diagnosticReport.waitTimedOut) {
-        diagnosticReport.waitTimedOut = true;
-        copyStage(diagnosticReport.timeoutStage, sizeof(diagnosticReport.timeoutStage), stage);
+      const uint32_t elapsed = millis() - started;
+      if (diagnosticReport.running) {
+        diagnosticReport.lastWaitMs = elapsed;
+        copyStage(diagnosticReport.lastWaitStage,
+                  sizeof(diagnosticReport.lastWaitStage), stage);
+        recordWaitEvidence(stage, elapsed, sawBusy);
+        if (!diagnosticReport.waitTimedOut) {
+          diagnosticReport.waitTimedOut = true;
+          copyStage(diagnosticReport.timeoutStage,
+                    sizeof(diagnosticReport.timeoutStage), stage);
+        }
       }
       Serial.printf("EPD busy timeout at %s, BUSY=%d, busy_seen=%d\n",
                     stage, digitalRead(EPD_PIN_BUSY), sawBusy);
@@ -243,9 +317,29 @@ bool epdWaitIdle(const char *stage, uint32_t timeoutMs = 60000) {
   }
   Serial.printf("EPD idle: %s after %lu ms, busy_seen=%d\n",
                 stage, static_cast<unsigned long>(millis() - started), sawBusy);
-  diagnosticReport.lastWaitMs = millis() - started;
-  copyStage(diagnosticReport.lastWaitStage, sizeof(diagnosticReport.lastWaitStage), stage);
+  const uint32_t elapsed = millis() - started;
+  if (diagnosticReport.running) {
+    diagnosticReport.lastWaitMs = elapsed;
+    copyStage(diagnosticReport.lastWaitStage,
+              sizeof(diagnosticReport.lastWaitStage), stage);
+    recordWaitEvidence(stage, elapsed, sawBusy);
+  }
   return true;
+}
+
+bool epdWaitBusyThenIdle(const char *stage, uint32_t timeoutMs = 60000) {
+  return epdWaitIdle(stage, timeoutMs, true);
+}
+
+void epdRequestFailSafePowerOff(const char *cleanupStage) {
+  epdCommand(POF);
+  epdData(0x00);
+  // If BUSY assertion itself is the broken signal, still give the controller
+  // an assertion-sized window to accept POF before disconnecting its GPIOs.
+  delay(EPD_BUSY_ASSERT_GRACE_MS);
+  epdWaitIdle(cleanupStage, 30000);
+  epdStopHardwareSpi();
+  epdHoldPanelPinsLow();
 }
 
 void epdReset() {
@@ -264,7 +358,7 @@ bool epdPostDisplayPowerCut() {
   epdCommand(PSR);
   epdData(0x4F);
   epdData(0x6E);
-  const bool psrIdle = epdWaitIdle("post-display PSR");
+  const bool psrIdle = epdWaitBusyThenIdle("post-display PSR");
   delay(1000);
   // Rev A1 leaves the ESP32 powered from USB when J2-1 is removed.  Hold every
   // panel-facing digital output LOW so the unpowered panel cannot be back-fed;
@@ -277,13 +371,9 @@ bool epdPostDisplayPowerCut() {
 bool epdSecondSettingAndRefresh() {
   Serial.println("EPD power on");
   epdCommand(PON);
-  if (!epdWaitIdle("PON")) {
-    Serial.println("EPD abort: PON timeout; requesting power off");
-    epdCommand(POF);
-    epdData(0x00);
-    epdWaitIdle("POF after PON timeout", 30000);
-    epdStopHardwareSpi();
-    epdHoldPanelPinsLow();
+  if (!epdWaitBusyThenIdle("PON")) {
+    Serial.println("EPD abort: PON BUSY failure; requesting safe power off");
+    epdRequestFailSafePowerOff("POF cleanup after PON failure");
     return false;
   }
 
@@ -296,21 +386,17 @@ bool epdSecondSettingAndRefresh() {
   Serial.println("EPD display refresh");
   epdCommand(DRF);
   epdData(0x00);
-  if (!epdWaitIdle("DRF")) {
-    Serial.println("EPD abort: DRF timeout; requesting power off");
-    epdCommand(POF);
-    epdData(0x00);
-    epdWaitIdle("POF after DRF timeout", 30000);
-    epdStopHardwareSpi();
-    epdHoldPanelPinsLow();
+  if (!epdWaitBusyThenIdle("DRF")) {
+    Serial.println("EPD abort: DRF BUSY failure; requesting safe power off");
+    epdRequestFailSafePowerOff("POF cleanup after DRF failure");
     return false;
   }
 
   Serial.println("EPD power off");
   epdCommand(POF);
   epdData(0x00);
-  if (!epdWaitIdle("POF")) {
-    Serial.println("EPD abort: POF timeout");
+  if (!epdWaitBusyThenIdle("POF")) {
+    Serial.println("EPD abort: POF BUSY failure");
     epdStopHardwareSpi();
     epdHoldPanelPinsLow();
     return false;
@@ -345,6 +431,36 @@ RevisionSample epdReadRevisionOnce(bool secondController) {
 }
 
 } // namespace
+
+bool epdIsSupportedColorCode(uint8_t color) {
+  switch (color) {
+    case EPD_COLOR_BLACK:
+    case EPD_COLOR_WHITE:
+    case EPD_COLOR_YELLOW:
+    case EPD_COLOR_RED:
+    case EPD_COLOR_BLUE:
+    case EPD_COLOR_GREEN:
+      return true;
+    default:
+      return false;
+  }
+}
+
+bool epdValidateFrameColors(const uint8_t *frame, size_t len,
+                            size_t *invalidPixel, uint8_t *invalidCode) {
+  if (!frame) return false;
+  for (size_t byteIndex = 0; byteIndex < len; ++byteIndex) {
+    const uint8_t high = (frame[byteIndex] >> 4) & 0x0F;
+    const uint8_t low = frame[byteIndex] & 0x0F;
+    if (!epdIsSupportedColorCode(high) || !epdIsSupportedColorCode(low)) {
+      const bool highInvalid = !epdIsSupportedColorCode(high);
+      if (invalidPixel) *invalidPixel = byteIndex * 2 + (highInvalid ? 0 : 1);
+      if (invalidCode) *invalidCode = highInvalid ? high : low;
+      return false;
+    }
+  }
+  return true;
+}
 
 void epdBegin() {
   pinMode(EPD_PIN_CS, OUTPUT);
@@ -461,11 +577,19 @@ void epdDiagnosticReleasePins() {
 }
 
 String epdDiagnosticReportJson() {
-  String json = "{\"valid\":" + String(diagnosticReport.valid ? "true" : "false") +
+  String json = "{\"operation_id\":" + String(diagnosticReport.operationId) +
+                ",\"valid\":" + String(diagnosticReport.valid ? "true" : "false") +
                 ",\"running\":" + String(diagnosticReport.running ? "true" : "false") +
                 ",\"sequence_ok\":" + String(diagnosticReport.sequenceOk ? "true" : "false") +
                 ",\"wait_timeout\":" + String(diagnosticReport.waitTimedOut ? "true" : "false") +
+                ",\"busy_assertion_missing\":" +
+                String(diagnosticReport.busyAssertionMissing ? "true" : "false") +
+                ",\"busy_assert_grace_ms\":" + String(EPD_BUSY_ASSERT_GRACE_MS) +
                 ",\"mapping_applied\":" + String(diagnosticReport.mappingApplied ? "true" : "false") +
+                ",\"pon_busy_seen\":" + String(diagnosticReport.ponBusySeen ? "true" : "false") +
+                ",\"drf_busy_seen\":" + String(diagnosticReport.drfBusySeen ? "true" : "false") +
+                ",\"pof_busy_seen\":" + String(diagnosticReport.pofBusySeen ? "true" : "false") +
+                ",\"post_psr_busy_seen\":" + String(diagnosticReport.postPsrBusySeen ? "true" : "false") +
                 ",\"spi_hz\":" + String(diagnosticReport.spiHz) +
                 ",\"input_fnv1a\":" + String(diagnosticReport.inputFrameFnv1a) +
                 ",\"cs1_dtm_fnv1a\":" + String(diagnosticReport.cs1DtmFnv1a) +
@@ -473,9 +597,14 @@ String epdDiagnosticReportJson() {
                 ",\"total_ms\":" + String(diagnosticReport.totalMs) +
                 ",\"cs1_upload_ms\":" + String(diagnosticReport.cs1UploadMs) +
                 ",\"cs2_upload_ms\":" + String(diagnosticReport.cs2UploadMs) +
+                ",\"pon_ms\":" + String(diagnosticReport.ponWaitMs) +
+                ",\"drf_ms\":" + String(diagnosticReport.drfWaitMs) +
+                ",\"pof_ms\":" + String(diagnosticReport.pofWaitMs) +
+                ",\"post_psr_ms\":" + String(diagnosticReport.postPsrWaitMs) +
                 ",\"last_wait_ms\":" + String(diagnosticReport.lastWaitMs) +
                 ",\"last_wait_stage\":\"" + String(diagnosticReport.lastWaitStage) +
                 "\",\"timeout_stage\":\"" + String(diagnosticReport.timeoutStage) +
+                "\",\"busy_missing_stage\":\"" + String(diagnosticReport.busyMissingStage) +
                 "\",\"mapping\":{" +
                 "\"cs1_source_half\":" + String(EPD_CS1_SOURCE_HALF) +
                 ",\"cs1_flip_x\":" + String(EPD_CS1_FLIP_X ? "true" : "false") +
@@ -632,10 +761,11 @@ bool epdDiagnosticSolid(uint16_t tresWidth,
                         size_t streamBytes,
                         uint8_t fillByte,
                         uint32_t spiHz) {
+  const uint32_t diagnosticStarted = epdBeginOperation(spiHz);
   if (tresWidth == 0 || tresHeight == 0 || streamBytes == 0 ||
       streamBytes > EPD_FRAME_BYTES) {
     Serial.println("EPD diagnostic rejected: invalid TRES or byte count");
-    return false;
+    return epdFinishOperation(diagnosticStarted, false);
   }
 
   Serial.println("EPD DIAGNOSTIC: use one test per cold panel power cycle");
@@ -645,40 +775,36 @@ bool epdDiagnosticSolid(uint16_t tresWidth,
   epdSetSpiFrequency(spiHz);
   if (!epdInitResolution(tresWidth, tresHeight)) {
     epdSetSpiFrequency(EPD_SPI_DEFAULT_HZ);
-    epdDiagnosticReleasePins();
-    return false;
+    epdStopHardwareSpi();
+    epdHoldPanelPinsLow();
+    return epdFinishOperation(diagnosticStarted, false);
   }
 
   setActiveControllers(true, false);
   epdCommand(DTM);
   const uint32_t uploadStarted = millis();
   epdStreamFillBytes(streamBytes, fillByte);
+  diagnosticReport.cs1UploadMs = millis() - uploadStarted;
   Serial.printf("EPD diagnostic upload done after %lu ms\n",
-                static_cast<unsigned long>(millis() - uploadStarted));
+                static_cast<unsigned long>(diagnosticReport.cs1UploadMs));
 
   setActiveControllers(true, false);
   const bool ok = epdSecondSettingAndRefresh();
   Serial.printf("EPD diagnostic result: %s\n", ok ? "PASS_SEQUENCE" : "FAILED_SEQUENCE");
   epdSetSpiFrequency(EPD_SPI_DEFAULT_HZ);
-  return ok;
+  return epdFinishOperation(diagnosticStarted, ok);
 }
 
 bool epdDiagnosticCs1ColorBars(uint32_t spiHz) {
-  diagnosticReport = EpdOperationReport{};
-  diagnosticReport.valid = true;
-  diagnosticReport.running = true;
-  diagnosticReport.spiHz = spiHz;
-  const uint32_t diagnosticStarted = millis();
+  const uint32_t diagnosticStarted = epdBeginOperation(spiHz);
 
   Serial.println("EPD TRUE CS1-ONLY DIAGNOSTIC: cold panel power cycle required");
   Serial.println("Only CS1 is selected for reset follow-up, init, DTM, PON, DRF and POF");
   epdSetSpiFrequency(spiHz);
   if (!epdInitResolutionSelected(EPD_CONTROLLER_WIDTH, EPD_HEIGHT, true, false)) {
-    diagnosticReport.totalMs = millis() - diagnosticStarted;
-    diagnosticReport.running = false;
     epdStopHardwareSpi();
     epdHoldPanelPinsLow();
-    return false;
+    return epdFinishOperation(diagnosticStarted, false);
   }
 
   setActiveControllers(true, false);
@@ -691,12 +817,9 @@ bool epdDiagnosticCs1ColorBars(uint32_t spiHz) {
 
   setActiveControllers(true, false);
   const bool ok = epdSecondSettingAndRefresh();
-  diagnosticReport.sequenceOk = ok;
-  diagnosticReport.totalMs = millis() - diagnosticStarted;
-  diagnosticReport.running = false;
   Serial.printf("EPD true CS1-only result: %s\n", ok ? "PASS_SEQUENCE" : "FAILED_SEQUENCE");
   epdSetSpiFrequency(EPD_SPI_DEFAULT_HZ);
-  return ok;
+  return epdFinishOperation(diagnosticStarted, ok);
 }
 
 static void epdEnableCascadeOnBothControllers() {
@@ -724,16 +847,13 @@ static bool epdDiagnosticDualSolidImpl(uint8_t firstFillByte,
                                        uint8_t secondFillByte,
                                        uint32_t spiHz,
                                        bool enableCascade) {
+  const uint32_t diagnosticStarted = epdBeginOperation(spiHz);
   if (EPD_PIN_CS2 < 0) {
     Serial.println("EPD dual-CS diagnostic rejected: CS2 pin disabled");
-    return false;
+    epdStopHardwareSpi();
+    epdHoldPanelPinsLow();
+    return epdFinishOperation(diagnosticStarted, false);
   }
-
-  diagnosticReport = EpdOperationReport{};
-  diagnosticReport.valid = true;
-  diagnosticReport.running = true;
-  diagnosticReport.spiHz = spiHz;
-  const uint32_t diagnosticStarted = millis();
 
   Serial.println("EPD DUAL-CS DIAGNOSTIC: use one test per cold panel power cycle");
   Serial.printf("EPD dual solid: each TRES=%ux%u, each bytes=%u, CS1 fill=0x%02X, CS2 fill=0x%02X, SPI=%lu Hz, cascade_trial=%d\n",
@@ -744,10 +864,9 @@ static bool epdDiagnosticDualSolidImpl(uint8_t firstFillByte,
   epdSetSpiFrequency(spiHz);
   if (!epdInitResolution(EPD_CONTROLLER_WIDTH, EPD_HEIGHT)) {
     epdSetSpiFrequency(EPD_SPI_DEFAULT_HZ);
-    epdDiagnosticReleasePins();
-    diagnosticReport.totalMs = millis() - diagnosticStarted;
-    diagnosticReport.running = false;
-    return false;
+    epdStopHardwareSpi();
+    epdHoldPanelPinsLow();
+    return epdFinishOperation(diagnosticStarted, false);
   }
 
   if (enableCascade) {
@@ -777,13 +896,10 @@ static bool epdDiagnosticDualSolidImpl(uint8_t firstFillByte,
   // timing remains synchronized through the panel cascade signals.
   setActiveControllers(true, true);
   const bool ok = epdSecondSettingAndRefresh();
-  diagnosticReport.sequenceOk = ok;
-  diagnosticReport.totalMs = millis() - diagnosticStarted;
-  diagnosticReport.running = false;
   Serial.printf("EPD dual-CS diagnostic result: %s\n",
                 ok ? "PASS_SEQUENCE" : "FAILED_SEQUENCE");
   epdSetSpiFrequency(EPD_SPI_DEFAULT_HZ);
-  return ok;
+  return epdFinishOperation(diagnosticStarted, ok);
 }
 
 
@@ -800,24 +916,19 @@ bool epdDiagnosticDualCascadeSolid(uint8_t firstFillByte,
 }
 
 bool epdDiagnosticDualCascadeColorBars(uint32_t spiHz) {
+  const uint32_t diagnosticStarted = epdBeginOperation(spiHz);
   if (EPD_PIN_CS2 < 0) {
     Serial.println("EPD dual cascade bars rejected: CS2 pin disabled");
-    return false;
+    epdStopHardwareSpi();
+    epdHoldPanelPinsLow();
+    return epdFinishOperation(diagnosticStarted, false);
   }
-
-  diagnosticReport = EpdOperationReport{};
-  diagnosticReport.valid = true;
-  diagnosticReport.running = true;
-  diagnosticReport.spiHz = spiHz;
-  const uint32_t diagnosticStarted = millis();
   Serial.println("EPD DUAL CASCADE SIX-COLOR BARS: cold panel power cycle required");
   epdSetSpiFrequency(spiHz);
   if (!epdInitResolutionSelected(EPD_CONTROLLER_WIDTH, EPD_HEIGHT, true, true)) {
-    diagnosticReport.totalMs = millis() - diagnosticStarted;
-    diagnosticReport.running = false;
     epdStopHardwareSpi();
     epdHoldPanelPinsLow();
-    return false;
+    return epdFinishOperation(diagnosticStarted, false);
   }
 
   epdEnableCascadeOnBothControllers();
@@ -839,13 +950,10 @@ bool epdDiagnosticDualCascadeColorBars(uint32_t spiHz) {
 
   setActiveControllers(true, true);
   const bool ok = epdSecondSettingAndRefresh();
-  diagnosticReport.sequenceOk = ok;
-  diagnosticReport.totalMs = millis() - diagnosticStarted;
-  diagnosticReport.running = false;
   Serial.printf("EPD dual cascade six-color result: %s\n",
                 ok ? "PASS_SEQUENCE" : "FAILED_SEQUENCE");
   epdSetSpiFrequency(EPD_SPI_DEFAULT_HZ);
-  return ok;
+  return epdFinishOperation(diagnosticStarted, ok);
 }
 
 void epdStreamControllerFrame(bool secondController, uint8_t fillByte) {
@@ -894,31 +1002,27 @@ static uint32_t epdStreamPackedFrameController(const uint8_t *frame, bool second
 }
 
 bool epdDisplayFrameAtFrequency(const uint8_t *frame, size_t len, uint32_t spiHz) {
-  diagnosticReport = EpdOperationReport{};
-  diagnosticReport.valid = true;
-  diagnosticReport.running = true;
-  diagnosticReport.spiHz = spiHz;
-  diagnosticReport.mappingApplied = true;
-  const uint32_t started = millis();
+  const uint32_t started = epdBeginOperation(spiHz);
   if (!frame || len != EPD_FRAME_BYTES) {
     Serial.printf("Invalid EPD frame length: %u, expected %u\n",
                   static_cast<unsigned>(len), static_cast<unsigned>(EPD_FRAME_BYTES));
-    diagnosticReport.totalMs = millis() - started;
-    diagnosticReport.running = false;
-    return false;
+    return epdFinishOperation(started, false);
   }
   if (spiHz == 0) {
     Serial.println("Invalid EPD SPI frequency: 0 Hz");
-    diagnosticReport.totalMs = millis() - started;
-    diagnosticReport.running = false;
-    return false;
+    return epdFinishOperation(started, false);
+  }
+  size_t invalidPixel = 0;
+  uint8_t invalidCode = 0;
+  if (!epdValidateFrameColors(frame, len, &invalidPixel, &invalidCode)) {
+    Serial.printf("Invalid EPD frame color at pixel %u: 0x%X\n",
+                  static_cast<unsigned>(invalidPixel), invalidCode);
+    return epdFinishOperation(started, false);
   }
   diagnosticReport.inputFrameFnv1a = fnv1a(frame, len);
 
   if (!epdPrepareCascade(spiHz)) {
-    diagnosticReport.totalMs = millis() - started;
-    diagnosticReport.running = false;
-    return false;
+    return epdFinishOperation(started, false);
   }
   Serial.printf("EPD full frame mapping: CS1 source_half=%u flip_x=%d flip_y=%d nibble_swap=%d; "
                 "CS2 source_half=%u flip_x=%d flip_y=%d nibble_swap=%d\n",
@@ -933,17 +1037,15 @@ bool epdDisplayFrameAtFrequency(const uint8_t *frame, size_t len, uint32_t spiHz
   const uint32_t cs2Started = millis();
   diagnosticReport.cs2DtmFnv1a = epdStreamPackedFrameController(frame, true);
   diagnosticReport.cs2UploadMs = millis() - cs2Started;
+  diagnosticReport.mappingApplied = true;
   Serial.printf("EPD full frame CS2 upload done after %lu ms, DTM FNV-1a=%lu\n",
                 static_cast<unsigned long>(diagnosticReport.cs2UploadMs),
                 static_cast<unsigned long>(diagnosticReport.cs2DtmFnv1a));
   setActiveControllers(true, true);
   const bool ok = epdSecondSettingAndRefresh();
-  diagnosticReport.sequenceOk = ok;
-  diagnosticReport.totalMs = millis() - started;
-  diagnosticReport.running = false;
   epdSetSpiFrequency(EPD_SPI_DEFAULT_HZ);
   Serial.printf("EPD full-frame cascade refresh: %s\n", ok ? "PASS" : "FAILED");
-  return ok;
+  return epdFinishOperation(started, ok);
 }
 
 bool epdDisplayFrame(const uint8_t *frame, size_t len) {
@@ -964,17 +1066,11 @@ static bool epdDisplayCascadeBars(bool swappedNibbles, bool horizontal, uint32_t
       EPD_COLOR_GREEN,
   };
 
-  diagnosticReport = EpdOperationReport{};
-  diagnosticReport.valid = true;
-  diagnosticReport.running = true;
-  diagnosticReport.spiHz = spiHz;
-  const uint32_t started = millis();
+  const uint32_t started = epdBeginOperation(spiHz);
   Serial.printf("EPD global cascade bars: 1024x600, swapped=%d, horizontal=%d, SPI=%lu Hz\n",
                 swappedNibbles, horizontal, static_cast<unsigned long>(spiHz));
   if (!epdPrepareCascade(spiHz)) {
-    diagnosticReport.totalMs = millis() - started;
-    diagnosticReport.running = false;
-    return false;
+    return epdFinishOperation(started, false);
   }
 
   for (uint8_t controller = 0; controller < 2; ++controller) {
@@ -1016,12 +1112,9 @@ static bool epdDisplayCascadeBars(bool swappedNibbles, bool horizontal, uint32_t
 
   setActiveControllers(true, true);
   const bool ok = epdSecondSettingAndRefresh();
-  diagnosticReport.sequenceOk = ok;
-  diagnosticReport.totalMs = millis() - started;
-  diagnosticReport.running = false;
   epdSetSpiFrequency(EPD_SPI_DEFAULT_HZ);
   Serial.printf("EPD global cascade bars result: %s\n", ok ? "PASS" : "FAILED");
-  return ok;
+  return epdFinishOperation(started, ok);
 }
 
 static void epdDisplayBarsResolution(uint16_t width, uint16_t height, bool swappedNibbles, bool horizontal) {

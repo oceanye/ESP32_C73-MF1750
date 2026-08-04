@@ -46,8 +46,11 @@ class ControllerMapping:
     nibble_swap: bool = False
 
     def __post_init__(self) -> None:
-        if self.source_half not in (0, 1):
-            raise FrameContractError("source_half must be 0 (left) or 1 (right)")
+        if type(self.source_half) is not int or self.source_half not in (0, 1):
+            raise FrameContractError("source_half must be integer 0 (left) or 1 (right)")
+        for name in ("flip_x", "flip_y", "nibble_swap"):
+            if type(getattr(self, name)) is not bool:
+                raise FrameContractError(f"{name} must be a boolean")
 
 
 def _validate_dimensions(width: int, height: int, *, controller_layout: bool) -> None:
@@ -64,7 +67,7 @@ def _validate_dimensions(width: int, height: int, *, controller_layout: bool) ->
 def _byte_view(data: bytes | bytearray | memoryview) -> memoryview:
     try:
         view = memoryview(data)
-        if view.ndim != 1 or view.itemsize != 1:
+        if view.ndim != 1 or view.itemsize != 1 or view.format != "B":
             view = view.cast("B")
         return view
     except (TypeError, ValueError) as error:

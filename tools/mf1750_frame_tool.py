@@ -1,277 +1,836 @@
 #!/usr/bin/env python3
-"""Generate and verify deterministic MF-1750 1024x600 4bpp test frames.
+"""Generate, verify, and safely transfer canonical MF-1750 test frames.
 
-The default operation is offline and cannot refresh the panel. Supplying --url
-posts to the non-refreshing frame-ingress endpoint. A real refresh additionally
-requires both --refresh and --confirm-cold-start.
+Without ``--url`` this tool is strictly offline.  With ``--url`` it defaults
+to the non-refreshing ingress check.  A refresh additionally requires an
+explicit cold-start confirmation plus two ordered expected controller
+mappings, and is successful only after the matching job and diagnostic report
+have both been verified.
 """
 
 from __future__ import annotations
 
 import argparse
+import itertools
 import json
 from pathlib import Path
 import sys
+import time
+from typing import Any, Callable, Mapping, Optional, Sequence, Tuple
 import urllib.error
+import urllib.parse
 import urllib.request
 
 
-WIDTH = 1024
-HEIGHT = 600
-ROW_BYTES = WIDTH // 2
-CONTROLLER_ROW_BYTES = ROW_BYTES // 2
-FRAME_BYTES = ROW_BYTES * HEIGHT
+# ``python tools/mf1750_frame_tool.py`` puts tools/, not the repository root,
+# on sys.path.  Bootstrap only the local source tree before importing the one
+# canonical frame implementation.
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
-BLACK = 0x0
-WHITE = 0x1
-YELLOW = 0x2
-RED = 0x3
-BLUE = 0x5
-GREEN = 0x6
-COLORS = (WHITE, BLACK, RED, YELLOW, BLUE, GREEN)
-
-EXPECTED = {
-    "map-orient-v1": (0x9D04142D, 0xF26832DD, 0xFE199FF5),
-    "global-v-bars": (0x908478A5, 0x61BCF1C5, 0xA3446735),
-    "global-h-bars": (0x7DD055C5, 0x855679C5, 0x855679C5),
-}
-MAP_ORIENT_V1_COUNTS = (39536, 425808, 29280, 47072, 0, 44192, 28512)
-
-
-def fnv1a(data: bytes | bytearray) -> int:
-    value = 0x811C9DC5
-    for byte in data:
-        value ^= byte
-        value = (value * 0x01000193) & 0xFFFFFFFF
-    return value
-
-
-def pack_pixels(pixel_at) -> bytes:
-    frame = bytearray(FRAME_BYTES)
-    for y in range(HEIGHT):
-        row = y * ROW_BYTES
-        for x in range(0, WIDTH, 2):
-            frame[row + x // 2] = ((pixel_at(x, y) & 0xF) << 4) | (pixel_at(x + 1, y) & 0xF)
-    return bytes(frame)
+from host.epd_frame import (  # noqa: E402
+    CONTROLLER_FRAME_BYTES,
+    EXPECTED_FIXTURE_HASHES,
+    FIXTURE_NAMES,
+    FRAME_BYTES,
+    HEIGHT,
+    MAP_ORIENT_V1_PIXEL_COUNTS,
+    PHYSICAL_COLOR_CODES,
+    WIDTH,
+    ControllerMapping,
+    FrameContractError,
+    controller_stream,
+    controller_stream_reference,
+    fnv1a,
+    generate_fixture,
+    pixel_counts,
+    split_controllers,
+    validate_frame,
+    verify_fixture,
+)
 
 
-def generate_map_orient_v1() -> bytes:
-    pixels = bytearray([WHITE]) * (WIDTH * HEIGHT)
+ALLOWED_BUILD_TAGS = frozenset(
+    {"MF1750_DRIVER_RC2B_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_2026-08-04"}
+)
+REQUIRED_DRIVER_API = "MF1750_R16_CASCADE_V2"
+REQUIRED_PSRAM_BYTES = 8 * 1024 * 1024
+REQUIRED_REFRESH_SPI_HZ = 1_000_000
+UINT32_MAX = 0xFFFFFFFF
+UINT32_FORWARD_LIMIT = 0x7FFFFFFF
+DEFAULT_JOB_TIMEOUT_S = 180.0
+DEFAULT_POLL_INTERVAL_S = 1.0
+FROZEN_PRODUCTION_DIR = REPO_ROOT / "hardware" / "mf1750_production_v1" / "production"
 
-    def rect(x0: int, x1: int, y0: int, y1: int, color: int) -> None:
-        fill = bytes([color]) * (x1 - x0)
-        for y in range(y0, y1):
-            pixels[y * WIDTH + x0 : y * WIDTH + x1] = fill
-
-    edge_colors = (BLACK, RED, YELLOW, BLUE, GREEN)
-    for y in range(HEIGHT):
-        for x in range(WIDTH):
-            distance = min(x, WIDTH - 1 - x, y, HEIGHT - 1 - y)
-            if distance < 20:
-                pixels[y * WIDTH + x] = edge_colors[distance // 4]
-
-    corners = (
-        (32, 32, RED, 1),
-        (400, 32, YELLOW, 2),
-        (32, 488, BLUE, 3),
-        (400, 488, GREEN, 4),
-    )
-    for half_base in (0, 512):
-        for u0, y0, color, ticks in corners:
-            rect(half_base + u0, half_base + u0 + 80, y0, y0 + 80, color)
-            for tick in range(ticks):
-                rect(half_base + u0 + 8 + 16 * tick,
-                     half_base + u0 + 16 + 16 * tick,
-                     y0 + 32, y0 + 48, BLACK)
-
-    rect(176, 336, 200, 280, RED)
-    rect(248, 264, 216, 264, BLACK)
-    rect(512 + 176, 512 + 336, 200, 280, BLUE)
-    rect(512 + 224, 512 + 240, 216, 264, WHITE)
-    rect(512 + 272, 512 + 288, 216, 264, WHITE)
-
-    for half_base in (0, 512):
-        rect(half_base + 156, half_base + 356, 320, 380, RED)
-        rect(half_base + 160, half_base + 192, 324, 376, BLACK)
-        rect(half_base + 320, half_base + 352, 324, 376, WHITE)
-        for y in range(324, 376):
-            for u in range(192, 320):
-                pixels[y * WIDTH + half_base + u] = WHITE if u & 1 else BLACK
-
-        rect(half_base + 156, half_base + 356, 396, 456, BLUE)
-        rect(half_base + 160, half_base + 192, 400, 452, WHITE)
-        rect(half_base + 320, half_base + 352, 400, 452, BLACK)
-        for y in range(400, 452):
-            for u in range(192, 320):
-                pixels[y * WIDTH + half_base + u] = BLACK if u & 1 else WHITE
-
-    seam_colors = (BLACK, RED, BLUE, YELLOW, GREEN, WHITE, BLUE, GREEN, RED, YELLOW)
-    for index, color in enumerate(seam_colors):
-        rect(492 + 4 * index, 496 + 4 * index, 20, 580, color)
-    rect(440, 584, 169, 177, BLACK)
-    rect(456, 568, 409, 421, RED)
-
-    frame = bytearray(FRAME_BYTES)
-    for y in range(HEIGHT):
-        for x in range(0, WIDTH, 2):
-            frame[(y * WIDTH + x) // 2] = (pixels[y * WIDTH + x] << 4) | pixels[y * WIDTH + x + 1]
-    return bytes(frame)
+HttpRequester = Callable[..., Tuple[int, str]]
 
 
-def generate(pattern: str) -> bytes:
-    if pattern == "map-orient-v1":
-        return generate_map_orient_v1()
-    if pattern == "global-v-bars":
-        return pack_pixels(lambda x, _y: COLORS[x * 6 // WIDTH])
-    if pattern == "global-h-bars":
-        return pack_pixels(lambda _x, y: COLORS[y * 6 // HEIGHT])
-    raise ValueError(f"unknown pattern: {pattern}")
+class FrameToolError(RuntimeError):
+    """Raised when a local or remote safety contract is not satisfied."""
 
 
-def split_controllers(frame: bytes) -> tuple[bytes, bytes]:
-    first = bytearray()
-    second = bytearray()
-    for y in range(HEIGHT):
-        row = y * ROW_BYTES
-        first.extend(frame[row : row + CONTROLLER_ROW_BYTES])
-        second.extend(frame[row + CONTROLLER_ROW_BYTES : row + ROW_BYTES])
-    return bytes(first), bytes(second)
+class FrameToolNetworkError(FrameToolError):
+    """Raised for a transient transport-level failure."""
 
 
-def controller_stream(frame: bytes, source_half: int, flip_x: bool, flip_y: bool,
-                      nibble_swap: bool) -> bytes:
-    """Mirror the production driver's byte-level mapping algorithm."""
-    output = bytearray()
-    for output_y in range(HEIGHT):
-        source_y = HEIGHT - 1 - output_y if flip_y else output_y
-        row = source_y * ROW_BYTES + source_half * CONTROLLER_ROW_BYTES
-        source = frame[row : row + CONTROLLER_ROW_BYTES]
-        for output_byte in range(CONTROLLER_ROW_BYTES):
-            source_byte = CONTROLLER_ROW_BYTES - 1 - output_byte if flip_x else output_byte
-            value = source[source_byte]
-            if flip_x != nibble_swap:
-                value = ((value << 4) | (value >> 4)) & 0xFF
-            output.append(value)
-    return bytes(output)
+class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):  # type: ignore[no-untyped-def]
+        return None
 
 
-def pixel_at(frame: bytes, x: int, y: int) -> int:
-    value = frame[y * ROW_BYTES + x // 2]
-    return value & 0xF if x & 1 else value >> 4
+def _mapping_dict(mapping: ControllerMapping) -> dict[str, int | bool]:
+    return {
+        "source_half": mapping.source_half,
+        "flip_x": mapping.flip_x,
+        "flip_y": mapping.flip_y,
+        "nibble_swap": mapping.nibble_swap,
+    }
 
 
-def controller_stream_reference(frame: bytes, source_half: int, flip_x: bool,
-                                flip_y: bool, nibble_swap: bool) -> bytes:
-    """Independent pixel-level reference for all mapping combinations."""
-    output = bytearray()
-    half_base = source_half * (WIDTH // 2)
-    for output_y in range(HEIGHT):
-        source_y = HEIGHT - 1 - output_y if flip_y else output_y
-        for output_x in range(0, WIDTH // 2, 2):
-            source_x0 = WIDTH // 2 - 1 - output_x if flip_x else output_x
-            source_x1 = WIDTH // 2 - 1 - (output_x + 1) if flip_x else output_x + 1
-            value = (pixel_at(frame, half_base + source_x0, source_y) << 4) | pixel_at(
-                frame, half_base + source_x1, source_y
-            )
-            if nibble_swap:
-                value = ((value << 4) | (value >> 4)) & 0xFF
-            output.append(value)
-    return bytes(output)
+def _validate_mapping_pair(
+    mappings: Optional[Sequence[ControllerMapping]],
+) -> Optional[tuple[ControllerMapping, ControllerMapping]]:
+    if mappings is None:
+        return None
+    if len(mappings) != 2:
+        raise FrameToolError("exactly two controller mappings are required, ordered CS1 then CS2")
+    first, second = mappings
+    if not isinstance(first, ControllerMapping) or not isinstance(second, ControllerMapping):
+        raise FrameToolError("controller mappings must be ControllerMapping instances")
+    if first.source_half == second.source_half:
+        raise FrameToolError("CS1 and CS2 mappings must consume different logical halves")
+    return first, second
 
 
-def verify_mapping_algorithm(frame: bytes) -> bool:
-    for source_half in (0, 1):
-        for flip_x in (False, True):
-            for flip_y in (False, True):
-                for nibble_swap in (False, True):
-                    actual = controller_stream(frame, source_half, flip_x, flip_y, nibble_swap)
-                    reference = controller_stream_reference(
-                        frame, source_half, flip_x, flip_y, nibble_swap
-                    )
-                    if actual != reference:
-                        return False
+def _require_refresh_mapping_pair(
+    mappings: Optional[Sequence[ControllerMapping]],
+) -> tuple[ControllerMapping, ControllerMapping]:
+    if mappings is None or len(mappings) != 2:
+        raise FrameToolError(
+            "refresh requires exactly two explicit controller mappings, ordered CS1 then CS2"
+        )
+    mapping_pair = _validate_mapping_pair(mappings)
+    assert mapping_pair is not None
+    return mapping_pair
+
+
+def _validated_frame_bytes(frame: bytes | bytearray | memoryview) -> bytes:
+    """Apply the canonical frame contract and translate it to this tool's error type."""
+
+    try:
+        return bytes(validate_frame(frame))
+    except FrameContractError as error:
+        raise FrameToolError(f"invalid canonical frame: {error}") from error
+
+
+def _mapping_algorithm_verified(frame: bytes) -> bool:
+    for source_half, flip_x, flip_y, nibble_swap in itertools.product(
+        (0, 1), (False, True), (False, True), (False, True)
+    ):
+        mapping = ControllerMapping(source_half, flip_x, flip_y, nibble_swap)
+        if controller_stream(frame, mapping) != controller_stream_reference(frame, mapping):
+            return False
     return True
 
 
-def verify(pattern: str, frame: bytes) -> dict[str, int | str | bool]:
-    first, second = split_controllers(frame)
-    actual = (fnv1a(frame), fnv1a(first), fnv1a(second))
-    expected = EXPECTED[pattern]
-    result = {
+def build_offline_report(
+    pattern: str,
+    frame: bytes,
+    mappings: Optional[Sequence[ControllerMapping]] = None,
+) -> dict[str, Any]:
+    """Build a controller-neutral report, adding physical hashes only explicitly."""
+
+    mapping_pair = _validate_mapping_pair(mappings)
+    fixture = verify_fixture(pattern, frame)
+    logical_left, logical_right = split_controllers(frame)
+    expected_full, expected_left, expected_right = EXPECTED_FIXTURE_HASHES[pattern]
+    mapping_verified = _mapping_algorithm_verified(frame)
+    report: dict[str, Any] = {
+        "schema_version": 2,
+        "kind": "mf1750-frame-report",
         "pattern": pattern,
+        "width": WIDTH,
+        "height": HEIGHT,
         "bytes": len(frame),
-        "full_fnv1a": actual[0],
-        "cs1_fnv1a": actual[1],
-        "cs2_fnv1a": actual[2],
-        "expected_full_fnv1a": expected[0],
-        "expected_cs1_fnv1a": expected[1],
-        "expected_cs2_fnv1a": expected[2],
-        "mapping_algorithm_verified": verify_mapping_algorithm(frame),
-        "verified": len(frame) == FRAME_BYTES and actual == expected,
+        "physical_color_codes": sorted(PHYSICAL_COLOR_CODES),
+        "full_fnv1a": fnv1a(frame),
+        "logical_left_fnv1a": fnv1a(logical_left),
+        "logical_right_fnv1a": fnv1a(logical_right),
+        "expected_full_fnv1a": expected_full,
+        "expected_logical_left_fnv1a": expected_left,
+        "expected_logical_right_fnv1a": expected_right,
+        "mapping_algorithm_verified": mapping_verified,
+        "offline_verified": fixture.verified and mapping_verified,
+        "hardware_tested": False,
+        "verified_scope": [
+            "canonical_fixture_dimensions_colors_and_hashes",
+            "host_controller_mapping_algorithm",
+        ],
     }
     if pattern == "map-orient-v1":
-        counts = [0] * 16
-        for value in frame:
-            counts[value >> 4] += 1
-            counts[value & 0xF] += 1
-        result["pixel_counts_verified"] = tuple(counts[:7]) == MAP_ORIENT_V1_COUNTS and not any(counts[7:])
-        result["verified"] = bool(result["verified"] and result["pixel_counts_verified"])
-    result["verified"] = bool(result["verified"] and result["mapping_algorithm_verified"])
-    return result
+        report["pixel_counts"] = list(pixel_counts(frame))
+        report["pixel_counts_verified"] = pixel_counts(frame) == MAP_ORIENT_V1_PIXEL_COUNTS
+        report["offline_verified"] = bool(
+            report["offline_verified"] and report["pixel_counts_verified"]
+        )
+    if mapping_pair is not None:
+        report["physical_controllers"] = [
+            {
+                "controller": f"CS{index}",
+                "mapping": _mapping_dict(mapping),
+                "dtm_bytes": CONTROLLER_FRAME_BYTES,
+                "dtm_fnv1a": fnv1a(controller_stream(frame, mapping)),
+            }
+            for index, mapping in enumerate(mapping_pair, start=1)
+        ]
+    return report
 
 
-def post_frame(base_url: str, frame: bytes, refresh: bool) -> tuple[int, str]:
-    endpoint = "/api/frame" if refresh else "/api/diagnostic/frame-ingress"
-    request = urllib.request.Request(
-        base_url.rstrip("/") + endpoint,
-        data=frame,
-        method="POST",
-        headers={"Content-Type": "application/octet-stream"},
-    )
-    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+def _normalize_base_url(base_url: str) -> str:
     try:
-        with opener.open(request, timeout=20) as response:
+        parsed = urllib.parse.urlsplit(base_url)
+        # Accessing port performs validation that urlsplit intentionally
+        # defers (for example, malformed or out-of-range ports).
+        _ = parsed.port
+    except ValueError as error:
+        raise FrameToolError(f"--url is malformed: {error}") from error
+    if parsed.scheme not in ("http", "https") or not parsed.netloc:
+        raise FrameToolError("--url must be an absolute http(s) base URL")
+    if parsed.username or parsed.password or parsed.query or parsed.fragment:
+        raise FrameToolError("--url must not contain credentials, a query, or a fragment")
+    if parsed.path not in ("", "/"):
+        raise FrameToolError("--url must identify the device root without an extra path")
+    return urllib.parse.urlunsplit((parsed.scheme, parsed.netloc, "", "", ""))
+
+
+def http_request(
+    base_url: str,
+    endpoint: str,
+    *,
+    method: str = "GET",
+    data: Optional[bytes] = None,
+    timeout: float = 20.0,
+) -> tuple[int, str]:
+    request = urllib.request.Request(
+        _normalize_base_url(base_url) + endpoint,
+        data=data,
+        method=method,
+        headers={"Content-Type": "application/octet-stream"} if data is not None else {},
+    )
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), _NoRedirectHandler())
+    try:
+        with opener.open(request, timeout=timeout) as response:
             return response.status, response.read().decode("utf-8", errors="replace")
     except urllib.error.HTTPError as error:
         return error.code, error.read().decode("utf-8", errors="replace")
+    except (urllib.error.URLError, TimeoutError, OSError) as error:
+        raise FrameToolNetworkError(f"{method} {endpoint} failed: {error}") from error
 
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--pattern", choices=sorted(EXPECTED), default="map-orient-v1")
-    parser.add_argument("--output", type=Path, help="optionally write the raw 4bpp frame")
-    parser.add_argument("--url", help="ESP32 base URL; default endpoint only checks ingress")
-    parser.add_argument("--refresh", action="store_true", help="post to /api/frame instead of safe ingress")
+def _json_object(body: str, label: str) -> dict[str, Any]:
+    def reject_duplicate(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError(f"duplicate key {key!r}")
+            result[key] = value
+        return result
+
+    try:
+        value = json.loads(
+            body,
+            object_pairs_hook=reject_duplicate,
+            parse_constant=lambda token: (_ for _ in ()).throw(ValueError(token)),
+        )
+    except (json.JSONDecodeError, ValueError) as error:
+        raise FrameToolError(f"{label} did not return strict JSON: {error}") from error
+    if not isinstance(value, dict):
+        raise FrameToolError(f"{label} JSON must be an object")
+    return value
+
+
+def _require_bool(value: Mapping[str, Any], key: str, label: str) -> bool:
+    result = value.get(key)
+    if type(result) is not bool:
+        raise FrameToolError(f"{label}.{key} must be a boolean")
+    return result
+
+
+def _require_int(
+    value: Mapping[str, Any], key: str, label: str, *, minimum: int = 0
+) -> int:
+    result = value.get(key)
+    if type(result) is not int or result < minimum:
+        raise FrameToolError(f"{label}.{key} must be an integer >= {minimum}")
+    return result
+
+
+def _require_u32(value: Mapping[str, Any], key: str, label: str) -> int:
+    result = value.get(key)
+    if type(result) is not int or not 0 <= result <= UINT32_MAX:
+        raise FrameToolError(f"{label}.{key} must be an unsigned 32-bit integer")
+    return result
+
+
+def _require_nonzero_u32(value: Mapping[str, Any], key: str, label: str) -> int:
+    result = _require_u32(value, key, label)
+    if result == 0:
+        raise FrameToolError(
+            f"{label}.{key} must be a non-zero unsigned 32-bit integer"
+        )
+    return result
+
+
+def _u32_is_forward_or_equal(earlier: int, later: int) -> bool:
+    return ((later - earlier) & UINT32_MAX) <= UINT32_FORWARD_LIMIT
+
+
+def _require_string(value: Mapping[str, Any], key: str, label: str) -> str:
+    result = value.get(key)
+    if not isinstance(result, str) or not result:
+        raise FrameToolError(f"{label}.{key} must be a non-empty string")
+    return result
+
+
+def _expect_status(status: int, expected: int, body: str, label: str) -> None:
+    if status != expected:
+        excerpt = body.replace("\r", " ").replace("\n", " ")[:160]
+        raise FrameToolError(f"{label} returned HTTP {status}, expected {expected}: {excerpt}")
+
+
+def _validate_transfer_response(
+    data: Mapping[str, Any], expected_hash: int, label: str
+) -> None:
+    if _require_bool(data, "ok", label) is not True:
+        raise FrameToolError(f"{label}.ok is false")
+    if _require_int(data, "bytes", label) != FRAME_BYTES:
+        raise FrameToolError(f"{label}.bytes does not match {FRAME_BYTES}")
+    if _require_int(data, "fnv1a", label) != expected_hash:
+        raise FrameToolError(f"{label}.fnv1a does not match the transmitted frame")
+    _require_int(data, "free_psram", label)
+
+
+def perform_ingress(
+    base_url: str,
+    frame: bytes | bytearray | memoryview,
+    *,
+    requester: Optional[HttpRequester] = None,
+) -> dict[str, Any]:
+    # This must remain the first operation: malformed frames must never cause
+    # URL handling or any device request.
+    frame_bytes = _validated_frame_bytes(frame)
+    request = requester or http_request
+    base_url = _normalize_base_url(base_url)
+    status, body = request(
+        base_url,
+        "/api/diagnostic/frame-ingress",
+        method="POST",
+        data=frame_bytes,
+        timeout=20.0,
+    )
+    _expect_status(status, 200, body, "frame ingress")
+    response = _json_object(body, "frame ingress")
+    expected_hash = fnv1a(frame_bytes)
+    _validate_transfer_response(response, expected_hash, "frame ingress")
+    if _require_string(response, "epd_action", "frame ingress") != "none":
+        raise FrameToolError("frame ingress.epd_action must be none")
+    return {
+        "mode": "ingress-only",
+        "epd_action": "none",
+        "bytes": FRAME_BYTES,
+        "fnv1a": expected_hash,
+        "protocol_verified": True,
+        "hardware_tested": False,
+        "verified_scope": [
+            "canonical_frame_dimensions_and_physical_color_codes",
+            "ingress_bytes_and_fnv1a",
+            "explicit_no_epd_action",
+        ],
+    }
+
+
+def _parse_version_mapping(value: str, label: str) -> ControllerMapping:
+    fields = [field.strip() for field in value.split(",")]
+    if len(fields) != 4 or any(field not in ("0", "1") for field in fields):
+        raise FrameToolError(f"{label} must contain four comma-separated 0/1 fields")
+    numbers = [int(field) for field in fields]
+    return ControllerMapping(numbers[0], *(bool(number) for number in numbers[1:]))
+
+
+def _parse_version(
+    body: str,
+    expected_mappings: tuple[ControllerMapping, ControllerMapping],
+) -> dict[str, Any]:
+    lines = [line.strip() for line in body.splitlines() if line.strip()]
+    if not lines or lines[0] not in ALLOWED_BUILD_TAGS:
+        raise FrameToolError("firmware build tag is not in the exact safety allowlist")
+    fields: dict[str, str] = {}
+    for line in lines[1:]:
+        if ":" not in line:
+            raise FrameToolError(f"malformed /api/version line: {line!r}")
+        key, value = (part.strip() for part in line.split(":", 1))
+        if key in fields:
+            raise FrameToolError(f"duplicate /api/version field: {key}")
+        fields[key] = value
+    if fields.get("Panel") != f"{WIDTH}x{HEIGHT}":
+        raise FrameToolError("firmware panel dimensions do not match the canonical frame")
+    if fields.get("Driver API") != REQUIRED_DRIVER_API:
+        raise FrameToolError(f"firmware Driver API must be {REQUIRED_DRIVER_API}")
+    try:
+        frame_bytes = int(fields["Frame bytes"])
+        psram_bytes = int(fields["PSRAM bytes"])
+        free_psram = int(fields["Free PSRAM"])
+        refresh_spi_hz = int(fields["Refresh SPI Hz"])
+    except (KeyError, ValueError) as error:
+        raise FrameToolError("firmware version has invalid frame/PSRAM/SPI fields") from error
+    if frame_bytes != FRAME_BYTES:
+        raise FrameToolError(f"firmware frame size must be {FRAME_BYTES}")
+    if psram_bytes < REQUIRED_PSRAM_BYTES:
+        raise FrameToolError(f"firmware reports less than {REQUIRED_PSRAM_BYTES} bytes PSRAM")
+    if free_psram < FRAME_BYTES:
+        raise FrameToolError("firmware does not report enough free PSRAM for one frame")
+    if refresh_spi_hz != REQUIRED_REFRESH_SPI_HZ:
+        raise FrameToolError(
+            f"firmware Refresh SPI Hz must be {REQUIRED_REFRESH_SPI_HZ}"
+        )
+    try:
+        device_mappings = (
+            _parse_version_mapping(fields["CS1 Mapping"], "firmware CS1 Mapping"),
+            _parse_version_mapping(fields["CS2 Mapping"], "firmware CS2 Mapping"),
+        )
+    except KeyError as error:
+        raise FrameToolError("firmware version is missing CS1/CS2 Mapping") from error
+    if device_mappings != expected_mappings:
+        raise FrameToolError(
+            "firmware CS1/CS2 Mapping differs from the explicit expected mappings"
+        )
+    return {
+        "build_tag": lines[0],
+        "driver_api": fields["Driver API"],
+        "panel": fields["Panel"],
+        "frame_bytes": frame_bytes,
+        "psram_bytes": psram_bytes,
+        "free_psram": free_psram,
+        "refresh_spi_hz": refresh_spi_hz,
+        "controller_mappings": [
+            {
+                "controller": f"CS{controller}",
+                "mapping": _mapping_dict(mapping),
+            }
+            for controller, mapping in enumerate(device_mappings, start=1)
+        ],
+    }
+
+
+def _preflight_version(
+    base_url: str,
+    requester: HttpRequester,
+    expected_mappings: tuple[ControllerMapping, ControllerMapping],
+) -> dict[str, Any]:
+    status, body = requester(base_url, "/api/version", method="GET", data=None, timeout=20.0)
+    _expect_status(status, 200, body, "firmware preflight")
+    return _parse_version(body, expected_mappings)
+
+
+def _validate_job(data: Mapping[str, Any], job_id: int, frame_hash: int) -> str:
+    label = "job"
+    if _require_int(data, "job_id", label, minimum=1) != job_id:
+        raise FrameToolError("job id changed while waiting for refresh")
+    if _require_string(data, "action", label) != "uploaded_frame":
+        raise FrameToolError("job action is not uploaded_frame")
+    if _require_int(data, "frame_fnv1a", label) != frame_hash:
+        raise FrameToolError("job frame hash does not match the transmitted frame")
+    queued_at_ms = _require_u32(data, "queued_at_ms", label)
+    started_at_ms = _require_u32(data, "started_at_ms", label)
+    finished_at_ms = _require_u32(data, "finished_at_ms", label)
+    state = _require_string(data, "state", label)
+    result = data.get("result")
+    if state in ("queued", "running"):
+        if result is not None:
+            raise FrameToolError(f"{state} job must have result=null")
+        return state
+    if state == "completed":
+        if result is not True:
+            raise FrameToolError("completed job did not report result=true")
+        if not _u32_is_forward_or_equal(queued_at_ms, started_at_ms):
+            raise FrameToolError("completed job timestamps are not ordered queued -> started")
+        if not _u32_is_forward_or_equal(started_at_ms, finished_at_ms):
+            raise FrameToolError("completed job timestamps are not ordered started -> finished")
+        return state
+    if state == "failed":
+        raise FrameToolError("refresh job reported failed")
+    raise FrameToolError(f"unexpected job state {state!r}")
+
+
+def _wait_for_job(
+    base_url: str,
+    job_id: int,
+    frame_hash: int,
+    requester: HttpRequester,
+    *,
+    timeout_s: float,
+    poll_interval_s: float,
+    sleeper: Callable[[float], None],
+    clock: Callable[[], float],
+) -> dict[str, Any]:
+    deadline = clock() + timeout_s
+    last_network_error: Optional[Exception] = None
+    while clock() < deadline:
+        remaining = deadline - clock()
+        try:
+            status, body = requester(
+                base_url,
+                "/api/job",
+                method="GET",
+                data=None,
+                timeout=min(20.0, max(1.0, remaining)),
+            )
+            _expect_status(status, 200, body, "job poll")
+            job = _json_object(body, "job poll")
+            state = _validate_job(job, job_id, frame_hash)
+            if state == "completed":
+                return job
+            last_network_error = None
+        except FrameToolNetworkError as error:
+            # The synchronous ESP32 WebServer cannot answer while the display
+            # routine is running.  A poll timeout is therefore retryable until
+            # the overall job deadline, but malformed responses are not.
+            last_network_error = error
+        remaining = deadline - clock()
+        if remaining > 0:
+            sleeper(min(poll_interval_s, remaining))
+    suffix = f"; last network error: {last_network_error}" if last_network_error else ""
+    raise FrameToolError(f"refresh job did not complete within {timeout_s:g} seconds{suffix}")
+
+
+def _mapping_from_diagnostic(mapping: Mapping[str, Any], controller: int) -> ControllerMapping:
+    label = f"diagnostic.mapping.cs{controller}"
+    prefix = f"cs{controller}_"
+    source_half = _require_int(mapping, prefix + "source_half", label)
+    flip_x = _require_bool(mapping, prefix + "flip_x", label)
+    flip_y = _require_bool(mapping, prefix + "flip_y", label)
+    nibble_swap = _require_bool(mapping, prefix + "nibble_swap", label)
+    try:
+        return ControllerMapping(source_half, flip_x, flip_y, nibble_swap)
+    except ValueError as error:
+        raise FrameToolError(f"{label} is invalid: {error}") from error
+
+
+def _validate_diagnostic(
+    data: Mapping[str, Any],
+    frame: bytes,
+    expected_mappings: tuple[ControllerMapping, ControllerMapping],
+    version: Mapping[str, Any],
+    job: Mapping[str, Any],
+) -> dict[str, Any]:
+    label = "diagnostic"
+    if _require_int(data, "schema_version", label, minimum=1) != 2:
+        raise FrameToolError("diagnostic.schema_version must be 2")
+    operation_id = _require_nonzero_u32(data, "operation_id", label)
+    job_operation_id = _require_nonzero_u32(data, "job_operation_id", label)
+    if job_operation_id != operation_id:
+        raise FrameToolError(
+            "diagnostic job_operation_id does not match driver operation_id"
+        )
+    required_true = ("valid", "sequence_ok", "mapping_applied")
+    for key in required_true:
+        if _require_bool(data, key, label) is not True:
+            raise FrameToolError(f"diagnostic.{key} is false")
+    if _require_bool(data, "running", label) is not False:
+        raise FrameToolError("diagnostic report is still running")
+    if _require_bool(data, "wait_timeout", label) is not False:
+        raise FrameToolError("diagnostic report contains a BUSY timeout")
+    if _require_bool(data, "busy_assertion_missing", label) is not False:
+        raise FrameToolError("diagnostic reports a missing BUSY assertion")
+    if _require_string(data, "busy_missing_stage", label) != "none":
+        raise FrameToolError("diagnostic.busy_missing_stage must be none")
+    if _require_int(data, "spi_hz", label) != REQUIRED_REFRESH_SPI_HZ:
+        raise FrameToolError(f"diagnostic SPI frequency is not {REQUIRED_REFRESH_SPI_HZ}")
+    frame_hash = fnv1a(frame)
+    if _require_int(data, "input_fnv1a", label) != frame_hash:
+        raise FrameToolError("diagnostic input frame hash mismatch")
+    if _require_string(data, "firmware_build_tag", label) != version["build_tag"]:
+        raise FrameToolError("diagnostic firmware build does not match preflight")
+    if _require_string(data, "driver_api_version", label) != version["driver_api"]:
+        raise FrameToolError("diagnostic driver API does not match preflight")
+    if _require_int(data, "job_id", label, minimum=1) != job["job_id"]:
+        raise FrameToolError("diagnostic job id does not match the completed job")
+    if _require_string(data, "job_action", label) != job["action"]:
+        raise FrameToolError("diagnostic job action does not match the completed job")
+    if _require_string(data, "job_state", label) != "completed":
+        raise FrameToolError("diagnostic job state is not completed")
+    if _require_bool(data, "job_result", label) is not True:
+        raise FrameToolError("diagnostic job result is not true")
+    for report_key, job_key in (
+        ("job_queued_at_ms", "queued_at_ms"),
+        ("job_started_at_ms", "started_at_ms"),
+        ("job_finished_at_ms", "finished_at_ms"),
+    ):
+        if _require_u32(data, report_key, label) != job[job_key]:
+            raise FrameToolError(
+                f"diagnostic {report_key} does not match the completed job"
+            )
+    if _require_string(data, "timeout_stage", label) != "none":
+        raise FrameToolError("diagnostic timeout_stage is not none")
+    if _require_string(data, "last_wait_stage", label) != "post-display PSR":
+        raise FrameToolError("diagnostic did not reach the safe post-display PSR finish")
+    total_ms = _require_int(data, "total_ms", label, minimum=1)
+    cs1_upload_ms = _require_int(data, "cs1_upload_ms", label, minimum=1)
+    cs2_upload_ms = _require_int(data, "cs2_upload_ms", label, minimum=1)
+    wait_ms: dict[str, int] = {}
+    for stage in ("pon", "drf", "pof", "post_psr"):
+        wait_ms[stage] = _require_int(data, f"{stage}_ms", label)
+        if _require_bool(data, f"{stage}_busy_seen", label) is not True:
+            raise FrameToolError(f"diagnostic.{stage}_busy_seen is false")
+    if not 10_000 <= wait_ms["drf"] <= 60_000:
+        raise FrameToolError("diagnostic.drf_ms must be within 10000..60000")
+    last_wait_ms = _require_int(data, "last_wait_ms", label)
+    if last_wait_ms != wait_ms["post_psr"]:
+        raise FrameToolError("diagnostic last_wait_ms does not match post_psr_ms")
+    minimum_total_ms = (
+        cs1_upload_ms + cs2_upload_ms + sum(wait_ms.values())
+    )
+    if total_ms < minimum_total_ms:
+        raise FrameToolError(
+            "diagnostic total_ms is shorter than uploads plus BUSY stages"
+        )
+
+    raw_mapping = data.get("mapping")
+    if not isinstance(raw_mapping, dict):
+        raise FrameToolError("diagnostic.mapping must be an object")
+    mappings = (
+        _mapping_from_diagnostic(raw_mapping, 1),
+        _mapping_from_diagnostic(raw_mapping, 2),
+    )
+    mappings = _validate_mapping_pair(mappings)
+    assert mappings is not None
+    if mappings != expected_mappings:
+        raise FrameToolError("diagnostic mapping differs from the explicit CLI mapping")
+
+    physical: list[dict[str, Any]] = []
+    for controller, mapping in enumerate(mappings, start=1):
+        expected_hash = fnv1a(controller_stream(frame, mapping))
+        reported_hash = _require_int(data, f"cs{controller}_dtm_fnv1a", label)
+        if reported_hash != expected_hash:
+            raise FrameToolError(f"diagnostic CS{controller} DTM hash mismatch")
+        physical.append(
+            {
+                "controller": f"CS{controller}",
+                "mapping": _mapping_dict(mapping),
+                "dtm_bytes": CONTROLLER_FRAME_BYTES,
+                "dtm_fnv1a": expected_hash,
+            }
+        )
+    return {
+        "operation_id": operation_id,
+        "job_operation_id": job_operation_id,
+        "job_driver_operation_identity_matched": True,
+        "sequence_verified": True,
+        "busy_timeout": False,
+        "safe_finish_verified": True,
+        "physical_controllers": physical,
+    }
+
+
+def perform_refresh(
+    base_url: str,
+    frame: bytes | bytearray | memoryview,
+    *,
+    expected_mappings: Optional[Sequence[ControllerMapping]] = None,
+    job_timeout_s: float = DEFAULT_JOB_TIMEOUT_S,
+    poll_interval_s: float = DEFAULT_POLL_INTERVAL_S,
+    requester: Optional[HttpRequester] = None,
+    sleeper: Callable[[float], None] = time.sleep,
+    clock: Callable[[], float] = time.monotonic,
+) -> dict[str, Any]:
+    # This must remain the first operation: malformed frames must never cause
+    # mapping/URL handling or any device request.
+    frame_bytes = _validated_frame_bytes(frame)
+    mapping_pair = _require_refresh_mapping_pair(expected_mappings)
+    request = requester or http_request
+    base_url = _normalize_base_url(base_url)
+    version = _preflight_version(base_url, request, mapping_pair)
+    frame_hash = fnv1a(frame_bytes)
+    status, body = request(
+        base_url, "/api/frame", method="POST", data=frame_bytes, timeout=20.0
+    )
+    _expect_status(status, 202, body, "frame refresh enqueue")
+    queued = _json_object(body, "frame refresh enqueue")
+    _validate_transfer_response(queued, frame_hash, "frame refresh enqueue")
+    job_id = _require_int(queued, "job_id", "frame refresh enqueue", minimum=1)
+    job = _wait_for_job(
+        base_url,
+        job_id,
+        frame_hash,
+        request,
+        timeout_s=job_timeout_s,
+        poll_interval_s=poll_interval_s,
+        sleeper=sleeper,
+        clock=clock,
+    )
+    status, body = request(
+        base_url, "/api/diagnostic/report", method="GET", data=None, timeout=20.0
+    )
+    _expect_status(status, 200, body, "diagnostic report")
+    diagnostic = _validate_diagnostic(
+        _json_object(body, "diagnostic report"), frame_bytes, mapping_pair, version, job
+    )
+    return {
+        "mode": "refresh",
+        "protocol_verified": True,
+        "hardware_tested": False,
+        "verified_scope": [
+            "canonical_frame_dimensions_and_physical_color_codes",
+            "firmware_build_api_spi_psram_and_mapping_preflight",
+            "frame_upload_bytes_and_fnv1a",
+            "job_identity_state_result_and_frame_hash",
+            "diagnostic_immutable_driver_operation_identity",
+            "diagnostic_build_api_job_mapping_and_dtm_hashes",
+            "diagnostic_sequence_busy_timing_and_safe_finish_evidence",
+        ],
+        "manual_observation_required": [
+            "full_panel_visual_result",
+            "power_supply_cv_and_current",
+            "L1_L2_temperature",
+        ],
+        "preflight": version,
+        "job_id": job_id,
+        "job": job,
+        "diagnostic": diagnostic,
+    }
+
+
+def _parse_mapping(value: str) -> ControllerMapping:
+    fields = [field.strip() for field in value.split(",")]
+    if len(fields) != 4 or any(field not in ("0", "1") for field in fields):
+        raise argparse.ArgumentTypeError(
+            "mapping must be SOURCE_HALF,FLIP_X,FLIP_Y,NIBBLE_SWAP using 0 or 1"
+        )
+    numbers = [int(field) for field in fields]
+    return ControllerMapping(numbers[0], *(bool(number) for number in numbers[1:]))
+
+
+def _positive_float(value: str) -> float:
+    try:
+        parsed = float(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("expected a positive number") from error
+    if not 0 < parsed < float("inf"):
+        raise argparse.ArgumentTypeError("expected a positive finite number")
+    return parsed
+
+
+def _is_within(path: Path, directory: Path) -> bool:
+    try:
+        path.relative_to(directory)
+    except ValueError:
+        return False
+    return True
+
+
+def _is_hard_link_to_frozen_file(path: Path, frozen_directory: Path) -> bool:
+    """Return true if an existing path aliases any frozen production file."""
+
+    if not path.exists():
+        return False
+    try:
+        for candidate in frozen_directory.rglob("*"):
+            if candidate.is_file() and path.samefile(candidate):
+                return True
+    except OSError as error:
+        raise FrameToolError(
+            f"could not verify output against frozen production files: {error}"
+        ) from error
+    return False
+
+
+def write_frame(path: Path, frame: bytes, *, force: bool = False) -> Path:
+    resolved = path.resolve(strict=False)
+    frozen = FROZEN_PRODUCTION_DIR.resolve(strict=False)
+    if _is_within(resolved, frozen):
+        raise FrameToolError("refusing to write inside the frozen production directory")
+    if force and _is_hard_link_to_frozen_file(resolved, frozen):
+        raise FrameToolError(
+            "refusing to replace a hard-link alias of a frozen production file"
+        )
+    try:
+        with resolved.open("wb" if force else "xb") as destination:
+            destination.write(frame)
+    except FileExistsError as error:
+        raise FrameToolError("output already exists; pass --force to replace it") from error
+    except OSError as error:
+        raise FrameToolError(f"could not write output: {error}") from error
+    return resolved
+
+
+def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
+    parser.add_argument("--pattern", choices=sorted(FIXTURE_NAMES), default="map-orient-v1")
+    parser.add_argument("--output", type=Path, help="optionally write the canonical raw frame")
+    parser.add_argument("--force", action="store_true", help="allow replacing an existing output")
+    parser.add_argument("--url", help="ESP32 root URL; default mode is non-refreshing ingress")
+    parser.add_argument(
+        "--refresh", action="store_true", help="queue one protocol-verified /api/frame refresh"
+    )
     parser.add_argument(
         "--confirm-cold-start",
         action="store_true",
-        help="required with --refresh; confirms one test after a >=10 s J2-1 power-off",
+        help="required with --refresh after a >=10 s J2-1 power-off",
     )
-    return parser.parse_args()
+    parser.add_argument(
+        "--controller-mapping",
+        action="append",
+        type=_parse_mapping,
+        metavar="HALF,FLIP_X,FLIP_Y,NIBBLE_SWAP",
+        help="explicit mapping; provide exactly twice in CS1, CS2 order",
+    )
+    parser.add_argument("--job-timeout", type=_positive_float, default=DEFAULT_JOB_TIMEOUT_S)
+    return parser.parse_args(argv)
 
 
-def main() -> int:
-    args = parse_args()
+def main(argv: Optional[Sequence[str]] = None) -> int:
+    args = parse_args(argv)
     if args.refresh and (not args.url or not args.confirm_cold_start):
         print("ERROR: --refresh requires --url and --confirm-cold-start", file=sys.stderr)
         return 2
-
-    frame = generate(args.pattern)
-    report = verify(args.pattern, frame)
-    print(json.dumps(report, ensure_ascii=False, indent=2))
-    if not report["verified"]:
-        print("ERROR: deterministic frame self-test failed; refusing output/upload", file=sys.stderr)
+    if args.refresh and (
+        args.controller_mapping is None or len(args.controller_mapping) != 2
+    ):
+        print(
+            "ERROR: --refresh requires exactly two --controller-mapping values "
+            "ordered CS1 then CS2",
+            file=sys.stderr,
+        )
+        return 2
+    if args.force and not args.output:
+        print("ERROR: --force requires --output", file=sys.stderr)
+        return 2
+    if args.confirm_cold_start and not args.refresh:
+        print("ERROR: --confirm-cold-start is only valid with --refresh", file=sys.stderr)
+        return 2
+    try:
+        mappings = _validate_mapping_pair(args.controller_mapping)
+        frame = _validated_frame_bytes(generate_fixture(args.pattern))
+        report = build_offline_report(args.pattern, frame, mappings)
+        if not report["offline_verified"]:
+            raise FrameToolError("deterministic frame self-test failed; refusing output/upload")
+        if args.output:
+            report["output"] = str(write_frame(args.output, frame, force=args.force))
+        if args.url:
+            if args.refresh:
+                report["network"] = perform_refresh(
+                    args.url,
+                    frame,
+                    expected_mappings=mappings,
+                    job_timeout_s=args.job_timeout,
+                )
+            else:
+                report["network"] = perform_ingress(args.url, frame)
+    except FrameToolError as error:
+        print(f"ERROR: {error}", file=sys.stderr)
         return 1
-
-    if args.output:
-        args.output.write_bytes(frame)
-        print(f"wrote {len(frame)} bytes to {args.output}")
-
-    if args.url:
-        status, body = post_frame(args.url, frame, args.refresh)
-        print(f"HTTP {status} {body}")
-        if status not in ({202} if args.refresh else {200}):
-            return 1
+    print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0
 
 

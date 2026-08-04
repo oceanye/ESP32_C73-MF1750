@@ -15,6 +15,12 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence
 
 PRODUCTION_RELATIVE = Path("hardware/mf1750_production_v1/production")
 MANIFEST_NAME = "manufacturing_manifest.json"
+# Raw Windows-checkout fingerprint at the frozen 3033da0 baseline. The text
+# matcher below also accepts its content-identical LF checkout form.
+FROZEN_MANIFEST = (
+    5076,
+    "2867521c6f3874a6e1cb9a57b764509c68b0e441cec735cfe406ef2698ebb69e",
+)
 FROZEN_FILES = {
     "Gerber_mf1750_revA1_Q1FIX.zip": (
         84183,
@@ -40,6 +46,7 @@ TEXT_SUFFIXES = {
     ".gtl",
     ".gto",
     ".gts",
+    ".json",
     ".md",
     ".rpt",
     ".txt",
@@ -110,6 +117,21 @@ def check_manifest(production_dir: Path, manifest_path: Optional[Path] = None) -
     manifest_path = manifest_path or production_dir / MANIFEST_NAME
     errors: List[str] = []
     warnings: List[str] = []
+    frozen_manifest = manifest_path.name == MANIFEST_NAME
+    if frozen_manifest:
+        expected_bytes, expected_sha256 = FROZEN_MANIFEST
+        if not manifest_path.is_file():
+            return CheckResult(
+                "manufacturing_manifest",
+                False,
+                0,
+                [f"missing frozen manifest: {manifest_path}"],
+            )
+        if not _matches_fingerprint(manifest_path, expected_bytes, expected_sha256):
+            errors.append(
+                "frozen manufacturing manifest fingerprint changed: "
+                f"bytes={manifest_path.stat().st_size}, sha256={_sha256(manifest_path)}"
+            )
     try:
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
@@ -163,6 +185,17 @@ def check_manifest(production_dir: Path, manifest_path: Optional[Path] = None) -
             )
     if len(entries) != 28:
         errors.append(f"manifest must retain 28 entries; got {len(entries)}")
+    if frozen_manifest:
+        actual_files = {
+            path.relative_to(production_dir).as_posix()
+            for path in production_dir.rglob("*")
+            if path.is_file()
+        }
+        expected_files = set(seen) | {MANIFEST_NAME}
+        for relative in sorted(actual_files - expected_files):
+            errors.append(f"unlisted file in frozen production directory: {relative}")
+        for relative in sorted(expected_files - actual_files):
+            errors.append(f"listed file absent from frozen production directory: {relative}")
     return CheckResult("manufacturing_manifest", not errors, len(entries), errors, warnings)
 
 
@@ -205,6 +238,8 @@ def check_public_driver_header(header_path: Path) -> CheckResult:
         "epdBegin",
         "epdReadBusy",
         "epdGetLastOperationReport",
+        "epdIsSupportedColorCode",
+        "epdValidateFrameColors",
         "epdDisplayFrame",
         "epdDisplayFrameAtFrequency",
         "epdClearWhite",
@@ -226,6 +261,10 @@ def check_public_driver_header(header_path: Path) -> CheckResult:
         errors.append(f"legacy/diagnostic APIs exposed in epd_driver.h: {forbidden}")
     if '#include "epd_diagnostics.h"' in content:
         errors.append("epd_driver.h must not include epd_diagnostics.h")
+    if "uint32_t operationId = 0;" not in content:
+        errors.append("operationId must be a non-zero-on-use u32 report field")
+    if "uint64_t operationId" in content:
+        errors.append("operationId must not exceed the host u32 contract")
     return CheckResult("public_driver_header", not errors, len(names), errors)
 
 
@@ -241,8 +280,32 @@ def check_upload_contract(main_cpp: Path) -> CheckResult:
         "write upper bound": "offset + raw.currentSize > EPD_FRAME_BYTES",
         "exact final length": "raw.totalSize == EPD_FRAME_BYTES",
         "binary copy": "memcpy(frameBuffer + offset, raw.buf, raw.currentSize)",
+        "physical color validation": 'frameUploadError = "unsupported_color_code"',
         "frame route": 'server.on("/api/frame", HTTP_POST',
         "queued response": "server.send(202, \"application/json\"",
+        "diagnostic report wrapper": "epdDiagnosticReportWithJobJson()",
+        "diagnostic firmware correlation": '\\"firmware_build_tag\\":\\"',
+        "diagnostic job id correlation": '\\"job_id\\":',
+        "diagnostic job action correlation": '\\"job_action\\":\\"',
+        "diagnostic job state correlation": '\\"job_state\\":\\"',
+        "diagnostic job result correlation": '\\"job_result\\":',
+        "diagnostic operation correlation": '\\"job_operation_id\\":',
+        "operation id pre-capture": (
+            "operationIdBefore = epdGetLastOperationReport().operationId;"
+        ),
+        "fresh completed report gate": "report.valid && !report.running",
+        "fresh operation id gate": "report.operationId > operationIdBefore",
+        "immutable driver report capture": (
+            "completedDriverReport = epdDiagnosticReportJson();"
+        ),
+        "atomic completed report publish": (
+            "epdPublishedReportJson = completedJobSnapshot;"
+        ),
+        "snapshot-only diagnostic GET": "return epdPublishedReportJson;",
+        "preflight refresh SPI": '"\\nRefresh SPI Hz: "',
+        "preflight CS1 mapping": '"\\nCS1 Mapping: "',
+        "preflight CS2 mapping": '"\\nCS2 Mapping: "',
+        "non-refreshing ingress declaration": 'ingressResult += ",\\"epd_action\\":\\"none\\"}"',
     }
     for label, marker in required_markers.items():
         if marker not in content:
@@ -251,7 +314,116 @@ def check_upload_contract(main_cpp: Path) -> CheckResult:
     for marker in forbidden_markers:
         if marker in content:
             errors.append(f"binary body incorrectly treated as C string: {marker}")
+    report_getter = re.search(
+        r"static String epdDiagnosticReportWithJobJson\(\)\s*\{(?P<body>.*?)\n\}",
+        content,
+        flags=re.DOTALL,
+    )
+    if report_getter is None:
+        errors.append("missing diagnostic report snapshot getter")
+    elif "epdDiagnosticReportJson()" in report_getter.group("body"):
+        errors.append("diagnostic GET must not read mutable live driver report")
     return CheckResult("binary_upload_contract", not errors, len(required_markers), errors)
+
+
+def check_driver_frame_contract(driver_cpp: Path) -> CheckResult:
+    errors: List[str] = []
+    try:
+        content = driver_cpp.read_text(encoding="utf-8")
+    except OSError as error:
+        return CheckResult("driver_frame_contract", False, 0, [str(error)])
+    display_start = content.find("bool epdDisplayFrameAtFrequency")
+    if display_start < 0:
+        return CheckResult(
+            "driver_frame_contract",
+            False,
+            0,
+            ["missing epdDisplayFrameAtFrequency implementation"],
+        )
+    display_body = content[display_start:]
+    required_markers = {
+        "packed color validator": "epdValidateFrameColors(frame, len, &invalidPixel, &invalidCode)",
+        "invalid pixel diagnostic": "Invalid EPD frame color at pixel",
+        "mapping after validation": "diagnosticReport.mappingApplied = true",
+        "cascade preparation": "epdPrepareCascade(spiHz)",
+        "second controller stream": (
+            "diagnosticReport.cs2DtmFnv1a = epdStreamPackedFrameController(frame, true)"
+        ),
+    }
+    positions: Dict[str, int] = {}
+    for label, marker in required_markers.items():
+        position = display_body.find(marker)
+        positions[label] = position
+        if position < 0:
+            errors.append(f"missing {label} contract marker")
+    validator = positions["packed color validator"]
+    mapping = positions["mapping after validation"]
+    cascade = positions["cascade preparation"]
+    second_stream = positions["second controller stream"]
+    if validator >= 0 and mapping >= 0 and validator > mapping:
+        errors.append("mapping must not be marked applied before frame colors validate")
+    if validator >= 0 and cascade >= 0 and validator > cascade:
+        errors.append("frame colors must validate before cascade initialization or DTM")
+    if mapping >= 0 and second_stream >= 0 and mapping < second_stream:
+        errors.append("mapping must be marked applied only after both controller streams")
+    evidence_markers = {
+        "wait evidence recorder": "recordWaitEvidence(stage, elapsed, sawBusy)",
+        "two-stage BUSY helper": "bool epdWaitBusyThenIdle(",
+        "PON strict BUSY wait": 'epdWaitBusyThenIdle("PON")',
+        "DRF strict BUSY wait": 'epdWaitBusyThenIdle("DRF")',
+        "POF strict BUSY wait": 'epdWaitBusyThenIdle("POF")',
+        "post-PSR strict BUSY wait": (
+            'epdWaitBusyThenIdle("post-display PSR")'
+        ),
+        "BUSY assertion grace": "EPD_BUSY_ASSERT_GRACE_MS",
+        "BUSY assertion failure": "diagnosticReport.busyAssertionMissing = true",
+        "fail-safe POF helper": "void epdRequestFailSafePowerOff(",
+        "PON fail-safe POF": (
+            'epdRequestFailSafePowerOff("POF cleanup after PON failure")'
+        ),
+        "DRF fail-safe POF": (
+            'epdRequestFailSafePowerOff("POF cleanup after DRF failure")'
+        ),
+        "safe panel shutdown": "epdHoldPanelPinsLow()",
+        "operation begin helper": "uint32_t epdBeginOperation(uint32_t spiHz)",
+        "operation finish helper": (
+            "bool epdFinishOperation(uint32_t startedAtMs, bool sequenceOk)"
+        ),
+        "operation id report": '\\"operation_id\\":',
+        "BUSY missing report": '\\"busy_assertion_missing\\":',
+        "PON BUSY evidence": '\\"pon_busy_seen\\":',
+        "DRF BUSY evidence": '\\"drf_busy_seen\\":',
+        "POF BUSY evidence": '\\"pof_busy_seen\\":',
+        "post-PSR BUSY evidence": '\\"post_psr_busy_seen\\":',
+        "DRF duration evidence": '\\"drf_ms\\":',
+    }
+    for label, marker in evidence_markers.items():
+        if marker not in content:
+            errors.append(f"missing {label} contract marker")
+    solid_match = re.search(
+        r"bool epdDiagnosticSolid\([^)]*\)\s*\{(?P<body>.*?)\n\}",
+        content,
+        flags=re.DOTALL,
+    )
+    if solid_match is None:
+        errors.append("missing epdDiagnosticSolid implementation")
+    else:
+        solid_body = solid_match.group("body")
+        if "epdBeginOperation(spiHz)" not in solid_body:
+            errors.append("epdDiagnosticSolid must begin a fresh operation report")
+        if "epdFinishOperation(diagnosticStarted" not in solid_body:
+            errors.append("epdDiagnosticSolid must complete its operation report")
+    if (
+        'epdWaitBusyThenIdle("reset")' in content
+        or 'epdWaitBusyThenIdle(secondController ? "REV CS2 reset"' in content
+    ):
+        errors.append("reset/REV waits must not require formal BUSY assertion")
+    return CheckResult(
+        "driver_frame_contract",
+        not errors,
+        len(required_markers) + len(evidence_markers),
+        errors,
+    )
 
 
 def run_checks(repo_root: Path) -> Dict[str, Any]:
@@ -263,6 +435,7 @@ def run_checks(repo_root: Path) -> Dict[str, Any]:
         check_release_build_flags(repo_root / "platformio.ini"),
         check_public_driver_header(repo_root / "src/epd_driver.h"),
         check_upload_contract(repo_root / "src/main.cpp"),
+        check_driver_frame_contract(repo_root / "src/epd_driver.cpp"),
     ]
     return {
         "schema_version": 1,
