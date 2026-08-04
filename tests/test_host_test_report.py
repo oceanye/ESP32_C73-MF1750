@@ -31,6 +31,14 @@ def _failing_suite() -> unittest.TestSuite:
     return unittest.TestSuite([FailingTest()])
 
 
+def _skipped_suite() -> unittest.TestSuite:
+    class SkippedTest(unittest.TestCase):
+        def runTest(self) -> None:
+            self.skipTest("intentional full-suite skip")
+
+    return unittest.TestSuite([SkippedTest()])
+
+
 class HostTestReportTests(unittest.TestCase):
     def _run_cli_with_suite(
         self,
@@ -63,6 +71,9 @@ class HostTestReportTests(unittest.TestCase):
             self.assertTrue(report["passed"])
             self.assertFalse(report["hardware_tested"])
             self.assertEqual(report["tests_run"], 1)
+            self.assertEqual(report["tests_executed"], 1)
+            self.assertFalse(report["suite_empty"])
+            self.assertFalse(report["all_tests_skipped"])
             self.assertEqual(report["failures"], 0)
             self.assertEqual(report["errors"], 0)
             self.assertEqual(report["failure_details"], [])
@@ -88,6 +99,55 @@ class HostTestReportTests(unittest.TestCase):
                 "intentional unit-test failure",
                 report["failure_details"][0]["traceback"],
             )
+
+    def test_empty_discovery_is_failed_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / "empty.json"
+            status, report = self._run_cli_with_suite(
+                unittest.TestSuite(), output
+            )
+
+            self.assertEqual(status, 1)
+            self.assertFalse(report["passed"])
+            self.assertEqual(report["tests_run"], 0)
+            self.assertEqual(report["tests_executed"], 0)
+            self.assertTrue(report["suite_empty"])
+            self.assertFalse(report["all_tests_skipped"])
+            self.assertEqual(report["failures"], 0)
+            self.assertEqual(report["errors"], 0)
+
+    def test_all_skipped_discovery_is_failed_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / "skipped.json"
+            status, report = self._run_cli_with_suite(
+                _skipped_suite(), output
+            )
+
+            self.assertEqual(status, 1)
+            self.assertFalse(report["passed"])
+            self.assertEqual(report["tests_run"], 1)
+            self.assertEqual(report["tests_executed"], 0)
+            self.assertFalse(report["suite_empty"])
+            self.assertTrue(report["all_tests_skipped"])
+            self.assertEqual(report["skipped"], 1)
+
+    def test_system_exit_from_discovery_writes_failed_report(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / "system-exit.json"
+            with mock.patch.object(
+                run_host_tests, "discover_suite", side_effect=SystemExit(0)
+            ):
+                with contextlib.redirect_stdout(
+                    io.StringIO()
+                ), contextlib.redirect_stderr(io.StringIO()):
+                    status = run_host_tests.main(["--output", str(output)])
+
+            report = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual(status, 2)
+            self.assertFalse(report["passed"])
+            self.assertEqual(report["tests_run"], 0)
+            self.assertEqual(report["errors"], 1)
+            self.assertIn("SystemExit: 0", report["error_details"][0]["traceback"])
 
     def test_existing_output_requires_explicit_force(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -148,6 +208,8 @@ class CiHostReportConfigurationTests(unittest.TestCase):
             "python tools/run_host_tests.py --output host-test-report.json --force",
             workflow,
         )
+        self.assertIn("python tools/validate_ci_reports.py", workflow)
+        self.assertIn("REPORT_OUTCOME", workflow)
         self.assertIn("host-test-report.json", workflow)
         self.assertIn("repo-contract-report.json", workflow)
         self.assertGreaterEqual(workflow.count("if: always()"), 2)

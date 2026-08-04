@@ -45,6 +45,12 @@ jobs:
         continue-on-error: true
         run: python tools/run_host_tests.py --output host-test-report.json --force
 
+      - name: Validate machine-readable host reports
+        id: report-contracts
+        if: always()
+        continue-on-error: true
+        run: python tools/validate_ci_reports.py
+
       - name: Upload machine-readable host reports
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -60,10 +66,12 @@ jobs:
         env:
           CONTRACT_OUTCOME: ${{ steps.repository-contracts.outcome }}
           TEST_OUTCOME: ${{ steps.host-tests.outcome }}
+          REPORT_OUTCOME: ${{ steps.report-contracts.outcome }}
         run: |
           echo "repository contracts: ${CONTRACT_OUTCOME}"
           echo "host regression tests: ${TEST_OUTCOME}"
-          if [[ "${CONTRACT_OUTCOME}" != "success" || "${TEST_OUTCOME}" != "success" ]]; then
+          echo "machine report validation: ${REPORT_OUTCOME}"
+          if [[ "${CONTRACT_OUTCOME}" != "success" || "${TEST_OUTCOME}" != "success" || "${REPORT_OUTCOME}" != "success" ]]; then
             exit 1
           fi
 

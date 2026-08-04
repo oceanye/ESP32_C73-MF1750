@@ -124,12 +124,21 @@ def build_report(
         _test_identifier(test)
         for test in getattr(result, "unexpectedSuccesses", [])
     ]
+    # ``unittest`` considers an empty suite successful.  In CI that would make
+    # a broken discovery path (or deletion of all tests) fail open, so require
+    # positive evidence that at least one test actually ran.
+    suite_empty = result.testsRun == 0
+    tests_executed = max(0, result.testsRun - len(skipped))
+    all_tests_skipped = result.testsRun > 0 and tests_executed == 0
     return {
         "schema_version": REPORT_SCHEMA_VERSION,
         "kind": REPORT_KIND,
-        "passed": result.wasSuccessful(),
+        "passed": result.wasSuccessful() and tests_executed > 0,
         "hardware_tested": False,
         "tests_run": result.testsRun,
+        "tests_executed": tests_executed,
+        "suite_empty": suite_empty,
+        "all_tests_skipped": all_tests_skipped,
         "failures": len(failures),
         "errors": len(errors),
         "skipped": len(skipped),
@@ -282,7 +291,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         result, duration_seconds = run_suite(discover_suite())
         report = build_report(result, duration_seconds=duration_seconds)
-    except Exception as error:  # preserve an artifact for CI infrastructure errors
+    # SystemExit(0) is not an Exception and would otherwise let a broken or
+    # hijacked discovery path make CI green without a report.  Treat every
+    # runner-level BaseException as infrastructure failure and preserve it in
+    # the machine-readable artifact.
+    except BaseException as error:  # preserve an artifact for all runner failures
         runner_failed = True
         duration_seconds = time.perf_counter() - started
         traceback.print_exc()
