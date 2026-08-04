@@ -197,6 +197,11 @@ nibble-swap 的全部 16 种组合下逐字节比较。
    POST 前核对固件 build/API/PSRAM/SPI/mapping，随后核对最终 job、四阶段 BUSY
    采样（PON/DRF/POF 必须 assertion，post-PSR 仅作信息证据）和双 DTM hash：
 
+   这里固件的 `PSRAM bytes` 来自 Arduino `ESP.getPsramSize()`，代表受管 SPIRAM
+   堆总量而非封装物理容量。N8R8 实机因堆元数据上报约 `8385863` 字节；主机门禁
+   因此只允许标称 8 MiB 以下最多 64 KiB 的固定管理开销，并继续独立要求至少
+   `307200` 字节可用 PSRAM。低于该下限仍必须在 POST 前失败。
+
    ```powershell
    python tools\mf1750_frame_tool.py --pattern map-orient-v1 `
      --url http://<device-ip> --refresh --confirm-cold-start `

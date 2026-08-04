@@ -55,7 +55,14 @@ ALLOWED_BUILD_TAGS = frozenset(
     {"MF1750_DRIVER_RC2C_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_2026-08-04"}
 )
 REQUIRED_DRIVER_API = "MF1750_R16_CASCADE_V3"
-REQUIRED_PSRAM_BYTES = 8 * 1024 * 1024
+NOMINAL_PSRAM_BYTES = 8 * 1024 * 1024
+# Arduino's ESP.getPsramSize() reports the managed SPIRAM heap
+# (free + allocated), not the physical package capacity. Heap metadata makes
+# a real 8 MiB N8R8 module report slightly below nominal. Keep a bounded
+# allowance that remains far above a 4 MiB part; the separate free-space gate
+# still requires room for the complete canonical frame.
+MAX_PSRAM_HEAP_OVERHEAD_BYTES = 64 * 1024
+MIN_REPORTED_PSRAM_BYTES = NOMINAL_PSRAM_BYTES - MAX_PSRAM_HEAP_OVERHEAD_BYTES
 REQUIRED_REFRESH_SPI_HZ = 1_000_000
 UINT32_MAX = 0xFFFFFFFF
 UINT32_FORWARD_LIMIT = 0x7FFFFFFF
@@ -386,8 +393,11 @@ def _parse_version(
         raise FrameToolError("firmware version has invalid frame/PSRAM/SPI fields") from error
     if frame_bytes != FRAME_BYTES:
         raise FrameToolError(f"firmware frame size must be {FRAME_BYTES}")
-    if psram_bytes < REQUIRED_PSRAM_BYTES:
-        raise FrameToolError(f"firmware reports less than {REQUIRED_PSRAM_BYTES} bytes PSRAM")
+    if psram_bytes < MIN_REPORTED_PSRAM_BYTES:
+        raise FrameToolError(
+            "firmware reports less than the minimum managed PSRAM heap for "
+            f"an 8 MiB module ({MIN_REPORTED_PSRAM_BYTES} bytes)"
+        )
     if free_psram < FRAME_BYTES:
         raise FrameToolError("firmware does not report enough free PSRAM for one frame")
     if refresh_spi_hz != REQUIRED_REFRESH_SPI_HZ:

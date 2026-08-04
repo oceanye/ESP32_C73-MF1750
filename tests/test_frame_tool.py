@@ -43,6 +43,7 @@ def version_body(
     *,
     mappings: tuple[ControllerMapping, ControllerMapping] = DEFAULT_MAPPINGS,
     refresh_spi_hz: int = 1_000_000,
+    psram_bytes: int = tool.NOMINAL_PSRAM_BYTES,
 ) -> str:
     return "\n".join(
         (
@@ -50,7 +51,7 @@ def version_body(
             "Panel: 1024x600",
             "Driver API: MF1750_R16_CASCADE_V3",
             "Frame bytes: 307200",
-            "PSRAM bytes: 8388608",
+            f"PSRAM bytes: {psram_bytes}",
             "Free PSRAM: 7900000",
             f"Refresh SPI Hz: {refresh_spi_hz}",
             f"CS1 Mapping: {mapping_text(mappings[0])}",
@@ -604,6 +605,41 @@ class NetworkContractTests(unittest.TestCase):
                         requester=requester,
                     )
                 self.assertEqual(requester.calls, [("GET", "/api/version")])
+
+    def test_preflight_allows_bounded_8_mib_heap_metadata_overhead(self) -> None:
+        observed_hardware_bytes = tool.NOMINAL_PSRAM_BYTES - 2_761
+        responses = valid_refresh_responses(self.frame)
+        responses["/api/version"] = [
+            (200, version_body(psram_bytes=observed_hardware_bytes))
+        ]
+        requester = ScriptedRequester(responses)
+
+        result = tool.perform_refresh(
+            "http://device",
+            self.frame,
+            expected_mappings=DEFAULT_MAPPINGS,
+            requester=requester,
+        )
+
+        self.assertEqual(result["preflight"]["psram_bytes"], observed_hardware_bytes)
+        self.assertIn(("POST", "/api/frame"), requester.calls)
+
+    def test_preflight_rejects_psram_below_bounded_8_mib_heap_floor(self) -> None:
+        responses = valid_refresh_responses(self.frame)
+        responses["/api/version"] = [
+            (200, version_body(psram_bytes=tool.MIN_REPORTED_PSRAM_BYTES - 1))
+        ]
+        requester = ScriptedRequester(responses)
+
+        with self.assertRaisesRegex(tool.FrameToolError, "minimum managed PSRAM heap"):
+            tool.perform_refresh(
+                "http://device",
+                self.frame,
+                expected_mappings=DEFAULT_MAPPINGS,
+                requester=requester,
+            )
+
+        self.assertEqual(requester.calls, [("GET", "/api/version")])
 
     def test_refresh_requires_complete_busy_timing_evidence(self) -> None:
         mutations = (
