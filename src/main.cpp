@@ -10,7 +10,7 @@
 WebServer server(80);
 
 static constexpr const char *FW_BUILD_TAG =
-    "MF1750_DRIVER_RC2D_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_2026-08-04";
+    "MF1750_DRIVER_RC2E_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_TRANSFORM_2026-08-04";
 static constexpr uint32_t FNV1A_OFFSET_BASIS = 2166136261UL;
 static constexpr uint32_t FNV1A_PRIME = 16777619UL;
 static constexpr uint32_t MAP_ORIENT_V1_EXPECTED_FNV1A = 2634290221UL;
@@ -113,10 +113,13 @@ static constexpr char INDEX_HTML[] PROGMEM = R"HTML(
       font-weight:700; cursor:pointer; }
     input, label, select { font-size:1rem; }
     select { border:2px solid var(--ink); background:#fffdf4; padding:8px; }
+    input[type="range"] { width:160px; accent-color:var(--accent); }
     .preview-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
     figure { margin:0; display:grid; gap:7px; }
     figcaption { font-weight:700; }
     canvas { max-width:100%; border:2px solid var(--line); background:white; }
+    #source-preview { cursor:grab; touch-action:none; }
+    #source-preview.dragging { cursor:grabbing; }
     #preview { image-rendering:pixelated; }
     code { background:#fff4c6; padding:2px 5px; }
     #status { font-weight:700; min-height:1.4em; }
@@ -142,8 +145,18 @@ static constexpr char INDEX_HTML[] PROGMEM = R"HTML(
       <button id="send" disabled>上传并刷新</button>
       <button id="test">MAP_ORIENT_V1 驱动验收</button>
     </div>
+    <div class="controls">
+      <label>缩放
+        <input id="zoom" type="range" min="50" max="400" step="5" value="100">
+        <output id="zoom-value">100%</output>
+      </label>
+      <button id="rotate-left" type="button">左转 90°</button>
+      <button id="rotate-right" type="button">右转 90°</button>
+      <button id="reset-view" type="button">重置构图</button>
+      <span>在左侧原图上拖动；滚轮可缩放</span>
+    </div>
     <div class="preview-grid">
-      <figure><figcaption>原图构图</figcaption><canvas id="source-preview"></canvas></figure>
+      <figure><figcaption>原图构图（可拖动）</figcaption><canvas id="source-preview"></canvas></figure>
       <figure><figcaption>实际六色上传预览</figcaption><canvas id="preview"></canvas></figure>
     </div>
     <div id="status"></div>
@@ -162,6 +175,11 @@ const sendEl = document.getElementById('send');
 const cropEl = document.getElementById('crop');
 const enhanceEl = document.getElementById('enhance');
 const ditherEl = document.getElementById('dither');
+const zoomEl = document.getElementById('zoom');
+const zoomValueEl = document.getElementById('zoom-value');
+const rotateLeftEl = document.getElementById('rotate-left');
+const rotateRightEl = document.getElementById('rotate-right');
+const resetViewEl = document.getElementById('reset-view');
 document.getElementById('size').textContent = `${UPLOAD_W} x ${H}`;
 sourceCanvas.width = canvas.width = UPLOAD_W;
 sourceCanvas.height = canvas.height = H;
@@ -172,6 +190,12 @@ let sourceObjectUrl = null;
 let renderGeneration = 0;
 let imageGeneration = 0;
 let uploadPending = false;
+let viewZoom = 1;
+let viewRotation = 0;
+let viewOffsetX = 0;
+let viewOffsetY = 0;
+let dragState = null;
+let transformRenderTimer = null;
 
 function setStatus(text) { statusEl.textContent = text; }
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
@@ -340,35 +364,76 @@ function quantizeAndPack() {
   return out;
 }
 
+function updateZoomLabel() {
+  zoomEl.value = String(Math.round(viewZoom * 100));
+  zoomValueEl.value = `${Math.round(viewZoom * 100)}%`;
+}
+
+function resetViewTransform() {
+  viewZoom = 1;
+  viewRotation = 0;
+  viewOffsetX = 0;
+  viewOffsetY = 0;
+  updateZoomLabel();
+}
+
+function drawSourceImage() {
+  const img = loadedImage;
+  if (!img) return;
+  sourceCtx.imageSmoothingEnabled = true;
+  sourceCtx.imageSmoothingQuality = 'high';
+  sourceCtx.fillStyle = 'white';
+  sourceCtx.fillRect(0, 0, UPLOAD_W, H);
+
+  const radians = viewRotation * Math.PI / 180;
+  const cosine = Math.abs(Math.cos(radians));
+  const sine = Math.abs(Math.sin(radians));
+  const boundsWidth = img.width * cosine + img.height * sine;
+  const boundsHeight = img.width * sine + img.height * cosine;
+  const widthScale = UPLOAD_W / boundsWidth;
+  const heightScale = H / boundsHeight;
+  const baseScale = cropEl.checked
+    ? Math.max(widthScale, heightScale)
+    : Math.min(widthScale, heightScale);
+  const scale = baseScale * viewZoom;
+
+  sourceCtx.save();
+  sourceCtx.translate(UPLOAD_W / 2 + viewOffsetX, H / 2 + viewOffsetY);
+  sourceCtx.rotate(radians);
+  sourceCtx.scale(scale, scale);
+  sourceCtx.drawImage(img, -img.width / 2, -img.height / 2);
+  sourceCtx.restore();
+}
+
+function invalidatePackedPreview(message) {
+  ++renderGeneration;
+  packed = null;
+  packedHash = null;
+  sendEl.disabled = true;
+  drawSourceImage();
+  setStatus(message);
+}
+
+function scheduleTransformPreview() {
+  if (transformRenderTimer !== null) clearTimeout(transformRenderTimer);
+  transformRenderTimer = setTimeout(() => {
+    transformRenderTimer = null;
+    renderLoadedImage();
+  }, 180);
+}
+
 function renderLoadedImage() {
   const img = loadedImage;
   if (!img) return;
+    if (transformRenderTimer !== null) {
+      clearTimeout(transformRenderTimer);
+      transformRenderTimer = null;
+    }
     const generation = ++renderGeneration;
     packed = null;
     packedHash = null;
     sendEl.disabled = true;
-    sourceCtx.imageSmoothingEnabled = true;
-    sourceCtx.imageSmoothingQuality = 'high';
-    sourceCtx.fillStyle = 'white';
-    sourceCtx.fillRect(0, 0, UPLOAD_W, H);
-    if (cropEl.checked) {
-      const srcRatio = img.width / img.height;
-      const dstRatio = UPLOAD_W / H;
-      let sx = 0, sy = 0, sw = img.width, sh = img.height;
-      if (srcRatio > dstRatio) {
-        sw = Math.round(img.height * dstRatio);
-        sx = Math.floor((img.width - sw) / 2);
-      } else {
-        sh = Math.round(img.width / dstRatio);
-        sy = Math.floor((img.height - sh) / 2);
-      }
-      sourceCtx.drawImage(img, sx, sy, sw, sh, 0, 0, UPLOAD_W, H);
-    } else {
-      const scale = Math.min(UPLOAD_W / img.width, H / img.height);
-      const dw = Math.round(img.width * scale);
-      const dh = Math.round(img.height * scale);
-      sourceCtx.drawImage(img, Math.floor((UPLOAD_W - dw) / 2), Math.floor((H - dh) / 2), dw, dh);
-    }
+    drawSourceImage();
     setStatus('正在生成真实六色预览...');
     requestAnimationFrame(() => {
       if (generation !== renderGeneration) return;
@@ -395,6 +460,7 @@ fileEl.addEventListener('change', async () => {
     if (sourceObjectUrl) URL.revokeObjectURL(sourceObjectUrl);
     sourceObjectUrl = objectUrl;
     loadedImage = img;
+    resetViewTransform();
     renderLoadedImage();
   };
   img.onerror = () => {
@@ -404,9 +470,83 @@ fileEl.addEventListener('change', async () => {
   img.src = objectUrl;
 });
 
-cropEl.addEventListener('change', renderLoadedImage);
+cropEl.addEventListener('change', () => {
+  viewOffsetX = 0;
+  viewOffsetY = 0;
+  renderLoadedImage();
+});
 enhanceEl.addEventListener('change', renderLoadedImage);
 ditherEl.addEventListener('change', renderLoadedImage);
+
+zoomEl.addEventListener('input', () => {
+  viewZoom = Number(zoomEl.value) / 100;
+  updateZoomLabel();
+  invalidatePackedPreview('正在调整缩放，停止操作后生成六色预览...');
+  scheduleTransformPreview();
+});
+
+function rotateBy(degrees) {
+  viewRotation = (viewRotation + degrees + 360) % 360;
+  viewOffsetX = 0;
+  viewOffsetY = 0;
+  renderLoadedImage();
+}
+
+rotateLeftEl.addEventListener('click', () => rotateBy(-90));
+rotateRightEl.addEventListener('click', () => rotateBy(90));
+resetViewEl.addEventListener('click', () => {
+  resetViewTransform();
+  renderLoadedImage();
+});
+
+sourceCanvas.addEventListener('pointerdown', event => {
+  if (!loadedImage || event.button !== 0) return;
+  const rect = sourceCanvas.getBoundingClientRect();
+  dragState = {
+    pointerId: event.pointerId,
+    x: event.clientX,
+    y: event.clientY,
+    scaleX: sourceCanvas.width / rect.width,
+    scaleY: sourceCanvas.height / rect.height,
+  };
+  sourceCanvas.setPointerCapture(event.pointerId);
+  sourceCanvas.classList.add('dragging');
+});
+
+sourceCanvas.addEventListener('pointermove', event => {
+  if (!dragState || dragState.pointerId !== event.pointerId) return;
+  viewOffsetX += (event.clientX - dragState.x) * dragState.scaleX;
+  viewOffsetY += (event.clientY - dragState.y) * dragState.scaleY;
+  dragState.x = event.clientX;
+  dragState.y = event.clientY;
+  invalidatePackedPreview('正在调整构图，松开后生成六色预览...');
+});
+
+function finishDrag(event) {
+  if (!dragState || dragState.pointerId !== event.pointerId) return;
+  dragState = null;
+  sourceCanvas.classList.remove('dragging');
+  renderLoadedImage();
+}
+
+sourceCanvas.addEventListener('pointerup', finishDrag);
+sourceCanvas.addEventListener('pointercancel', finishDrag);
+
+sourceCanvas.addEventListener('wheel', event => {
+  if (!loadedImage) return;
+  event.preventDefault();
+  const rect = sourceCanvas.getBoundingClientRect();
+  const pointerX = (event.clientX - rect.left) * sourceCanvas.width / rect.width;
+  const pointerY = (event.clientY - rect.top) * sourceCanvas.height / rect.height;
+  const previousZoom = viewZoom;
+  viewZoom = Math.max(0.5, Math.min(4, viewZoom * Math.exp(-event.deltaY * 0.001)));
+  const ratio = viewZoom / previousZoom;
+  viewOffsetX = pointerX - UPLOAD_W / 2 - (pointerX - UPLOAD_W / 2 - viewOffsetX) * ratio;
+  viewOffsetY = pointerY - H / 2 - (pointerY - H / 2 - viewOffsetY) * ratio;
+  updateZoomLabel();
+  invalidatePackedPreview('正在调整缩放，停止操作后生成六色预览...');
+  scheduleTransformPreview();
+}, { passive: false });
 
 sendEl.addEventListener('click', async () => {
   if (!packed || packedHash === null || uploadPending) return;

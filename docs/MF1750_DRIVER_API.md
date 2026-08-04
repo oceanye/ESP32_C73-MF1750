@@ -7,10 +7,11 @@
 
 | 项目 | 当前值 |
 |---|---|
-| 源码候选 build | `MF1750_DRIVER_RC2D_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_2026-08-04` |
+| 源码候选 build | `MF1750_DRIVER_RC2E_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_TRANSFORM_2026-08-04` |
+| 最近断电运行验证 build | `MF1750_DRIVER_RC2D_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_2026-08-04`；Wi-Fi、网页、PSRAM、映射通过，未刷新面板 |
 | 最近实机验收 build | `MF1750_DRIVER_RC2C_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_2026-08-04` |
 | C++ Driver API | `MF1750_R16_CASCADE_V3` |
-| RC2D `firmware.bin` | 803120 字节；SHA-256 `AE7427DC7A5B3DC6F69103CEDC63F24E7D9C06FF84E6669D6B16911A46943DAD`；尚未刷写验收 |
+| RC2E `firmware.bin` | 807728 字节；SHA-256 `90247EC7A53FF8FBD186C53B435FD6EBDDFCE47B90AE0046D984141C87EC9705`；尚未刷写验收 |
 | 硬件 | MF-1750 Rev A1，R15 拆除、R16=0 Ω |
 | 控制器 | 双 SPD1657B，revision `0x04` |
 | 面板 | 1024x600，双 512x600 控制器 |
@@ -138,7 +139,7 @@ POF 后 PSR 写入不会在当前实板再次拉低 BUSY，因此该阶段只要
 5. 最后由人确认画面、电源和温度。
 
 网络超时后不得盲目重发 `/api/frame`。先查询 `/api/job` 和
-`/api/diagnostic/report`；RC2D/V3 没有远端 cancel API。
+`/api/diagnostic/report`；RC2E/V3 没有远端 cancel API。
 
 ### 4.2 稳定的应用协议路由
 
@@ -168,7 +169,7 @@ GET /api/version
 成功返回 `200 text/plain`：
 
 ```text
-MF1750_DRIVER_RC2D_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_2026-08-04
+MF1750_DRIVER_RC2E_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_TRANSFORM_2026-08-04
 Panel: 1024x600
 Driver API: MF1750_R16_CASCADE_V3
 Frame bytes: 307200
@@ -232,6 +233,12 @@ POST /api/frame
 提亮暗部并轻微降低饱和度；关闭后使用解码后的 sRGB 像素。所有模式都使用
 `0/1/2/3/5/6` 六个物理码，同时由同一次颜色选择生成预览像素和 4bpp 帧，避免
 原图预览与实际上传不一致。
+
+原图构图画布支持鼠标和触摸指针拖动；鼠标滚轮或 `50%..400%` 滑杆缩放；左右
+按钮按 90° 旋转；重置按钮恢复 `100%/0°/居中`。旋转后的 contain/cover 基准按
+旋转外接框重新计算。拖动期间只更新原图构图，松开后量化；连续缩放使用短防抖，
+停止操作后才生成六色预览。任何构图变化都会立即作废旧 `packed` 帧并禁用上传，
+直到新预览及其 FNV-1a 生成完成。
 
 切换裁剪、照片优化或抖动模式只在浏览器中重新计算，绝不访问 `/api/frame`。
 只有点击“上传并刷新”才提交当前 `packed` 帧；网页必须核对设备响应的 `bytes`
@@ -304,7 +311,7 @@ PSRAM 分配失败通过 400 `frame_buffer_allocation_failed` 返回。错误响
 
 ## 5. 维护诊断路由
 
-以下路由继续存在于 RC2D 固件，但不属于稳定应用 API，也不在
+以下路由继续存在于 RC2E 固件，但不属于稳定应用 API，也不在
 `HttpDeviceAdapter` allowlist 中。它们可能切换 GPIO、复位控制器、启动高压或
 显示历史非规范尺寸；只有在面板供电条件、冷启动间隔和人工授权明确时才可调用。
 
@@ -425,7 +432,7 @@ python -m app.server --enable-device --device-url http://DEVICE-IP
 | POST | `/application/device/report` | `{}` |
 | POST | `/application/device/recover` | `{}` |
 | POST | `/application/device/local-abort` | `{}` |
-| POST | `/application/device/cancel` | `{}`；RC2D/V3 明确返回 unsupported |
+| POST | `/application/device/cancel` | `{}`；RC2E/V3 明确返回 unsupported |
 
 mapping JSON：
 
@@ -445,8 +452,9 @@ false，最终物理验收必须在应用报告之外人工记录。
 
 ## 8. 已知边界与版本策略
 
-- RC2C/V3 是底层驱动已实测的不可变固件身份；RC2D/V3 只增加设备内置网页照片
-  工具，必须以新的 build、构建指纹和刷写复验记录管理，不能继承 RC2C 的固件哈希。
+- RC2C/V3 是底层驱动已实测的不可变固件身份；RC2D/V3 增加设备内置网页照片
+  工具，RC2E/V3 再增加构图变换。每个版本必须以独立 build、构建指纹和刷写复验
+  记录管理，不能继承 RC2C 的固件哈希。
 - 任何改变初始化、CCSET、mapping、颜色码、PON/DRF/POF/PSR、BUSY 门禁或
   面板 GPIO 安全状态的变更，都必须提升 build/API 并重新实机验收。
 - 当前设备 API 无认证、无 TLS、无 cancel、无持久 job 历史。

@@ -35,6 +35,11 @@ class FirmwarePhotoToolTests(unittest.TestCase):
             "crop",
             "enhance",
             "dither",
+            "zoom",
+            "zoom-value",
+            "rotate-left",
+            "rotate-right",
+            "reset-view",
             "send",
         ):
             self.assertIn(f'id="{element_id}"', self.html)
@@ -58,13 +63,28 @@ class FirmwarePhotoToolTests(unittest.TestCase):
             self.assertIn(f"code: {code}", self.javascript)
 
     def test_switching_options_only_rebuilds_preview(self) -> None:
-        self.assertIn("cropEl.addEventListener('change', renderLoadedImage)", self.javascript)
+        self.assertIn("cropEl.addEventListener('change', () =>", self.javascript)
+        self.assertIn("viewOffsetX = 0", self.javascript)
         self.assertIn("enhanceEl.addEventListener('change', renderLoadedImage)", self.javascript)
         self.assertIn("ditherEl.addEventListener('change', renderLoadedImage)", self.javascript)
         self.assertEqual(self.javascript.count("fetch('/api/frame'"), 1)
         self.assertIn("sendEl.addEventListener('click'", self.javascript)
         self.assertIn("uploadPending", self.javascript)
         self.assertIn("generation !== imageGeneration", self.javascript)
+
+    def test_transform_controls_are_local_preview_operations(self) -> None:
+        self.assertIn("sourceCanvas.addEventListener('pointerdown'", self.javascript)
+        self.assertIn("sourceCanvas.addEventListener('pointermove'", self.javascript)
+        self.assertIn("sourceCanvas.addEventListener('pointerup'", self.javascript)
+        self.assertIn("sourceCanvas.addEventListener('wheel'", self.javascript)
+        self.assertIn("rotateLeftEl.addEventListener('click'", self.javascript)
+        self.assertIn("rotateRightEl.addEventListener('click'", self.javascript)
+        self.assertIn("resetViewEl.addEventListener('click'", self.javascript)
+        self.assertIn("sourceCtx.translate", self.javascript)
+        self.assertIn("sourceCtx.rotate", self.javascript)
+        self.assertIn("sourceCtx.scale", self.javascript)
+        self.assertIn("scheduleTransformPreview", self.javascript)
+        self.assertEqual(self.javascript.count("fetch('/api/frame'"), 1)
 
     def test_embedded_javascript_has_valid_syntax_when_node_is_available(self) -> None:
         node = shutil.which("node")
