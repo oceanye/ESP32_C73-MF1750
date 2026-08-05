@@ -20,6 +20,14 @@ import re
 import sys
 from typing import Any, Mapping, Optional, Sequence
 
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from tools.local_path_safety import (
+    LocalPathSafetyError,
+    require_local_regular_path_syntax,
+)
+
 
 KIND = "mf1750-extended-color-asset-manifest"
 SCHEMA_VERSION = 1
@@ -58,6 +66,13 @@ _SHA256_RE = re.compile(r"[0-9a-f]{64}")
 
 class ManifestError(ValueError):
     """Raised when a manifest plan or filesystem target violates the contract."""
+
+
+def _require_local_path(path: Path, label: str) -> None:
+    try:
+        require_local_regular_path_syntax(path, label=label)
+    except LocalPathSafetyError as error:
+        raise ManifestError(str(error)) from error
 
 
 def _require_mapping(value: object, label: str) -> Mapping[str, Any]:
@@ -111,7 +126,9 @@ def _resolve_asset(root: Path, relative_text: object, index: int) -> tuple[Path,
     relative = Path(_require_nonempty_string(relative_text, f"assets[{index}].path", maximum=4096))
     if relative.is_absolute() or relative.drive or ".." in relative.parts:
         raise ManifestError(f"assets[{index}].path must be a relative path without '..'")
+    _require_local_path(relative, f"assets[{index}].path")
     candidate = (root / relative).resolve(strict=True)
+    _require_local_path(candidate, f"resolved assets[{index}].path")
     try:
         normalized = candidate.relative_to(root).as_posix()
     except ValueError as error:
@@ -140,7 +157,9 @@ def build_manifest(
     if not isinstance(assets_value, list) or not assets_value:
         raise ManifestError("assets must be a non-empty JSON array")
 
+    _require_local_path(root, "asset root")
     resolved_root = root.resolve(strict=True)
+    _require_local_path(resolved_root, "resolved asset root")
     if not resolved_root.is_dir():
         raise ManifestError("root must be a directory")
 
@@ -258,7 +277,9 @@ def _is_within(candidate: Path, parent: Path) -> bool:
 def validate_output_path(output: Path) -> Path:
     """Resolve one output while permanently guarding repository-owned evidence paths."""
 
+    _require_local_path(output, "manifest output")
     lexical_output = Path(os.path.abspath(output))
+    _require_local_path(lexical_output, "absolute manifest output")
     protected = (
         REPO_ROOT / FROZEN_PRODUCTION_RELATIVE,
         REPO_ROOT / LOCAL_TEST_OUTPUT_RELATIVE,
@@ -268,7 +289,9 @@ def validate_output_path(output: Path) -> Path:
             raise ManifestError(f"output cannot be written inside protected {protected_root.name}")
 
     output_parent = output.parent.resolve(strict=True)
+    _require_local_path(output_parent, "resolved manifest output parent")
     resolved_output = output_parent / output.name
+    _require_local_path(resolved_output, "resolved manifest output")
     for protected_root in protected:
         if _is_within(resolved_output, protected_root.resolve(strict=False)):
             raise ManifestError(f"output cannot be written inside protected {protected_root.name}")
@@ -299,6 +322,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
 def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parse_args(argv)
     try:
+        _require_local_path(args.plan, "manifest plan")
         with args.plan.open("r", encoding="utf-8") as stream:
             plan = json.load(stream)
         report = build_manifest(plan, args.root)

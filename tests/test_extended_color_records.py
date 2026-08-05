@@ -37,6 +37,7 @@ class SchemaDocumentTests(unittest.TestCase):
 
     def test_all_record_schemas_are_strict_json_schema_documents(self) -> None:
         expected = {
+            "area_mix.schema.json",
             "asset_manifest.schema.json",
             "electrical.schema.json",
             "event_recovery.schema.json",
@@ -119,6 +120,21 @@ class SchemaDocumentTests(unittest.TestCase):
             {"peak_current_a", "mean_current_a", "rms_current_a", "energy_j", "droop_v"}
             <= required
         )
+
+    def test_area_mix_schema_freezes_offline_formal_six_color_contract(self) -> None:
+        schema = json.loads(
+            (SCHEMA_ROOT / "area_mix.schema.json").read_text(encoding="utf-8")
+        )
+        properties = schema["properties"]
+        self.assertEqual(properties["color_codes"]["const"], [0, 1, 2, 3, 5, 6])
+        self.assertFalse(properties["hardware_tested"]["const"])
+        self.assertTrue(properties["offline_only"]["const"])
+        self.assertFalse(properties["device_io_performed"]["const"])
+        self.assertFalse(properties["network_io_performed"]["const"])
+        self.assertFalse(properties["waveform_changed"]["const"])
+        self.assertFalse(properties["voltage_changed"]["const"])
+        self.assertTrue(properties["formal_api_compatible"]["const"])
+        self.assertFalse(properties["prediction_is_measurement"]["const"])
 
 
 class AssetManifestTests(unittest.TestCase):
@@ -225,6 +241,11 @@ class AssetManifestTests(unittest.TestCase):
             validate_output_path(REPO_ROOT / FROZEN_PRODUCTION_RELATIVE / "manifest.json")
         with self.assertRaisesRegex(ManifestError, "protected .test-output"):
             validate_output_path(REPO_ROOT / ".test-output" / "manifest.json")
+        unsafe = ["COM8", "COM8.json", "NUL.txt", r"\\server\share\manifest.json"]
+        for raw_path in unsafe:
+            with self.subTest(raw_path=raw_path):
+                with self.assertRaises(ManifestError):
+                    validate_output_path(Path(raw_path))
 
     def test_writer_rejects_schema_invalid_report(self) -> None:
         invalid = {

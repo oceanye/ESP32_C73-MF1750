@@ -21,7 +21,8 @@ Hardware tested: `NO`
 - 本机 `MF-17506-M009F-T` 是 7.50 英寸、1024×600、`3-bit E6` 的六状态有源矩阵电泳显示模组，参考设计使用两颗 SPD1657B，显示 IC 集成 SRAM、LUT、内部温度传感器和片上 OTP waveform。
 - E Ink 和 Solomon 的官方平台资料与正式论文共同表明，SPD1657 面向 Spectra 6；Spectra 6 使用红、黄、蓝、白四种粒子，在 Microcup 中形成白、黑、红、黄、蓝、绿六个主状态。因此，把本机识别为 Spectra 6 家族是高置信推论，但当前没有精确到该面板 film lot/墨水批次的 E Ink 证书。
 - 当前正常刷新路径与使用片上 OTP waveform 一致；但 OTP ID、版本、CRC、批次绑定、温区和读回方式均未知。
-- 0x4、0x7、0x8～0xF、LUT 主机接口、0x86 的完整定义、window/old-frame/partial、精确 Sparkle/Ripple 兼容性、内部温度读法、高压范围以及连续刷新/寿命限制都没有足够证据。
+- Spectra 6 官方论文和年报明确支持“六个设备色 + dithering/advanced color mixing”形成更多视觉颜色；论文展示驱动与粒子分层会改变混合光学输出，但不证明额外输出是稳定、可寻址、可保持的状态。
+- 0x4、0x7、0x8～0xF、LUT 主机接口、0x86 的完整定义、window/old-frame/partial、Sparkle、Ripple 转场及新混色波形架构的分别兼容性、内部温度读法、高压范围以及连续刷新/寿命限制都没有足够证据。
 
 所以 A 阶段对后续工作的裁决是：
 
@@ -80,12 +81,13 @@ Hardware tested: `NO`
 | P4 | P | [COMPUTEX 官方 SPD1657 产品页](https://www.computextaipei.com.tw/en/product/CBA4659B8C39B7F72BDDBEB61C4033B7A51D2AFD55BCA758/info.html) | SPD1657 为 800 source × 600 gate、面向 Spectra 6 | 不是 SPD1657B rev 0x04 datasheet |
 | P5 | P | [Solomon bistable 产品目录](https://www.solomon-systech.com/product-category/bistable-display) | 当前公开目录和 datasheet 申请渠道 | 目录未列出不能解释寄存器 |
 | P6 | P | [E Ink 7.3 英寸兄弟模组](https://shopkits.eink.com/en/product/detail/7.3%27%27Spectra6ePaperDisplay) | 兄弟模组片上 RAM、OTP waveform 和项目匹配 support files | 800×480 兄弟模组资料不可移植 |
-| P7 | P | [IDW 2023：Color Electrophoretic Displays](https://confit.atlas.jp/guide/event-img/idw2023/EP1-01/public/pdf_archive?type=in) | Spectra 6 四粒子物理和 W/K/R/Y/B/G 六状态 | 论文电压/时间不是本机参数 |
+| P7 | P | [IDW 2023：Color Electrophoretic Displays](https://confit.atlas.jp/guide/event-img/idw2023/EP1-01/public/pdf_archive?type=in) | Spectra 6 四粒子和量产六设备色；驱动/分层影响混合光学输出，商业系统选择六色并用 dithering | 不证明额外输出为稳定 palette state；不给编码、LUT 或可移植参数 |
 | P8 | P | [SID 2025：高分辨率 Spectra 6](https://sid.org/Portals/sid/Files/SID-Digest/docs/92-4.pdf) | Microcup 粒子极性和不同背板研究条件 | 不同背板的电压/频率不得移植 |
-| P9 | P | [SID 2025 Spectra 6 平台论文](https://sid.org/Portals/sid/Files/SID-Digest/docs/92-1.pdf) | 红/黄/蓝/白粒子形成六个主状态 | 不定义本机编码或命令 |
-| P10 | P | [E Ink Ripple 官方公告](https://www.eink.com/news/detail/E-Ink-Ripple-Second-Generation-Waveform-Architecture-E%20Ink-Spectra-Displays) | Ripple 是新 waveform architecture，依赖升级 compatible chipset，可把平台扩到八主色 | 未点名 SPD1657/B 或 MF-17506 |
+| P9 | P | [SID 2025：Color Electrophoretic Display for Outdoor Signage](https://sid.org/Portals/sid/Files/SID-Digest/docs/92-1.pdf) | 引言回顾 Spectra 6 六状态经 dithering 形成全彩图像 | 论文主体是另一平台；中间态机制不可移植，不定义本机命令 |
+| P10 | P | [E Ink 2025 官方公告](https://www.eink.com/news/detail/E-Ink-Ripple-Second-Generation-Waveform-Architecture-E%20Ink-Spectra-Displays) | 先述 Ripple 转场，再以“in addition”另述新混色波形架构；后者的不同配置分别声称八主色或增加 cyan/light green/orange | 两者关系未公开；未列兼容芯片型号，不能映射未知码 |
 | P11 | P | `参考资料/Solomon-SPD1656.pdf` | 相邻 640×480 3-bit 控制器概念 | 禁止移植所有命令和参数 |
 | P12 | P，原理限定 | [US20250239231A1](https://patents.google.com/patent/US20250239231A1/en) | old/new transition 和边界处理的一般原理 | 专利不得产生可执行参数 |
+| P13 | P | [E Ink 2024 Annual Report，PDF p.78](https://kr.eink.com/upload/2025_04_28/51_20250428155204i9ls2kL8C5.pdf) | 白/红/黄/蓝带电彩墨形成黑/白/红/黄/蓝/绿，并以高级混色算法呈现丰富颜色 | 企业平台说明，不证明本机 Ripple、新混色架构或额外单像素状态 |
 
 ## 5. A 阶段证据矩阵
 
@@ -170,11 +172,15 @@ window command、old-frame RAM/format、partial waveform、border rule 和 clean
 
 E Ink 官方 Spectra 6 页面公开 Sparkle partial-image flashing effect。没有证据证明 MF-17506、SPD1657B rev `0x04` 或当前 OTP 包支持它，也没有本机 command/support package。
 
-### 5.10 Ripple
+### 5.10 Ripple 与同公告的新混色波形架构
 
-等级：平台架构为 `P`；本机能力为 `U`。
+等级：公告文字为 `P`；二者关系与本机能力为 `U`。
 
-E Ink 2025 官方公告把 Ripple 描述为第二代 waveform architecture，并明确结合升级 compatible chipset system；公告没有点名 SPD1657/B 或 MF-17506。当前不得宣称或启用 Ripple。
+E Ink 2025 官方公告先把 Ripple 描述为波浪式图像转场效果，随后以“In addition to E Ink Ripple”另述结合升级 compatible chipset system 的新混色 waveform architecture。公开文字没有说明两者实现关系。本机不得宣称或启用任一能力。
+
+公告分别描述“升级 3-bit chipset system 扩至八主色”和“T2000 增加 cyan、light green、orange”两种配置。公开资料没有说明两者能否叠加，也没有把任何新颜色映射到 `0x4`、`0x7` 或 bit3；这些映射继续为 `null`。
+
+公告列出的兼容芯片供应商为 Fitipower、Solomon Systech、Himax、Novatek、IST、UltraChip；没有提供任何具体型号，因此不能把 Solomon 的入列解释成 SPD1657/B 兼容证明。
 
 ### 5.11 内部温度读取
 
@@ -214,10 +220,12 @@ read command、长度、raw format、摄氏度换算、校准、精度和 wavefo
 3. 精确 3-bit 全码表，包含 0x4、0x7 和 bit3/reserved-bit 规则。
 4. LUT upload/select/readback 能力声明；若支持，需格式、合法范围和 readback；若不支持，需明确否定声明。
 5. 0x86 的语义、区域编码、前置条件和安全限制。
-6. window、old-frame、partial、Sparkle、Ripple 的精确兼容矩阵和支持包。
-7. 内部温度读取命令、格式、换算、校准、精度和 waveform 温区映射。
-8. VCOM/VGH/VGL/VSH/VSL/VPH/VPC/PREVGL 的 nominal、tolerance、absolute limits 和测量条件。
-9. 厂商要求的 recovery/cleanup、cooling、maximum consecutive refresh、retention 和 rated-cycle 限制。
+6. window、old-frame、partial 的精确支持声明、命令、格式、边界与 cleanup 规则。
+7. Sparkle 与 Ripple 转场各自的精确兼容声明和支持包。
+8. 新混色 waveform architecture 对 MF-17506 + SPD1657B rev 0x04 + 当前 OTP 的精确兼容声明；仅在确认兼容后索取具体芯片型号、实际主色数量、完整码表、reserved/bit3 规则、支持包和回滚方式。
+9. 内部温度读取命令、格式、换算、校准、精度和 waveform 温区映射。
+10. VCOM/VGH/VGL/VSH/VSL/VPH/VPC/PREVGL 的 nominal、tolerance、absolute limits 和测量条件。
+11. 厂商要求的 recovery/cleanup、cooling、maximum consecutive refresh、retention 和 rated-cycle 限制。
 
 ## 7. 安全结论与 go/no-go
 

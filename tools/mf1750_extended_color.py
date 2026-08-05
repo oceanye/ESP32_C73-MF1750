@@ -19,6 +19,10 @@ from host.extended_color import (  # noqa: E402
     ExtendedColorContractError,
     build_artifact,
 )
+from tools.local_path_safety import (  # noqa: E402
+    LocalPathSafetyError,
+    require_local_regular_path_syntax,
+)
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -47,6 +51,10 @@ def validate_output_path(path: Path) -> Path:
 
     if not isinstance(path, Path):
         raise OutputSafetyError("output path must be a pathlib.Path")
+    try:
+        require_local_regular_path_syntax(path, label="output path")
+    except LocalPathSafetyError as error:
+        raise OutputSafetyError(str(error)) from error
     lexical = path.absolute()
     if _contains_forbidden_component(lexical):
         raise OutputSafetyError(f"output must not be inside {FORBIDDEN_LOCAL_DIRECTORY}/")
@@ -57,6 +65,10 @@ def validate_output_path(path: Path) -> Path:
         raise OutputSafetyError(f"could not resolve output safety boundary: {error}") from error
     if _contains_forbidden_component(resolved):
         raise OutputSafetyError(f"output must not resolve inside {FORBIDDEN_LOCAL_DIRECTORY}/")
+    try:
+        require_local_regular_path_syntax(resolved, label="resolved output path")
+    except LocalPathSafetyError as error:
+        raise OutputSafetyError(str(error)) from error
     if resolved == frozen or _is_relative_to(resolved, frozen):
         raise OutputSafetyError("output must not be inside the frozen production directory")
     if resolved.exists() or resolved.is_symlink():

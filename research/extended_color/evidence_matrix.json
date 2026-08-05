@@ -160,10 +160,11 @@
       "local_locator": null,
       "locators": [
         "Four-particle Spectra 6 architecture and six W/K/R/Y/B/G device colors",
+        "Section 2.3: advanced driving can attain more mixed colors, while the commercial system selects six device colors and manages the rest by dithering",
         "Research-level waveform examples and 0-50 C platform behavior"
       ],
       "exact_target": false,
-      "use_limit": "正式论文可解释物理和平台性能，但实验电压/时间不得作为 MF-17506/SPD1657B 可执行参数。"
+      "use_limit": "正式论文可解释物理和混合光学输出，但不证明额外输出是稳定、可寻址、可保持的 palette state；实验电压/时间不得作为本机参数。"
     },
     {
       "id": "S-P8",
@@ -184,28 +185,32 @@
       "level": "P",
       "authority": "E Ink authors, SID 2025",
       "source_type": "formal_paper",
-      "title": "Spectra 6 electrophoretic display platform paper",
+      "title": "Color Electrophoretic Display for Outdoor Signage",
       "url": "https://sid.org/Portals/sid/Files/SID-Digest/docs/92-1.pdf",
       "local_locator": null,
       "locators": [
-        "Red/yellow/blue/white particles in Microcup form six primary states"
+        "Red/yellow/blue/white particles in Microcup form six primary states",
+        "The six Spectra 6 states are dithered together for full-color images; intermediate-position mechanisms described for other platforms are distinct"
       ],
       "exact_target": false,
-      "use_limit": "平台论文，不定义本机编码或命令。"
+      "use_limit": "Spectra 6 内容仅为引言中的平台回顾，论文主体是另一平台；不定义本机编码、命令或可移植中间态。"
     },
     {
       "id": "S-P10",
       "level": "P",
       "authority": "E Ink",
       "source_type": "official_press_release",
-      "title": "E Ink Ripple second-generation waveform architecture",
+      "title": "E Ink Ripple and new color-mixing waveform architecture announcement",
       "url": "https://www.eink.com/news/detail/E-Ink-Ripple-Second-Generation-Waveform-Architecture-E%20Ink-Spectra-Displays",
       "local_locator": null,
       "locators": [
-        "2025 announcement: Ripple combines a new waveform architecture with upgraded compatible chipset systems and can expand Spectra 6 from six to eight primary colors"
+        "The announcement first describes Ripple as a wave-like image transition effect",
+        "In addition to Ripple, it separately announces a new color-mixing waveform architecture; an upgraded 3-bit chipset configuration is said to expand Spectra 6 from six to eight primary colors",
+        "A separate T2000 configuration is said to add cyan, light green and orange to the original six colors",
+        "Compatible chipset vendors listed are Fitipower, Solomon Systech, Himax, Novatek, IST and UltraChip; no chip model is named"
       ],
       "exact_target": false,
-      "use_limit": "未点名 SPD1657/B 或 MF-17506；不能推断当前 OTP 支持 Ripple。"
+      "use_limit": "Ripple 与新混色架构的实现关系未公开；未点名 SPD1657/B 或 MF-17506，不能推断当前 OTP 支持，也不能映射 0x4、0x7 或 bit3。"
     },
     {
       "id": "S-P11",
@@ -234,6 +239,20 @@
       ],
       "exact_target": false,
       "use_limit": "专利仅解释原理；不得导出命令、LUT、phase、电压、窗口格式或安全参数。"
+    },
+    {
+      "id": "S-P13",
+      "level": "P",
+      "authority": "E Ink Holdings Inc.",
+      "source_type": "official_annual_report",
+      "title": "E Ink 2024 Annual Report",
+      "url": "https://kr.eink.com/upload/2025_04_28/51_20250428155204i9ls2kL8C5.pdf",
+      "local_locator": null,
+      "locators": [
+        "PDF p.78: white, red, yellow and blue charged color inks form black, white, red, yellow, blue and green, followed by advanced color mixing algorithms"
+      ],
+      "exact_target": false,
+      "use_limit": "官方平台与产品路线证据；不证明 MF-17506 当前 OTP、SPD1657B rev 0x04 或未知码支持额外单像素状态。"
     }
   ],
   "matrix": [
@@ -551,27 +570,42 @@
     },
     {
       "id": "A-10",
-      "topic": "Ripple 支持",
+      "topic": "Ripple 转场与同公告新混色波形架构支持",
       "level": "P",
       "status": "PLATFORM_KNOWN_EXACT_TARGET_UNKNOWN",
       "value": {
-        "platform_architecture": "second-generation waveform architecture with upgraded compatible chipset systems",
-        "platform_claim": "can expand Spectra 6 from six to eight primary colors",
-        "mf17506_support": null,
-        "spd1657b_rev_0x04_support": null,
+        "ripple_transition_effect_claim": "wave-like image transitions",
+        "color_mixing_waveform_architecture_claim": "uses existing particles with upgraded compatible chipset systems",
+        "relationship_between_ripple_and_color_mixing_architecture": null,
+        "upgraded_3bit_configuration_claim": "can expand Spectra 6 from six to eight primary colors",
+        "t2000_configuration_claim": "adds cyan, light green and orange to the original six colors",
+        "relationship_between_eight_color_and_t2000_configurations": null,
+        "unknown_code_or_bit3_mapping": null,
+        "mf17506_ripple_support": null,
+        "mf17506_color_mixing_architecture_support": null,
+        "spd1657b_rev_0x04_ripple_support": null,
+        "spd1657b_rev_0x04_color_mixing_architecture_support": null,
         "current_otp_support": null,
-        "compatible_chipset_list": null
+        "announced_compatible_vendors": [
+          "Fitipower",
+          "Solomon Systech",
+          "Himax",
+          "Novatek",
+          "IST",
+          "UltraChip"
+        ],
+        "exact_compatible_chip_models": null
       },
       "evidence": [
         {
           "source_id": "S-P10",
           "level": "P",
           "locator": "official 2025 announcement",
-          "supports": "Ripple 的平台架构和升级 chipset 依赖"
+          "supports": "Ripple 转场、新混色架构及其升级 chipset 依赖分别出现在同一公告"
         }
       ],
-      "limitation": "公告没有点名当前控制器、面板或 OTP。",
-      "safety_effect": "当前平台不得宣称或启用 Ripple。"
+      "limitation": "公告未公开 Ripple 与新混色架构的实现关系，没有点名当前控制器、面板或 OTP，也没有把新颜色映射到 0x4、0x7 或 bit3。",
+      "safety_effect": "当前平台不得宣称或启用 Ripple 或新混色波形架构。"
     },
     {
       "id": "A-11",
@@ -702,6 +736,7 @@
     "window_old_frame_partial": "BLOCKED",
     "sparkle": "BLOCKED_ON_EXACT_COMPATIBILITY_PACKAGE",
     "ripple": "BLOCKED_ON_EXACT_COMPATIBILITY_PACKAGE",
+    "color_mixing_waveform_architecture": "BLOCKED_ON_EXACT_COMPATIBILITY_PACKAGE",
     "lut_upload_or_readback": "HARD_BLOCKED",
     "waveform_or_phase_modification": "HARD_BLOCKED",
     "voltage_modification": "HARD_BLOCKED",
@@ -714,7 +749,9 @@
     "Exact 3-bit code table including 0x4, 0x7 and reserved-bit/bit3 rules",
     "Documented LUT upload/select/readback statement and format, or an explicit statement that no host interface exists",
     "Documented command 0x86 semantics, area encoding, prerequisites and safety restrictions",
-    "Exact window, old-frame, partial, Sparkle and Ripple support/compatibility statement",
+    "Exact window, old-frame and partial support statement with commands, formats, boundaries and cleanup rules",
+    "Exact Sparkle and Ripple-transition compatibility statements and support packages",
+    "Exact new color-mixing waveform architecture compatibility statement for MF-17506-M009F-T with SPD1657B revision 0x04 and the current OTP; only if supported, the exact compatible chip model, actual primary-color count and code table, reserved/bit3 rules, support package and rollback procedure",
     "Internal temperature read command, format, conversion, calibration, accuracy and waveform-band mapping",
     "VCOM/VGH/VGL/VSH/VSL/VPH/VPC/PREVGL nominal, tolerance and absolute limits with measurement conditions",
     "Required recovery/cleanup, cooling, maximum consecutive refresh, retention and rated cycle limits"

@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from host.epd_frame import (
     FRAME_BYTES,
@@ -19,6 +20,7 @@ from host.epd_frame import (
     pixel_counts,
     validate_frame,
 )
+from tools.local_path_safety import require_local_regular_path_syntax
 from host.extended_color import (
     COLOR_ORDER,
     DEFAULT_CONTROLLER_MAPPINGS,
@@ -436,6 +438,28 @@ class OfflineCliTests(unittest.TestCase):
         protected = tool.FROZEN_PRODUCTION_DIR / "extended-color-test.bin"
         with self.assertRaisesRegex(tool.OutputSafetyError, "frozen production"):
             tool.validate_output_path(protected)
+
+    def test_output_safety_lexically_rejects_windows_devices_and_network_paths(self) -> None:
+        unsafe = [
+            "COM8",
+            "COM8.bin",
+            "COM8 .bin",
+            "NUL.txt",
+            "NUL .txt",
+            r"\\.\COM8",
+            r"\\?\C:\safe-looking\frame.bin",
+            r"\\server\share\frame.bin",
+            "frame.bin:stream",
+            "frame.bin.",
+        ]
+        for raw_path in unsafe:
+            with self.subTest(raw_path=raw_path):
+                with self.assertRaises(tool.OutputSafetyError):
+                    tool.validate_output_path(Path(raw_path))
+
+    def test_local_path_guard_accepts_posix_absolute_paths_in_posix_mode(self) -> None:
+        with patch("tools.local_path_safety.os.name", "posix"):
+            require_local_regular_path_syntax(Path("/tmp/report.json"), label="test")
 
 
 if __name__ == "__main__":
