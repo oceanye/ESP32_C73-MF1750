@@ -9,6 +9,7 @@ src/wifi_secrets.h
 compile_commands.json
 repo-contract-report.json
 host-test-report.json
+.test-output/
 .agents/
 **/__pycache__/
 *.py[cod]

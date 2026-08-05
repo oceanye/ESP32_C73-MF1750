@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/mf1750/extended-color/optical.schema.json",
+  "title": "MF-1750 extended-color optical measurements",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "run_id",
+    "hardware_tested",
+    "timepoint",
+    "timepoint_basis",
+    "geometry",
+    "illuminant",
+    "observer",
+    "aperture_mm",
+    "instrument_id",
+    "measurements"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "kind": {"const": "mf1750-extended-color-optical"},
+    "run_id": {"type": "string", "minLength": 1},
+    "hardware_tested": {"type": "boolean"},
+    "timepoint": {"enum": ["t0", "10min", "1h", "24h", "72h", "other"]},
+    "timepoint_basis": {"const": "POF BUSY_N low-to-high + 60 s for t0"},
+    "geometry": {"const": "45/0"},
+    "illuminant": {"enum": ["D50", "D65"]},
+    "observer": {"enum": ["2deg", "10deg"]},
+    "aperture_mm": {"type": ["number", "null"], "exclusiveMinimum": 0},
+    "instrument_id": {"type": ["string", "null"]},
+    "raw_capture_ref": {"type": ["string", "null"]},
+    "measurements": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/measurement"}
+    },
+    "notes": {"type": ["string", "null"]}
+  },
+  "$defs": {
+    "lab": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["l", "a", "b"],
+      "properties": {
+        "l": {"type": "number"},
+        "a": {"type": "number"},
+        "b": {"type": "number"}
+      }
+    },
+    "measurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "roi_id",
+        "controller",
+        "x0",
+        "y0",
+        "x1",
+        "y1",
+        "intended_initial_code",
+        "measured_initial_lab",
+        "target_code",
+        "measured_final_lab",
+        "delta_e00",
+        "uniformity_delta_e00",
+        "ghosting_metric"
+      ],
+      "properties": {
+        "roi_id": {"type": "string", "minLength": 1},
+        "controller": {"enum": ["CS1", "CS2"]},
+        "x0": {"type": "integer", "minimum": 0, "maximum": 1023},
+        "y0": {"type": "integer", "minimum": 0, "maximum": 599},
+        "x1": {"type": "integer", "minimum": 1, "maximum": 1024},
+        "y1": {"type": "integer", "minimum": 1, "maximum": 600},
+        "intended_initial_code": {"enum": [0, 1, 2, 3, 5, 6]},
+        "measured_initial_lab": {"$ref": "#/$defs/lab"},
+        "target_code": {"type": "integer", "minimum": 0, "maximum": 15},
+        "measured_final_lab": {"$ref": "#/$defs/lab"},
+        "delta_e00": {"type": ["number", "null"], "minimum": 0},
+        "uniformity_delta_e00": {"type": ["number", "null"], "minimum": 0},
+        "ghosting_metric": {"type": ["number", "null"], "minimum": 0}
+      }
+    }
+  }
+}

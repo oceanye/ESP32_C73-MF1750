@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/mf1750/extended-color/transition_profile.schema.json",
+  "title": "MF-1750 six-by-six transition profile for C3 optimization",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "panel_model",
+    "color_codes",
+    "hardware_tested",
+    "generated_at",
+    "cells"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "kind": {"const": "mf1750-six-by-six-transition-profile"},
+    "panel_model": {"const": "MF-17506-M009F-T"},
+    "color_codes": {"const": [0, 1, 2, 3, 5, 6]},
+    "hardware_tested": {"type": "boolean"},
+    "generated_at": {"type": ["string", "null"], "format": "date-time"},
+    "cells": {
+      "type": "array",
+      "minItems": 36,
+      "maxItems": 36,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "old_code",
+          "new_code",
+          "sample_count",
+          "initial_lab_mean",
+          "final_lab_mean",
+          "delta_e00_mean",
+          "delta_e00_sd",
+          "cs1_minus_cs2_delta_e00",
+          "position_effect_delta_e00",
+          "ghosting_metric_mean",
+          "busy_ms_mean",
+          "peak_current_a_mean",
+          "energy_j_mean",
+          "temperature_rise_c_mean",
+          "recovery_pass_rate"
+        ],
+        "properties": {
+          "old_code": {"enum": [0, 1, 2, 3, 5, 6]},
+          "new_code": {"enum": [0, 1, 2, 3, 5, 6]},
+          "sample_count": {"type": "integer", "minimum": 0},
+          "initial_lab_mean": {"$ref": "#/$defs/lab"},
+          "final_lab_mean": {"$ref": "#/$defs/lab"},
+          "delta_e00_mean": {"$ref": "#/$defs/nullable_nonnegative"},
+          "delta_e00_sd": {"$ref": "#/$defs/nullable_nonnegative"},
+          "cs1_minus_cs2_delta_e00": {"$ref": "#/$defs/nullable_number"},
+          "position_effect_delta_e00": {"$ref": "#/$defs/nullable_number"},
+          "ghosting_metric_mean": {"$ref": "#/$defs/nullable_nonnegative"},
+          "busy_ms_mean": {"$ref": "#/$defs/nullable_nonnegative"},
+          "peak_current_a_mean": {"$ref": "#/$defs/nullable_nonnegative"},
+          "energy_j_mean": {"$ref": "#/$defs/nullable_nonnegative"},
+          "temperature_rise_c_mean": {"$ref": "#/$defs/nullable_number"},
+          "recovery_pass_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "nullable_number": {"type": ["number", "null"]},
+    "nullable_nonnegative": {"type": ["number", "null"], "minimum": 0},
+    "lab": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["l", "a", "b"],
+      "properties": {
+        "l": {"type": "number"},
+        "a": {"type": "number"},
+        "b": {"type": "number"}
+      }
+    }
+  }
+}
