@@ -15,6 +15,16 @@
 上；ESP32 继续只负责经过验证的规范帧接收、job 执行和 diagnostic report。第一版
 不在 ESP32 固件中直接实现 HTTPS、云相册 SDK、JPEG/PNG 解码或定时器。
 
+Rev B-mini 已新增 microSD/TF 卡硬件需求。TF 首先作为设备端图片/规范帧缓存、
+离线播放队列和诊断记录存储，不自动把第一版网络下载与复杂图片解码迁入 ESP32。
+硬件边界见
+[`H1_REV_B_MINI_COMPONENT_ASSESSMENT_2026-08-05.md`](H1_REV_B_MINI_COMPONENT_ASSESSMENT_2026-08-05.md)。
+
+用户场景为低频刷新相框。当前算力结论是不升级 ESP32-P4：优先把现有
+`host.color_pipeline` 封装为可审计的量化服务 API，ESP32-S3 负责下载、
+验证、TF 缓存和刷新。本地量化只做离线后备，先在 S3 上基准测试；P4 仅在
+完全离线大图/视觉任务且 S3 有实测失败证据时重新评审。
+
 ```text
 HTTP(S) 图库 / NAS / 相册服务
               ↓
@@ -43,6 +53,8 @@ HTTP(S) 图库 / NAS / 相册服务
   provenance 的 calibrated palette。
 - ESP32 设备 API 当前没有认证、TLS、远端 cancel 或持久 job 历史。
 - `EPD_PIN_SWC=-1`，当前软件不能自动切换 J2-1 面板电源。
+- 当前 Rev A1/DevKit 台架没有 TF 卡；Rev B 只记录了独立 SPI 的推荐输入，
+  尚未冻结卡座、GPIO、文件系统或缓存协议。
 
 统一接口合同见 [`MF1750_DRIVER_API.md`](MF1750_DRIVER_API.md)。
 
@@ -59,6 +71,8 @@ HTTP(S) 图库 / NAS / 相册服务
 6. 面板供电方式：J2-1 长期供电、人工上电，或新增受控电源开关硬件。
 7. calibrated palette 的测量文件和正式授权人。
 8. 局域网安全要求：固定 DHCP、mDNS、设备 token、HTTPS reverse proxy、VLAN。
+9. TF 用途：仅缓存已处理帧，还是也保存原图；目标容量、文件系统、卡检测和
+   拔卡策略。
 
 ## 4. 工作包与顺序
 
@@ -71,6 +85,21 @@ HTTP(S) 图库 / NAS / 相册服务
 
 验收：schema 有严格类型/未知字段拒绝测试；示例配置不包含真实地址、token 或照片。
 
+### N0.5：量化服务 API 合同
+
+- 服务器可接收原图，或接收 allowlist 内的 source ID；不让 ESP32 把任意 URL
+  交给服务器，避免 SSRF。
+- 智能裁剪/主体识别可以使用 AI；最终六色 palette mapping、抖动和打包必须
+  使用版本化、确定性管线。
+- 结果绑定 source SHA256、frame SHA256、palette ID/hash、算法/参数版本、
+  `1024x600`、`307200` 字节和允许色码 `0/1/2/3/5/6`。
+- manifest 和 frame 使用签名/HMAC 或等效认证；ESP32 仍执行长度、色码和
+  hash 验证，验证后才原子写入 TF。
+- 网络失败时回退到 TF 中已验证缓存；不得盲目重发旧请求或刷新未验帧。
+
+验收：同输入/同版本输出确定；篡改帧、错 palette、错尺寸、非法色码、过期签名、
+重复 job 和服务超时全部 fail closed。
+
 ### N1：安全下载与缓存
 
 - 对远程来源使用 host allowlist；限制协议、端口、重定向、超时和最大响应体。
@@ -78,6 +107,8 @@ HTTP(S) 图库 / NAS / 相册服务
 - 每个原文件计算 SHA-256；缓存使用内容寻址，不以远端文件名直接拼接路径。
 - 对私有/本地地址访问做显式策略，避免配置或重定向形成 SSRF。
 - 下载失败只隔离该候选，不得触发旧帧重发或设备刷新。
+- 缓存后端先定义与介质无关的内容寻址接口；首版主机磁盘实现通过后，才增加
+  Rev B TF 后端，禁止两个后端产生不同的内容身份或重复选择语义。
 
 验收：正常、超时、截断、错误 MIME、重定向、重复内容和恶意路径均有测试。
 

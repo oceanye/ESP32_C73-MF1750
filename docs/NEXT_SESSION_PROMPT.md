@@ -6,6 +6,8 @@
 > 根目录 `README.md`、
 > `docs/STAGE1_REV_A1_HANDOFF_2026-07-13.md`、
 > `docs/STAGE2_ESP32_BATTERY_INTEGRATION_BRIEF.md`、
+> `docs/H1_REV_B_MINI_COMPONENT_ASSESSMENT_2026-08-05.md`、
+> `docs/REV_B_MINI_L1_L2_DOWNSIZING_ASSESSMENT_2026-08-05.md`、
 > `docs/TODO_MULTI_AI_HANDOFF_PLAN_2026-08-04.md`、
 > `docs/REV_A1_R16_CASCADE_FULLFRAME_TEST_2026-08-04.md`、
 > `docs/MF1750_DRIVER_API.md`、
@@ -53,8 +55,22 @@
 > `0x4/0x7`；`0x8..0xF` 只作为后置 bit3 alias 测试。正式 `/api/frame` 的六色
 > guard 不得放宽，LUT/内部 phase/高压仍受 SPD1657B/OTP 一手资料硬门禁。
 >
-> H0 完成后优先移交 C4 应用层；C2 真屏色彩和 R1 扫频可独立推进。再继续 Rev B：
-> 集成 ESP32-S3、USB-C 烧录/供电、单节锂电充电、
-> power-path 和 3.3 V buck-boost。Rev B 默认沿用已验证的双独立片选 GPIO 与
-> MF-1750 高压拓扑；任何 ECO 必须有首板实测依据。开始设计前先和我确认 ESP32
-> 模块/PSRAM、电池尺寸容量、USB-C 功能、天线和机械约束。
+> H0 完成后优先移交 C4 应用层；C2 真屏色彩和 R1 扫频可独立推进。Rev B-mini
+> H1 第一轮已经记录，但没有启动原理图/PCB：当前建议以
+> `ESP32-S3-WROOM-1-N8R8` 邮票孔射频模组作为首选架构候选，保留 8 MB Flash/
+> 8 MB OPI PSRAM；裸 SoC 不用于首版，XIAO ESP32-S3 Plus 只作为快速工程样
+> 对照。若 WROOM 仍不能满足机械尺寸，可评估约 7×7 mm 的
+> `ESP32-S3-PICO-1-N8R8` SiP，但必须接受 4 层、RF/天线和 EMC 验证。
+> 用户场景是低频刷新相框，当前不升级 ESP32-P4：浏览器/服务器 API 承担
+> 高质量确定性量化，S3 负责联网、TF 缓存、hash/签名/色码验证和刷新；
+> 本地基础量化仅作离线后备。P4 只有在完全离线大图/视觉任务且 S3 有实测
+> 不达标证据时才重开选型。
+> 增加板边 TF 卡槽，首版优先独立 SPI；EPD 3.3 V 经过软件可控 load
+> switch。产品电源采用一颗有足够瞬态能力的 3.3 V buck-boost 分支供 ESP32、
+> TF 和 EPD，而不是默认从开发板 3V3 引脚供驱动板。DevKit 3V3→J2-1 仅可在
+> 用户当次授权、断开外部 J2-1 电源并完成电流/跌落/温升监测后作诊断。
+> L1/L2 初评建议先验证 15 µH 高性能 5030，4040 仅作测流后的实验；不得在
+> 未测峰值/RMS和温升前冻结更小器件或修改 Rev A1。Rev B 继续集成 USB-C
+> 烧录/供电、单节锂电充电、power-path 和 3.3 V buck-boost，默认沿用已验证
+> 的双独立片选 GPIO 与 MF-1750 高压拓扑。H2 前还需用户确认模组/XIAO 分支、
+> TF 机械、电池尺寸容量、USB-C 功能、天线、目标板尺寸和是否允许 4 层。

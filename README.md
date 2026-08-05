@@ -4,6 +4,8 @@
 
 - 阶段一制造与固件交接：[`docs/STAGE1_REV_A1_HANDOFF_2026-07-13.md`](docs/STAGE1_REV_A1_HANDOFF_2026-07-13.md)
 - 阶段二 ESP32/电池整合设计输入：[`docs/STAGE2_ESP32_BATTERY_INTEGRATION_BRIEF.md`](docs/STAGE2_ESP32_BATTERY_INTEGRATION_BRIEF.md)
+- Rev B-mini ESP32/TF/电源与器件初评：[`docs/H1_REV_B_MINI_COMPONENT_ASSESSMENT_2026-08-05.md`](docs/H1_REV_B_MINI_COMPONENT_ASSESSMENT_2026-08-05.md)
+- Rev B-mini L1/L2 小型化详细评估：[`docs/REV_B_MINI_L1_L2_DOWNSIZING_ASSESSMENT_2026-08-05.md`](docs/REV_B_MINI_L1_L2_DOWNSIZING_ASSESSMENT_2026-08-05.md)
 - Rev A1 R16 级联整屏实测：[`docs/REV_A1_R16_CASCADE_FULLFRAME_TEST_2026-08-04.md`](docs/REV_A1_R16_CASCADE_FULLFRAME_TEST_2026-08-04.md)
 - 基础驱动与 API 参考：[`docs/MF1750_DRIVER_API.md`](docs/MF1750_DRIVER_API.md)
 - 网络照片与随机刷新 TODO：[`docs/TODO_NETWORK_RANDOM_PHOTO_PIPELINE.md`](docs/TODO_NETWORK_RANDOM_PHOTO_PIPELINE.md)
@@ -67,6 +69,25 @@
 
 完整证据、公式修订、测量门禁和第一轮十个问题见扩色可行性文档；可执行任务、
 依赖和停止条件见扩色测试 TODO。两份文档都不构成上电、COM8 刷写或刷新授权。
+
+## 2026-08-05 Rev B-mini 第一轮架构结论
+
+- H1 已记录 ESP32、TF、共用 3.3 V 与 L1/L2 小型化评估；原理图、PCB 和 BOM
+  尚未冻结，也没有修改 Rev A1。
+- 当前首选架构候选是 `ESP32-S3-WROOM-1-N8R8` 邮票孔射频模组，保留已验证
+  的 8 MB Flash/8 MB OPI PSRAM；裸 SoC 不用于首版，XIAO ESP32-S3 Plus
+  只作为快速工程样对照。若 WROOM 仍不能满足机械尺寸，再评估约 7×7 mm 的
+  `ESP32-S3-PICO-1-N8R8` SiP，但它需要自研 RF/天线和 EMC 验证。
+- 应用是低频刷新相框，当前不升级 ESP32-P4：高质量量化由现有浏览器或后续
+  服务器 API 执行，S3 负责联网、TF 缓存、严格帧校验和刷新；本地基础量化只
+  作为后备。P4 需额外网络协处理器，只有 S3 实测不达标才重开选型。
+- TF 首版优先独立 SPI；当前电子纸驱动的双向 GPIO11 和断电片选状态使共享
+  SPI 不是无条件接线替换。
+- 产品架构建议由一颗有足够瞬态能力的 3.3 V 主稳压器分支供 ESP32、TF 和
+  EPD，EPD 分支经过软件可控 load switch。当前 DevKit 3V3 → J2-1 只能另行
+  授权做诊断，不是量产电源结论。
+- L1/L2 第一轮以 15 µH 高性能 5030 为候选基线；4040 只作测流后的实验选项，
+  器件与布局均未冻结。
 
 ## 构建与仓库边界
 
