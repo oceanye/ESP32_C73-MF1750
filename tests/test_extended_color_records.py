@@ -110,6 +110,16 @@ class SchemaDocumentTests(unittest.TestCase):
             ],
         )
 
+    def test_electrical_schema_records_all_input_current_metrics(self) -> None:
+        schema = json.loads(
+            (SCHEMA_ROOT / "electrical.schema.json").read_text(encoding="utf-8")
+        )
+        required = set(schema["properties"]["input_power"]["required"])
+        self.assertTrue(
+            {"peak_current_a", "mean_current_a", "rms_current_a", "energy_j", "droop_v"}
+            <= required
+        )
+
 
 class AssetManifestTests(unittest.TestCase):
     def make_plan(self) -> dict[str, object]:

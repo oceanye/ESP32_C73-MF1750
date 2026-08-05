@@ -50,9 +50,10 @@
     "input_power": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["peak_current_a", "rms_current_a", "energy_j", "tp1_min_v", "droop_v", "supply_cc_or_trip"],
+      "required": ["peak_current_a", "mean_current_a", "rms_current_a", "energy_j", "tp1_min_v", "droop_v", "supply_cc_or_trip"],
       "properties": {
         "peak_current_a": {"$ref": "#/$defs/nullable_nonnegative"},
+        "mean_current_a": {"$ref": "#/$defs/nullable_nonnegative"},
         "rms_current_a": {"$ref": "#/$defs/nullable_nonnegative"},
         "energy_j": {"$ref": "#/$defs/nullable_nonnegative"},
         "tp1_min_v": {"type": ["number", "null"]},
