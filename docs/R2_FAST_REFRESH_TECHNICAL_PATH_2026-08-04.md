@@ -12,6 +12,10 @@
 
 阶段 1 没有修改 `src/`、没有访问硬件，也不宣称快速刷新已经实屏通过。
 
+扩展颜色与亮度研究沿用同一资料边界；当前结论和后续测试门禁见
+[`EPD_EXTENDED_COLOR_FEASIBILITY_2026-08-05.md`](EPD_EXTENDED_COLOR_FEASIBILITY_2026-08-05.md)
+及 [`TODO_EPD_EXTENDED_COLOR_TESTS_2026-08-05.md`](TODO_EPD_EXTENDED_COLOR_TESTS_2026-08-05.md)。
+
 ## 2. 已确认的直接证据
 
 ### 2.1 当前面板与接口

@@ -10,6 +10,8 @@
 > `docs/REV_A1_R16_CASCADE_FULLFRAME_TEST_2026-08-04.md`、
 > `docs/MF1750_DRIVER_API.md`、
 > `docs/TODO_NETWORK_RANDOM_PHOTO_PIPELINE.md`、
+> `docs/EPD_EXTENDED_COLOR_FEASIBILITY_2026-08-05.md`、
+> `docs/TODO_EPD_EXTENDED_COLOR_TESTS_2026-08-05.md`、
 > `docs/C1_HOST_FRAME_HANDOFF_2026-08-04.md`、
 > `docs/C5_HOST_CI_HANDOFF_2026-08-04.md`、
 > `docs/HOST_REFRESH_COLOR_INTEGRATION_2026-08-04.md`、
@@ -45,6 +47,11 @@
 > CI 通过均不等于真屏验收。主机色彩管线已经强制绑定
 > `0黑/1白/2黄/3红/5蓝/6绿` 并默认拒绝未校准整屏输出；仍须回填受控
 > D65/2deg 六色 Lab 色板，再比较真屏抖动效果。
+> 扩展颜色/亮度可行性与 TODO 已记录，状态为 `PENDING / NOT STARTED`；用户未
+> 明确排期前，不建立未知码实验固件、不刷 COM8、不调用刷新 API。若启动，先做
+> 资料和测量系统、六色基线、恢复 pilot 与 6×6 转换矩阵，再单独审批小面积
+> `0x4/0x7`；`0x8..0xF` 只作为后置 bit3 alias 测试。正式 `/api/frame` 的六色
+> guard 不得放宽，LUT/内部 phase/高压仍受 SPD1657B/OTP 一手资料硬门禁。
 >
 > H0 完成后优先移交 C4 应用层；C2 真屏色彩和 R1 扫频可独立推进。再继续 Rev B：
 > 集成 ESP32-S3、USB-C 烧录/供电、单节锂电充电、

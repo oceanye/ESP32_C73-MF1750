@@ -8,6 +8,7 @@
 | C1 主机帧核心 | 软件、fixtures、严格上传/结果核验和 D0 真屏物理映射完成 | `feature/host-frame-core` / `cb0a03f` + 本地加固 | 无 D0 剩余门禁 |
 | C2 六色量化与抖动 | 算法、schema v2、来源与整屏授权边界完成 | `feature/color-dither` / `7cc015e` + 本地加固 | 实测 D65/2deg 六色色板与真屏主观验收 |
 | C3 转移感知优化 | 保守区域/转移统计规划器完成；完整优化器未开始 | `research/fast-refresh` / `b03b7e1` | 可信旧帧状态和 6x6 实测转移矩阵 |
+| EC0-EC9 扩展颜色/亮度 | 可行性审查与分阶段 TODO 已冻结；硬件测试未开始 | `docs/EPD_EXTENDED_COLOR_FEASIBILITY_2026-08-05.md` + `docs/TODO_EPD_EXTENDED_COLOR_TESTS_2026-08-05.md` | 测色/电气仪器、恢复 pilot、隔离诊断入口、用户逐阶段授权；LUT/电压继续等待 SPD1657B/OTP 资料 |
 | C4 应用 API/Web UI | 应用 API/Web UI、HTTP adapter 与一次性硬件授权的软件合同完成 | 本地集成加固 | 设备端认证方案、普通图片端到端实刷 |
 | C5 CI 与回归门禁 | 203 项回归、合同、PlatformIO 与主线 CI run 30917129233 通过 | `feature/host-ci` / `c59a1f2` + 本地加固 | 后续变更继续逐提交运行；CI 不替代硬件结论 |
 | N0-N6 网络随机照片 | 待执行；已建立来源、下载、随机、量化、投递、调度与无人值守门禁 | `docs/TODO_NETWORK_RANDOM_PHOTO_PIPELINE.md` | 用户确认数据源、调度主机、周期、电源方式和 calibrated palette |
@@ -35,6 +36,8 @@ MF-1750 Rev A1 驱动层 D0 已完成验收。后续执行顺序为：
 3. 再移交应用团队；
 4. C2 色板、R1 扫频和 C4 应用验收分开执行，不能互相冒充通过；
 5. C3 等待实测转移矩阵，R2 等待厂商资料，H1/H2 等待用户输入。
+6. EC0-EC9 已登记但不自动执行、不抢占 H0；用户排期后从资料、测量系统、六色
+   基线和恢复 pilot 开始，不能直接跳到未知码、LUT 或高压实验。
 
 剩余 TODO 不得修改已冻结的 Rev A1 生产文件，也不得绕过硬件或厂商资料门禁。
 
@@ -331,6 +334,11 @@ SPI 加速只缩短 DTM 上传，不缩短固定 DRF 波形。当前 100 kHz 实
 
 未取得 MF-1750 厂商提供的 SPD1657B datasheet、专用 LUT、温度表和局刷流程
 前，禁止枚举 LUT、改变高压、缩短相位或移植 SPD1656 PartialRAM 命令。
+
+扩展颜色与亮度研究不放宽上述边界。其当前可行性、`3-bit E6` 与 4bpp 容器的
+区分、小面积编码探针和硬件联锁要求见
+[`EPD_EXTENDED_COLOR_FEASIBILITY_2026-08-05.md`](EPD_EXTENDED_COLOR_FEASIBILITY_2026-08-05.md)
+及 [`TODO_EPD_EXTENDED_COLOR_TESTS_2026-08-05.md`](TODO_EPD_EXTENDED_COLOR_TESTS_2026-08-05.md)。
 
 ## 13. H0/H1/H2：PCB 小型化 TODO
 

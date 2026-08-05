@@ -7,6 +7,8 @@
 - Rev A1 R16 级联整屏实测：[`docs/REV_A1_R16_CASCADE_FULLFRAME_TEST_2026-08-04.md`](docs/REV_A1_R16_CASCADE_FULLFRAME_TEST_2026-08-04.md)
 - 基础驱动与 API 参考：[`docs/MF1750_DRIVER_API.md`](docs/MF1750_DRIVER_API.md)
 - 网络照片与随机刷新 TODO：[`docs/TODO_NETWORK_RANDOM_PHOTO_PIPELINE.md`](docs/TODO_NETWORK_RANDOM_PHOTO_PIPELINE.md)
+- 扩展颜色/亮度技术可行性结论：[`docs/EPD_EXTENDED_COLOR_FEASIBILITY_2026-08-05.md`](docs/EPD_EXTENDED_COLOR_FEASIBILITY_2026-08-05.md)
+- 扩展颜色/亮度后续测试 TODO：[`docs/TODO_EPD_EXTENDED_COLOR_TESTS_2026-08-05.md`](docs/TODO_EPD_EXTENDED_COLOR_TESTS_2026-08-05.md)
 - 主机快速刷新、CI 与六色流水线总集成：[`docs/HOST_REFRESH_COLOR_INTEGRATION_2026-08-04.md`](docs/HOST_REFRESH_COLOR_INTEGRATION_2026-08-04.md)
 - 多 AI TODO 与 Git 集成计划：[`docs/TODO_MULTI_AI_HANDOFF_PLAN_2026-08-04.md`](docs/TODO_MULTI_AI_HANDOFF_PLAN_2026-08-04.md)
 - 新对话启动提示：[`docs/NEXT_SESSION_PROMPT.md`](docs/NEXT_SESSION_PROMPT.md)
@@ -47,6 +49,23 @@
 - 基础驱动 D0 已定版；普通图片与 Web UI 的软件合同已合入，但 calibrated palette
   真屏色彩、设备端认证、更高 SPI 扫频、快速波形和局刷仍是独立后续工作，不能
   由本次硬件通过自动提升状态。
+
+## 2026-08-05 扩展颜色与亮度可行性结论
+
+- 面板规格写明 `3-bit E6`，当前应用帧则是 4bpp packed 容器；4bpp 不代表存在
+  16 个独立颜色。正式有效码仍只有 `0/1/2/3/5/6`。
+- 第一轮只允许原厂初始化和片上 OTP waveform 不变的六色基线、恢复流程、
+  `6×6` 转换矩阵，以及受控的小面积 `0x4/0x7` 数字编码探针。
+- 正式 `/api/frame` 继续拒绝 `0x4/0x7..0xF`。未来未知码只能通过默认关闭、
+  固定图案、哈希锁定、一次性授权的隔离实验入口执行，不能放宽生产颜色校验。
+- 当前 Rev A1 不是可编程 TCON：没有已知 LUT upload、内部 phase、局刷窗口、
+  温度读取或独立高压控制接口。取得 SPD1657B rev `0x04`、当前 OTP 和厂商安全
+  资料前，禁止猜寄存器、改 LUT/相位/高压或移植 SPD1656 命令。
+- 当前没有软件可控 J2-1、PGOOD、板载电流/温度/高压联锁，因此未知码、耐久和
+  waveform 实验均处于 `PENDING/BLOCKED`，等待用户逐阶段安排和授权。
+
+完整证据、公式修订、测量门禁和第一轮十个问题见扩色可行性文档；可执行任务、
+依赖和停止条件见扩色测试 TODO。两份文档都不构成上电、COM8 刷写或刷新授权。
 
 ## 构建与仓库边界
 

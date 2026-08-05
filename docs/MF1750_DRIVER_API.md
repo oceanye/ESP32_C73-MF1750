@@ -49,6 +49,11 @@
 | `0x5` | 蓝 |
 | `0x6` | 绿 |
 
+这里的 4bpp 是应用帧和 SPI DTM 的 packed 容器，不代表面板存在 16 个独立颜色。
+MF-1750 规格标称 `3-bit E6 full display capabilities`；当前生产合同仍只接受上述
+六个经过实屏验证的物理码。`0x4/0x7` 的潜在 3-bit 状态和 `0x8..0xF` 的 bit3
+alias/保留行为都尚未通过受控硬件实验。
+
 `0x4` 和 `0x7..0xF` 非法。HTTP raw handler 会在复制完整帧和排队前逐 nibble
 拒绝非法码；公开 C++ 显示入口还会在初始化、DTM、PON 之前再次完整验证。
 
@@ -477,4 +482,9 @@ false，最终物理验收必须在应用报告之外人工记录。
 - 网络照片源、随机选择与定时刷新按
   [`TODO_NETWORK_RANDOM_PHOTO_PIPELINE.md`](TODO_NETWORK_RANDOM_PHOTO_PIPELINE.md)
   分阶段执行；当前尚未实现，也不得直接在 ESP32 上猜测式扩展。
+- 当前没有公开或 legacy 未知颜色码测试 API。未来实验不能通过放宽 `/api/frame`
+  或公共 C++ 颜色校验实现；只能使用默认关闭、固定图案、哈希锁定、一次性 arm
+  的隔离诊断 build/action，并提升版本、重新完成安全和实机验收。完整边界见
+  [`EPD_EXTENDED_COLOR_FEASIBILITY_2026-08-05.md`](EPD_EXTENDED_COLOR_FEASIBILITY_2026-08-05.md)
+  与 [`TODO_EPD_EXTENDED_COLOR_TESTS_2026-08-05.md`](TODO_EPD_EXTENDED_COLOR_TESTS_2026-08-05.md)。
 - 完整实测数据见 `docs/REV_A1_R16_CASCADE_FULLFRAME_TEST_2026-08-04.md`。
