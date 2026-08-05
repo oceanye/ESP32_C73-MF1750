@@ -8,6 +8,7 @@
 - Rev B-mini L1/L2 小型化详细评估：[`docs/REV_B_MINI_L1_L2_DOWNSIZING_ASSESSMENT_2026-08-05.md`](docs/REV_B_MINI_L1_L2_DOWNSIZING_ASSESSMENT_2026-08-05.md)
 - Rev A1 R16 级联整屏实测：[`docs/REV_A1_R16_CASCADE_FULLFRAME_TEST_2026-08-04.md`](docs/REV_A1_R16_CASCADE_FULLFRAME_TEST_2026-08-04.md)
 - 基础驱动与 API 参考：[`docs/MF1750_DRIVER_API.md`](docs/MF1750_DRIVER_API.md)
+- Spectra 6 色域映射高级 AI Handoff：[`docs/G1_SPECTRA6_GAMUT_MAPPING_HANDOFF_2026-08-05.md`](docs/G1_SPECTRA6_GAMUT_MAPPING_HANDOFF_2026-08-05.md)
 - 网络照片与随机刷新 TODO：[`docs/TODO_NETWORK_RANDOM_PHOTO_PIPELINE.md`](docs/TODO_NETWORK_RANDOM_PHOTO_PIPELINE.md)
 - 扩展颜色/亮度技术可行性结论：[`docs/EPD_EXTENDED_COLOR_FEASIBILITY_2026-08-05.md`](docs/EPD_EXTENDED_COLOR_FEASIBILITY_2026-08-05.md)
 - 扩展颜色/亮度后续测试 TODO：[`docs/TODO_EPD_EXTENDED_COLOR_TESTS_2026-08-05.md`](docs/TODO_EPD_EXTENDED_COLOR_TESTS_2026-08-05.md)
@@ -51,6 +52,10 @@
 - 基础驱动 D0 已定版；普通图片与 Web UI 的软件合同已合入，但 calibrated palette
   真屏色彩、设备端认证、更高 SPI 扫频、快速波形和局刷仍是独立后续工作，不能
   由本次硬件通过自动提升状态。
+- G1 已建立可交给高级 AI 的 host/server 色域映射工作包：先完成 profile、
+  抖动前 tone/gamut mapping、三种 rendering intent、单一 canonical UI、消融测试
+  和离线标定图；没有 D65/2° 六色及混色色块实测 artifact 时只允许
+  synthetic/offline preview，不得解锁正式上传或声称真屏改善。
 
 ## 2026-08-05 扩展颜色与亮度可行性结论
 

@@ -87,6 +87,11 @@ HTTP(S) 图库 / NAS / 相册服务
 
 ### N0.5：量化服务 API 合同
 
+抖动前色域映射、gamut profile、rendering intent、mapped-raster identity、
+canonical Web 预览和软件/硬件门禁统一服从
+[`G1_SPECTRA6_GAMUT_MAPPING_HANDOFF_2026-08-05.md`](G1_SPECTRA6_GAMUT_MAPPING_HANDOFF_2026-08-05.md)。
+N0.5 不得在网络服务内另写一套 palette、tone map 或抖动算法。
+
 - 服务器可接收原图，或接收 allowlist 内的 source ID；不让 ESP32 把任意 URL
   交给服务器，避免 SSRF。
 - 智能裁剪/主体识别可以使用 AI；最终六色 palette mapping、抖动和打包必须
@@ -128,7 +133,11 @@ HTTP(S) 图库 / NAS / 相册服务
 - 解码后统一为 straight-alpha RGBA，透明像素在线性光空间合成到白底。
 - 支持 contain/cover/stretch，输出精确 1024x600、307200 字节和合法六色码。
 - 保存原图 SHA、规范 RGBA SHA、帧 SHA/FNV、palette provenance、选项和预览 PNG。
+- 若启用 G1，另保存 gamut profile/algorithm/intent/hash、mapped-raster hash、
+  out-of-gamut 与 tone/chroma 压缩统计；相同合同必须产生逐字节相同的帧。
 - 未校准 palette 只能生成 offline preview，不能获得 formal upload authorization。
+- 未校准或仅六点近似的 gamut profile 同样只能生成 offline preview，不能通过
+  网络流水线获得正式上传授权。
 
 验收：确定性输出、非法图片拒绝、报告身份绑定、预览与帧一致性测试全部通过。
 

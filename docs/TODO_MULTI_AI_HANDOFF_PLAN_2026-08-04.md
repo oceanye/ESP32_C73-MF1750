@@ -7,6 +7,7 @@
 | D0 驱动定版 | RC2C/V3 的 100 kHz 协议复验与正式 1 MHz MAP 真屏均通过 | 本地集成加固+真屏证据 | 已关闭；更高频率不属于 D0 |
 | C1 主机帧核心 | 软件、fixtures、严格上传/结果核验和 D0 真屏物理映射完成 | `feature/host-frame-core` / `cb0a03f` + 本地加固 | 无 D0 剩余门禁 |
 | C2 六色量化与抖动 | 算法、schema v2、来源与整屏授权边界完成 | `feature/color-dither` / `7cc015e` + 本地加固 | 实测 D65/2deg 六色色板与真屏主观验收 |
+| G1 抖动前色域映射 | 高级 AI 软件工作包与复制提示词已建立；实现未开始 | `docs/G1_SPECTRA6_GAMUT_MAPPING_HANDOFF_2026-08-05.md` | calibrated 六色及混色 profile、软件实现、真屏 A/B |
 | C3 转移感知优化 | 保守区域/转移统计规划器完成；完整优化器未开始 | `research/fast-refresh` / `b03b7e1` | 可信旧帧状态和 6x6 实测转移矩阵 |
 | EC0-EC9 扩展颜色/亮度 | 可行性审查与分阶段 TODO 已冻结；硬件测试未开始 | `docs/EPD_EXTENDED_COLOR_FEASIBILITY_2026-08-05.md` + `docs/TODO_EPD_EXTENDED_COLOR_TESTS_2026-08-05.md` | 测色/电气仪器、恢复 pilot、隔离诊断入口、用户逐阶段授权；LUT/电压继续等待 SPD1657B/OTP 资料 |
 | C4 应用 API/Web UI | 应用 API/Web UI、HTTP adapter 与一次性硬件授权的软件合同完成 | 本地集成加固 | 设备端认证方案、普通图片端到端实刷 |
@@ -36,9 +37,11 @@ MF-1750 Rev A1 驱动层 D0 已完成验收。后续执行顺序为：
 2. 固化 H0 驱动快照与 hash；硬件验收标签仍需用户明确授权；
 3. 再移交应用团队；
 4. C2 色板、R1 扫频和 C4 应用验收分开执行，不能互相冒充通过；
-5. C3 等待实测转移矩阵，R2 等待厂商资料；H1 已有第一轮结论但仍等待测量，
+5. G1 可先由无硬件高级 AI 完成 profile/schema、通用 mapper、API/UI、消融测试和
+   离线标定图；在六色及混色色块实测返回前只能是 synthetic/offline preview；
+6. C3 等待实测转移矩阵，R2 等待厂商资料；H1 已有第一轮结论但仍等待测量，
    H2 等待 H0/H1 门禁和用户输入。
-6. EC0-EC9 已登记但不自动执行、不抢占 H0；用户排期后从资料、测量系统、六色
+7. EC0-EC9 已登记但不自动执行、不抢占 H0；用户排期后从资料、测量系统、六色
    基线和恢复 pilot 开始，不能直接跳到未知码、LUT 或高压实验。
 
 剩余 TODO 不得修改已冻结的 Rev A1 生产文件，也不得绕过硬件或厂商资料门禁。
@@ -118,6 +121,7 @@ SPD1656 猜测 SPD1657B 的高压/LUT/局刷寄存器。
 ```text
 feature/host-frame-core
 feature/color-dither
+feature/spectra6-gamut-mapping
 feature/transition-aware-optimizer
 feature/application-api-ui
 feature/host-ci
@@ -132,6 +136,7 @@ analysis/revb-mini
 | D0 | 驱动 v1.0 定版 | 否，只读复审可委托 | 当前任务 | PSRAM 日志、MAP_ORIENT_V1、1 MHz 规范帧 |
 | C1 | 主机帧格式核心与 fixtures | 是 | D0 API/格式冻结 | 无 |
 | C2 | 六色量化与空间抖动 | 是 | C1 | 实屏颜色主观验收 |
+| G1 | 抖动前色域映射与照片优化 | 是，除真屏标定 | C2/C4 | 六色及混色测量、真屏 A/B |
 | C3 | 转移感知抖动优化器 | 是，先做参数化代码 | C1/C2 | 6x6 实测矩阵 |
 | C4 | 应用 API/Web UI | 是 | D0/C1 | 一次普通图片端到端刷新 |
 | C5 | CI、静态检查和回归测试 | 是 | D0/C1 | 无 |

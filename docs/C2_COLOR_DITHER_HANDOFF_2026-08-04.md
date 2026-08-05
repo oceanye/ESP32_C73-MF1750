@@ -86,6 +86,15 @@ Suggested merge order: D0 baseline -> C1 -> C5 -> C2
 `git diff --check` 均通过。该计数是本轮共享工作树快照，最终集成仍应以提交后
 CI 为准；`Hardware tested` 仍为 `NO`。
 
+## 后续 G1 工作包
+
+C2 已解决确定性六色选择与空间抖动，但没有独立的抖动前 tone/gamut mapping。
+后续由高级 AI 执行的 profile、rendering intent、亮度/色度压缩、混色色卡、
+消融测试和 canonical Web 集成见
+[`G1_SPECTRA6_GAMUT_MAPPING_HANDOFF_2026-08-05.md`](G1_SPECTRA6_GAMUT_MAPPING_HANDOFF_2026-08-05.md)。
+G1 不改变 C2 的物理色码、packing 或 calibrated palette 门禁；没有真实测量时只能
+生成明确标记的实验预览。
+
 ## Palette safety boundary
 
 `host/color_pipeline/palettes/reference_srgb_v1.json` contains mathematical
