@@ -5,12 +5,16 @@
 状态：`PLANNED / NOT STARTED`
 
 硬件授权：无；等待用户逐阶段安排
+
+技术审查源码基线：`867efdd`
+
+Hardware tested in this review: `NO`
 完整可行性结论：`docs/EPD_EXTENDED_COLOR_FEASIBILITY_2026-08-05.md`
 
 ## 1. 范围和执行原则
 
-第一轮只允许在厂家初始化、OTP waveform、CCSET、PON/DRF/POF/PSR 和高压参数
-完全不变的条件下执行：
+若用户后续逐阶段明确授权，第一轮最大范围仅限于在厂家初始化、OTP waveform、
+CCSET、PON/DRF/POF/PSR 和高压参数完全不变的条件下执行：
 
 ```text
 资料和测量系统冻结
@@ -24,7 +28,8 @@
 ```
 
 `0x8～0xF` 只作为后续 bit3 alias/协议鲁棒性子阶段，不能预先作为八个新颜色。
-LUT、内部 phase、partial/window 和电压实验不属于本 TODO 的已批准执行范围。
+LUT、内部 phase、partial/window 和电压实验不属于本 TODO 的可安排范围，继续保持
+硬阻断。
 
 每个硬件步骤都必须满足：
 
