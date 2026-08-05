@@ -12,6 +12,7 @@
 - 网络照片与随机刷新 TODO：[`docs/TODO_NETWORK_RANDOM_PHOTO_PIPELINE.md`](docs/TODO_NETWORK_RANDOM_PHOTO_PIPELINE.md)
 - 扩展颜色/亮度技术可行性结论：[`docs/EPD_EXTENDED_COLOR_FEASIBILITY_2026-08-05.md`](docs/EPD_EXTENDED_COLOR_FEASIBILITY_2026-08-05.md)
 - 扩展颜色/亮度后续测试 TODO：[`docs/TODO_EPD_EXTENDED_COLOR_TESTS_2026-08-05.md`](docs/TODO_EPD_EXTENDED_COLOR_TESTS_2026-08-05.md)
+- 扩展颜色远端成果集成审查：[`docs/EXTENDED_COLOR_INTEGRATION_REVIEW_2026-08-05.md`](docs/EXTENDED_COLOR_INTEGRATION_REVIEW_2026-08-05.md)
 - 主机快速刷新、CI 与六色流水线总集成：[`docs/HOST_REFRESH_COLOR_INTEGRATION_2026-08-04.md`](docs/HOST_REFRESH_COLOR_INTEGRATION_2026-08-04.md)
 - 多 AI TODO 与 Git 集成计划：[`docs/TODO_MULTI_AI_HANDOFF_PLAN_2026-08-04.md`](docs/TODO_MULTI_AI_HANDOFF_PLAN_2026-08-04.md)
 - 新对话启动提示：[`docs/NEXT_SESSION_PROMPT.md`](docs/NEXT_SESSION_PROMPT.md)
@@ -71,6 +72,10 @@
   资料前，禁止猜寄存器、改 LUT/相位/高压或移植 SPD1656 命令。
 - 当前没有软件可控 J2-1、PGOOD、板载电流/温度/高压联锁，因此未知码、耐久和
   waveform 实验均处于 `PENDING/BLOCKED`，等待用户逐阶段安排和授权。
+- 远端 `research/extended-color-20260805` 的官方证据矩阵、测量记录合同、固定
+  `0x4/0x7` 离线图、6×6 transition scaffold 和六码面积混色模拟已经完成本地集成
+  审查；这些工具不含设备 I/O，仍固定为 `Hardware tested: NO`。合并不代表未知码、
+  新颜色、恢复流程或真实混色色域已经通过实屏验证。
 
 完整证据、公式修订、测量门禁和第一轮十个问题见扩色可行性文档；可执行任务、
 依赖和停止条件见扩色测试 TODO。两份文档都不构成上电、COM8 刷写或刷新授权。

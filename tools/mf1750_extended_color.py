@@ -125,6 +125,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             + "\n"
         ).encode("utf-8")
 
+        if args.output is not None and args.report_output is None:
+            raise OutputSafetyError(
+                "--output requires --report-output so every frame has an auditable sidecar"
+            )
         frame_path = validate_output_path(args.output) if args.output is not None else None
         report_path = (
             validate_output_path(args.report_output)
@@ -134,12 +138,14 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         if frame_path is not None and report_path is not None and frame_path == report_path:
             raise OutputSafetyError("frame and report outputs must be different files")
 
-        # Both destinations are checked before either is opened.  Exclusive
-        # creation provides the final race-safe no-overwrite gate.
-        if frame_path is not None:
-            _write_new(frame_path, artifact.frame)
+        # Both destinations are checked before either is opened.  Persist the
+        # identity and safety sidecar first so a later frame-write failure can
+        # never leave an unlabelled frame artifact behind.  Exclusive creation
+        # provides the final race-safe no-overwrite gate for each destination.
         if report_path is not None:
             _write_new(report_path, rendered)
+        if frame_path is not None:
+            _write_new(frame_path, artifact.frame)
     except (ExtendedColorContractError, OutputSafetyError) as error:
         print(f"ERROR: {error}", file=sys.stderr)
         return 2

@@ -393,14 +393,64 @@ class OfflineCliTests(unittest.TestCase):
             self.assertEqual(json.loads(stdout.getvalue()), report)
 
             original_frame = frame_path.read_bytes()
+            second_report = root / "second.json"
             stderr = io.StringIO()
             with contextlib.redirect_stderr(stderr):
                 status = tool.main(
-                    ["--pattern", "solid-black", "--output", str(frame_path)]
+                    [
+                        "--pattern",
+                        "solid-black",
+                        "--output",
+                        str(frame_path),
+                        "--report-output",
+                        str(second_report),
+                    ]
                 )
             self.assertEqual(status, 2)
             self.assertIn("overwrite is not supported", stderr.getvalue())
             self.assertEqual(frame_path.read_bytes(), original_frame)
+            self.assertFalse(second_report.exists())
+
+    def test_cli_requires_persistent_sidecar_for_every_frame_output(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            for pattern in ("solid-white", "unknown-0x4"):
+                with self.subTest(pattern=pattern):
+                    frame_path = root / f"{pattern}.frame"
+                    stderr = io.StringIO()
+                    with contextlib.redirect_stderr(stderr):
+                        status = tool.main(
+                            ["--pattern", pattern, "--output", str(frame_path)]
+                        )
+                    self.assertEqual(status, 2)
+                    self.assertIn("requires --report-output", stderr.getvalue())
+                    self.assertFalse(frame_path.exists())
+
+    def test_cli_persists_sidecar_before_frame(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            frame_path = root / "unknown.frame"
+            report_path = root / "unknown.json"
+            writes: list[Path] = []
+
+            def record_write(path: Path, content: bytes) -> None:
+                self.assertTrue(content)
+                writes.append(path)
+
+            with patch.object(tool, "_write_new", side_effect=record_write):
+                with contextlib.redirect_stdout(io.StringIO()):
+                    status = tool.main(
+                        [
+                            "--pattern",
+                            "unknown-0x4",
+                            "--output",
+                            str(frame_path),
+                            "--report-output",
+                            str(report_path),
+                        ]
+                    )
+            self.assertEqual(status, 0)
+            self.assertEqual(writes, [report_path.resolve(), frame_path.resolve()])
 
     def test_cli_has_no_network_or_arbitrary_unknown_code_option(self) -> None:
         for forbidden in ("--url", "--refresh", "--unknown-code"):
@@ -458,8 +508,9 @@ class OfflineCliTests(unittest.TestCase):
                     tool.validate_output_path(Path(raw_path))
 
     def test_local_path_guard_accepts_posix_absolute_paths_in_posix_mode(self) -> None:
+        posix_style_path = Path("/tmp/report.json")
         with patch("tools.local_path_safety.os.name", "posix"):
-            require_local_regular_path_syntax(Path("/tmp/report.json"), label="test")
+            require_local_regular_path_syntax(posix_style_path, label="test")
 
 
 if __name__ == "__main__":

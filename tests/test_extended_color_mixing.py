@@ -76,7 +76,15 @@ class AreaMixModelTests(unittest.TestCase):
         self.assertFalse(report["device_io_performed"])
         self.assertFalse(report["network_io_performed"])
         self.assertFalse(report["waveform_changed"])
-        self.assertTrue(report["formal_api_compatible"])
+        self.assertTrue(report["frame_contract_compatible"])
+        self.assertIn("does not imply", report["frame_contract_compatibility_scope"])
+        self.assertFalse(report["hardware_formal_qualified"])
+        self.assertFalse(report["hardware_qualification"]["qualified"])
+        self.assertEqual(
+            report["hardware_qualification"]["reason_code"],
+            "palette-v2-insufficient-hardware-binding",
+        )
+        self.assertIsNone(report["hardware_qualification"]["binding_profile"])
         self.assertEqual(report["model"]["model_version"], "xyz-area-v1")
         for field in (
             "measured_lab",
@@ -88,6 +96,40 @@ class AreaMixModelTests(unittest.TestCase):
             "ghosting_metric",
         ):
             self.assertIsNone(report["candidates"][0][field])
+
+    def test_calibrated_palette_v2_remains_unqualified_for_hardware_use(self) -> None:
+        analysis = analyze_area_mixes(
+            calibrated_palette(),
+            srgb8_to_lab((20, 170, 180)),
+            tile_side=2,
+            limit=1,
+            target_input_space="sRGB8",
+            target_input_values=(20, 170, 180),
+        )
+        report = analysis.report(rendered_candidate_rank=1)
+
+        self.assertFalse(report["model"]["uncalibrated_simulation"])
+        self.assertTrue(report["frame_contract_compatible"])
+        self.assertFalse(report["hardware_formal_qualified"])
+        qualification = report["hardware_qualification"]
+        self.assertFalse(qualification["qualified"])
+        self.assertIsNone(qualification["binding_profile"])
+        self.assertEqual(
+            qualification["required_bindings"],
+            [
+                "panel_model",
+                "panel_id_or_serial",
+                "panel_batch",
+                "palette_canonical_sha256",
+                "firmware_commit",
+                "waveform_identity",
+                "temperature_c",
+                "relative_humidity_percent",
+                "measurement_geometry",
+                "backing",
+                "raw_measurement_artifact_sha256",
+            ],
+        )
 
     def test_pure_primary_target_has_exact_zero_distance_recipe(self) -> None:
         palette = calibrated_palette()
@@ -103,7 +145,7 @@ class AreaMixModelTests(unittest.TestCase):
         self.assertEqual(counts[0], WIDTH * HEIGHT)
         self.assertEqual(sum(counts), WIDTH * HEIGHT)
 
-    def test_four_by_four_search_is_complete_deterministic_and_formal(self) -> None:
+    def test_four_by_four_search_is_complete_deterministic_and_legal(self) -> None:
         palette = calibrated_palette()
         target = srgb8_to_lab((35, 180, 190))
         first = analyze_area_mixes(palette, target, tile_side=4, limit=5)
@@ -189,8 +231,15 @@ class AreaMixModelTests(unittest.TestCase):
             / "area_mix.schema.json"
         )
         schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        self.assertEqual(report["schema_version"], 2)
+        self.assertEqual(schema["properties"]["schema_version"]["const"], 2)
+        self.assertNotIn("formal_api_compatible", report)
+        self.assertTrue(schema["properties"]["formal_api_compatible"]["deprecated"])
+        self.assertEqual(schema["not"], {"required": ["formal_api_compatible"]})
         self.assertEqual(set(report), set(schema["required"]))
-        self.assertEqual(set(report), set(schema["properties"]))
+        self.assertEqual(
+            set(schema["properties"]), set(report) | {"formal_api_compatible"}
+        )
         candidate_schema = schema["$defs"]["candidate"]
         self.assertEqual(set(report["candidates"][0]), set(candidate_schema["required"]))
         self.assertEqual(set(report["candidates"][0]), set(candidate_schema["properties"]))
@@ -249,6 +298,22 @@ class AreaMixModelTests(unittest.TestCase):
         bad_selection["artifact_selection"]["frame_output_requested"] = True
         with self.assertRaisesRegex(AreaMixError, "artifact_selection"):
             validate_area_mix_report(bad_selection)
+
+        spoofed_qualification = json.loads(json.dumps(report))
+        spoofed_qualification["hardware_formal_qualified"] = True
+        spoofed_qualification["hardware_qualification"]["qualified"] = True
+        spoofed_qualification["hardware_qualification"]["binding_profile"] = {
+            "claimed": "not-a-supported-characterization-profile"
+        }
+        with self.assertRaisesRegex(AreaMixError, "hardware_formal_qualified"):
+            validate_area_mix_report(spoofed_qualification)
+
+        legacy_name = json.loads(json.dumps(report))
+        legacy_name["formal_api_compatible"] = legacy_name.pop(
+            "frame_contract_compatible"
+        )
+        with self.assertRaisesRegex(AreaMixError, "keys differ"):
+            validate_area_mix_report(legacy_name)
 
 
 class AreaMixToolTests(unittest.TestCase):
@@ -310,7 +375,7 @@ class AreaMixToolTests(unittest.TestCase):
         self.assertIn("a* and b*", stderr.getvalue())
         self.assertNotIn("Traceback", stderr.getvalue())
 
-    def test_cli_can_create_new_formal_frame_and_report_without_device_io(self) -> None:
+    def test_cli_can_create_new_legal_frame_and_report_without_device_io(self) -> None:
         with tempfile.TemporaryDirectory() as directory_name:
             root = Path(directory_name)
             frame_path = root / "mix.frame"
@@ -348,6 +413,9 @@ class AreaMixToolTests(unittest.TestCase):
             self.assertFalse(report["hardware_tested"])
             self.assertFalse(report["device_io_performed"])
             self.assertFalse(report["network_io_performed"])
+            self.assertTrue(report["frame_contract_compatible"])
+            self.assertFalse(report["hardware_formal_qualified"])
+            self.assertFalse(report["hardware_qualification"]["qualified"])
             selection = report["artifact_selection"]
             self.assertTrue(selection["frame_output_requested"])
             self.assertEqual(selection["rendered_candidate_rank"], 1)

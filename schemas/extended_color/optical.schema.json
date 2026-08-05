@@ -9,6 +9,12 @@
     "kind",
     "run_id",
     "hardware_tested",
+    "evidence_status",
+    "null_reason",
+    "generated_at",
+    "source_run_sha256",
+    "asset_manifest_sha256",
+    "authorization_id",
     "timepoint",
     "timepoint_basis",
     "geometry",
@@ -16,36 +22,124 @@
     "observer",
     "aperture_mm",
     "instrument_id",
+    "raw_capture_ref",
+    "raw_capture_sha256",
     "measurements"
   ],
   "properties": {
-    "schema_version": {"const": 1},
+    "schema_version": {"const": 2},
     "kind": {"const": "mf1750-extended-color-optical"},
     "run_id": {"type": "string", "minLength": 1},
     "hardware_tested": {"type": "boolean"},
+    "evidence_status": {"enum": ["not_run", "partial", "complete", "invalid"]},
+    "null_reason": {"type": ["string", "null"], "minLength": 1, "maxLength": 4096},
+    "generated_at": {"type": ["string", "null"], "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"},
+    "source_run_sha256": {"$ref": "#/$defs/sha256"},
+    "asset_manifest_sha256": {"$ref": "#/$defs/sha256"},
+    "authorization_id": {"type": ["string", "null"], "minLength": 1},
     "timepoint": {"enum": ["t0", "10min", "1h", "24h", "72h", "other"]},
     "timepoint_basis": {"const": "POF BUSY_N low-to-high + 60 s for t0"},
     "geometry": {"const": "45/0"},
-    "illuminant": {"enum": ["D50", "D65"]},
-    "observer": {"enum": ["2deg", "10deg"]},
+    "illuminant": {"const": "D65"},
+    "observer": {"const": "2deg"},
     "aperture_mm": {"type": ["number", "null"], "exclusiveMinimum": 0},
     "instrument_id": {"type": ["string", "null"]},
     "raw_capture_ref": {"type": ["string", "null"]},
+    "raw_capture_sha256": {"$ref": "#/$defs/sha256"},
     "measurements": {
       "type": "array",
       "items": {"$ref": "#/$defs/measurement"}
     },
     "notes": {"type": ["string", "null"]}
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"hardware_tested": {"const": false}},
+        "required": ["hardware_tested"]
+      },
+      "then": {
+        "properties": {
+          "evidence_status": {"const": "not_run"},
+          "null_reason": {"type": "string", "minLength": 1},
+          "generated_at": {"type": "null"},
+          "source_run_sha256": {"type": "null"},
+          "asset_manifest_sha256": {"type": "null"},
+          "authorization_id": {"type": "null"},
+          "aperture_mm": {"type": "null"},
+          "instrument_id": {"type": "null"},
+          "raw_capture_ref": {"type": "null"},
+          "raw_capture_sha256": {"type": "null"},
+          "measurements": {"maxItems": 0}
+        }
+      },
+      "else": {
+        "properties": {
+          "evidence_status": {"enum": ["partial", "complete", "invalid"]},
+          "generated_at": {"type": "string", "format": "date-time"},
+          "source_run_sha256": {"$ref": "#/$defs/sha256_required"},
+          "asset_manifest_sha256": {"$ref": "#/$defs/sha256_required"},
+          "authorization_id": {"type": "string", "minLength": 1},
+          "aperture_mm": {"type": "number", "exclusiveMinimum": 0},
+          "instrument_id": {"type": "string", "minLength": 1},
+          "raw_capture_ref": {"type": "string", "minLength": 1},
+          "raw_capture_sha256": {"$ref": "#/$defs/sha256_required"},
+          "measurements": {"minItems": 1}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"evidence_status": {"const": "complete"}},
+        "required": ["evidence_status"]
+      },
+      "then": {
+        "properties": {
+          "hardware_tested": {"const": true},
+          "null_reason": {"type": "null"},
+          "measurements": {
+            "items": {
+              "properties": {
+                "measured_initial_lab": {"$ref": "#/$defs/lab_required"},
+                "measured_final_lab": {"$ref": "#/$defs/lab_required"},
+                "delta_e00": {"type": "number", "minimum": 0},
+                "uniformity_delta_e00": {"type": "number", "minimum": 0},
+                "ghosting_metric": {"type": "number", "minimum": 0}
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"evidence_status": {"enum": ["partial", "invalid"]}},
+        "required": ["evidence_status"]
+      },
+      "then": {"properties": {"null_reason": {"type": "string", "minLength": 1}}}
+    }
+  ],
   "$defs": {
+    "sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "sha256_required": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "lab": {
       "type": ["object", "null"],
       "additionalProperties": false,
       "required": ["l", "a", "b"],
       "properties": {
-        "l": {"type": "number"},
-        "a": {"type": "number"},
-        "b": {"type": "number"}
+        "l": {"type": "number", "minimum": 0, "maximum": 100},
+        "a": {"type": "number", "minimum": -200, "maximum": 200},
+        "b": {"type": "number", "minimum": -200, "maximum": 200}
+      }
+    },
+    "lab_required": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["l", "a", "b"],
+      "properties": {
+        "l": {"type": "number", "minimum": 0, "maximum": 100},
+        "a": {"type": "number", "minimum": -200, "maximum": 200},
+        "b": {"type": "number", "minimum": -200, "maximum": 200}
       }
     },
     "measurement": {

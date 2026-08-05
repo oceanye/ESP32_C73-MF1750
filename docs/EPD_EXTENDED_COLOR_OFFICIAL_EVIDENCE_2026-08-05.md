@@ -14,6 +14,10 @@ Hardware tested: `NO`
 
 机器可读矩阵：`research/extended_color/evidence_matrix.json`
 
+> 集成说明：本文是远端研究分支在提交时的阶段快照，其中 Git 状态描述保留当时
+> 事实。后续本地合并、独立审查和加固结果见
+> `docs/EXTENDED_COLOR_INTEGRATION_REVIEW_2026-08-05.md`。
+
 ## 1. 结论
 
 现有允许证据足以支持以下结论：

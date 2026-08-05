@@ -17,6 +17,7 @@ from pathlib import Path
 from pathlib import PurePosixPath
 from pathlib import PureWindowsPath
 import re
+import stat
 import sys
 from typing import Any, Mapping, Optional, Sequence
 
@@ -112,21 +113,102 @@ def _validate_optional_timestamp(value: object, label: str) -> Optional[str]:
     return text
 
 
-def sha256_file(path: Path) -> str:
-    """Hash one regular file without loading it into memory."""
+def _stat_fingerprint(value: os.stat_result) -> tuple[int, int, int, int, int, int]:
+    """Return identity and mutation-sensitive fields without access-time noise."""
+
+    return (
+        value.st_mode,
+        value.st_dev,
+        value.st_ino,
+        value.st_size,
+        value.st_mtime_ns,
+        value.st_ctime_ns,
+    )
+
+
+def _path_identity_fingerprint(value: os.stat_result) -> tuple[int, int, int, int, int]:
+    """Return fields that are stable between Windows handle and path stat calls.
+
+    Python 3.12 on Windows can briefly expose a cached path ``st_ctime_ns``
+    that differs from two matching ``fstat`` results for the same unchanged
+    handle.  Keep ctime in the before/after descriptor check, but exclude it
+    from this final handle-to-path identity comparison to avoid a false
+    mutation verdict.  Device, inode, size and mtime still detect replacement
+    or ordinary writes.
+    """
+
+    return (
+        value.st_mode,
+        value.st_dev,
+        value.st_ino,
+        value.st_size,
+        value.st_mtime_ns,
+    )
+
+
+def _stable_file_identity(path: Path) -> tuple[int, str]:
+    """Hash one unchanged regular file through a single open descriptor."""
 
     digest = hashlib.sha256()
-    with path.open("rb") as stream:
-        while chunk := stream.read(1024 * 1024):
-            digest.update(chunk)
-    return digest.hexdigest()
+    try:
+        with path.open("rb") as stream:
+            before = os.fstat(stream.fileno())
+            if not stat.S_ISREG(before.st_mode):
+                raise ManifestError(f"asset is not a regular file: {path}")
+            while chunk := stream.read(1024 * 1024):
+                digest.update(chunk)
+            after = os.fstat(stream.fileno())
+        current = path.stat()
+    except OSError as error:
+        raise ManifestError(f"could not hash asset {path}: {error}") from error
+
+    if (
+        _stat_fingerprint(after) != _stat_fingerprint(before)
+        or _path_identity_fingerprint(current)
+        != _path_identity_fingerprint(after)
+    ):
+        raise ManifestError(f"asset changed while hashing: {path}")
+    return before.st_size, digest.hexdigest()
+
+
+def sha256_file(path: Path) -> str:
+    """Hash one stable regular file without loading it into memory."""
+
+    return _stable_file_identity(path)[1]
+
+
+def _normalized_relative_posix_path(value: object, label: str) -> PurePosixPath:
+    """Reject paths whose meaning can change between POSIX and Windows."""
+
+    text = _require_nonempty_string(value, label, maximum=4096)
+    if "\\" in text:
+        raise ManifestError(
+            f"{label} must be a normalized relative path "
+            "(a relative POSIX path using only '/' separators)"
+        )
+    relative = PurePosixPath(text)
+    windows = PureWindowsPath(text)
+    if (
+        relative.is_absolute()
+        or bool(windows.drive)
+        or bool(windows.root)
+        or not relative.parts
+        or ".." in relative.parts
+        or text != relative.as_posix()
+    ):
+        raise ManifestError(
+            f"{label} must be a normalized relative path "
+            "(a relative POSIX path using only '/' separators)"
+        )
+    _require_local_path(Path(*relative.parts), label)
+    return relative
 
 
 def _resolve_asset(root: Path, relative_text: object, index: int) -> tuple[Path, str]:
-    relative = Path(_require_nonempty_string(relative_text, f"assets[{index}].path", maximum=4096))
-    if relative.is_absolute() or relative.drive or ".." in relative.parts:
-        raise ManifestError(f"assets[{index}].path must be a relative path without '..'")
-    _require_local_path(relative, f"assets[{index}].path")
+    label = f"assets[{index}].path"
+    relative_posix = _normalized_relative_posix_path(relative_text, label)
+    relative = Path(*relative_posix.parts)
+    _require_local_path(relative, label)
     candidate = (root / relative).resolve(strict=True)
     _require_local_path(candidate, f"resolved assets[{index}].path")
     try:
@@ -186,12 +268,13 @@ def build_manifest(
                 instrument_id_value, f"assets[{index}].instrument_id"
             )
         )
+        byte_count, digest = _stable_file_identity(asset_path)
         assets.append(
             {
                 "role": role,
                 "relative_path": relative_path,
-                "bytes": asset_path.stat().st_size,
-                "sha256": sha256_file(asset_path),
+                "bytes": byte_count,
+                "sha256": digest,
                 "captured_at": captured_at,
                 "instrument_id": instrument_id,
             }
@@ -239,18 +322,9 @@ def validate_manifest_report(report: Mapping[str, Any]) -> None:
         relative_text = _require_nonempty_string(
             asset["relative_path"], f"assets[{index}].relative_path", maximum=4096
         )
-        relative = PurePosixPath(relative_text)
-        windows_path = PureWindowsPath(relative_text)
-        if (
-            relative.is_absolute()
-            or bool(windows_path.drive)
-            or bool(windows_path.root)
-            or ".." in relative.parts
-            or relative_text != relative.as_posix()
-        ):
-            raise ManifestError(
-                f"assets[{index}].relative_path must be a normalized relative POSIX path"
-            )
+        _normalized_relative_posix_path(
+            relative_text, f"assets[{index}].relative_path"
+        )
         if relative_text in seen_paths:
             raise ManifestError(f"duplicate asset path: {relative_text}")
         seen_paths.add(relative_text)
@@ -298,6 +372,29 @@ def validate_output_path(output: Path) -> Path:
     return resolved_output
 
 
+def validate_plan_path(plan: Path) -> Path:
+    """Resolve one local regular plan without following a leaf symlink."""
+
+    if not isinstance(plan, Path):
+        raise ManifestError("manifest plan must be a pathlib.Path")
+    _require_local_path(plan, "manifest plan")
+    lexical = plan.absolute()
+    if any(part.casefold() == LOCAL_TEST_OUTPUT_RELATIVE.name for part in lexical.parts):
+        raise ManifestError("manifest plan cannot be read from protected .test-output")
+    if plan.is_symlink():
+        raise ManifestError("manifest plan must not be a symbolic link")
+    try:
+        resolved = plan.resolve(strict=True)
+    except OSError as error:
+        raise ManifestError(f"could not resolve manifest plan: {error}") from error
+    _require_local_path(resolved, "resolved manifest plan")
+    if any(part.casefold() == LOCAL_TEST_OUTPUT_RELATIVE.name for part in resolved.parts):
+        raise ManifestError("manifest plan cannot resolve inside protected .test-output")
+    if not resolved.is_file():
+        raise ManifestError("manifest plan must be a regular file")
+    return resolved
+
+
 def write_manifest(report: Mapping[str, Any], output: Path) -> None:
     """Validate and write once, refusing protected paths and existing targets."""
 
@@ -322,8 +419,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
 def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parse_args(argv)
     try:
-        _require_local_path(args.plan, "manifest plan")
-        with args.plan.open("r", encoding="utf-8") as stream:
+        plan_path = validate_plan_path(args.plan)
+        with plan_path.open("r", encoding="utf-8") as stream:
             plan = json.load(stream)
         report = build_manifest(plan, args.root)
         write_manifest(report, args.output)

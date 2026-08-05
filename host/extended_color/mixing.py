@@ -1,10 +1,16 @@
 """Offline six-primary area-mixing analysis for MF-1750.
 
-The panel's formal frame contract remains six colours.  This module predicts
+The panel's frame-byte contract remains six colours.  This module predicts
 spatial mixtures by averaging calibrated tristimulus values in CIE XYZ, ranks
 fixed-size tile recipes with CIEDE2000, and can render a repeated tile as a
-canonical frame.  It deliberately contains no device, network, serial,
-waveform, voltage, or refresh functionality.
+canonical frame.  A frame that satisfies the byte contract is not thereby
+qualified or authorized for hardware use.  Palette schema v2 does not bind a
+measurement to the exact panel/batch, firmware/waveform, environment,
+measurement geometry, backing, and raw artifact, so reports generated here
+remain fail-closed for formal hardware qualification.
+
+The module deliberately contains no device, network, serial, waveform,
+voltage, or refresh functionality.
 
 Predictions are only first-order optical estimates.  They are not measured
 panel colours and must not be promoted to measurements in Stage D/E records.
@@ -33,14 +39,35 @@ from host.epd_frame import HEIGHT, PHYSICAL_COLOR_CODES, WIDTH, pack_pixels, val
 from .offline import COLOR_NAME_BY_CODE, COLOR_ORDER, frame_identity
 
 
-AREA_MIX_SCHEMA_VERSION = 1
+AREA_MIX_SCHEMA_VERSION = 2
 AREA_MIX_MODEL_VERSION = "xyz-area-v1"
 AREA_MIX_LAYOUT_VERSION = "bayer-threshold-interval-v1"
 AREA_MIX_ANALYSIS_ID_SCOPE = (
-    "canonical UTF-8 JSON of schema/model/layout versions, formal color order, "
+    "canonical UTF-8 JSON of schema/model/layout versions, legal physical color order, "
     "palette hash, target Lab, input space, tile side, candidate counts and tile codes"
 )
-AREA_MIX_TILE_SHA256_SCOPE = "row-major tile; one byte per pixel containing a formal color code"
+AREA_MIX_TILE_SHA256_SCOPE = (
+    "row-major tile; one byte per pixel containing a legal physical color code"
+)
+AREA_MIX_FRAME_CONTRACT_SCOPE = (
+    "1024x600, 4bpp packed, two pixels per byte, legal physical color codes "
+    "0/1/2/3/5/6; compatibility does not imply calibration, hardware "
+    "qualification, safety approval, authorization, or device testing"
+)
+AREA_MIX_HARDWARE_QUALIFICATION_REASON = "palette-v2-insufficient-hardware-binding"
+AREA_MIX_REQUIRED_HARDWARE_BINDINGS = (
+    "panel_model",
+    "panel_id_or_serial",
+    "panel_batch",
+    "palette_canonical_sha256",
+    "firmware_commit",
+    "waveform_identity",
+    "temperature_c",
+    "relative_humidity_percent",
+    "measurement_geometry",
+    "backing",
+    "raw_measurement_artifact_sha256",
+)
 SUPPORTED_LAB_CHROMA_COMPONENT_LIMIT = 200.0
 SUPPORTED_TILE_SIDES = (2, 4)
 DEFAULT_TILE_SIDE = 4
@@ -125,7 +152,7 @@ def render_area_mix_tile(tile_side: int, counts: Sequence[int]) -> Tuple[int, ..
 
     side = _tile_side(tile_side)
     if not isinstance(counts, (tuple, list)) or len(counts) != len(COLOR_ORDER):
-        raise AreaMixError("counts must contain one value for each formal colour")
+        raise AreaMixError("counts must contain one value for each legal physical colour")
     if any(type(value) is not int or value < 0 for value in counts):
         raise AreaMixError("area-mix counts must be non-negative integers")
     normalized = tuple(counts)
@@ -172,7 +199,7 @@ class AreaMixRecipe:
         if sum(self.counts) != side * side:
             raise AreaMixError("recipe counts must sum to tile_side squared")
         if any(code not in PHYSICAL_COLOR_CODES for code in COLOR_ORDER):
-            raise AreaMixError("internal formal colour order is invalid")
+            raise AreaMixError("internal legal physical colour order is invalid")
         _validated_lab(self.predicted_lab, "predicted Lab")
         if (
             not isinstance(self.predicted_srgb, tuple)
@@ -190,7 +217,7 @@ class AreaMixRecipe:
         return render_area_mix_tile(self.tile_side, self.counts)
 
     def frame(self) -> bytes:
-        """Repeat the formal six-code tile over a canonical 1024x600 frame."""
+        """Repeat the legal six-code tile over a canonical 1024x600 frame."""
 
         side = self.tile_side
         tile = self.tile
@@ -301,7 +328,15 @@ class AreaMixAnalysis:
             "network_io_performed": False,
             "waveform_changed": False,
             "voltage_changed": False,
-            "formal_api_compatible": True,
+            "frame_contract_compatible": True,
+            "frame_contract_compatibility_scope": AREA_MIX_FRAME_CONTRACT_SCOPE,
+            "hardware_formal_qualified": False,
+            "hardware_qualification": {
+                "qualified": False,
+                "reason_code": AREA_MIX_HARDWARE_QUALIFICATION_REASON,
+                "binding_profile": None,
+                "required_bindings": list(AREA_MIX_REQUIRED_HARDWARE_BINDINGS),
+            },
             "prediction_is_measurement": False,
             "target": {
                 "input_space": self.target_input_space,
@@ -452,7 +487,10 @@ _REPORT_KEYS = frozenset(
         "network_io_performed",
         "waveform_changed",
         "voltage_changed",
-        "formal_api_compatible",
+        "frame_contract_compatible",
+        "frame_contract_compatibility_scope",
+        "hardware_formal_qualified",
+        "hardware_qualification",
         "prediction_is_measurement",
         "target",
         "palette",
@@ -530,7 +568,9 @@ def validate_area_mix_report(report: Mapping[str, Any]) -> None:
         "network_io_performed": False,
         "waveform_changed": False,
         "voltage_changed": False,
-        "formal_api_compatible": True,
+        "frame_contract_compatible": True,
+        "frame_contract_compatibility_scope": AREA_MIX_FRAME_CONTRACT_SCOPE,
+        "hardware_formal_qualified": False,
         "prediction_is_measurement": False,
     }
     for field, expected in constants.items():
@@ -540,6 +580,27 @@ def validate_area_mix_report(report: Mapping[str, Any]) -> None:
         report["analysis_id"]
     ) is None:
         raise AreaMixError("area-mix analysis_id is invalid")
+
+    qualification = _report_mapping(
+        report["hardware_qualification"], "hardware_qualification"
+    )
+    if set(qualification) != {
+        "qualified",
+        "reason_code",
+        "binding_profile",
+        "required_bindings",
+    }:
+        raise AreaMixError("hardware_qualification keys differ from the contract")
+    expected_qualification = {
+        "qualified": False,
+        "reason_code": AREA_MIX_HARDWARE_QUALIFICATION_REASON,
+        "binding_profile": None,
+        "required_bindings": list(AREA_MIX_REQUIRED_HARDWARE_BINDINGS),
+    }
+    if dict(qualification) != expected_qualification:
+        raise AreaMixError(
+            "hardware_qualification must fail closed without a characterization profile"
+        )
 
     target_mapping = _report_mapping(report["target"], "target")
     if set(target_mapping) != {
@@ -666,7 +727,7 @@ def validate_area_mix_report(report: Mapping[str, Any]) -> None:
             raise AreaMixError("candidate tile dimensions are inconsistent")
         tile = tuple(value for row in raw_tile for value in row)
         if any(type(code) is not int or code not in COLOR_ORDER for code in tile):
-            raise AreaMixError("candidate tile contains a non-formal color code")
+            raise AreaMixError("candidate tile contains an illegal physical color code")
         if tuple(tile.count(code) for code in COLOR_ORDER) != tuple(counts):
             raise AreaMixError("candidate tile does not reproduce its counts")
         if tile != render_area_mix_tile(side, counts):

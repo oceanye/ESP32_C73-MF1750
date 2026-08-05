@@ -1,82 +1,188 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://example.invalid/mf1750/extended-color/transition_profile.schema.json",
-  "title": "MF-1750 six-by-six transition profile for C3 optimization",
+  "title": "MF-1750 provenance-bound six-by-six transition profile",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "schema_version",
-    "kind",
-    "panel_model",
-    "color_codes",
-    "hardware_tested",
-    "generated_at",
-    "cells"
+    "schema_version", "kind", "panel_model", "color_codes", "hardware_tested",
+    "generated_at", "panel_serial", "firmware_git_commit", "firmware_binary_sha256",
+    "waveform_id", "waveform_sha256", "environment", "illuminant", "observer",
+    "geometry", "cells"
   ],
   "properties": {
-    "schema_version": {"const": 1},
+    "schema_version": {"const": 2},
     "kind": {"const": "mf1750-six-by-six-transition-profile"},
     "panel_model": {"const": "MF-17506-M009F-T"},
     "color_codes": {"const": [0, 1, 2, 3, 5, 6]},
     "hardware_tested": {"type": "boolean"},
-    "generated_at": {"type": ["string", "null"], "format": "date-time"},
+    "generated_at": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/rfc3339"}]},
+    "panel_serial": {"type": ["string", "null"], "minLength": 1},
+    "firmware_git_commit": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/hex40"}]},
+    "firmware_binary_sha256": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]},
+    "waveform_id": {"type": ["string", "null"], "minLength": 1},
+    "waveform_sha256": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]},
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["temperature_c", "relative_humidity_percent", "record_ref"],
+      "properties": {
+        "temperature_c": {"type": ["number", "null"], "minimum": -100, "maximum": 200},
+        "relative_humidity_percent": {"type": ["number", "null"], "minimum": 0, "maximum": 100},
+        "record_ref": {"type": ["string", "null"], "minLength": 1}
+      }
+    },
+    "illuminant": {"enum": ["D65", null]},
+    "observer": {"enum": ["2deg", null]},
+    "geometry": {"enum": ["45/0", null]},
     "cells": {
       "type": "array",
       "minItems": 36,
       "maxItems": 36,
       "uniqueItems": true,
       "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "old_code",
-          "new_code",
-          "sample_count",
-          "initial_lab_mean",
-          "final_lab_mean",
-          "delta_e00_mean",
-          "delta_e00_sd",
-          "cs1_minus_cs2_delta_e00",
-          "position_effect_delta_e00",
-          "ghosting_metric_mean",
-          "busy_ms_mean",
-          "peak_current_a_mean",
-          "energy_j_mean",
-          "temperature_rise_c_mean",
-          "recovery_pass_rate"
-        ],
+        "$ref": "#/$defs/cell",
         "properties": {
-          "old_code": {"enum": [0, 1, 2, 3, 5, 6]},
-          "new_code": {"enum": [0, 1, 2, 3, 5, 6]},
-          "sample_count": {"type": "integer", "minimum": 0},
-          "initial_lab_mean": {"$ref": "#/$defs/lab"},
-          "final_lab_mean": {"$ref": "#/$defs/lab"},
-          "delta_e00_mean": {"$ref": "#/$defs/nullable_nonnegative"},
-          "delta_e00_sd": {"$ref": "#/$defs/nullable_nonnegative"},
-          "cs1_minus_cs2_delta_e00": {"$ref": "#/$defs/nullable_number"},
-          "position_effect_delta_e00": {"$ref": "#/$defs/nullable_number"},
-          "ghosting_metric_mean": {"$ref": "#/$defs/nullable_nonnegative"},
-          "busy_ms_mean": {"$ref": "#/$defs/nullable_nonnegative"},
-          "peak_current_a_mean": {"$ref": "#/$defs/nullable_nonnegative"},
-          "energy_j_mean": {"$ref": "#/$defs/nullable_nonnegative"},
-          "temperature_rise_c_mean": {"$ref": "#/$defs/nullable_number"},
-          "recovery_pass_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1}
+          "sample_count": {"type": "integer", "minimum": 0, "maximum": 1000000},
+          "delta_e00_mean": {"$ref": "#/$defs/nullable_nonnegative"}
         }
       }
     }
   },
+  "allOf": [
+    {
+      "if": {"properties": {"hardware_tested": {"const": false}}, "required": ["hardware_tested"]},
+      "then": {
+        "properties": {
+          "generated_at": {"type": "null"},
+          "panel_serial": {"type": "null"},
+          "firmware_git_commit": {"type": "null"},
+          "firmware_binary_sha256": {"type": "null"},
+          "waveform_id": {"type": "null"},
+          "waveform_sha256": {"type": "null"},
+          "illuminant": {"type": "null"},
+          "observer": {"type": "null"},
+          "geometry": {"type": "null"},
+          "environment": {
+            "properties": {
+              "temperature_c": {"type": "null"},
+              "relative_humidity_percent": {"type": "null"},
+              "record_ref": {"type": "null"}
+            }
+          },
+          "cells": {"items": {"properties": {"sample_count": {"const": 0}}}}
+        }
+      },
+      "else": {
+        "properties": {
+          "generated_at": {"$ref": "#/$defs/rfc3339"},
+          "panel_serial": {"type": "string", "minLength": 1},
+          "firmware_git_commit": {"$ref": "#/$defs/hex40"},
+          "firmware_binary_sha256": {"$ref": "#/$defs/sha256"},
+          "waveform_id": {"type": "string", "minLength": 1},
+          "waveform_sha256": {"$ref": "#/$defs/sha256"},
+          "illuminant": {"const": "D65"},
+          "observer": {"const": "2deg"},
+          "geometry": {"const": "45/0"},
+          "environment": {
+            "properties": {
+              "temperature_c": {"type": "number", "minimum": -100, "maximum": 200},
+              "relative_humidity_percent": {"type": "number", "minimum": 0, "maximum": 100},
+              "record_ref": {"type": "string", "minLength": 1}
+            }
+          },
+          "cells": {
+            "contains": {"properties": {"sample_count": {"minimum": 1}}, "required": ["sample_count"]},
+            "minContains": 1
+          }
+        }
+      }
+    }
+  ],
   "$defs": {
+    "rfc3339": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"
+    },
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "hex40": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
     "nullable_number": {"type": ["number", "null"]},
     "nullable_nonnegative": {"type": ["number", "null"], "minimum": 0},
     "lab": {
-      "type": ["object", "null"],
+      "type": "object",
       "additionalProperties": false,
       "required": ["l", "a", "b"],
       "properties": {
-        "l": {"type": "number"},
-        "a": {"type": "number"},
-        "b": {"type": "number"}
+        "l": {"type": "number", "minimum": 0, "maximum": 100},
+        "a": {"type": "number", "minimum": -200, "maximum": 200},
+        "b": {"type": "number", "minimum": -200, "maximum": 200}
       }
+    },
+    "nullable_lab": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/lab"}]},
+    "cell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "old_code", "new_code", "sample_count", "initial_lab_mean", "final_lab_mean",
+        "delta_e00_mean", "delta_e00_sd", "cs1_minus_cs2_delta_e00",
+        "position_effect_delta_e00", "ghosting_metric_mean", "busy_ms_mean",
+        "peak_current_a_mean", "energy_j_mean", "temperature_rise_c_mean",
+        "recovery_pass_rate", "source_run_sha256s", "asset_manifest_sha256s",
+        "authorization_ids"
+      ],
+      "properties": {
+        "old_code": {"enum": [0, 1, 2, 3, 5, 6]},
+        "new_code": {"enum": [0, 1, 2, 3, 5, 6]},
+        "sample_count": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "initial_lab_mean": {"$ref": "#/$defs/nullable_lab"},
+        "final_lab_mean": {"$ref": "#/$defs/nullable_lab"},
+        "delta_e00_mean": {"$ref": "#/$defs/nullable_nonnegative"},
+        "delta_e00_sd": {"$ref": "#/$defs/nullable_nonnegative"},
+        "cs1_minus_cs2_delta_e00": {"$ref": "#/$defs/nullable_number"},
+        "position_effect_delta_e00": {"$ref": "#/$defs/nullable_nonnegative"},
+        "ghosting_metric_mean": {"$ref": "#/$defs/nullable_nonnegative"},
+        "busy_ms_mean": {"$ref": "#/$defs/nullable_nonnegative"},
+        "peak_current_a_mean": {"$ref": "#/$defs/nullable_nonnegative"},
+        "energy_j_mean": {"$ref": "#/$defs/nullable_nonnegative"},
+        "temperature_rise_c_mean": {"$ref": "#/$defs/nullable_number"},
+        "recovery_pass_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "source_run_sha256s": {"anyOf": [{"type": "null"}, {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/sha256"}}]},
+        "asset_manifest_sha256s": {"anyOf": [{"type": "null"}, {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/sha256"}}]},
+        "authorization_ids": {"anyOf": [{"type": "null"}, {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}]}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"sample_count": {"const": 0}}, "required": ["sample_count"]},
+          "then": {
+            "properties": {
+              "initial_lab_mean": {"type": "null"}, "final_lab_mean": {"type": "null"},
+              "delta_e00_mean": {"type": "null"}, "delta_e00_sd": {"type": "null"},
+              "cs1_minus_cs2_delta_e00": {"type": "null"}, "position_effect_delta_e00": {"type": "null"},
+              "ghosting_metric_mean": {"type": "null"}, "busy_ms_mean": {"type": "null"},
+              "peak_current_a_mean": {"type": "null"}, "energy_j_mean": {"type": "null"},
+              "temperature_rise_c_mean": {"type": "null"}, "recovery_pass_rate": {"type": "null"},
+              "source_run_sha256s": {"type": "null"}, "asset_manifest_sha256s": {"type": "null"},
+              "authorization_ids": {"type": "null"}
+            }
+          },
+          "else": {
+            "properties": {
+              "initial_lab_mean": {"$ref": "#/$defs/lab"}, "final_lab_mean": {"$ref": "#/$defs/lab"},
+              "delta_e00_mean": {"type": "number", "minimum": 0}, "delta_e00_sd": {"type": "number", "minimum": 0},
+              "cs1_minus_cs2_delta_e00": {"type": "number", "minimum": -200, "maximum": 200},
+              "position_effect_delta_e00": {"type": "number", "minimum": 0},
+              "ghosting_metric_mean": {"type": "number", "minimum": 0}, "busy_ms_mean": {"type": "number", "minimum": 0},
+              "peak_current_a_mean": {"type": "number", "minimum": 0}, "energy_j_mean": {"type": "number", "minimum": 0},
+              "temperature_rise_c_mean": {"type": "number", "minimum": -200, "maximum": 200},
+              "recovery_pass_rate": {"type": "number", "minimum": 0, "maximum": 1},
+              "source_run_sha256s": {"type": "array", "minItems": 1},
+              "asset_manifest_sha256s": {"type": "array", "minItems": 1},
+              "authorization_ids": {"type": "array", "minItems": 1}
+            }
+          }
+        }
+      ]
     }
   }
 }

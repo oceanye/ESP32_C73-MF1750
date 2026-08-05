@@ -250,7 +250,8 @@ EC5-U04-I06-P01-L64M1
 - 提交一次无 frame body 的固定 fixture job；
 - 查询同一 job；
 - 读取不可变 report；
-- 在人工评审后进入固定已知码恢复流程。
+- 在人工评审后，只能申请进入已经由 EC3 资格验证并冻结 identity 的已知码恢复流程；
+  当前 `B/W/B/W` 仍只是未资格候选。
 
 arm 必须绑定：
 
@@ -277,10 +278,11 @@ user_authorization_id, expires_at
 `reset-consumed`。网络超时后只能查询 status/job/report，禁止再次 POST。
 
 从进入 `ARMED` 起直到 `RECOVERY_CONFIRMED` 后转入 `LOCKED`，实验状态机必须持有
-全局 EPD refresh lock。除该 test ID 的一次 fixture execute 和随后经人工授权的
-固定恢复 job 外，正式 `/api/frame`、legacy route、启动刷新、定时器以及其他客户端
-的已知六色 job 全部 fail closed。实现可以在实验 build 中静态移除这些刷新 route，
-也可以由单一全局仲裁器拒绝它们；仅保持正式颜色 guard 不变并不足以满足此门禁。
+全局 EPD refresh lock。除该 test ID 的一次 fixture execute 和随后经人工授权、
+且已通过 EC3 资格验证的恢复 job 外，正式 `/api/frame`、legacy route、启动刷新、
+定时器以及其他客户端的已知六色 job 全部 fail closed。实现可以在实验 build 中静态
+移除这些刷新 route，也可以由单一全局仲裁器拒绝它们；仅保持正式颜色 guard 不变
+并不足以满足此门禁。
 
 ## 10. 状态机
 
@@ -405,15 +407,37 @@ user_authorization_id, terminal_state
 
 ### 14.2 恢复
 
-无电气异常且用户授权时，执行一次固定：
+`B/W/B/W` 目前是未资格恢复候选，不是固定、已批准或厂商认证的恢复流程。无电气
+异常和用户授权仍不足以执行它；进入 G 阶段前，EC3 必须先冻结并验证 recovery
+profile，且该 profile 至少绑定：
+
+- `recovery_profile_id`、版本、适用 panel/batch 和 firmware/waveform identity；
+- 四个已知码 job 的 frame/hash 和精确顺序；
+- 每一步独立的用户授权 ID；
+- 每一步 POF 后 J2-1 断电、TP1/高压轨释放判据；
+- 下一步上电前的面板/控制器/Q1/Q2/L1/L2 温度门；
+- 数值化 `cooldown_s` 及其起算事件；
+- 最大尝试次数（绝对上限为一套，资格结果也可以规定为 0）；
+- 任一步失败后的隔离和永久锁定规则。
+
+只有 recovery profile 已在六种已知初始状态下通过资格测试、identity 完全匹配且用户
+逐步授权时，才可申请一套候选序列：
 
 ```text
-原厂全黑 → 原厂全白 → 原厂全黑 → 原厂全白
+原厂全黑
+→ POF → J2-1 断电 → TP1/高压轨释放 → 温度通过 → cooldown
+→ 原厂全白
+→ POF → J2-1 断电 → TP1/高压轨释放 → 温度通过 → cooldown
+→ 原厂全黑
+→ POF → J2-1 断电 → TP1/高压轨释放 → 温度通过 → cooldown
+→ 原厂全白
+→ POF → J2-1 断电 → TP1/高压轨释放 → 温度通过
 ```
 
-每一步仍是已知码、精确 hash 的独立 job；不能由未知 fixture job 内部自动连刷。
-一套序列最多执行一次。最终白色必须通过测量安全门文档的 Lab、RAW、均匀性、
-电流、轨、BUSY、温度和断电判据。
+每一步仍是已知码、精确 hash 的独立 job，且完成断电/释放/温度/cooldown 证据后才
+能申请下一步授权；不能由未知 fixture job 内部自动连刷。缺失数值化 cooldown、温度
+证据或 recovery profile identity 时 fail closed。一套序列最多执行一次。最终白色
+必须通过测量安全门文档的 Lab、RAW、均匀性、电流、轨、BUSY、温度和断电判据。
 
 恢复失败时：
 
@@ -475,7 +499,9 @@ release guard 回归、binary/frame/双 DTM hash 冻结，并重新授予 COM8 �
 
 - [ ] 未完成人工 review 时不能进入 recovery；
 - [ ] 电气异常时不能自动恢复；
-- [ ] recovery 最多一套且每步为固定已知码 job；
+- [ ] 未通过 EC3 资格验证、缺少 recovery profile 或 identity 不匹配时不能恢复；
+- [ ] recovery 最大一套，每步为固定已知码 job，并强制逐步断电、轨释放、温度门和
+      数值化 cooldown；
 - [ ] 恢复失败锁死下一 test ID；
 - [ ] 日志、探头或测量 setup hash 缺失时 fail closed；
 - [ ] 模拟 PON/DRF/POF BUSY 异常时无自动重试。
@@ -486,6 +512,8 @@ release guard 回归、binary/frame/双 DTM hash 冻结，并重新授予 COM8 �
 
 - [ ] EC0～EC4 已完成，D 原厂六色和恢复资格可靠；
 - [ ] C 阶段测量系统、安全链和所有绝对门已 GO；
+- [ ] EC3 recovery profile 已在六种已知初始状态通过，且冻结逐步断电、温度门、
+      数值化 cooldown、最大尝试次数、frame/hash 与失败隔离规则；
 - [ ] 有专用牺牲屏，黄金参考屏不执行未知码；
 - [ ] 第 4 节 layout 和第 5 节 hash 已独立复核；
 - [ ] 私有 fixture-only 驱动入口设计完成，不放宽正式 guard；

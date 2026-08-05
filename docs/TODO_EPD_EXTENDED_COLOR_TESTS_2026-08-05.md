@@ -2,7 +2,7 @@
 
 创建日期：2026-08-05
 
-状态：`PLANNED / NOT STARTED`
+状态：`SOFTWARE GROUNDWORK INTEGRATED / HARDWARE NOT STARTED`
 
 硬件授权：无；等待用户逐阶段安排
 
@@ -10,6 +10,12 @@
 
 Hardware tested in this review: `NO`
 完整可行性结论：`docs/EPD_EXTENDED_COLOR_FEASIBILITY_2026-08-05.md`
+
+离线成果与集成审查：`docs/EXTENDED_COLOR_INTEGRATION_REVIEW_2026-08-05.md`
+
+已完成的仅是官方证据矩阵、测量/安全门、固定图案及身份、空 6×6 profile、
+六码面积混色模拟和机器记录合同。它们不构成硬件授权，也不把下表任何硬件出口
+提升为已通过。
 
 ## 1. 范围和执行原则
 
@@ -48,8 +54,8 @@ LUT、内部 phase、partial/window 和电压实验不属于本 TODO 的可安�
 | EC1 | 测量系统资格 | TODO | 光学、电气、温度测量重复性合格 |
 | EC2 | 原厂六色电气/光学基线 | TODO | 六色 Lab、功耗、轨包络、保持基线 |
 | EC3 | 原厂恢复流程资格 | TODO | B/W/B/W 可重复恢复且有最大尝试限制 |
-| EC4 | 6×6 转换矩阵 | TODO | 36 转换的历史依赖、残影、能耗和统计 |
-| EC5 | `0x4/0x7` 小面积编码探针 | BLOCKED | 需隔离实验固件、硬件保护和 EC0–EC4 |
+| EC4 | 6×6 转换矩阵 | OFFLINE FIXTURE READY / HARDWARE TODO | 36 转换的历史依赖、残影、能耗和统计 |
+| EC5 | `0x4/0x7` 小面积编码探针 | OFFLINE DESIGN READY / HARDWARE BLOCKED | 需隔离实验固件、硬件保护和 EC0–EC4 |
 | EC6 | bit3 alias `0x8～0xF` | BLOCKED | 需 EC5 通过及单独风险评审/厂家资料 |
 | EC7 | 第一轮报告 | TODO | 回答十个问题并形成下一阶段 go/no-go |
 | EC8 | 自定义 waveform/LUT/电压 | HARD BLOCKED | 需 SPD1657B/OTP 资料和新硬件联锁 |

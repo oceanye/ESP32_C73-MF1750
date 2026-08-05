@@ -40,6 +40,13 @@ from .profile import (
     build_empty_transition_profile,
     validate_transition_profile,
 )
+from .records import (
+    ExtendedColorRecordError,
+    validate_electrical_record,
+    validate_event_recovery_record,
+    validate_optical_record,
+    validate_run_record,
+)
 from .mixing import (
     AREA_MIX_ANALYSIS_ID_SCOPE,
     AREA_MIX_LAYOUT_VERSION,
@@ -86,6 +93,7 @@ __all__ = [
     "AreaMixRecipe",
     "ControllerIdentity",
     "ExtendedColorContractError",
+    "ExtendedColorRecordError",
     "FrameIdentity",
     "OfflineFrameArtifact",
     "Rectangle",
@@ -105,6 +113,10 @@ __all__ = [
     "known_pixel_counts",
     "render_area_mix_tile",
     "validate_area_mix_report",
+    "validate_electrical_record",
+    "validate_event_recovery_record",
+    "validate_optical_record",
+    "validate_run_record",
     "transition_color_orders",
     "transition_rois",
     "unknown_probe_rois",

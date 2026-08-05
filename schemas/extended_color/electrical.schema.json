@@ -9,6 +9,13 @@
     "kind",
     "run_id",
     "hardware_tested",
+    "evidence_status",
+    "null_reason",
+    "generated_at",
+    "source_run_sha256",
+    "asset_manifest_sha256",
+    "authorization_id",
+    "limit_profile",
     "acquisition",
     "busy",
     "input_power",
@@ -17,20 +24,58 @@
     "interlocks"
   ],
   "properties": {
-    "schema_version": {"const": 1},
+    "schema_version": {"const": 2},
     "kind": {"const": "mf1750-extended-color-electrical"},
     "run_id": {"type": "string", "minLength": 1},
     "hardware_tested": {"type": "boolean"},
+    "evidence_status": {"enum": ["not_run", "partial", "complete", "invalid"]},
+    "null_reason": {"type": ["string", "null"], "minLength": 1, "maxLength": 4096},
+    "generated_at": {"type": ["string", "null"], "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"},
+    "source_run_sha256": {"$ref": "#/$defs/sha256"},
+    "asset_manifest_sha256": {"$ref": "#/$defs/sha256"},
+    "authorization_id": {"type": ["string", "null"], "minLength": 1},
+    "limit_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile_id", "profile_version", "profile_sha256", "source_ref", "qualified"],
+      "properties": {
+        "profile_id": {"type": ["string", "null"], "minLength": 1},
+        "profile_version": {"type": ["integer", "null"], "minimum": 1},
+        "profile_sha256": {"$ref": "#/$defs/sha256"},
+        "source_ref": {"type": ["string", "null"], "minLength": 1},
+        "qualified": {"const": false}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"profile_id": {"type": "null"}}, "required": ["profile_id"]},
+          "then": {
+            "properties": {
+              "profile_version": {"type": "null"},
+              "profile_sha256": {"type": "null"},
+              "source_ref": {"type": "null"}
+            }
+          },
+          "else": {
+            "properties": {
+              "profile_version": {"type": "integer", "minimum": 1},
+              "profile_sha256": {"$ref": "#/$defs/sha256_required"},
+              "source_ref": {"type": "string", "minLength": 1}
+            }
+          }
+        }
+      ]
+    },
     "acquisition": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["instrument_ids", "sample_rate_sps", "bandwidth_hz", "clock_alignment_ms", "raw_trace_refs"],
+      "required": ["instrument_ids", "sample_rate_sps", "bandwidth_hz", "clock_alignment_ms", "raw_trace_refs", "raw_trace_sha256"],
       "properties": {
         "instrument_ids": {"type": "array", "items": {"type": "string"}},
         "sample_rate_sps": {"type": ["number", "null"], "exclusiveMinimum": 0},
         "bandwidth_hz": {"type": ["number", "null"], "exclusiveMinimum": 0},
         "clock_alignment_ms": {"type": ["number", "null"], "minimum": 0},
-        "raw_trace_refs": {"type": "array", "items": {"type": "string"}}
+        "raw_trace_refs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "raw_trace_sha256": {"type": "array", "items": {"$ref": "#/$defs/sha256_required"}}
       }
     },
     "busy": {
@@ -98,20 +143,185 @@
     },
     "notes": {"type": ["string", "null"]}
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"hardware_tested": {"const": false}},
+        "required": ["hardware_tested"]
+      },
+      "then": {
+        "properties": {
+          "evidence_status": {"const": "not_run"},
+          "null_reason": {"type": "string", "minLength": 1},
+          "generated_at": {"type": "null"},
+          "source_run_sha256": {"type": "null"},
+          "asset_manifest_sha256": {"type": "null"},
+          "authorization_id": {"type": "null"},
+          "limit_profile": {
+            "properties": {
+              "profile_id": {"type": "null"},
+              "profile_version": {"type": "null"},
+              "profile_sha256": {"type": "null"},
+              "source_ref": {"type": "null"},
+              "qualified": {"const": false}
+            }
+          },
+          "acquisition": {
+            "properties": {
+              "instrument_ids": {"maxItems": 0},
+              "sample_rate_sps": {"type": "null"},
+              "bandwidth_hz": {"type": "null"},
+              "clock_alignment_ms": {"type": "null"},
+              "raw_trace_refs": {"maxItems": 0},
+              "raw_trace_sha256": {"maxItems": 0}
+            }
+          },
+          "busy": {
+            "properties": {
+              "pon_ms": {"type": "null"}, "pon_asserted": {"type": "null"},
+              "drf_ms": {"type": "null"}, "drf_asserted": {"type": "null"},
+              "pof_ms": {"type": "null"}, "pof_asserted": {"type": "null"},
+              "timeout": {"type": "null"}
+            }
+          },
+          "input_power": {
+            "properties": {
+              "peak_current_a": {"type": "null"}, "mean_current_a": {"type": "null"},
+              "rms_current_a": {"type": "null"}, "energy_j": {"type": "null"},
+              "tp1_min_v": {"type": "null"}, "droop_v": {"type": "null"},
+              "supply_cc_or_trip": {"type": "null"}
+            }
+          },
+          "rails": {
+            "properties": {
+              "tp3_vph": {"$ref": "#/$defs/not_run_rail"},
+              "tp5_prevgl": {"$ref": "#/$defs/not_run_rail"},
+              "tp6_vpc": {"$ref": "#/$defs/not_run_rail"}
+            }
+          },
+          "temperatures": {
+            "properties": {
+              "panel_c": {"type": "null"}, "controller_1_c": {"type": "null"},
+              "controller_2_c": {"type": "null"}, "q1_c": {"type": "null"},
+              "q2_c": {"type": "null"}, "l1_c": {"type": "null"},
+              "l2_c": {"type": "null"}
+            }
+          },
+          "interlocks": {
+            "properties": {
+              "estop_armed": {"type": "null"},
+              "hardware_current_limit_armed": {"type": "null"},
+              "j2_1_latched_switch_armed": {"type": "null"},
+              "triggered": {"type": "null"}
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "evidence_status": {"enum": ["partial", "complete", "invalid"]},
+          "generated_at": {"type": "string", "format": "date-time"},
+          "source_run_sha256": {"$ref": "#/$defs/sha256_required"},
+          "asset_manifest_sha256": {"$ref": "#/$defs/sha256_required"},
+          "authorization_id": {"type": "string", "minLength": 1},
+          "acquisition": {
+            "properties": {
+              "instrument_ids": {"minItems": 1},
+              "sample_rate_sps": {"type": "number", "exclusiveMinimum": 0},
+              "bandwidth_hz": {"type": "number", "exclusiveMinimum": 0},
+              "clock_alignment_ms": {"type": "number", "minimum": 0},
+              "raw_trace_refs": {"minItems": 1},
+              "raw_trace_sha256": {"minItems": 1}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"evidence_status": {"const": "partial"}},
+        "required": ["evidence_status"]
+      },
+      "then": {
+        "properties": {
+          "rails": {
+            "properties": {
+              "tp3_vph": {"$ref": "#/$defs/positive_rail"},
+              "tp5_prevgl": {"$ref": "#/$defs/negative_rail"},
+              "tp6_vpc": {"$ref": "#/$defs/negative_rail"}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"evidence_status": {"const": "complete"}},
+        "required": ["evidence_status"]
+      },
+      "then": false
+    },
+    {
+      "if": {
+        "properties": {"evidence_status": {"enum": ["partial", "invalid"]}},
+        "required": ["evidence_status"]
+      },
+      "then": {"properties": {"null_reason": {"type": "string", "minLength": 1}}}
+    }
+  ],
   "$defs": {
+    "sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "sha256_required": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "nullable_nonnegative": {"type": ["number", "null"], "minimum": 0},
     "rail": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["minimum_v", "maximum_v", "plateau_v", "rise_ms", "release_ms", "absolute_limit_known"],
+      "required": ["minimum_v", "maximum_v", "plateau_v", "rise_ms", "release_ms", "absolute_limit_known", "absolute_limit_reason"],
       "properties": {
         "minimum_v": {"type": ["number", "null"]},
         "maximum_v": {"type": ["number", "null"]},
         "plateau_v": {"type": ["number", "null"]},
         "rise_ms": {"$ref": "#/$defs/nullable_nonnegative"},
         "release_ms": {"$ref": "#/$defs/nullable_nonnegative"},
-        "absolute_limit_known": {"const": false}
+        "absolute_limit_known": {"const": false},
+        "absolute_limit_reason": {"type": "string", "minLength": 1}
       }
+    },
+    "positive_rail": {
+      "allOf": [
+        {"$ref": "#/$defs/rail"},
+        {
+          "properties": {
+            "minimum_v": {"type": ["number", "null"], "minimum": 0},
+            "maximum_v": {"type": ["number", "null"], "minimum": 0},
+            "plateau_v": {"type": ["number", "null"], "exclusiveMinimum": 0}
+          }
+        }
+      ]
+    },
+    "negative_rail": {
+      "allOf": [
+        {"$ref": "#/$defs/rail"},
+        {
+          "properties": {
+            "minimum_v": {"type": ["number", "null"], "maximum": 0},
+            "maximum_v": {"type": ["number", "null"], "maximum": 0},
+            "plateau_v": {"type": ["number", "null"], "exclusiveMaximum": 0}
+          }
+        }
+      ]
+    },
+    "not_run_rail": {
+      "allOf": [
+        {"$ref": "#/$defs/rail"},
+        {
+          "properties": {
+            "minimum_v": {"type": "null"}, "maximum_v": {"type": "null"},
+            "plateau_v": {"type": "null"}, "rise_ms": {"type": "null"},
+            "release_ms": {"type": "null"}
+          }
+        }
+      ]
     }
   }
 }

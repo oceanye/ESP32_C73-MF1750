@@ -9,6 +9,12 @@
     "kind",
     "run_id",
     "hardware_tested",
+    "evidence_status",
+    "null_reason",
+    "generated_at",
+    "source_run_sha256",
+    "asset_manifest_sha256",
+    "authorization_id",
     "events",
     "abnormality",
     "automatic_retry_count",
@@ -16,10 +22,16 @@
     "final_power_state"
   ],
   "properties": {
-    "schema_version": {"const": 1},
+    "schema_version": {"const": 2},
     "kind": {"const": "mf1750-extended-color-event-recovery"},
     "run_id": {"type": "string", "minLength": 1},
     "hardware_tested": {"type": "boolean"},
+    "evidence_status": {"enum": ["not_run", "partial", "complete", "invalid"]},
+    "null_reason": {"type": ["string", "null"], "minLength": 1, "maxLength": 4096},
+    "generated_at": {"type": ["string", "null"], "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"},
+    "source_run_sha256": {"$ref": "#/$defs/sha256"},
+    "asset_manifest_sha256": {"$ref": "#/$defs/sha256"},
+    "authorization_id": {"type": ["string", "null"], "minLength": 1},
     "events": {
       "type": "array",
       "items": {
@@ -28,7 +40,7 @@
         "required": ["sequence", "timestamp", "event", "authorization_id", "result", "details"],
         "properties": {
           "sequence": {"type": "integer", "minimum": 0},
-          "timestamp": {"type": ["string", "null"], "format": "date-time"},
+          "timestamp": {"type": ["string", "null"], "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"},
           "event": {
             "enum": [
               "power_off_confirmed",
@@ -52,7 +64,28 @@
           "authorization_id": {"type": ["string", "null"]},
           "result": {"enum": ["pending", "pass", "fail", "not_run"]},
           "details": {"type": ["string", "null"]}
-        }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "event": {
+                  "enum": [
+                    "flash_authorized",
+                    "flashed",
+                    "power_on_authorized",
+                    "frame_authorized",
+                    "recovery_authorized",
+                    "recovery_frame",
+                    "power_off_authorized"
+                  ]
+                }
+              },
+              "required": ["event"]
+            },
+            "then": {"properties": {"authorization_id": {"type": "string", "minLength": 1}}}
+          }
+        ]
       }
     },
     "abnormality": {
@@ -82,7 +115,30 @@
         "passed": {"type": ["boolean", "null"]},
         "final_white_delta_e00": {"type": ["number", "null"], "minimum": 0},
         "raw_ghosting_metric": {"type": ["number", "null"], "minimum": 0}
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"authorized": {"const": true}},
+            "required": ["authorized"]
+          },
+          "then": {"properties": {"authorization_id": {"type": "string", "minLength": 1}}},
+          "else": {"properties": {"authorization_id": {"type": "null"}}}
+        },
+        {
+          "if": {
+            "properties": {"attempted": {"const": false}},
+            "required": ["attempted"]
+          },
+          "then": {
+            "properties": {
+              "passed": {"type": "null"},
+              "final_white_delta_e00": {"type": "null"},
+              "raw_ghosting_metric": {"type": "null"}
+            }
+          }
+        }
+      ]
     },
     "final_power_state": {
       "type": "object",
@@ -94,5 +150,123 @@
         "tp1_at_or_below_0_10_v_for_5s": {"type": ["boolean", "null"]}
       }
     }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"hardware_tested": {"const": false}},
+        "required": ["hardware_tested"]
+      },
+      "then": {
+        "properties": {
+          "evidence_status": {"const": "not_run"},
+          "null_reason": {"type": "string", "minLength": 1},
+          "generated_at": {"type": "null"},
+          "source_run_sha256": {"type": "null"},
+          "asset_manifest_sha256": {"type": "null"},
+          "authorization_id": {"type": "null"},
+          "events": {"maxItems": 0},
+          "abnormality": {
+            "properties": {
+              "observed": {"const": false},
+              "category": {"type": "null"},
+              "description": {"type": "null"},
+              "fault_locked": {"const": false}
+            }
+          },
+          "recovery": {
+            "properties": {"authorized": {"const": false}, "attempted": {"const": false}}
+          },
+          "final_power_state": {
+            "properties": {
+              "j2_1_off_confirmed": {"type": "null"},
+              "tp1_v": {"type": "null"},
+              "tp1_at_or_below_0_10_v_for_5s": {"type": "null"}
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "evidence_status": {"enum": ["partial", "complete", "invalid"]},
+          "generated_at": {"type": "string", "format": "date-time"},
+          "source_run_sha256": {"$ref": "#/$defs/sha256_required"},
+          "asset_manifest_sha256": {"$ref": "#/$defs/sha256_required"},
+          "authorization_id": {"type": "string", "minLength": 1},
+          "events": {
+            "minItems": 1,
+            "items": {"properties": {"timestamp": {"type": "string", "format": "date-time"}}}
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"evidence_status": {"const": "complete"}},
+        "required": ["evidence_status"]
+      },
+      "then": {
+        "properties": {
+          "hardware_tested": {"const": true},
+          "null_reason": {"type": "null"},
+          "events": {
+            "items": {"properties": {"result": {"const": "pass"}}},
+            "allOf": [
+              {"$ref": "#/$defs/require_power_off_confirmed"},
+              {"$ref": "#/$defs/require_power_on_authorized"},
+              {"$ref": "#/$defs/require_power_normal_confirmed"},
+              {"$ref": "#/$defs/require_frame_authorized"},
+              {"$ref": "#/$defs/require_pon"},
+              {"$ref": "#/$defs/require_drf"},
+              {"$ref": "#/$defs/require_pof"},
+              {"$ref": "#/$defs/require_operator_observation"},
+              {"$ref": "#/$defs/require_power_off_authorized"},
+              {"$ref": "#/$defs/require_tp1_zero_confirmed"},
+              {"$ref": "#/$defs/forbid_fault"}
+            ]
+          },
+          "abnormality": {"properties": {"observed": {"const": false}}},
+          "final_power_state": {
+            "properties": {
+              "j2_1_off_confirmed": {"const": true},
+              "tp1_v": {"type": "number", "minimum": 0, "maximum": 0.1},
+              "tp1_at_or_below_0_10_v_for_5s": {"const": true}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"evidence_status": {"enum": ["partial", "invalid"]}},
+        "required": ["evidence_status"]
+      },
+      "then": {"properties": {"null_reason": {"type": "string", "minLength": 1}}}
+    }
+  ],
+  "$defs": {
+    "sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "sha256_required": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "require_power_off_confirmed": {"$ref": "#/$defs/require_power_off_confirmed_body"},
+    "require_power_on_authorized": {"$ref": "#/$defs/require_power_on_authorized_body"},
+    "require_power_normal_confirmed": {"$ref": "#/$defs/require_power_normal_confirmed_body"},
+    "require_frame_authorized": {"$ref": "#/$defs/require_frame_authorized_body"},
+    "require_pon": {"$ref": "#/$defs/require_pon_body"},
+    "require_drf": {"$ref": "#/$defs/require_drf_body"},
+    "require_pof": {"$ref": "#/$defs/require_pof_body"},
+    "require_operator_observation": {"$ref": "#/$defs/require_operator_observation_body"},
+    "require_power_off_authorized": {"$ref": "#/$defs/require_power_off_authorized_body"},
+    "require_tp1_zero_confirmed": {"$ref": "#/$defs/require_tp1_zero_confirmed_body"},
+    "forbid_fault": {"not": {"contains": {"properties": {"event": {"const": "fault"}}, "required": ["event"]}}},
+    "require_power_off_confirmed_body": {"contains": {"properties": {"event": {"const": "power_off_confirmed"}, "result": {"const": "pass"}}, "required": ["event", "result"]}, "minContains": 1, "maxContains": 1},
+    "require_power_on_authorized_body": {"contains": {"properties": {"event": {"const": "power_on_authorized"}, "result": {"const": "pass"}}, "required": ["event", "result"]}, "minContains": 1, "maxContains": 1},
+    "require_power_normal_confirmed_body": {"contains": {"properties": {"event": {"const": "power_normal_confirmed"}, "result": {"const": "pass"}}, "required": ["event", "result"]}, "minContains": 1, "maxContains": 1},
+    "require_frame_authorized_body": {"contains": {"properties": {"event": {"const": "frame_authorized"}, "result": {"const": "pass"}}, "required": ["event", "result"]}, "minContains": 1, "maxContains": 1},
+    "require_pon_body": {"contains": {"properties": {"event": {"const": "pon"}, "result": {"const": "pass"}}, "required": ["event", "result"]}, "minContains": 1, "maxContains": 1},
+    "require_drf_body": {"contains": {"properties": {"event": {"const": "drf"}, "result": {"const": "pass"}}, "required": ["event", "result"]}, "minContains": 1, "maxContains": 1},
+    "require_pof_body": {"contains": {"properties": {"event": {"const": "pof"}, "result": {"const": "pass"}}, "required": ["event", "result"]}, "minContains": 1, "maxContains": 1},
+    "require_operator_observation_body": {"contains": {"properties": {"event": {"const": "operator_observation"}, "result": {"const": "pass"}}, "required": ["event", "result"]}, "minContains": 1, "maxContains": 1},
+    "require_power_off_authorized_body": {"contains": {"properties": {"event": {"const": "power_off_authorized"}, "result": {"const": "pass"}}, "required": ["event", "result"]}, "minContains": 1, "maxContains": 1},
+    "require_tp1_zero_confirmed_body": {"contains": {"properties": {"event": {"const": "tp1_zero_confirmed"}, "result": {"const": "pass"}}, "required": ["event", "result"]}, "minContains": 1, "maxContains": 1}
   }
 }

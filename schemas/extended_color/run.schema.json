@@ -11,9 +11,14 @@
     "run_id",
     "stage",
     "status",
+    "evidence_status",
+    "null_reason",
     "hardware_tested",
+    "generated_at",
+    "asset_manifest_sha256",
     "panel",
     "authorization",
+    "authorization_scope",
     "firmware",
     "frame_identity",
     "environment",
@@ -21,7 +26,7 @@
     "finished_at"
   ],
   "properties": {
-    "schema_version": {"const": 1},
+    "schema_version": {"const": 2},
     "kind": {"const": "mf1750-extended-color-run"},
     "test_id": {"type": "string", "minLength": 1, "maxLength": 96},
     "run_id": {"type": "string", "minLength": 1, "maxLength": 128},
@@ -29,7 +34,11 @@
     "status": {
       "enum": ["planned", "authorized", "running", "completed", "aborted", "fault_locked"]
     },
+    "evidence_status": {"enum": ["not_run", "partial", "complete", "invalid"]},
+    "null_reason": {"type": ["string", "null"], "minLength": 1, "maxLength": 4096},
     "hardware_tested": {"type": "boolean"},
+    "generated_at": {"type": ["string", "null"], "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"},
+    "asset_manifest_sha256": {"$ref": "#/$defs/sha256"},
     "candidate_code": {
       "type": ["integer", "null"],
       "minimum": 0,
@@ -82,6 +91,33 @@
         "post_refresh_confirmed": {"$ref": "#/$defs/authorization"},
         "final_power_off_tp1_confirmed": {"$ref": "#/$defs/authorization"}
       }
+    },
+    "authorization_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["test_id", "frame_sha256", "canonical_sha256"],
+      "properties": {
+        "test_id": {"type": ["string", "null"], "minLength": 1, "maxLength": 96},
+        "frame_sha256": {"$ref": "#/$defs/sha256"},
+        "canonical_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"test_id": {"type": "null"}}, "required": ["test_id"]},
+          "then": {
+            "properties": {
+              "frame_sha256": {"type": "null"},
+              "canonical_sha256": {"type": "null"}
+            }
+          },
+          "else": {
+            "properties": {
+              "frame_sha256": {"$ref": "#/$defs/sha256_required"},
+              "canonical_sha256": {"$ref": "#/$defs/sha256_required"}
+            }
+          }
+        }
+      ]
     },
     "firmware": {
       "type": "object",
@@ -143,11 +179,159 @@
         "record_ref": {"type": ["string", "null"]}
       }
     },
-    "started_at": {"type": ["string", "null"], "format": "date-time"},
-    "finished_at": {"type": ["string", "null"], "format": "date-time"},
+    "started_at": {"type": ["string", "null"], "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"},
+    "finished_at": {"type": ["string", "null"], "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"},
     "abort_reason": {"type": ["string", "null"]},
     "notes": {"type": ["string", "null"]}
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"hardware_tested": {"const": false}},
+        "required": ["hardware_tested"]
+      },
+      "then": {
+        "properties": {
+          "evidence_status": {"const": "not_run"},
+          "null_reason": {"type": "string", "minLength": 1},
+          "generated_at": {"type": "null"},
+          "asset_manifest_sha256": {"type": "null"},
+          "status": {"enum": ["planned", "authorized"]},
+          "started_at": {"type": "null"},
+          "finished_at": {"type": "null"},
+          "environment": {
+            "properties": {
+              "temperature_c": {"type": "null"},
+              "relative_humidity_percent": {"type": "null"},
+              "record_ref": {"type": "null"}
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "evidence_status": {"enum": ["partial", "complete", "invalid"]},
+          "generated_at": {"type": "string", "format": "date-time"},
+          "asset_manifest_sha256": {"$ref": "#/$defs/sha256_required"},
+          "status": {"enum": ["running", "completed", "aborted", "fault_locked"]},
+          "started_at": {"type": "string", "format": "date-time"},
+          "panel": {
+            "properties": {"serial": {"type": "string", "minLength": 1}}
+          },
+          "firmware": {
+            "properties": {
+              "git_commit": {"$ref": "#/$defs/hex40_required"},
+              "binary_sha256": {"$ref": "#/$defs/sha256_required"}
+            }
+          },
+          "frame_identity": {
+            "properties": {
+              "frame_sha256": {"$ref": "#/$defs/sha256_required"},
+              "canonical_sha256": {"$ref": "#/$defs/sha256_required"},
+              "controllers": {
+                "prefixItems": [
+                  {
+                    "allOf": [
+                      {"$ref": "#/$defs/cs1_identity"},
+                      {"properties": {"dtm_sha256": {"$ref": "#/$defs/sha256_required"}}}
+                    ]
+                  },
+                  {
+                    "allOf": [
+                      {"$ref": "#/$defs/cs2_identity"},
+                      {"properties": {"dtm_sha256": {"$ref": "#/$defs/sha256_required"}}}
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          "authorization_scope": {
+            "properties": {
+              "test_id": {"type": "string", "minLength": 1, "maxLength": 96},
+              "frame_sha256": {"$ref": "#/$defs/sha256_required"},
+              "canonical_sha256": {"$ref": "#/$defs/sha256_required"}
+            }
+          },
+          "environment": {
+            "properties": {
+              "temperature_c": {"type": "number", "minimum": -100, "maximum": 200},
+              "relative_humidity_percent": {"type": "number", "minimum": 0, "maximum": 100},
+              "record_ref": {"type": "string", "minLength": 1}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"status": {"enum": ["running", "completed"]}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "authorization": {
+            "properties": {
+              "power_off_confirmed": {"$ref": "#/$defs/authorization_required"},
+              "power_on": {"$ref": "#/$defs/authorization_required"},
+              "power_normal_confirmed": {"$ref": "#/$defs/authorization_required"},
+              "send_frame": {"$ref": "#/$defs/authorization_required"}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"status": {"const": "completed"}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "authorization": {
+            "properties": {
+              "post_refresh_confirmed": {"$ref": "#/$defs/authorization_required"},
+              "final_power_off_tp1_confirmed": {"$ref": "#/$defs/authorization_required"}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"evidence_status": {"const": "complete"}},
+        "required": ["evidence_status"]
+      },
+      "then": {
+        "properties": {
+          "hardware_tested": {"const": true},
+          "null_reason": {"type": "null"},
+          "status": {"const": "completed"},
+          "finished_at": {"type": "string", "format": "date-time"},
+          "authorization": {
+            "properties": {
+              "post_refresh_confirmed": {"$ref": "#/$defs/authorization_required"},
+              "final_power_off_tp1_confirmed": {"$ref": "#/$defs/authorization_required"}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"evidence_status": {"enum": ["partial", "invalid"]}},
+        "required": ["evidence_status"]
+      },
+      "then": {"properties": {"null_reason": {"type": "string", "minLength": 1}}}
+    },
+    {
+      "if": {
+        "properties": {"status": {"enum": ["completed", "aborted", "fault_locked"]}},
+        "required": ["status"]
+      },
+      "then": {"properties": {"finished_at": {"type": "string", "format": "date-time"}}}
+    }
+  ],
   "$defs": {
     "authorization": {
       "type": "object",
@@ -156,11 +340,39 @@
       "properties": {
         "authorized": {"type": "boolean"},
         "authorization_id": {"type": ["string", "null"]},
-        "recorded_at": {"type": ["string", "null"], "format": "date-time"}
-      }
+        "recorded_at": {"type": ["string", "null"], "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"authorized": {"const": true}},
+            "required": ["authorized"]
+          },
+          "then": {
+            "properties": {
+              "authorization_id": {"type": "string", "minLength": 1},
+              "recorded_at": {"type": "string", "format": "date-time"}
+            }
+          },
+          "else": {
+            "properties": {
+              "authorization_id": {"type": "null"},
+              "recorded_at": {"type": "null"}
+            }
+          }
+        }
+      ]
+    },
+    "authorization_required": {
+      "allOf": [
+        {"$ref": "#/$defs/authorization"},
+        {"properties": {"authorized": {"const": true}}}
+      ]
     },
     "sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "sha256_required": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "hex40": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$"},
+    "hex40_required": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
     "fnv1a": {"type": "integer", "minimum": 0, "maximum": 4294967295},
     "fnv1a_hex": {"type": "string", "pattern": "^0x[0-9A-F]{8}$"},
     "mapping_cs1": {

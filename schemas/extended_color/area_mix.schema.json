@@ -4,6 +4,7 @@
   "title": "MF-1750 offline six-primary area-mix analysis",
   "type": "object",
   "additionalProperties": false,
+  "not": {"required": ["formal_api_compatible"]},
   "required": [
     "schema_version",
     "kind",
@@ -17,7 +18,10 @@
     "network_io_performed",
     "waveform_changed",
     "voltage_changed",
-    "formal_api_compatible",
+    "frame_contract_compatible",
+    "frame_contract_compatibility_scope",
+    "hardware_formal_qualified",
+    "hardware_qualification",
     "prediction_is_measurement",
     "target",
     "palette",
@@ -26,11 +30,11 @@
     "artifact_selection"
   ],
   "properties": {
-    "schema_version": {"const": 1},
+    "schema_version": {"const": 2},
     "kind": {"const": "mf1750-six-primary-area-mix-analysis"},
     "analysis_id": {"type": "string", "pattern": "^MF1750-EC-MIX-[0-9A-F]{12}$"},
     "analysis_id_scope": {
-      "const": "canonical UTF-8 JSON of schema/model/layout versions, formal color order, palette hash, target Lab, input space, tile side, candidate counts and tile codes"
+      "const": "canonical UTF-8 JSON of schema/model/layout versions, legal physical color order, palette hash, target Lab, input space, tile side, candidate counts and tile codes"
     },
     "panel_model": {"const": "MF-17506-M009F-T"},
     "color_codes": {"const": [0, 1, 2, 3, 5, 6]},
@@ -40,7 +44,46 @@
     "network_io_performed": {"const": false},
     "waveform_changed": {"const": false},
     "voltage_changed": {"const": false},
-    "formal_api_compatible": {"const": true},
+    "frame_contract_compatible": {"const": true},
+    "frame_contract_compatibility_scope": {
+      "const": "1024x600, 4bpp packed, two pixels per byte, legal physical color codes 0/1/2/3/5/6; compatibility does not imply calibration, hardware qualification, safety approval, authorization, or device testing"
+    },
+    "formal_api_compatible": {
+      "const": true,
+      "deprecated": true,
+      "$comment": "Schema v1 field retained only for migration discovery. Schema v2 forbids it via the top-level not rule; use frame_contract_compatible."
+    },
+    "hardware_formal_qualified": {"const": false},
+    "hardware_qualification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "qualified",
+        "reason_code",
+        "binding_profile",
+        "required_bindings"
+      ],
+      "properties": {
+        "qualified": {"const": false},
+        "reason_code": {"const": "palette-v2-insufficient-hardware-binding"},
+        "binding_profile": {"type": "null"},
+        "required_bindings": {
+          "const": [
+            "panel_model",
+            "panel_id_or_serial",
+            "panel_batch",
+            "palette_canonical_sha256",
+            "firmware_commit",
+            "waveform_identity",
+            "temperature_c",
+            "relative_humidity_percent",
+            "measurement_geometry",
+            "backing",
+            "raw_measurement_artifact_sha256"
+          ]
+        }
+      }
+    },
     "prediction_is_measurement": {"const": false},
     "target": {
       "type": "object",
@@ -407,7 +450,7 @@
         },
         "tile_sha256": {"$ref": "#/$defs/sha256"},
         "tile_sha256_scope": {
-          "const": "row-major tile; one byte per pixel containing a formal color code"
+          "const": "row-major tile; one byte per pixel containing a legal physical color code"
         },
         "frame_identity": {"$ref": "#/$defs/frame_identity"}
       }

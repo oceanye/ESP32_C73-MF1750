@@ -69,6 +69,16 @@ dithering 形成饱和全彩图像。完全相同的英文措辞可在转售页�
   主动拒绝 `.test-output/`、冻结生产目录、Windows DOS 设备名、UNC/device namespace、
   NTFS ADS 和映射网络盘。
 
+面积混合报告从 schema v2 起使用 `frame_contract_compatible`，它只表示输出满足
+1024×600、4bpp 和正式六码的字节合同，不表示已经校准、安全批准、获得硬件授权或
+经过设备测试。v1 的 `formal_api_compatible` 已弃用；v2 schema 仅保留该名字用于迁移
+识别并明确拒绝实际出现，消费者必须按 `schema_version` 解析。
+
+即使 palette schema v2 写有 `calibrated=true` 和 measurement hash，它仍未绑定精确
+panel/batch、firmware/waveform、环境、几何、backing 与可验证原始 artifact。因而当前
+area-mix 报告固定 `hardware_formal_qualified=false`；只有未来引入并验证覆盖上述字段的
+characterization profile 后，才能在新的版本化合同中重新评审硬件正式资格。
+
 示例（仅离线分析，不写文件、不连接设备）：
 
 ```powershell

@@ -256,8 +256,8 @@ sample_interval, sensor_time_constant
 |---|---|---|
 | baseline ambient | `25.0±1.0℃` | FROZEN |
 | baseline RH | `55±5%RH` | FROZEN |
-| primary illuminant/observer | `D50 / 2°`，保存原始光谱 | FROZEN FOR INTERNAL STUDY |
-| secondary result | 可导出 `D65 / 2°`，不得与主结果混用 | OPTIONAL |
+| canonical illuminant/observer | `D65 / 2°`，同时保存原始光谱反射率 | FROZEN |
+| secondary result | 可从同一原始光谱另行计算 `D50 / 2°`，必须记录积分/色适应算法与版本 | OPTIONAL；不得冒充 D65 |
 | geometry | `45/0`，探测法线误差 `≤2°` | FROZEN |
 | unknown ROI aperture | 实际光斑直径 `≤5 mm` | FROZEN |
 | external RAW light | `5000±100 K, 1000±20 lx` | PROVISIONAL；待夹具验收 |
@@ -276,10 +276,18 @@ sample_interval, sensor_time_constant
 | input current absolute limit | 厂家/硬件审查数值 | `PENDING / BLOCKER` |
 | TP3/TP5/TP6 absolute windows | SPD1657B和节点应力审查数值 | `PENDING / BLOCKER` |
 | component temperature limits | 各器件额定、贴装和不确定度后的门限 | `PENDING / BLOCKER` |
-| recovery attempts | 最多一套经批准的 B/W/B/W 序列 | FROZEN |
+| recovery candidate | `B/W/B/W` 仅为待 EC3 资格验证的候选，不是厂商认证或当前可执行流程 | `NOT QUALIFIED / BLOCKER` |
+| recovery maximum attempts | 绝对上限一套；EC3 必须冻结最终允许值（只能为 0 或 1） | `PENDING / BLOCKER` |
+| recovery inter-step gate | 每步均需 POF、J2-1 断电、TP1/高压轨释放、温度复核和已批准 cooldown | `PENDING / BLOCKER` |
 
 厂家若提供与本表不同的正式测量方法或安全范围，应形成版本化变更评审；不得静默
 覆盖已经采集的数据条件。
+
+本项目所有进入 palette、面积混合、综合色域或 ΔE00 正式判定的 canonical Lab 均为
+`D65/2°`。可以保留或另行导出 D50 结果，但必须从原始光谱按已记录的方法重新积分，
+或使用明确命名和版本化的色适应步骤；禁止只改 illuminant 标签，也禁止把 D50 与
+D65 数值放入同一统计序列。表中的 `5000±100 K` 外部 RAW 光源只服务空间均匀性、
+色斑和残影成像，不定义 canonical Lab 的 illuminant。
 
 ## 8. 指标定义
 
@@ -409,13 +417,30 @@ B_lo/B_hi = 同布局、同初始态已知码基线的单侧界限
 `181 ms / 21.700 s / 140 ms` 的 PON/DRF/POF 记录只是 sanity reference，不能
 单独建立统计门限。
 
-### 10.4 恢复判据
+### 10.4 未资格恢复候选与判据
 
-恢复最多执行一套经批准的：
+`B/W/B/W` 当前只是 EC3 的恢复候选。它不是厂商认证安全 waveform，也没有完成
+cooldown、连续刷新、温度和最大尝试次数资格验证；因此当前为 `NO-GO`，不能因发生
+未知码残影或异常而直接执行。
+
+进入 G 阶段前，EC3 必须生成经审查的不可变 recovery profile，至少冻结：每一步的
+已知码 frame/hash、逐步授权、POF 与 J2-1 断电证据、TP1/高压轨释放阈值、开始下一步
+前的器件/面板温度门、数值化 cooldown、最大尝试次数（绝对上限一套）以及失败隔离
+规则。只有该 profile 已通过六种已知初始状态的资格测试，才可申请执行候选序列：
 
 ```text
-原厂全黑 → 原厂全白 → 原厂全黑 → 原厂全白
+原厂全黑
+→ POF → J2-1 断电 → TP1/高压轨释放 → 温度复核 → 已批准 cooldown
+→ 原厂全白
+→ POF → J2-1 断电 → TP1/高压轨释放 → 温度复核 → 已批准 cooldown
+→ 原厂全黑
+→ POF → J2-1 断电 → TP1/高压轨释放 → 温度复核 → 已批准 cooldown
+→ 原厂全白
+→ POF → J2-1 断电 → TP1/高压轨释放 → 温度复核
 ```
+
+每个颜色步骤都是新的、单独授权的已知码 job；不得在设备内自动连刷。cooldown 或
+温度证据缺失、profile/hash 不匹配、任一步失败或已达到最大尝试次数时均 fail closed。
 
 最终白色建议同时满足：
 

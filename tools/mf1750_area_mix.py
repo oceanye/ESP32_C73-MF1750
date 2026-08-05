@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rank and render formal six-colour MF-1750 area-mix recipes offline."""
+"""Rank and render frame-compatible six-colour MF-1750 area-mix recipes offline."""
 
 from __future__ import annotations
 
@@ -111,7 +111,10 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     parser.add_argument(
         "--frame-output",
         type=Path,
-        help="optionally create one packed 307200-byte formal six-colour frame",
+        help=(
+            "optionally create one packed 307200-byte legal six-code frame; "
+            "this does not imply hardware qualification or upload authorization"
+        ),
     )
     parser.add_argument(
         "--report-output",
