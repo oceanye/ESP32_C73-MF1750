@@ -1,0 +1,25 @@
+{
+  "run_id": "REPLACE_WITH_RUN_ID",
+  "root_label": "REPLACE_WITH_EVIDENCE_VOLUME_LABEL",
+  "hardware_tested": false,
+  "assets": [
+    {
+      "role": "raw_camera",
+      "path": "camera/REPLACE_WITH_FILE.raw",
+      "captured_at": null,
+      "instrument_id": null
+    },
+    {
+      "role": "oscilloscope",
+      "path": "scope/REPLACE_WITH_FILE.bin",
+      "captured_at": null,
+      "instrument_id": null
+    },
+    {
+      "role": "colorimeter",
+      "path": "colorimeter/REPLACE_WITH_FILE.csv",
+      "captured_at": null,
+      "instrument_id": null
+    }
+  ]
+}

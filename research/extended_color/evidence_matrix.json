@@ -1,0 +1,819 @@
+{
+  "schema_version": "1.0.0",
+  "document_id": "mf1750-extended-color-official-evidence-2026-08-05",
+  "stage": "A",
+  "stage_name": "官方资料与证据调研",
+  "stage_status": "COMPLETED",
+  "assessment": "COMPLETED_WITH_MATERIAL_UNKNOWNS",
+  "updated": "2026-08-05",
+  "repository_branch": "research/extended-color-20260805",
+  "repository_commit_at_review": "3dfd4776b749660a5462f27b80d0055f23f0c47e",
+  "hardware_tested": false,
+  "null_policy": "任何未由允许证据确定的数值、编码语义、接口或限值均使用 JSON null；不得用猜测值、相邻控制器参数或空字符串代替。",
+  "target": {
+    "panel_model": "MF-17506-M009F-T",
+    "panel_module": "M009F-T",
+    "resolution": {
+      "width_px": 1024,
+      "height_px": 600
+    },
+    "controller": "SPD1657B",
+    "controller_count": 2,
+    "observed_controller_revision": "0x04",
+    "pcb": "MF1750 Rev A1",
+    "production_frame": {
+      "packing": "4bpp packed, two pixels per byte",
+      "bytes": 307200
+    },
+    "panel_marketing_format": "3-bit E6"
+  },
+  "evidence_levels": {
+    "D": "直接证据：精确 MF-17506-M009F-T 厂商规格或针对该精确硬件的受控资料。",
+    "P": "平台证据：厂商官方网页、官方代码、芯片厂资料或正式论文，但对象是 Spectra 6 平台、相邻面板或相邻控制器。",
+    "I": "推论：由 D/P 交叉支持的解释；不得直接生成命令、LUT、波形、电压或安全限值。",
+    "U": "未知：允许来源不足；机器可读值必须为 null。"
+  },
+  "source_catalog": [
+    {
+      "id": "S-D1",
+      "level": "D",
+      "authority": "Ink Cubic",
+      "source_type": "manufacturer_panel_specification",
+      "title": "MF-17506-M009F-T / M009F-T panel specification, revision A1, 2026-02-28",
+      "url": null,
+      "local_locator": "参考资料/MF-1750..1).pdf",
+      "locators": [
+        "PDF p.1: exact model and module identifiers",
+        "PDF p.4: 7.50 inch, 1024x600, 3-bit E6, integrated SRAM/LUT/internal temperature sensor/on-chip OTP waveform",
+        "PDF p.5: reference arrangement uses two SPD1657 devices",
+        "PDF pp.6-7: BUSY behavior and named VCOM/VPC/VGL/VPH/VSH/VSL/VGH rails",
+        "PDF p.10: reference circuit BOM labels SPD1657B",
+        "PDF p.11: VCI absolute maximum, VDD operating range, temperature/humidity notes, supplied-controller-and-waveform warranty boundary",
+        "PDF pp.13-14: SPI timing and command-table referral to the SPD1657B datasheet",
+        "PDF p.15: black/white/red/yellow/blue/green optical states and update/long-red recommendations",
+        "PDF p.19: qualification reliability procedures"
+      ],
+      "exact_target": true,
+      "use_limit": "这是本矩阵唯一的精确面板直接资料；它没有给出 SPD1657B 完整命令、OTP manifest 或高压轨数值范围。"
+    },
+    {
+      "id": "S-P1",
+      "level": "P",
+      "authority": "E Ink Holdings Inc.",
+      "source_type": "official_sample_code_adjacent_platform",
+      "title": "E6_73 sample code V1.2, 2025-01-16",
+      "url": null,
+      "local_locator": "参考资料/E6_73_sample code_V1.2_20250116/E6_73_sample code_V1.2_20250116/",
+      "locators": [
+        "E6_73.c lines 126-130: TRES 0x0320 by 0x01E0, i.e. 800x480",
+        "E6_73.c lines 159-169, 208-216, 254-261, 300-309, 347-356, 394-403: six 192000-byte solid frames and byte values 0x11/0x00/0x22/0x33/0x55/0x66",
+        "E6_73.c lines 141-153: unused/reserved Interlace helpers send command 0x86 with data 0x01 or 0x00",
+        "E6_73.c lines 184-204 and corresponding color functions: DRF/POF and sample-specific VDD-cut sequence",
+        "E6_73.h lines 9-26: command-name constants exposed by this sample",
+        "Version_Descriptions.txt line 3: V1.2 adds a VDD-cut sequence at each display function"
+      ],
+      "exact_target": false,
+      "sample_geometry": {
+        "width_px": 800,
+        "height_px": 480,
+        "frame_bytes": 192000
+      },
+      "use_limit": "相邻 Spectra 6 平台证据。其几何尺寸和单控制器数据量与 MF-17506 的 1024x600、307200 B、双 SPD1657B 不同；禁止把初始化寄存器、0x86 或关断时序当作精确 MF-17506 的逐寄存器直接证据。"
+    },
+    {
+      "id": "S-P2",
+      "level": "P",
+      "authority": "E Ink",
+      "source_type": "official_product_page",
+      "title": "E Ink Spectra 6",
+      "url": "https://www.eink.com/brand/detail/Spectra6",
+      "local_locator": null,
+      "locators": [
+        "Official platform description: 0-50 C operation and Sparkle partial-image flashing capability"
+      ],
+      "exact_target": false,
+      "use_limit": "平台功能声明不证明当前 SPD1657B revision、OTP lot 或 MF-17506 模组已开放 Sparkle。"
+    },
+    {
+      "id": "S-P3",
+      "level": "P",
+      "authority": "E Ink",
+      "source_type": "official_technology_page",
+      "title": "How E Ink works / Spectra 6 technology",
+      "url": "https://cn.eink.com/tech/detail/How_it_works",
+      "local_locator": null,
+      "locators": [
+        "Official Spectra 6 four-particle/six-primary-color explanation"
+      ],
+      "exact_target": false,
+      "use_limit": "解释墨水平台，不提供精确面板料号证书、编码表或控制器命令。"
+    },
+    {
+      "id": "S-P4",
+      "level": "P",
+      "authority": "Solomon Systech via COMPUTEX official exhibitor catalog",
+      "source_type": "official_controller_product_listing",
+      "title": "SPD1657 Spectra 6 bistable display controller",
+      "url": "https://www.computextaipei.com.tw/en/product/CBA4659B8C39B7F72BDDBEB61C4033B7A51D2AFD55BCA758/info.html",
+      "local_locator": null,
+      "locators": [
+        "Product listing: 800 source by 600 gate and Spectra 6 support"
+      ],
+      "exact_target": false,
+      "use_limit": "只确认 SPD1657 产品定位；不是 SPD1657B rev 0x04 完整 datasheet。"
+    },
+    {
+      "id": "S-P5",
+      "level": "P",
+      "authority": "Solomon Systech",
+      "source_type": "official_controller_catalog",
+      "title": "Bistable Display product catalog",
+      "url": "https://www.solomon-systech.com/product-category/bistable-display",
+      "local_locator": null,
+      "locators": [
+        "Current public catalog lists SPD1656 and offers datasheets by request; no public SPD1657B command document was located"
+      ],
+      "exact_target": false,
+      "use_limit": "产品目录缺项不是寄存器语义证据；完整 SPD1657B 资料仍须厂商提供。"
+    },
+    {
+      "id": "S-P6",
+      "level": "P",
+      "authority": "E Ink",
+      "source_type": "official_sibling_module_page",
+      "title": "7.3 inch Spectra 6 ePaper Display, ED2208-GCA",
+      "url": "https://shopkits.eink.com/en/product/detail/7.3%27%27Spectra6ePaperDisplay",
+      "local_locator": null,
+      "locators": [
+        "Sibling module describes on-chip RAM, waveform in on-chip OTP, and project-matched support files"
+      ],
+      "exact_target": false,
+      "use_limit": "800x480 兄弟模组；支持文件、温度接口和 OTP 内容不可移植到 MF-17506。"
+    },
+    {
+      "id": "S-P7",
+      "level": "P",
+      "authority": "E Ink authors, IDW 2023",
+      "source_type": "formal_paper",
+      "title": "Color Electrophoretic Displays",
+      "url": "https://confit.atlas.jp/guide/event-img/idw2023/EP1-01/public/pdf_archive?type=in",
+      "local_locator": null,
+      "locators": [
+        "Four-particle Spectra 6 architecture and six W/K/R/Y/B/G device colors",
+        "Section 2.3: advanced driving can attain more mixed colors, while the commercial system selects six device colors and manages the rest by dithering",
+        "Research-level waveform examples and 0-50 C platform behavior"
+      ],
+      "exact_target": false,
+      "use_limit": "正式论文可解释物理和混合光学输出，但不证明额外输出是稳定、可寻址、可保持的 palette state；实验电压/时间不得作为本机参数。"
+    },
+    {
+      "id": "S-P8",
+      "level": "P",
+      "authority": "Sharp and E Ink authors, SID 2025",
+      "source_type": "formal_paper",
+      "title": "High Resolution Spectra 6 Display with Oxide TFT Backplane",
+      "url": "https://sid.org/Portals/sid/Files/SID-Digest/docs/92-4.pdf",
+      "local_locator": null,
+      "locators": [
+        "Spectra 6 Microcup particle polarity and research/demo waveform/backplane conditions"
+      ],
+      "exact_target": false,
+      "use_limit": "不同 backplane 和实验平台；其中电压、频率和轨值不得转为 MF-17506 限值。"
+    },
+    {
+      "id": "S-P9",
+      "level": "P",
+      "authority": "E Ink authors, SID 2025",
+      "source_type": "formal_paper",
+      "title": "Color Electrophoretic Display for Outdoor Signage",
+      "url": "https://sid.org/Portals/sid/Files/SID-Digest/docs/92-1.pdf",
+      "local_locator": null,
+      "locators": [
+        "Red/yellow/blue/white particles in Microcup form six primary states",
+        "The six Spectra 6 states are dithered together for full-color images; intermediate-position mechanisms described for other platforms are distinct"
+      ],
+      "exact_target": false,
+      "use_limit": "Spectra 6 内容仅为引言中的平台回顾，论文主体是另一平台；不定义本机编码、命令或可移植中间态。"
+    },
+    {
+      "id": "S-P10",
+      "level": "P",
+      "authority": "E Ink",
+      "source_type": "official_press_release",
+      "title": "E Ink Ripple and new color-mixing waveform architecture announcement",
+      "url": "https://www.eink.com/news/detail/E-Ink-Ripple-Second-Generation-Waveform-Architecture-E%20Ink-Spectra-Displays",
+      "local_locator": null,
+      "locators": [
+        "The announcement first describes Ripple as a wave-like image transition effect",
+        "In addition to Ripple, it separately announces a new color-mixing waveform architecture; an upgraded 3-bit chipset configuration is said to expand Spectra 6 from six to eight primary colors",
+        "A separate T2000 configuration is said to add cyan, light green and orange to the original six colors",
+        "Compatible chipset vendors listed are Fitipower, Solomon Systech, Himax, Novatek, IST and UltraChip; no chip model is named"
+      ],
+      "exact_target": false,
+      "use_limit": "Ripple 与新混色架构的实现关系未公开；未点名 SPD1657/B 或 MF-17506，不能推断当前 OTP 支持，也不能映射 0x4、0x7 或 bit3。"
+    },
+    {
+      "id": "S-P11",
+      "level": "P",
+      "authority": "Solomon Systech",
+      "source_type": "adjacent_controller_datasheet",
+      "title": "SPD1656 datasheet",
+      "url": null,
+      "local_locator": "参考资料/Solomon-SPD1656.pdf",
+      "locators": [
+        "Adjacent 640x480 3-bit color EPD controller documentation"
+      ],
+      "exact_target": false,
+      "use_limit": "仅可解释控制器概念。禁止移植 PartialRAM、LUT unlock、frame-rate、temperature、voltage 或 waveform 命令到 SPD1657B。"
+    },
+    {
+      "id": "S-P12",
+      "level": "P",
+      "authority": "E Ink patent publication",
+      "source_type": "patent_principle_only",
+      "title": "Color electrophoretic partial-update principles",
+      "url": "https://patents.google.com/patent/US20250239231A1/en",
+      "local_locator": null,
+      "locators": [
+        "Old/new-transition-aware update and border-handling principles"
+      ],
+      "exact_target": false,
+      "use_limit": "专利仅解释原理；不得导出命令、LUT、phase、电压、窗口格式或安全参数。"
+    },
+    {
+      "id": "S-P13",
+      "level": "P",
+      "authority": "E Ink Holdings Inc.",
+      "source_type": "official_annual_report",
+      "title": "E Ink 2024 Annual Report",
+      "url": "https://kr.eink.com/upload/2025_04_28/51_20250428155204i9ls2kL8C5.pdf",
+      "local_locator": null,
+      "locators": [
+        "PDF p.78: white, red, yellow and blue charged color inks form black, white, red, yellow, blue and green, followed by advanced color mixing algorithms"
+      ],
+      "exact_target": false,
+      "use_limit": "官方平台与产品路线证据；不证明 MF-17506 当前 OTP、SPD1657B rev 0x04 或未知码支持额外单像素状态。"
+    }
+  ],
+  "matrix": [
+    {
+      "id": "A-01",
+      "topic": "MF-17506-M009F-T 确切墨水体系",
+      "level": "I",
+      "status": "PARTIALLY_KNOWN",
+      "value": {
+        "exact_panel_description": "active-matrix electrophoretic display, 3-bit E6, six optical states",
+        "platform_identification": "high-confidence Spectra 6 family identification",
+        "particle_system": "Spectra 6 platform uses red, yellow, blue and white particles in Microcup to form six primary states",
+        "exact_film_lot_certificate": null,
+        "exact_ink_batch_or_particle_recipe": null
+      },
+      "evidence": [
+        {
+          "source_id": "S-D1",
+          "level": "D",
+          "locator": "PDF pp.1, 4, 15",
+          "supports": "精确型号、3-bit E6 及六个光学状态"
+        },
+        {
+          "source_id": "S-P3",
+          "level": "P",
+          "locator": "official technology page",
+          "supports": "Spectra 6 四粒子/六基色平台"
+        },
+        {
+          "source_id": "S-P4",
+          "level": "P",
+          "locator": "official exhibitor product listing",
+          "supports": "SPD1657 面向 Spectra 6"
+        },
+        {
+          "source_id": "S-P7",
+          "level": "P",
+          "locator": "formal paper",
+          "supports": "四颜料物理体系和 W/K/R/Y/B/G 状态"
+        }
+      ],
+      "limitation": "精确面板规格未直接写 Spectra 6 商标或 film lot；结论不可转化为额外编码或波形参数。"
+    },
+    {
+      "id": "A-02",
+      "topic": "SPD1657B rev 0x04 完整 datasheet",
+      "level": "U",
+      "status": "UNKNOWN_BLOCKING",
+      "value": null,
+      "unknown_values": {
+        "full_datasheet_url": null,
+        "rev_0x04_command_definition": null,
+        "register_reset_values": null,
+        "reserved_bit_rules": null,
+        "cascade_readback_rules": null
+      },
+      "evidence": [
+        {
+          "source_id": "S-D1",
+          "level": "D",
+          "locator": "PDF p.14",
+          "supports": "精确面板命令表明确要求另查 SPD1657B datasheet"
+        },
+        {
+          "source_id": "S-P4",
+          "level": "P",
+          "locator": "official product listing",
+          "supports": "只确认 SPD1657 的 800-source/600-gate Spectra 6 产品定位"
+        },
+        {
+          "source_id": "S-P5",
+          "level": "P",
+          "locator": "current official public catalog",
+          "supports": "公开目录没有提供 SPD1657B 完整命令资料"
+        }
+      ],
+      "safety_effect": "禁止未知命令、寄存器枚举、SPD1656 参数移植和任何波形/电压修改。"
+    },
+    {
+      "id": "A-03",
+      "topic": "3-bit 编码表以及 0x4/0x7 含义",
+      "level": "P",
+      "status": "PARTIALLY_KNOWN",
+      "value": {
+        "platform_sample_mapping": {
+          "0x0": "black",
+          "0x1": "white",
+          "0x2": "yellow",
+          "0x3": "red",
+          "0x4": null,
+          "0x5": "blue",
+          "0x6": "green",
+          "0x7": null
+        },
+        "exact_mf17506_vendor_code_table": null,
+        "meaning_0x4": null,
+        "meaning_0x7": null
+      },
+      "evidence": [
+        {
+          "source_id": "S-P1",
+          "level": "P",
+          "locator": "E6_73.c lines 159-169, 208-216, 254-261, 300-309, 347-356, 394-403",
+          "supports": "800x480 相邻样例只使用 0/1/2/3/5/6，并省略 4/7"
+        },
+        {
+          "source_id": "S-D1",
+          "level": "D",
+          "locator": "PDF pp.4, 15",
+          "supports": "精确面板为 3-bit E6 且有六个光学状态，但没有码表"
+        }
+      ],
+      "limitation": "正式应用映射按已冻结项目基线继续使用；相邻样例不能补足精确芯片的 0x4/0x7 语义。",
+      "safety_effect": "正式 API 必须继续拒绝 0x4、0x7 及所有其他未知码。"
+    },
+    {
+      "id": "A-04",
+      "topic": "0x8-0xF 的 bit3 行为",
+      "level": "U",
+      "status": "UNKNOWN_BLOCKING",
+      "value": null,
+      "unknown_values": {
+        "bit3_ignored": null,
+        "aliases_low_three_bits": null,
+        "bit3_reserved_or_forbidden": null,
+        "codes_0x8_to_0xF_meanings": null
+      },
+      "evidence": [
+        {
+          "source_id": "S-D1",
+          "level": "D",
+          "locator": "PDF p.4",
+          "supports": "只声明 3-bit E6"
+        },
+        {
+          "source_id": "S-P1",
+          "level": "P",
+          "locator": "all six 192000-byte frame loops",
+          "supports": "平台样例始终使高 nibble bit3 和低 nibble bit3 为 0"
+        }
+      ],
+      "safety_effect": "不得推断 alias；在取得厂商定义前不执行 H 阶段。"
+    },
+    {
+      "id": "A-05",
+      "topic": "OTP waveform ID、版本和温区",
+      "level": "D",
+      "status": "PARTIALLY_KNOWN",
+      "value": {
+        "waveform_storage": "on-chip OTP",
+        "current_drf_path_interpretation": "normal refresh is consistent with use of the on-chip OTP waveform",
+        "otp_waveform_id": null,
+        "otp_waveform_version": null,
+        "otp_crc_or_hash": null,
+        "otp_lot_binding": null,
+        "temperature_bands_c": null,
+        "temperature_band_selection_rule": null,
+        "waveform_readback": null
+      },
+      "evidence": [
+        {
+          "source_id": "S-D1",
+          "level": "D",
+          "locator": "PDF p.4",
+          "supports": "精确面板 waveform stored in on-chip OTP"
+        },
+        {
+          "source_id": "S-P6",
+          "level": "P",
+          "locator": "official sibling module page",
+          "supports": "Spectra 6 兄弟模组同样要求项目匹配的 OTP/support files"
+        },
+        {
+          "source_id": "S-P1",
+          "level": "P",
+          "locator": "E6_73.c DRF sequences",
+          "supports": "平台样例触发 DRF 而不上传 LUT payload"
+        }
+      ],
+      "limitation": "当前 OTP 使用是 D/P 交叉解释；DRF 的 0x00 数据语义仍需 SPD1657B datasheet。",
+      "safety_effect": "没有精确 OTP manifest 时禁止替换、选择或修改 waveform。"
+    },
+    {
+      "id": "A-06",
+      "topic": "LUT 上传、选择和读回能力",
+      "level": "U",
+      "status": "UNKNOWN_BLOCKING",
+      "value": null,
+      "known_hardware_block": "精确面板规格称控制 IC 集成 LUT",
+      "unknown_values": {
+        "host_lut_upload_supported": null,
+        "lut_upload_command": null,
+        "lut_unlock_sequence": null,
+        "lut_slot_selection": null,
+        "lut_readback_supported": null,
+        "lut_format": null,
+        "phase_count": null,
+        "per_phase_voltage_encoding": null
+      },
+      "evidence": [
+        {
+          "source_id": "S-D1",
+          "level": "D",
+          "locator": "PDF p.4",
+          "supports": "IC 包含 LUT 硬件块"
+        },
+        {
+          "source_id": "S-P1",
+          "level": "P",
+          "locator": "entire supplied sample",
+          "supports": "相邻样例没有 LUT 上传、选择或读回流程"
+        },
+        {
+          "source_id": "S-P11",
+          "level": "P",
+          "locator": "adjacent controller datasheet",
+          "supports": "SPD1656 只可提供概念背景"
+        }
+      ],
+      "limitation": "存在 LUT 硬件块不等于开放主机编程接口。",
+      "safety_effect": "自定义 LUT/phase 保持 HARD BLOCKED；禁止移植 SPD1656 LUT unlock。"
+    },
+    {
+      "id": "A-07",
+      "topic": "0x86 Interlace 定义",
+      "level": "P",
+      "status": "PARTIALLY_KNOWN_NON_EXECUTABLE",
+      "value": {
+        "adjacent_sample_enable_bytes": [
+          "0x86",
+          "0x01"
+        ],
+        "adjacent_sample_disable_bytes": [
+          "0x86",
+          "0x00"
+        ],
+        "sample_comment_scope": "not used; reserved for future dither image and dependent on dithering area",
+        "exact_spd1657b_definition": null,
+        "area_encoding": null,
+        "waveform_dependency": null,
+        "old_frame_dependency": null,
+        "safety_constraints": null
+      },
+      "evidence": [
+        {
+          "source_id": "S-P1",
+          "level": "P",
+          "locator": "E6_73.c lines 141-153",
+          "supports": "相邻样例中 0x86 helper 和限制性注释"
+        }
+      ],
+      "limitation": "800x480 相邻样例本身声明该功能未使用；不能作为 MF-17506 逐寄存器定义。",
+      "safety_effect": "不得调用 0x86，直到获得精确 SPD1657B rev 0x04 定义和厂商支持文件。"
+    },
+    {
+      "id": "A-08",
+      "topic": "window、old-frame 和 partial 支持",
+      "level": "U",
+      "status": "UNKNOWN_BLOCKING",
+      "value": null,
+      "unknown_values": {
+        "window_addressing_supported": null,
+        "window_commands": null,
+        "old_frame_ram_supported": null,
+        "old_frame_format": null,
+        "partial_refresh_supported": null,
+        "partial_waveform_id": null,
+        "border_expansion_rule": null,
+        "mandatory_cleanup_count": null
+      },
+      "evidence": [
+        {
+          "source_id": "S-D1",
+          "level": "D",
+          "locator": "PDF p.14",
+          "supports": "精确规格没有命令详情并转介 SPD1657B datasheet"
+        },
+        {
+          "source_id": "S-P1",
+          "level": "P",
+          "locator": "entire supplied sample",
+          "supports": "相邻样例只展示全帧 DTM/PON/DRF/POF"
+        },
+        {
+          "source_id": "S-P12",
+          "level": "P",
+          "locator": "patent publication",
+          "supports": "只解释 old/new transition 和更新边界的一般原理"
+        }
+      ],
+      "limitation": "专利不产生可执行命令或参数。",
+      "safety_effect": "不得猜测 window/old-frame/partial 命令。"
+    },
+    {
+      "id": "A-09",
+      "topic": "Sparkle 支持",
+      "level": "P",
+      "status": "PLATFORM_KNOWN_EXACT_TARGET_UNKNOWN",
+      "value": {
+        "spectra6_platform_capability": "Sparkle partial-image flashing effect",
+        "mf17506_support": null,
+        "spd1657b_rev_0x04_support": null,
+        "current_otp_support": null,
+        "command_or_support_package": null
+      },
+      "evidence": [
+        {
+          "source_id": "S-P2",
+          "level": "P",
+          "locator": "official Spectra 6 product page",
+          "supports": "Spectra 6 平台营销能力"
+        }
+      ],
+      "safety_effect": "只能向厂商索取精确兼容声明；不得据平台宣传调用未知命令。"
+    },
+    {
+      "id": "A-10",
+      "topic": "Ripple 转场与同公告新混色波形架构支持",
+      "level": "P",
+      "status": "PLATFORM_KNOWN_EXACT_TARGET_UNKNOWN",
+      "value": {
+        "ripple_transition_effect_claim": "wave-like image transitions",
+        "color_mixing_waveform_architecture_claim": "uses existing particles with upgraded compatible chipset systems",
+        "relationship_between_ripple_and_color_mixing_architecture": null,
+        "upgraded_3bit_configuration_claim": "can expand Spectra 6 from six to eight primary colors",
+        "t2000_configuration_claim": "adds cyan, light green and orange to the original six colors",
+        "relationship_between_eight_color_and_t2000_configurations": null,
+        "unknown_code_or_bit3_mapping": null,
+        "mf17506_ripple_support": null,
+        "mf17506_color_mixing_architecture_support": null,
+        "spd1657b_rev_0x04_ripple_support": null,
+        "spd1657b_rev_0x04_color_mixing_architecture_support": null,
+        "current_otp_support": null,
+        "announced_compatible_vendors": [
+          "Fitipower",
+          "Solomon Systech",
+          "Himax",
+          "Novatek",
+          "IST",
+          "UltraChip"
+        ],
+        "exact_compatible_chip_models": null
+      },
+      "evidence": [
+        {
+          "source_id": "S-P10",
+          "level": "P",
+          "locator": "official 2025 announcement",
+          "supports": "Ripple 转场、新混色架构及其升级 chipset 依赖分别出现在同一公告"
+        }
+      ],
+      "limitation": "公告未公开 Ripple 与新混色架构的实现关系，没有点名当前控制器、面板或 OTP，也没有把新颜色映射到 0x4、0x7 或 bit3。",
+      "safety_effect": "当前平台不得宣称或启用 Ripple 或新混色波形架构。"
+    },
+    {
+      "id": "A-11",
+      "topic": "内部温度传感器读取方法",
+      "level": "U",
+      "status": "PARTIALLY_KNOWN_BLOCKING",
+      "value": {
+        "sensor_presence": "internal temperature sensor",
+        "busy_behavior": "BUSY is asserted while communicating with the digital temperature sensor",
+        "read_command": null,
+        "readback_length_bytes": null,
+        "raw_format": null,
+        "conversion_to_celsius": null,
+        "calibration": null,
+        "accuracy_c": null,
+        "temperature_band_selection": null
+      },
+      "evidence": [
+        {
+          "source_id": "S-D1",
+          "level": "D",
+          "locator": "PDF pp.4, 7",
+          "supports": "内部传感器存在以及 BUSY 参与传感器通信"
+        },
+        {
+          "source_id": "S-P1",
+          "level": "P",
+          "locator": "E6_73.h line 26; E6_73.c lines 135-136",
+          "supports": "相邻样例只定义并写入名为 T_VDCS 的 0x84/0x01，不展示温度读取"
+        }
+      ],
+      "limitation": "不能把 T_VDCS 名称或写操作解释为温度读回 API。",
+      "safety_effect": "在厂商提供读取协议前，温度必须由外部已校准探头测量。"
+    },
+    {
+      "id": "A-12",
+      "topic": "VCOM/VGH/VGL/VSH/VSL 范围",
+      "level": "U",
+      "status": "PARTIALLY_KNOWN_BLOCKING",
+      "value": {
+        "logic_vdd_operating_v": {
+          "min": 2.4,
+          "typ": 3.0,
+          "max": 3.6
+        },
+        "vci_absolute_max_v": {
+          "min": -0.5,
+          "max": 3.6
+        },
+        "vcom_programmed_by_panel_ic": true,
+        "vcom_operating_range_v": null,
+        "vgh_operating_range_v": null,
+        "vgl_operating_range_v": null,
+        "vsh_operating_range_v": null,
+        "vsl_operating_range_v": null,
+        "vph_operating_range_v": null,
+        "vpc_operating_range_v": null,
+        "prevgl_operating_range_v": null,
+        "allowed_tolerance_percent": null,
+        "absolute_maximum_rail_values_v": null
+      },
+      "evidence": [
+        {
+          "source_id": "S-D1",
+          "level": "D",
+          "locator": "PDF pp.6-7, 10-11",
+          "supports": "轨名、VCOM 已设定、逻辑供电范围；没有高压轨数值"
+        },
+        {
+          "source_id": "S-P7",
+          "level": "P",
+          "locator": "formal paper waveform examples",
+          "supports": "仅提供 Spectra 6 研究背景"
+        },
+        {
+          "source_id": "S-P8",
+          "level": "P",
+          "locator": "different oxide-TFT demonstration",
+          "supports": "仅提供不同平台研究背景"
+        }
+      ],
+      "limitation": "论文电压和参考电路电容的 25 V 额定值都不是本机 rail 限值。",
+      "safety_effect": "电压修改、扫描和从论文/专利移植数值保持 HARD BLOCKED。"
+    },
+    {
+      "id": "A-13",
+      "topic": "恢复、冷却、最大连续刷新和寿命限制",
+      "level": "D",
+      "status": "PARTIALLY_KNOWN_BLOCKING",
+      "value": {
+        "panel_recommendation": "suggest update once a day",
+        "long_red_recovery_guidance": "after red is shown for a long time, increase black/white clear-screen cycles for better effect",
+        "five_year_pixel_quality_humidity_condition": "not guaranteed below 45% RH or above 70% RH",
+        "qualification_operation_hold_s": 150,
+        "qualification_post_test_stabilization": "2 h at 20-25 C",
+        "adjacent_sample_post_display_sequence": "POF, wait BUSY, at least 10 ms, 6 s wait, PSR 0x4F 0x6E, wait BUSY, 1 s wait, then sample-controlled VDD cut",
+        "exact_required_recovery_sequence": null,
+        "minimum_runtime_cooldown_s": null,
+        "maximum_consecutive_refreshes": null,
+        "maximum_refreshes_per_day": null,
+        "mandatory_black_white_cleanup_count": null,
+        "rated_refresh_cycles": null,
+        "retention_lifetime_hours": null,
+        "partial_or_sparkle_endurance_limit": null
+      },
+      "evidence": [
+        {
+          "source_id": "S-D1",
+          "level": "D",
+          "locator": "PDF pp.15, 19",
+          "supports": "更新建议、长期红色恢复提示、湿度条件和可靠性资格试验"
+        },
+        {
+          "source_id": "S-P1",
+          "level": "P",
+          "locator": "E6_73.c lines 184-204 and repeated color functions; Version_Descriptions.txt line 3",
+          "supports": "800x480 相邻样例的 V1.2 power-cut sequence"
+        }
+      ],
+      "limitation": "150 s hold 和 2 h 放置属于可靠性资格试验，不是运行冷却规则；相邻样例的关断序列也不是精确面板命令保证。",
+      "safety_effect": "未知最大连续刷新和冷却规则时禁止自动连续刷新或无人值守耐久测试。"
+    }
+  ],
+  "hard_boundaries": {
+    "production_color_guard": "KEEP_REJECTING_0x4_AND_0x7_THROUGH_0xF",
+    "unknown_spi_commands": "BLOCKED",
+    "command_0x86": "BLOCKED",
+    "window_old_frame_partial": "BLOCKED",
+    "sparkle": "BLOCKED_ON_EXACT_COMPATIBILITY_PACKAGE",
+    "ripple": "BLOCKED_ON_EXACT_COMPATIBILITY_PACKAGE",
+    "color_mixing_waveform_architecture": "BLOCKED_ON_EXACT_COMPATIBILITY_PACKAGE",
+    "lut_upload_or_readback": "HARD_BLOCKED",
+    "waveform_or_phase_modification": "HARD_BLOCKED",
+    "voltage_modification": "HARD_BLOCKED",
+    "spd1656_command_porting": "FORBIDDEN",
+    "patent_parameter_derivation": "FORBIDDEN"
+  },
+  "required_vendor_inputs": [
+    "SPD1657B full datasheet and command supplement explicitly covering revision 0x04",
+    "MF-17506-M009F-T OTP waveform manifest with ID, version, CRC/hash, lot binding and temperature bands",
+    "Exact 3-bit code table including 0x4, 0x7 and reserved-bit/bit3 rules",
+    "Documented LUT upload/select/readback statement and format, or an explicit statement that no host interface exists",
+    "Documented command 0x86 semantics, area encoding, prerequisites and safety restrictions",
+    "Exact window, old-frame and partial support statement with commands, formats, boundaries and cleanup rules",
+    "Exact Sparkle and Ripple-transition compatibility statements and support packages",
+    "Exact new color-mixing waveform architecture compatibility statement for MF-17506-M009F-T with SPD1657B revision 0x04 and the current OTP; only if supported, the exact compatible chip model, actual primary-color count and code table, reserved/bit3 rules, support package and rollback procedure",
+    "Internal temperature read command, format, conversion, calibration, accuracy and waveform-band mapping",
+    "VCOM/VGH/VGL/VSH/VSL/VPH/VPC/PREVGL nominal, tolerance and absolute limits with measurement conditions",
+    "Required recovery/cleanup, cooling, maximum consecutive refresh, retention and rated cycle limits"
+  ],
+  "search_record": {
+    "date": "2026-08-05",
+    "allowed_source_classes": [
+      "manufacturer specification",
+      "official manufacturer code",
+      "chip-vendor material",
+      "official product or technology page",
+      "formal paper"
+    ],
+    "patent_policy": "principle_only",
+    "adjacent_controller_policy": "SPD1656 concepts only; no command or parameter porting",
+    "public_spd1657b_rev_0x04_full_datasheet_found": false,
+    "public_spd1657b_rev_0x04_full_datasheet_url": null
+  },
+  "stage_record": {
+    "actual_execution": [
+      "Reviewed the complete local MF-17506-M009F-T manufacturer specification",
+      "Reviewed the supplied E Ink E6_73 V1.2 sample and classified it as an adjacent 800x480, 192000-byte Spectra 6 platform sample",
+      "Searched and reviewed official E Ink and Solomon pages plus formal E Ink papers",
+      "Separated direct, platform, inference and unknown evidence",
+      "Recorded every unknown executable value as null"
+    ],
+    "not_executed": [
+      "No panel power-on",
+      "No COM8 flashing",
+      "No HTTP refresh request",
+      "No SPI command probing",
+      "No LUT, waveform, timing or voltage modification",
+      "No hardware measurement"
+    ],
+    "user_authorization_record": {
+      "hardware_authorization_requested": false,
+      "hardware_authorization_received": false,
+      "reason": "Stage A was read-only and required no hardware action."
+    },
+    "git": {
+      "branch": "research/extended-color-20260805",
+      "source_commit": "3dfd4776b749660a5462f27b80d0055f23f0c47e",
+      "commit_created_for_this_artifact": null,
+      "pushed": false
+    },
+    "hardware_tested": false,
+    "raw_data_paths": [],
+    "raw_data_sha256": [],
+    "build_hash": null,
+    "binary_hash": null,
+    "frame_hash": null,
+    "dtm_hashes": null,
+    "anomalies": [],
+    "recovery_result": null
+  },
+  "go_no_go": {
+    "stage_a_to_safe_host_work": "GO",
+    "reason_for_go": "证据边界已足以继续仓库检查、主机侧生成器、schema、分析器、模拟测试和测量门禁文档。",
+    "original_six_color_hardware_baseline": "NO_GO_UNTIL_EXPLICIT_HARDWARE_AUTHORIZATION_AND_MEASUREMENT_SAFETY_GATE",
+    "unknown_code_hardware_probe": "NO_GO_UNTIL_STAGE_F_REVIEW_AND_SEPARATE_FLASH_AND_REFRESH_AUTHORIZATIONS",
+    "bit3_alias_hardware_probe": "NO_GO_UNTIL_STAGE_G_REPORT_AND_NEW_USER_APPROVAL",
+    "custom_waveform_lut_voltage_work": "HARD_BLOCKED",
+    "blocking_reason": "缺少 SPD1657B rev 0x04 完整资料、当前 OTP 包、精确 LUT/温度/电压接口及厂商安全和寿命要求。"
+  }
+}

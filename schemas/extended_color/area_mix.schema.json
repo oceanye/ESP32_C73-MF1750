@@ -1,0 +1,416 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/mf1750/extended-color/area_mix.schema.json",
+  "title": "MF-1750 offline six-primary area-mix analysis",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "analysis_id",
+    "analysis_id_scope",
+    "panel_model",
+    "color_codes",
+    "hardware_tested",
+    "offline_only",
+    "device_io_performed",
+    "network_io_performed",
+    "waveform_changed",
+    "voltage_changed",
+    "formal_api_compatible",
+    "prediction_is_measurement",
+    "target",
+    "palette",
+    "model",
+    "candidates",
+    "artifact_selection"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "kind": {"const": "mf1750-six-primary-area-mix-analysis"},
+    "analysis_id": {"type": "string", "pattern": "^MF1750-EC-MIX-[0-9A-F]{12}$"},
+    "analysis_id_scope": {
+      "const": "canonical UTF-8 JSON of schema/model/layout versions, formal color order, palette hash, target Lab, input space, tile side, candidate counts and tile codes"
+    },
+    "panel_model": {"const": "MF-17506-M009F-T"},
+    "color_codes": {"const": [0, 1, 2, 3, 5, 6]},
+    "hardware_tested": {"const": false},
+    "offline_only": {"const": true},
+    "device_io_performed": {"const": false},
+    "network_io_performed": {"const": false},
+    "waveform_changed": {"const": false},
+    "voltage_changed": {"const": false},
+    "formal_api_compatible": {"const": true},
+    "prediction_is_measurement": {"const": false},
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["input_space", "input_values", "lab_d65_2deg", "preview_srgb"],
+      "properties": {
+        "input_space": {"enum": ["Lab", "sRGB8"]},
+        "input_values": {"type": "array", "minItems": 3, "maxItems": 3},
+        "lab_d65_2deg": {"$ref": "#/$defs/lab"},
+        "preview_srgb": {"$ref": "#/$defs/srgb"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"input_space": {"const": "sRGB8"}}},
+          "then": {"properties": {"input_values": {"$ref": "#/$defs/srgb"}}},
+          "else": {"properties": {"input_values": {"$ref": "#/$defs/lab_array"}}}
+        }
+      ]
+    },
+    "palette": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "palette_id",
+        "calibrated",
+        "source",
+        "illuminant",
+        "observer",
+        "notes",
+        "calibration",
+        "entries",
+        "canonical_sha256"
+      ],
+      "properties": {
+        "schema_version": {"const": 2},
+        "palette_id": {"type": "string", "minLength": 1},
+        "calibrated": {"type": "boolean"},
+        "source": {"type": "string", "minLength": 1},
+        "illuminant": {"const": "D65"},
+        "observer": {"const": "2deg"},
+        "notes": {"type": "string"},
+        "calibration": {"$ref": "#/$defs/nullable_calibration"},
+        "entries": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 6,
+          "prefixItems": [
+            {"$ref": "#/$defs/palette_black"},
+            {"$ref": "#/$defs/palette_white"},
+            {"$ref": "#/$defs/palette_yellow"},
+            {"$ref": "#/$defs/palette_red"},
+            {"$ref": "#/$defs/palette_blue"},
+            {"$ref": "#/$defs/palette_green"}
+          ],
+          "items": false
+        },
+        "canonical_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"calibrated": {"const": true}}},
+          "then": {"properties": {"calibration": {"$ref": "#/$defs/calibration"}}},
+          "else": {"properties": {"calibration": {"type": "null"}}}
+        }
+      ]
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model_version",
+        "layout_version",
+        "tile_side",
+        "tile_pixels",
+        "recipe_space_size",
+        "area_average_domain",
+        "ranking_metric",
+        "layout",
+        "uncalibrated_simulation",
+        "limitations"
+      ],
+      "properties": {
+        "model_version": {"const": "xyz-area-v1"},
+        "layout_version": {"const": "bayer-threshold-interval-v1"},
+        "tile_side": {"enum": [2, 4]},
+        "tile_pixels": {"enum": [4, 16]},
+        "recipe_space_size": {"enum": [126, 20349]},
+        "area_average_domain": {"const": "CIE XYZ D65 derived from palette Lab"},
+        "ranking_metric": {"const": "CIEDE2000"},
+        "layout": {"const": "contiguous color-count intervals on Bayer threshold order"},
+        "uncalibrated_simulation": {"type": "boolean"},
+        "limitations": {"type": "string", "minLength": 1}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"tile_side": {"const": 2}}},
+          "then": {
+            "properties": {
+              "tile_pixels": {"const": 4},
+              "recipe_space_size": {"const": 126}
+            }
+          },
+          "else": {
+            "properties": {
+              "tile_pixels": {"const": 16},
+              "recipe_space_size": {"const": 20349}
+            }
+          }
+        }
+      ]
+    },
+    "candidates": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "items": {"$ref": "#/$defs/candidate"}
+    },
+    "artifact_selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "frame_output_requested",
+        "rendered_candidate_rank",
+        "selected_frame_identity"
+      ],
+      "properties": {
+        "frame_output_requested": {"type": "boolean"},
+        "rendered_candidate_rank": {"type": ["integer", "null"], "minimum": 1, "maximum": 32},
+        "selected_frame_identity": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/frame_identity"}
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"frame_output_requested": {"const": true}}},
+          "then": {
+            "properties": {
+              "rendered_candidate_rank": {"type": "integer", "minimum": 1, "maximum": 32},
+              "selected_frame_identity": {"$ref": "#/$defs/frame_identity"}
+            }
+          },
+          "else": {
+            "properties": {
+              "rendered_candidate_rank": {"type": "null"},
+              "selected_frame_identity": {"type": "null"}
+            }
+          }
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "fnv1a": {"type": "integer", "minimum": 0, "maximum": 4294967295},
+    "fnv1a_hex": {"type": "string", "pattern": "^0x[0-9A-F]{8}$"},
+    "lab": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["l", "a", "b"],
+      "properties": {
+        "l": {"type": "number", "minimum": 0, "maximum": 100},
+        "a": {"type": "number", "minimum": -200, "maximum": 200},
+        "b": {"type": "number", "minimum": -200, "maximum": 200}
+      }
+    },
+    "lab_array": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "prefixItems": [
+        {"type": "number", "minimum": 0, "maximum": 100},
+        {"type": "number", "minimum": -200, "maximum": 200},
+        {"type": "number", "minimum": -200, "maximum": 200}
+      ],
+      "items": false
+    },
+    "srgb": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {"type": "integer", "minimum": 0, "maximum": 255}
+    },
+    "calibration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["measurement_id", "artifact_sha256"],
+      "properties": {
+        "measurement_id": {"type": "string", "minLength": 1},
+        "artifact_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "nullable_calibration": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/calibration"}
+      ]
+    },
+    "palette_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "name", "lab", "preview_rgb"],
+      "properties": {
+        "code": {"enum": [0, 1, 2, 3, 5, 6]},
+        "name": {"enum": ["black", "white", "yellow", "red", "blue", "green"]},
+        "lab": {"$ref": "#/$defs/lab_array"},
+        "preview_rgb": {"$ref": "#/$defs/srgb"}
+      }
+    },
+    "palette_black": {"$ref": "#/$defs/palette_entry", "properties": {"code": {"const": 0}, "name": {"const": "black"}}},
+    "palette_white": {"$ref": "#/$defs/palette_entry", "properties": {"code": {"const": 1}, "name": {"const": "white"}}},
+    "palette_yellow": {"$ref": "#/$defs/palette_entry", "properties": {"code": {"const": 2}, "name": {"const": "yellow"}}},
+    "palette_red": {"$ref": "#/$defs/palette_entry", "properties": {"code": {"const": 3}, "name": {"const": "red"}}},
+    "palette_blue": {"$ref": "#/$defs/palette_entry", "properties": {"code": {"const": 5}, "name": {"const": "blue"}}},
+    "palette_green": {"$ref": "#/$defs/palette_entry", "properties": {"code": {"const": 6}, "name": {"const": "green"}}},
+    "count": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "name", "pixels", "fraction"],
+      "properties": {
+        "code": {"enum": [0, 1, 2, 3, 5, 6]},
+        "name": {"enum": ["black", "white", "yellow", "red", "blue", "green"]},
+        "pixels": {"type": "integer", "minimum": 0, "maximum": 16},
+        "fraction": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "count_black": {"$ref": "#/$defs/count", "properties": {"code": {"const": 0}, "name": {"const": "black"}}},
+    "count_white": {"$ref": "#/$defs/count", "properties": {"code": {"const": 1}, "name": {"const": "white"}}},
+    "count_yellow": {"$ref": "#/$defs/count", "properties": {"code": {"const": 2}, "name": {"const": "yellow"}}},
+    "count_red": {"$ref": "#/$defs/count", "properties": {"code": {"const": 3}, "name": {"const": "red"}}},
+    "count_blue": {"$ref": "#/$defs/count", "properties": {"code": {"const": 5}, "name": {"const": "blue"}}},
+    "count_green": {"$ref": "#/$defs/count", "properties": {"code": {"const": 6}, "name": {"const": "green"}}},
+    "mapping_cs1": {
+      "const": {"source_half": 0, "flip_x": false, "flip_y": false, "nibble_swap": false}
+    },
+    "mapping_cs2": {
+      "const": {"source_half": 1, "flip_x": false, "flip_y": false, "nibble_swap": false}
+    },
+    "cs1_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["controller", "mapping", "dtm_bytes", "dtm_sha256", "dtm_fnv1a", "dtm_fnv1a_hex"],
+      "properties": {
+        "controller": {"const": "CS1"},
+        "mapping": {"$ref": "#/$defs/mapping_cs1"},
+        "dtm_bytes": {"const": 153600},
+        "dtm_sha256": {"$ref": "#/$defs/sha256"},
+        "dtm_fnv1a": {"$ref": "#/$defs/fnv1a"},
+        "dtm_fnv1a_hex": {"$ref": "#/$defs/fnv1a_hex"}
+      }
+    },
+    "cs2_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["controller", "mapping", "dtm_bytes", "dtm_sha256", "dtm_fnv1a", "dtm_fnv1a_hex"],
+      "properties": {
+        "controller": {"const": "CS2"},
+        "mapping": {"$ref": "#/$defs/mapping_cs2"},
+        "dtm_bytes": {"const": 153600},
+        "dtm_sha256": {"$ref": "#/$defs/sha256"},
+        "dtm_fnv1a": {"$ref": "#/$defs/fnv1a"},
+        "dtm_fnv1a_hex": {"$ref": "#/$defs/fnv1a_hex"}
+      }
+    },
+    "frame_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height",
+        "bits_per_pixel",
+        "frame_bytes",
+        "frame_sha256",
+        "frame_fnv1a",
+        "frame_fnv1a_hex",
+        "controllers",
+        "canonical_sha256",
+        "canonical_sha256_scope"
+      ],
+      "properties": {
+        "width": {"const": 1024},
+        "height": {"const": 600},
+        "bits_per_pixel": {"const": 4},
+        "frame_bytes": {"const": 307200},
+        "frame_sha256": {"$ref": "#/$defs/sha256"},
+        "frame_fnv1a": {"$ref": "#/$defs/fnv1a"},
+        "frame_fnv1a_hex": {"$ref": "#/$defs/fnv1a_hex"},
+        "controllers": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "prefixItems": [
+            {"$ref": "#/$defs/cs1_identity"},
+            {"$ref": "#/$defs/cs2_identity"}
+          ],
+          "items": false
+        },
+        "canonical_sha256": {"$ref": "#/$defs/sha256"},
+        "canonical_sha256_scope": {
+          "const": "canonical JSON of frame byte/hash fields and ordered CS1/CS2 DTM identities"
+        }
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rank",
+        "counts",
+        "predicted_lab",
+        "predicted_preview_srgb",
+        "predicted_delta_e00",
+        "measured_lab",
+        "measured_delta_e00",
+        "model_residual_delta_e00",
+        "prediction_confidence",
+        "transition_cost",
+        "energy_j",
+        "ghosting_metric",
+        "tile_codes",
+        "tile_sha256",
+        "tile_sha256_scope",
+        "frame_identity"
+      ],
+      "properties": {
+        "rank": {"type": "integer", "minimum": 1, "maximum": 32},
+        "counts": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 6,
+          "prefixItems": [
+            {"$ref": "#/$defs/count_black"},
+            {"$ref": "#/$defs/count_white"},
+            {"$ref": "#/$defs/count_yellow"},
+            {"$ref": "#/$defs/count_red"},
+            {"$ref": "#/$defs/count_blue"},
+            {"$ref": "#/$defs/count_green"}
+          ],
+          "items": false
+        },
+        "predicted_lab": {"$ref": "#/$defs/lab"},
+        "predicted_preview_srgb": {"$ref": "#/$defs/srgb"},
+        "predicted_delta_e00": {"type": "number", "minimum": 0},
+        "measured_lab": {"type": "null"},
+        "measured_delta_e00": {"type": "null"},
+        "model_residual_delta_e00": {"type": "null"},
+        "prediction_confidence": {"type": "null"},
+        "transition_cost": {"type": "null"},
+        "energy_j": {"type": "null"},
+        "ghosting_metric": {"type": "null"},
+        "tile_codes": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 4,
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 4,
+            "items": {"enum": [0, 1, 2, 3, 5, 6]}
+          }
+        },
+        "tile_sha256": {"$ref": "#/$defs/sha256"},
+        "tile_sha256_scope": {
+          "const": "row-major tile; one byte per pixel containing a formal color code"
+        },
+        "frame_identity": {"$ref": "#/$defs/frame_identity"}
+      }
+    }
+  }
+}

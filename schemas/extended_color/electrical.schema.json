@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/mf1750/extended-color/electrical.schema.json",
+  "title": "MF-1750 extended-color electrical and thermal measurements",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "run_id",
+    "hardware_tested",
+    "acquisition",
+    "busy",
+    "input_power",
+    "rails",
+    "temperatures",
+    "interlocks"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "kind": {"const": "mf1750-extended-color-electrical"},
+    "run_id": {"type": "string", "minLength": 1},
+    "hardware_tested": {"type": "boolean"},
+    "acquisition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["instrument_ids", "sample_rate_sps", "bandwidth_hz", "clock_alignment_ms", "raw_trace_refs"],
+      "properties": {
+        "instrument_ids": {"type": "array", "items": {"type": "string"}},
+        "sample_rate_sps": {"type": ["number", "null"], "exclusiveMinimum": 0},
+        "bandwidth_hz": {"type": ["number", "null"], "exclusiveMinimum": 0},
+        "clock_alignment_ms": {"type": ["number", "null"], "minimum": 0},
+        "raw_trace_refs": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "busy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pon_ms", "pon_asserted", "drf_ms", "drf_asserted", "pof_ms", "pof_asserted", "timeout"],
+      "properties": {
+        "pon_ms": {"$ref": "#/$defs/nullable_nonnegative"},
+        "pon_asserted": {"type": ["boolean", "null"]},
+        "drf_ms": {"$ref": "#/$defs/nullable_nonnegative"},
+        "drf_asserted": {"type": ["boolean", "null"]},
+        "pof_ms": {"$ref": "#/$defs/nullable_nonnegative"},
+        "pof_asserted": {"type": ["boolean", "null"]},
+        "timeout": {"type": ["boolean", "null"]}
+      }
+    },
+    "input_power": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["peak_current_a", "mean_current_a", "rms_current_a", "energy_j", "tp1_min_v", "droop_v", "supply_cc_or_trip"],
+      "properties": {
+        "peak_current_a": {"$ref": "#/$defs/nullable_nonnegative"},
+        "mean_current_a": {"$ref": "#/$defs/nullable_nonnegative"},
+        "rms_current_a": {"$ref": "#/$defs/nullable_nonnegative"},
+        "energy_j": {"$ref": "#/$defs/nullable_nonnegative"},
+        "tp1_min_v": {"type": ["number", "null"]},
+        "droop_v": {"$ref": "#/$defs/nullable_nonnegative"},
+        "supply_cc_or_trip": {"type": ["boolean", "null"]}
+      }
+    },
+    "rails": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tp3_vph", "tp5_prevgl", "tp6_vpc"],
+      "properties": {
+        "tp3_vph": {"$ref": "#/$defs/rail"},
+        "tp5_prevgl": {"$ref": "#/$defs/rail"},
+        "tp6_vpc": {"$ref": "#/$defs/rail"}
+      }
+    },
+    "temperatures": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["panel_c", "controller_1_c", "controller_2_c", "q1_c", "q2_c", "l1_c", "l2_c"],
+      "properties": {
+        "panel_c": {"type": ["number", "null"]},
+        "controller_1_c": {"type": ["number", "null"]},
+        "controller_2_c": {"type": ["number", "null"]},
+        "q1_c": {"type": ["number", "null"]},
+        "q2_c": {"type": ["number", "null"]},
+        "l1_c": {"type": ["number", "null"]},
+        "l2_c": {"type": ["number", "null"]}
+      }
+    },
+    "interlocks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["estop_armed", "hardware_current_limit_armed", "j2_1_latched_switch_armed", "triggered"],
+      "properties": {
+        "estop_armed": {"type": ["boolean", "null"]},
+        "hardware_current_limit_armed": {"type": ["boolean", "null"]},
+        "j2_1_latched_switch_armed": {"type": ["boolean", "null"]},
+        "triggered": {"type": ["boolean", "null"]}
+      }
+    },
+    "notes": {"type": ["string", "null"]}
+  },
+  "$defs": {
+    "nullable_nonnegative": {"type": ["number", "null"], "minimum": 0},
+    "rail": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minimum_v", "maximum_v", "plateau_v", "rise_ms", "release_ms", "absolute_limit_known"],
+      "properties": {
+        "minimum_v": {"type": ["number", "null"]},
+        "maximum_v": {"type": ["number", "null"]},
+        "plateau_v": {"type": ["number", "null"]},
+        "rise_ms": {"$ref": "#/$defs/nullable_nonnegative"},
+        "release_ms": {"$ref": "#/$defs/nullable_nonnegative"},
+        "absolute_limit_known": {"const": false}
+      }
+    }
+  }
+}

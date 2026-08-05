@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/mf1750/extended-color/event_recovery.schema.json",
+  "title": "MF-1750 extended-color immutable event and recovery record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "run_id",
+    "hardware_tested",
+    "events",
+    "abnormality",
+    "automatic_retry_count",
+    "recovery",
+    "final_power_state"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "kind": {"const": "mf1750-extended-color-event-recovery"},
+    "run_id": {"type": "string", "minLength": 1},
+    "hardware_tested": {"type": "boolean"},
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["sequence", "timestamp", "event", "authorization_id", "result", "details"],
+        "properties": {
+          "sequence": {"type": "integer", "minimum": 0},
+          "timestamp": {"type": ["string", "null"], "format": "date-time"},
+          "event": {
+            "enum": [
+              "power_off_confirmed",
+              "flash_authorized",
+              "flashed",
+              "power_on_authorized",
+              "power_normal_confirmed",
+              "frame_authorized",
+              "pon",
+              "drf",
+              "pof",
+              "operator_observation",
+              "fault",
+              "recovery_authorized",
+              "recovery_frame",
+              "recovery_confirmed",
+              "power_off_authorized",
+              "tp1_zero_confirmed"
+            ]
+          },
+          "authorization_id": {"type": ["string", "null"]},
+          "result": {"enum": ["pending", "pass", "fail", "not_run"]},
+          "details": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "abnormality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observed", "category", "description", "fault_locked"],
+      "properties": {
+        "observed": {"type": "boolean"},
+        "category": {
+          "type": ["string", "null"],
+          "enum": ["busy", "current", "voltage", "temperature", "visual", "instrument", "data", "other", null]
+        },
+        "description": {"type": ["string", "null"]},
+        "fault_locked": {"type": "boolean"}
+      }
+    },
+    "automatic_retry_count": {"const": 0},
+    "recovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authorized", "authorization_id", "attempted", "sequence", "passed", "final_white_delta_e00", "raw_ghosting_metric"],
+      "properties": {
+        "authorized": {"type": "boolean"},
+        "authorization_id": {"type": ["string", "null"]},
+        "attempted": {"type": "boolean"},
+        "sequence": {"const": [0, 1, 0, 1]},
+        "passed": {"type": ["boolean", "null"]},
+        "final_white_delta_e00": {"type": ["number", "null"], "minimum": 0},
+        "raw_ghosting_metric": {"type": ["number", "null"], "minimum": 0}
+      }
+    },
+    "final_power_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["j2_1_off_confirmed", "tp1_v", "tp1_at_or_below_0_10_v_for_5s"],
+      "properties": {
+        "j2_1_off_confirmed": {"type": ["boolean", "null"]},
+        "tp1_v": {"type": ["number", "null"]},
+        "tp1_at_or_below_0_10_v_for_5s": {"type": ["boolean", "null"]}
+      }
+    }
+  }
+}

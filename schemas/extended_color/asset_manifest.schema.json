@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/mf1750/extended-color/asset_manifest.schema.json",
+  "title": "MF-1750 extended-color raw evidence manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "run_id", "created_at", "root_label", "hardware_tested", "assets"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "kind": {"const": "mf1750-extended-color-asset-manifest"},
+    "run_id": {"type": "string", "minLength": 1},
+    "created_at": {"type": "string", "format": "date-time"},
+    "root_label": {"type": "string", "minLength": 1},
+    "hardware_tested": {"type": "boolean"},
+    "assets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "relative_path", "bytes", "sha256", "captured_at", "instrument_id"],
+        "properties": {
+          "role": {
+            "enum": ["raw_camera", "oscilloscope", "colorimeter", "thermal", "environment", "power_supply", "other"]
+          },
+          "relative_path": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(?![A-Za-z]:)(?![/\\\\])(?!.*(?:^|[/\\\\])[.][.](?:[/\\\\]|$)).+$"
+          },
+          "bytes": {"type": "integer", "minimum": 0},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "captured_at": {"type": ["string", "null"], "format": "date-time"},
+          "instrument_id": {"type": ["string", "null"]}
+        }
+      }
+    }
+  }
+}

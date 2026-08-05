@@ -1,0 +1,223 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/mf1750/extended-color/run.schema.json",
+  "title": "MF-1750 extended-color run record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "test_id",
+    "run_id",
+    "stage",
+    "status",
+    "hardware_tested",
+    "panel",
+    "authorization",
+    "firmware",
+    "frame_identity",
+    "environment",
+    "started_at",
+    "finished_at"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "kind": {"const": "mf1750-extended-color-run"},
+    "test_id": {"type": "string", "minLength": 1, "maxLength": 96},
+    "run_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "stage": {"enum": ["D", "E", "G", "H", "I"]},
+    "status": {
+      "enum": ["planned", "authorized", "running", "completed", "aborted", "fault_locked"]
+    },
+    "hardware_tested": {"type": "boolean"},
+    "candidate_code": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "maximum": 15
+    },
+    "initial_color_code": {
+      "type": ["integer", "null"],
+      "enum": [0, 1, 2, 3, 5, 6, null]
+    },
+    "panel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model",
+        "serial",
+        "pcb_revision",
+        "controller",
+        "controller_revision",
+        "r15",
+        "r16_ohm"
+      ],
+      "properties": {
+        "model": {"const": "MF-17506-M009F-T"},
+        "serial": {"type": ["string", "null"]},
+        "pcb_revision": {"const": "MF1750 Rev A1"},
+        "controller": {"const": "SPD1657B"},
+        "controller_revision": {"const": "0x04"},
+        "r15": {"const": "removed"},
+        "r16_ohm": {"const": 0}
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "flash_com8",
+        "power_off_confirmed",
+        "power_on",
+        "power_normal_confirmed",
+        "send_frame",
+        "post_refresh_confirmed",
+        "final_power_off_tp1_confirmed"
+      ],
+      "properties": {
+        "flash_com8": {"$ref": "#/$defs/authorization"},
+        "power_off_confirmed": {"$ref": "#/$defs/authorization"},
+        "power_on": {"$ref": "#/$defs/authorization"},
+        "power_normal_confirmed": {"$ref": "#/$defs/authorization"},
+        "send_frame": {"$ref": "#/$defs/authorization"},
+        "post_refresh_confirmed": {"$ref": "#/$defs/authorization"},
+        "final_power_off_tp1_confirmed": {"$ref": "#/$defs/authorization"}
+      }
+    },
+    "firmware": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["git_commit", "build_tag", "binary_sha256", "release_unknown_code_disabled"],
+      "properties": {
+        "git_commit": {"$ref": "#/$defs/hex40"},
+        "build_tag": {"type": "string", "minLength": 1},
+        "binary_sha256": {"$ref": "#/$defs/sha256"},
+        "release_unknown_code_disabled": {"const": true}
+      }
+    },
+    "frame_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height",
+        "bits_per_pixel",
+        "frame_bytes",
+        "frame_sha256",
+        "frame_fnv1a",
+        "frame_fnv1a_hex",
+        "controllers",
+        "canonical_sha256",
+        "canonical_sha256_scope"
+      ],
+      "properties": {
+        "width": {"const": 1024},
+        "height": {"const": 600},
+        "bits_per_pixel": {"const": 4},
+        "frame_bytes": {"const": 307200},
+        "frame_sha256": {"$ref": "#/$defs/sha256"},
+        "frame_fnv1a": {"$ref": "#/$defs/fnv1a"},
+        "frame_fnv1a_hex": {"$ref": "#/$defs/fnv1a_hex"},
+        "controllers": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "prefixItems": [
+            {"$ref": "#/$defs/cs1_identity"},
+            {"$ref": "#/$defs/cs2_identity"}
+          ],
+          "items": false
+        },
+        "canonical_sha256": {"$ref": "#/$defs/sha256"},
+        "canonical_sha256_scope": {
+          "const": "canonical JSON of frame byte/hash fields and ordered CS1/CS2 DTM identities"
+        }
+      }
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["temperature_c", "relative_humidity_percent", "record_ref"],
+      "properties": {
+        "temperature_c": {"type": ["number", "null"]},
+        "relative_humidity_percent": {"type": ["number", "null"], "minimum": 0, "maximum": 100},
+        "record_ref": {"type": ["string", "null"]}
+      }
+    },
+    "started_at": {"type": ["string", "null"], "format": "date-time"},
+    "finished_at": {"type": ["string", "null"], "format": "date-time"},
+    "abort_reason": {"type": ["string", "null"]},
+    "notes": {"type": ["string", "null"]}
+  },
+  "$defs": {
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authorized", "authorization_id", "recorded_at"],
+      "properties": {
+        "authorized": {"type": "boolean"},
+        "authorization_id": {"type": ["string", "null"]},
+        "recorded_at": {"type": ["string", "null"], "format": "date-time"}
+      }
+    },
+    "sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "hex40": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$"},
+    "fnv1a": {"type": "integer", "minimum": 0, "maximum": 4294967295},
+    "fnv1a_hex": {"type": "string", "pattern": "^0x[0-9A-F]{8}$"},
+    "mapping_cs1": {
+      "const": {
+        "source_half": 0,
+        "flip_x": false,
+        "flip_y": false,
+        "nibble_swap": false
+      }
+    },
+    "mapping_cs2": {
+      "const": {
+        "source_half": 1,
+        "flip_x": false,
+        "flip_y": false,
+        "nibble_swap": false
+      }
+    },
+    "cs1_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "controller",
+        "mapping",
+        "dtm_bytes",
+        "dtm_sha256",
+        "dtm_fnv1a",
+        "dtm_fnv1a_hex"
+      ],
+      "properties": {
+        "controller": {"const": "CS1"},
+        "mapping": {"$ref": "#/$defs/mapping_cs1"},
+        "dtm_bytes": {"const": 153600},
+        "dtm_sha256": {"$ref": "#/$defs/sha256"},
+        "dtm_fnv1a": {"$ref": "#/$defs/fnv1a"},
+        "dtm_fnv1a_hex": {"$ref": "#/$defs/fnv1a_hex"}
+      }
+    },
+    "cs2_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "controller",
+        "mapping",
+        "dtm_bytes",
+        "dtm_sha256",
+        "dtm_fnv1a",
+        "dtm_fnv1a_hex"
+      ],
+      "properties": {
+        "controller": {"const": "CS2"},
+        "mapping": {"$ref": "#/$defs/mapping_cs2"},
+        "dtm_bytes": {"const": 153600},
+        "dtm_sha256": {"$ref": "#/$defs/sha256"},
+        "dtm_fnv1a": {"$ref": "#/$defs/fnv1a"},
+        "dtm_fnv1a_hex": {"$ref": "#/$defs/fnv1a_hex"}
+      }
+    }
+  }
+}
