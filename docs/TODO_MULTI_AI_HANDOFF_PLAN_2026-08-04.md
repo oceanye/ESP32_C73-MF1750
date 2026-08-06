@@ -1,6 +1,6 @@
 # ESP32_C73 后续 TODO 与多 AI 协作计划（2026-08-04）
 
-## 0. 进度快照（2026-08-04 集成复审）
+## 0. 进度快照（2026-08-05 集成复审）
 
 | 工作包 | 当前状态 | 已合入来源 | 剩余门禁 |
 |---|---|---|---|
@@ -9,15 +9,16 @@
 | C2 六色量化与抖动 | 算法、schema v2、来源与整屏授权边界完成 | `feature/color-dither` / `7cc015e` + 本地加固 | 实测 D65/2deg 六色色板与真屏主观验收 |
 | G1 抖动前色域映射 | 高级 AI 软件工作包与复制提示词已建立；实现未开始 | `docs/G1_SPECTRA6_GAMUT_MAPPING_HANDOFF_2026-08-05.md` | calibrated 六色及混色 profile、软件实现、真屏 A/B |
 | C3 转移感知优化 | 保守区域/转移统计规划器完成；完整优化器未开始 | `research/fast-refresh` / `b03b7e1` | 可信旧帧状态和 6x6 实测转移矩阵 |
-| EC0-EC9 扩展颜色/亮度 | 可行性审查与分阶段 TODO 已冻结；硬件测试未开始 | `docs/EPD_EXTENDED_COLOR_FEASIBILITY_2026-08-05.md` + `docs/TODO_EPD_EXTENDED_COLOR_TESTS_2026-08-05.md` | 测色/电气仪器、恢复 pilot、隔离诊断入口、用户逐阶段授权；LUT/电压继续等待 SPD1657B/OTP 资料 |
+| EC0-EC9 扩展颜色/亮度 | 可行性审查与分阶段 TODO 已冻结；A/B/F/J 离线设计、七份 schema、面积混色与资产清单工具已合入本地 main（`73607a2` + 加固 `be859be`）；硬件测试未开始 | `docs/EPD_EXTENDED_COLOR_FEASIBILITY_2026-08-05.md` + `docs/TODO_EPD_EXTENDED_COLOR_TESTS_2026-08-05.md` + `docs/EXTENDED_COLOR_STAGE_LEDGER_2026-08-05.md` | 测色/电气仪器、恢复 pilot、隔离诊断入口、用户逐阶段授权；F 实验固件实现等用户审查设计文档后授权；LUT/电压继续等待 SPD1657B/OTP 资料 |
 | C4 应用 API/Web UI | 应用 API/Web UI、HTTP adapter 与一次性硬件授权的软件合同完成 | 本地集成加固 | 设备端认证方案、普通图片端到端实刷 |
-| C5 CI 与回归门禁 | 203 项回归、合同、PlatformIO 与主线 CI run 30917129233 通过 | `feature/host-ci` / `c59a1f2` + 本地加固 | 后续变更继续逐提交运行；CI 不替代硬件结论 |
+| C5 CI 与回归门禁 | 286 项回归在扩展颜色合并后于本地 Python 3.10/3.12 双解释器通过；合同、PlatformIO 与主线 CI run 30917129233（203 项时点）通过 | `feature/host-ci` / `c59a1f2` + 本地加固 | 后续变更继续逐提交运行；本次推送后以 origin/main 新 SHA 的 CI 为准；CI 不替代硬件结论 |
 | N0-N6 网络随机照片 | 待执行；已建立来源、下载、随机、量化、投递、调度与无人值守门禁 | `docs/TODO_NETWORK_RANDOM_PHOTO_PIPELINE.md` | 用户确认数据源、调度主机、周期、电源方式和 calibrated palette |
 | R1 SPI 扫频 | 严格离线分析器完成；参数化固件 action 未实现 | `research/fast-refresh` / `b03b7e1` + 本地加固 | 独立诊断固件及 1/2/4/8/10 MHz 冷启动扫频 |
 | R2 快速波形/局刷 | 证据边界与控制器中立规划器完成 | `research/fast-refresh` / `b03b7e1` | SPD1657B/面板 OTP 厂商资料；取得前禁止实装 |
 | H0 阶段备份 | Git/冻结文件基线已建立；D0 已通过但硬件 v1.0 快照未封版 | RC1/冻结基线 `3033da0` | 生成 archive/hash；tag 需用户明确授权 |
 | H1 Rev B-mini 分析 | ESP32/TF/电源架构及 L1/L2 第一轮只读评估已记录；器件未冻结 | `docs/H1_REV_B_MINI_COMPONENT_ASSESSMENT_2026-08-05.md` + L1/L2 附录 | 定量电流、SW/高压波形、温升、机械与产品输入 |
 | H2 Rev B-mini 设计 | 未开始原理图或 PCB | 无 | H0、H1 测量门禁和用户确认后才能启动 |
+| 设备端功能缺口 | HTTP API 无认证/TLS、无远端 cancel、无持久 job 历史；HTTP 分块上传未实现（整帧依赖 PSRAM 一次性分配）；MCU 端 JPEG/PNG 解码与本地量化无正式路径 | `docs/MF1750_DRIVER_API.md` §8 + `docs/C4_APPLICATION_HANDOFF_2026-08-04.md` | 正式发布与无人值守运行前必须解决设备端认证；分块上传是 MINI-1-N4R2 小 PSRAM 评估前提；其余无正式排期 |
 
 远端完整集成分支 `integration/host-fast-refresh-ci-color` 的最新点为 `dd711c9`，
 [GitHub Actions run 30863009577](https://github.com/oceanye/ESP32_C73-MF1750/actions/runs/30863009577)
@@ -28,6 +29,15 @@ RC2B/V2、主机工具、颜色与契约加固已通过当时的本地回归、r
 RC2C/V3 随后完成 100 kHz 与正式 1 MHz MAP_ORIENT_V1 真屏验收；主机修正点
 `2b19f75` 的 203 项回归、PlatformIO 与 GitHub CI run `30917129233` 全部通过。
 真屏结论只来自同次 job/report 与用户对画面、电源、温度的确认，不能由 CI 替代。
+
+2026-08-05 复审补充：扩展颜色研究分支（含面积混色、资产清单、阶段台账与 G1 移交文档）
+已合入本地 main（`73607a2` + 加固 `be859be`），合并后全仓 286 项 unittest 在 Python
+3.10/3.12 下通过；此前本地 main 领先 `origin/main` 7 个提交未推送，本次快照更新随提交
+一并推送，推送后须以 `origin/main` 新 SHA 的 CI 为准。当前源码候选 build tag 为 RC2F
+（`MF1750_DRIVER_RC2F_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_PHYSICAL_2026-08-05`），
+已完成 clean build 但尚未刷写、未在该 build 上做面板刷新；最近实机验收 build 仍为
+RC2C/V3。`host-test-report.json` 为 2026-08-04 的 152 项陈旧快照，不代表当前 286 项，
+以 `python tools/run_host_tests.py --force` 现场重跑为准。
 
 ## 1. 目的与当前优先级
 
