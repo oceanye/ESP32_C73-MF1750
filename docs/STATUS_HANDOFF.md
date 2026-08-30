@@ -4,7 +4,50 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-08-30 22:02 +08:00`
+最后更新：`2026-08-31 05:45 +08:00`
+
+## 2026-08-31 05:45 T3 日间 48MP 辅助粗筛与 W4 状态门离线就绪（最高优先级）
+
+- 操作者已准备休息；本轮严格只做离线代码与计划。继承现场状态不变：J2
+  commanded/query `OFF`、屏幕保留 W3 干净白、`electrical_state_proven=false`。截止本节没有
+  访问相机、设备网络、COM 或继电器，也没有 flash、reset、rewire 或 display refresh。
+- T3/W4 冻结固件和两次 visible-refresh 预算不变。新增日间辅助路线使用唯一允许的
+  `48MP USB Camera / VID_32E4:PID_4801`；明确排除双目 `VID_1BCF:PID_0B15`。本轮统一采用
+  `README camera.md` 的正式静拍档：`MJPG 4000×3000@15 / focus79 / exposure=-6 /
+  WB4600`；fresh-V2 的 `exposure=-3` 不得混入。
+- 明日顺序冻结为：当前 W3 白场断电拍 1 张 → T3 app-only 写入/验证和 4-GET 诊断 → relay
+  ON 后只读 raw `BUSY=1` → 唯一 T3 刷新 → relay OFF → 最多 5 次取得并 O_EXCL 封存 3 张
+  atlas → 只有四帧原始证据深验通过才允许安装 W4 → 唯一 W4 白恢复 → relay OFF → 末端白图。
+  相机分析可以在 W4 后离线完成，分析结论本身不阻止安全刷白。
+- 若 5 次内不能取得 3 张合格 atlas，必须保持 relay OFF 并保留双稳态 atlas；不安装 W4，
+  等待操作者决定。若原始照片已封存但粗判为 REVIEW/FAIL，则允许按计划执行 W4 containment。
+  任一 action/diagnostic/BUSY 门失败均保护性 OFF、无 retry/recovery/autochain。
+- 自动输出只允许 `HUMAN_CAMERA_SCREEN_PASS/REVIEW/FAIL`。低照度、几何失败、暖色歧义或低信心
+  一律 REVIEW；相机不声明绝对色、稳定新色、正式 profile-following、灰阶或 qualified colour。
+  人工观察仍可补充，但不得用占位词补造事实。
+- 离线执行卡为
+  `docs/MF1750_RAW_P16_CROSSOVER_T3_CAMERA_W4_DAYLIGHT_RUNBOOK_2026-08-31.md`。状态门 V2 已
+  O_EXCL 封存为
+  `.test-output/offline/MF1750_RAW_P16_CROSSOVER_T3_CAMERA_W4_DAYLIGHT_PLAN_20260831_V2.json`，
+  bytes/SHA-256=`27457 / d3c0d2e12804c459d03872479da91bfce81ebcff039128f7395ebdbb937ef551`；
+  初版 V1 保留但被 V2 明确替代。
+- 四帧 capture pack 已就绪：
+  `tools/mf1750_raw_p16_crossover_t3_camera_capture_pack.py`，SHA-256=
+  `5608ac7c24fd7fad28d5279cdcafae4bc2fd85ee098d9dd5850d12bf8e0522de`。每次调用最多采一帧，
+  相机打开前先永久 O_EXCL claim；白参考最多 2 attempts、T3 三帧总计最多 5 attempts，失败不
+  自动 retry/fallback。四张图各用本帧四角，逐帧检查 64 格投影；对应角漂移上限 `30 px`，
+  同时严格要求 camera instance/mount/requested/effective settings/尺寸全等。
+- camera-only analyzer 已就绪：
+  `tools/mf1750_raw_p16_crossover_t3_profile_following_camera_observation.py`，SHA-256=
+  `1a75d63fea7a3d32adb431a8083c58b3d1f0e3ccb16b12fddb8b9c8b78d2a40c`。无人工 seed 仍生成完整
+  64 格报告，但最高只能 REVIEW 且不生成 compact；只有真实完整 seed 才可综合 PASS 并 O_EXCL
+  输出 compact。四副本门=`8/12 ΔE00`、三帧门=`3/6 ΔE76`、白参考 `L*<25 FAIL /
+  25–35 REVIEW`，同时检查 controls、底边、条纹、残留与帧对齐。
+- 正式 capture allowlist 已精确加入新 W4 的 campaign/test/contract/BIN/action/descriptor/role/
+  marker，并修复 `...SUCCESSOR` marker 降级到通用 recovery role 的绕过；11 类近似篡改均被
+  fail-closed 拒绝，历史白收容绑定保持不变。
+- 主线程最终联合回归=`150 passed / 425.80 s`；格式、Ruff 和 py_compile PASS；计划 V2 深验
+  PASS。所有测试均离线，当前现场状态仍为 J2 OFF、W3 干净白保留、无任何新增硬件动作。
 
 ## 2026-08-30 22:02 T3 A/C profile-following 人眼判因与 W4 白收容已离线封存，尚未上机（最高优先级）
 

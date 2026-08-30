@@ -481,6 +481,53 @@ claim/ARM/EXECUTE 前 fail-closed。本节全部为离线工作：未 flash、re
 wire 正负门、W4 exact source quartet 与无 upload surface。Ruff check/format 和 py_compile
 均 PASS。
 
+### 5.1H 日间 48MP 辅助粗筛与 W4 收容闭环（2026-08-31 01:18，离线就绪）
+
+保持 5.1G 的两次可见刷新、T3/W4 identity 和 human-primary 正式边界不变；另加一条可在日间
+执行的 camera-only 辅助路线。相机只允许 `48MP USB Camera / VID_32E4:PID_4801`，固定
+`MJPG 4000×3000@15 / focus79 / exposure=-6 / WB4600`；双目 `1BCF:0B15` 与 V2
+`exposure=-3` 均禁止。
+
+现场顺序冻结为：
+
+```text
+W3 clean white + relay OFF
+→ 1 white capture
+→ app-only T3 + 4 GET diagnostic + relay ON + raw BUSY=1
+→ exactly one T3 visible refresh
+→ relay OFF
+→ capture 3 retained atlas frames (at most 5 attempts total)
+→ deep-seal the four-frame bundle
+→ separately resume app-only W4 + 4 GET + relay ON + raw BUSY=1
+→ exactly one W4 white refresh
+→ relay OFF + independent post-white frame
+→ offline camera screen
+```
+
+四帧原始证据封存是 W4 的先决门；相机分析结论不是 W4 安全白收容的先决门。若 5 次内不能
+得到 3 张有效 atlas，保持 OFF、保留 atlas 并暂停；若照片已封存但分析为 REVIEW/FAIL，仍可
+执行 W4 收容。camera attempt 与 display-action retry 严格分开，后者始终为 0。
+
+采集包每次调用至多打开相机一次，并在打开前永久消耗 O_EXCL attempt；白参考最多 2 次、
+atlas 最多 5 次。每帧独立提供当前 `TL/TR/BR/BL`，逐帧验证凸四边形、活动区、64 格投影，
+跨帧对应角最大漂移固定 `30 px`；相机 instance、mount、请求/实际设置与尺寸仍必须全等。
+
+分析器以 W3 白参考归一化三张 T3：检查 64 格、每 controller/code 四副本、三帧时间稳定、
+controls `2/3/5`、底边、水平/垂直条纹、残留和对齐。四副本 max `ΔE00 <=8 / 8–12 /
+>12` 分别 PASS/REVIEW/FAIL；三帧 max `ΔE76 <=3 / 3–6 / >6`；白参考 `L*<25` FAIL，
+`25–35` REVIEW。自动结论只为 `HUMAN_CAMERA_SCREEN_PASS/REVIEW/FAIL`。无人工 seed 时仍可
+输出完整报告，但最高 REVIEW；不能用 placeholder 生成 compact，也不声明绝对色、正式
+profile-following、灰阶或 qualified colour。
+
+W4 已加入相机工具的精确 frozen allowlist，并关闭 `...SUCCESSOR` marker 降级为宽泛 recovery
+role 的绕过。离线状态门 V2=`27457 bytes /
+d3c0d2e12804c459d03872479da91bfce81ebcff039128f7395ebdbb937ef551`；capture pack SHA=
+`5608ac7c24fd7fad28d5279cdcafae4bc2fd85ee098d9dd5850d12bf8e0522de`；analyzer SHA=
+`1a75d63fea7a3d32adb431a8083c58b3d1f0e3ccb16b12fddb8b9c8b78d2a40c`。最终联合回归
+`150 passed / 425.80 s`，Ruff/format/py_compile 和计划深验均 PASS。该节全程离线，J2
+仍 OFF，屏幕仍为 W3 干净白，没有访问相机、设备网络、COM 或继电器，没有 flash/reset/
+refresh/rewire。
+
 ### 5.2 固定顺序
 
 ```text
