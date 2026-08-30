@@ -4,7 +4,7 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-08-30 12:35 +08:00`
+最后更新：`2026-08-30 12:48 +08:00`
 
 ## 2026-08-30 12:02 RAW-P16 日光取证、独立刷白和相机白场复核完成（最高优先级）
 
@@ -47,13 +47,19 @@
   atlas，每 code 四个分散位置；重点 code=`3,5,6,7`，code4 作 guard，code0–2
   作 internal controls。明度/灰阶仍未解决：先前明度矩阵各列肉眼基本一致，现有
   L* 差异常与色相变化耦合，不能当作可控单像素灰阶。
-- 上述 crossover 已完成纯离线落地：T1/W1/T2/W2/可选T3/W3 六镜像均 build SUCCESS，
-  clean-checkout bootstrap 以 source preflight→六镜像 compile-only build→12个 BIN/ELF
-  哈希核验闭环，postflight=`artifacts_verified=true`。atlas J2 显式确认门及 literal-private-
-  IPv4/no-proxy/no-redirect mutation 门通过独立审查；主线程综合复跑 `111 passed`，Ruff
-  check/format PASS。没有访问硬件、设备网络、COM、继电器或相机，也没有 flash/reset/
-  refresh；因此状态仅为 `OFFLINE_READY / NOT LIVE-EXECUTED`。历史 same-R20 V2 的旧冻结
-  artifact replay 测试明确排除，不能宣称全仓库测试全绿。
+- 上述 crossover 已完成**原始工作树内**纯离线落地：T1/W1/T2/W2/可选T3/W3 六镜像均
+  build SUCCESS，本地 postflight=`artifacts_verified=true`；atlas J2 显式确认门及 literal-
+  private-IPv4/no-proxy/no-redirect mutation 门通过独立审查；主线程综合复跑 `111 passed`，
+  Ruff check/format PASS。没有访问硬件、设备网络、COM、继电器或相机，也没有 flash/reset/
+  refresh；因此真屏状态仅为 `LOCAL_OFFLINE_READY / NOT LIVE-EXECUTED`。
+- **12:48 clean-checkout 纠正：GitHub代码提交 NO-GO。** 独立 short-path checkout 覆盖
+  文档化46文件后，source preflight与6个镜像编译均PASS，但精确12个BIN/ELF哈希FAIL；ELF
+  嵌入绝对checkout path，ignored Wi-Fi本地配置也改变镜像。即便使用同一未披露配置，T1 BIN
+  同字节数仍有65 bytes随嵌入identity/checksum变化。拟提交shared foundation又混有多项历史
+  campaign、缺少完整条件include/测试/config闭包，并有vendor LUT再分发边界待确认。因此本轮
+  只允许已完成的文档里程碑保留在GitHub；代码不得暂存或推送，直到 deterministic build/
+  artifact release方案及foundation拆分通过。历史 same-R20旧冻结artifact replay仍明确排除，
+  不能宣称全仓库测试全绿。
 - 本轮详细证据、决策门和 GitHub 同步规则见
   `docs/MF1750_RAW_P16_CROSSOVER_TEST_PLAN_AND_LIVE_RECORD_2026-08-30.md`。
 

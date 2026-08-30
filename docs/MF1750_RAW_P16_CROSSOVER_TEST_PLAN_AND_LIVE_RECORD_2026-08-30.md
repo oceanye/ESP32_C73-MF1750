@@ -1,7 +1,7 @@
 # MF1750 RAW-P16 跨 Profile 判因计划与实测台账
 
 日期：`2026-08-30`
-当前状态：`RAW-P16 已拍照分析 / 独立白场收容已完成 / AC↔CA 六镜像离线就绪、尚未上机`
+当前状态：`RAW-P16 已拍照分析 / 独立白场收容已完成 / AC↔CA 本地六镜像就绪、代码发布阻断、尚未上机`
 当前面板：`factory-OTP white retained`
 当前 J2：`commanded/query OFF`
 
@@ -150,12 +150,18 @@ W3 final`。六者具有独立 campaign、contract、action、NVS 和 claim/outp
 - T2 CA：`ddcde0da8f5fec1b73924131a9a3e92fbee632430a041a72c56eea8a32b9d3cf`；
 - T3 AC-repeat：`60f27623af8527f240173e457060ba008e61083f985e2b4a6ad4914a1f3705a0`。
 
-独立复核已关闭三项提交前阻断：atlas action 必须显式收到 J2-ON 确认；mutation 只接受 literal
-private/local IPv4 并使用 no-proxy/no-redirect requester；clean checkout 采用 artifact-free
-preflight→六镜像 compile-only build→12 个 BIN/ELF 哈希核验。主线程最终复跑结果：六镜像
-`SUCCESS`，build bootstrap postflight `artifacts_verified=true`，相关综合测试 `111 passed`，
-Ruff check/format PASS。全过程没有访问硬件、设备网络、COM、继电器或相机，也没有 flash、
-reset 或 display refresh。
+独立复核已关闭现场执行安全门：atlas action 必须显式收到 J2-ON 确认；mutation 只接受 literal
+private/local IPv4 并使用 no-proxy/no-redirect requester。主线程在原始工作树复跑：六镜像
+`SUCCESS`，本地 build bootstrap postflight `artifacts_verified=true`，相关综合测试
+`111 passed`，Ruff check/format PASS。全过程没有访问硬件、设备网络、COM、继电器或相机，
+也没有 flash、reset 或 display refresh。
+
+随后独立 short-path clean-checkout 审计纠正了“可复现”口径：source preflight 与六镜像编译
+均 PASS，但 12 个精确 BIN/ELF 哈希 FAIL。ELF 嵌入绝对 checkout path，ignored 本地 Wi-Fi
+配置也影响镜像；即使使用同一未披露的本地配置，T1 BIN 仍有 65 bytes 因嵌入 identity／
+checksum 不同。共享 foundation 还混入多项历史 campaign，并存在依赖／测试闭包和 vendor LUT
+再分发边界。因此当前仅为 `LOCAL_OFFLINE_READY / NOT LIVE-EXECUTED`，GitHub 代码提交
+`NO-GO`；已发布的计划和证据文档不等价于代码可复现性声明。
 
 详细命令、身份与哈希见：
 

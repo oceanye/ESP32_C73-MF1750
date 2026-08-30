@@ -1,5 +1,7 @@
 # MF1750 RAW-P16 crossover position-balanced reviewed artifact manifest
 # Format: SHA256  BYTES  LOGICAL-STAGE  PATH
+# Scope: reviewed original-worktree artifacts; path/config bound, not currently
+# reproducible as exact BIN/ELF identities across clean checkout paths.
 
 86ec547ae7e4f0b8d74a383efa48d14346f20275c8b9452e13274c9f0496c800  799312  t1-ac  .pio/build-raw-p16-crossover-posbal-t1_ac-v1/ec5_raw_p16_crossover_posbal_t1_ac_v1/firmware.bin
 b9b6557086e730a6e322067bd687b539d1d2ac69994354f041a31aa4993bee7b  13294400  t1-ac  .pio/build-raw-p16-crossover-posbal-t1_ac-v1/ec5_raw_p16_crossover_posbal_t1_ac_v1/firmware.elf

@@ -1,7 +1,7 @@
 # MF1750 RAW-P16 crossover position-balanced runbook
 
 Date: 2026-08-30
-Status: offline implementation and build complete; no live result is claimed.
+Status: local offline implementation/build complete; clean-checkout exact-hash reproduction and code publication are blocked; no live result is claimed.
 
 ## Purpose
 
@@ -53,9 +53,9 @@ A candidate should only advance when all of the following hold:
 
 Until those gates pass, observations remain experimental endpoint appearances, not qualified colours or an expanded palette.
 
-## Clean-checkout build and validation order
+## Local build and validation order
 
-The ignored `.pio` directory is not a repository artifact. On a clean checkout, do not run artifact-bound `dry-validate` or the artifact integration tests before compiling. Use this order; none of these commands uploads firmware or accesses a device:
+The ignored `.pio` directory is not a repository artifact. In the original reviewed worktree, use this order; none of these commands uploads firmware or accesses a device:
 
 ```powershell
 if (-not (Test-Path -LiteralPath src/wifi_secrets.h)) {
@@ -67,7 +67,9 @@ python -B tools/mf1750_raw_p16_crossover_position_balanced_once.py dry-validate
 python -B -m pytest -q tests/test_mf1750_raw_p16_crossover_position_balanced.py
 ```
 
-`prebuild-validate` is intentionally artifact-free. The build command first repeats that preflight, compiles all six isolated images, and then enforces all 12 reviewed BIN/ELF hashes. The following explicit `dry-validate` is the artifact-bound post-build gate. The bootstrap never invokes a PlatformIO upload target. If local credentials already exist, do not overwrite them with the example.
+`prebuild-validate` is intentionally artifact-free. The build command first repeats that preflight, compiles all six isolated images, and then enforces all 12 reviewed local BIN/ELF hashes. The following explicit `dry-validate` is the artifact-bound post-build gate. The bootstrap never invokes a PlatformIO upload target. If local credentials already exist, do not overwrite them with the example.
+
+This sequence is **not yet a cross-path exact-reproduction recipe**. An independent short-path clean checkout compiled all six images but failed the frozen hash gate because the ELF embeds the checkout path and the ignored Wi-Fi configuration affects image content. Until a deterministic build policy is implemented and the artifacts are re-frozen, use `preflight` and the six manual compile commands only to prove source buildability; do not claim that a fresh clone reproduced the reviewed artifacts. Keep Windows checkout paths short.
 
 For manual diagnosis, the six compile-only commands used by the bootstrap are:
 
@@ -93,4 +95,4 @@ The live subcommands are deliberately separate (`diagnose-atlas-j2-off`, `run-at
 | T3 AC repeat | `60f27623af8527f240173e457060ba008e61083f985e2b4a6ad4914a1f3705a0` | `4a7c3d2816aca50e124049e048c7d7dbeec32a8c7bb825b9cd5294fdd23f144a` | `p16x_t3ar_v1` |
 | W3 final | `b7e984233f33c826f7882e44ede6297f38b5308947c02cd7561f2883e247ee6c` | `c8e00dcb3a5d3bff11c192b56d7fc3074605be561fec1fb5688a065444365c63` | `p16x_w3_v1` |
 
-Artifact hashes are frozen separately in `MF1750_RAW_P16_CROSSOVER_POSITION_BALANCED_SHA256_2026-08-30.txt` and are also enforced by the offline runner before any live request.
+Artifact hashes are frozen separately in `MF1750_RAW_P16_CROSSOVER_POSITION_BALANCED_SHA256_2026-08-30.txt` and are enforced by the offline runner before any live request. They bind the reviewed local artifacts; they are not currently reproducible across checkout paths.
