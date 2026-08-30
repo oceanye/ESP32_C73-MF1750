@@ -1,0 +1,15 @@
+# MF1750 RAW-P16 crossover position-balanced reviewed artifact manifest
+# Format: SHA256  BYTES  LOGICAL-STAGE  PATH
+
+86ec547ae7e4f0b8d74a383efa48d14346f20275c8b9452e13274c9f0496c800  799312  t1-ac  .pio/build-raw-p16-crossover-posbal-t1_ac-v1/ec5_raw_p16_crossover_posbal_t1_ac_v1/firmware.bin
+b9b6557086e730a6e322067bd687b539d1d2ac69994354f041a31aa4993bee7b  13294400  t1-ac  .pio/build-raw-p16-crossover-posbal-t1_ac-v1/ec5_raw_p16_crossover_posbal_t1_ac_v1/firmware.elf
+4dc8e0333b9a37839af18cca0c76ad36d94bd621b6cbc7510b8d775dfd3e2b81  786560  w1-after-t1  .pio/build-raw-p16-crossover-w1_after_t1-white-v1/ec5_raw_p16_crossover_w1_after_t1_white_v1/firmware.bin
+2c39bda79e4ae20687f56c8781e0732b943c2b1e7f89d63323293b0c1dbcc30e  13214660  w1-after-t1  .pio/build-raw-p16-crossover-w1_after_t1-white-v1/ec5_raw_p16_crossover_w1_after_t1_white_v1/firmware.elf
+2880dcbd943c99133b296e5ab9be94a426efcc953440105e1c86243dc338f931  799328  t2-ca  .pio/build-raw-p16-crossover-posbal-t2_ca-v1/ec5_raw_p16_crossover_posbal_t2_ca_v1/firmware.bin
+99e59db9d5f0b68a80e8834ebe085a73a10984b7b5b6981a65dc4092736c1432  13294416  t2-ca  .pio/build-raw-p16-crossover-posbal-t2_ca-v1/ec5_raw_p16_crossover_posbal_t2_ca_v1/firmware.elf
+76b13e8257390c6657178c305828f1725782121cc2c7991c6cc241e3119a846c  786560  w2-after-t2  .pio/build-raw-p16-crossover-w2_after_t2-white-v1/ec5_raw_p16_crossover_w2_after_t2_white_v1/firmware.bin
+57f71aa5f481c7b2e91911b0a00fdda8a1dadb3559cb974cbd727ab2e32f71ea  13214660  w2-after-t2  .pio/build-raw-p16-crossover-w2_after_t2-white-v1/ec5_raw_p16_crossover_w2_after_t2_white_v1/firmware.elf
+ccfdb42b3d027f59a22cec8c88b31b58ce1a0cf97b4ed60ca61a6e769320cb9a  799472  t3-ac-repeat  .pio/build-raw-p16-crossover-posbal-t3_ac_repeat-v1/ec5_raw_p16_crossover_posbal_t3_ac_repeat_v1/firmware.bin
+b40ec1324518b1628c4445f44a10afd67e915e6111ae49283f936c6894973f95  13294608  t3-ac-repeat  .pio/build-raw-p16-crossover-posbal-t3_ac_repeat-v1/ec5_raw_p16_crossover_posbal_t3_ac_repeat_v1/firmware.elf
+6ffce0798428f41205f26db7dc8e7d7da89939f6b0a775c117c3989e8e1b0804  786624  w3-final-after-t3  .pio/build-raw-p16-crossover-w3_final_after_t3-white-v1/ec5_raw_p16_crossover_w3_final_after_t3_white_v1/firmware.bin
+95c223989b6c6bb62cb356d873d58b06050ad83933b354a79a4f82a3c0d18baf  13214660  w3-final-after-t3  .pio/build-raw-p16-crossover-w3_final_after_t3-white-v1/ec5_raw_p16_crossover_w3_final_after_t3_white_v1/firmware.elf
