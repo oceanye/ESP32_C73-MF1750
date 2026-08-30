@@ -1,7 +1,7 @@
 # MF1750 RAW-P16 跨 Profile 判因计划与实测台账
 
 日期：`2026-08-30`
-当前状态：`T1正式门FAIL / discovery-only T2 V2人工粗发现完成 / W3白收容PASS / 候选未资格化`
+当前状态：`T1正式门FAIL / discovery-only T2 V2人工粗发现完成 / W3白收容PASS / T3+W4离线就绪未上机 / 候选未资格化`
 当前面板：`clean factory-OTP white retained`
 当前 J2：`commanded/query OFF；electrical_state_proven=false`
 
@@ -386,6 +386,101 @@ W3 首次 relay ON 后 raw `BUSY=0`，因此只做保护性 OFF，没有 claim/P
 确认 raw `BUSY=1` 后才允许 claim/ARM/EXECUTE；relay ON receipt 或固定等待时间均不能替代
 该门。
 
+### 5.1G T3 A/C profile-following successor 与 W4 收容离线就绪（2026-08-30 22:02）
+
+用户选择下一轮由肉眼作为主判据；48MP 相机不再是决策门，只可选留档。因此新
+T3 不复用旧 `t3-ac-repeat` campaign，而使用 fresh campaign/contract/descriptor/action/route/
+NVS/claim/output。旧 T3 CLI 已在 configure/request/claim 前 tombstone，不能从受支持的命令行路径
+被误执行。
+
+T3 可见载荷冻结为：
+
+```text
+global header = active
+CS1 / 左侧 = active535 (A)
+CS2 / 右侧 = commented535 (C)
+round = 3
+frame / CS1 DTM / CS2 DTM = 与 T2 V2 byte-identical
+required camera frames = 0
+visible refresh count = 1
+retry / recovery / autochain = 0 / 0 / 0
+```
+
+T3 最终封存：
+
+| 项 | 精确值 |
+|---|---|
+| contract | `714ddf2e44725361e9b404ce512d9c9a96a96d7b31cce8bfbd4555d0883e9e19` |
+| descriptor | `52de5c169b19bf7db2788f73e2c450971bb6adffb7c305cb0dd8d7873b9b3af9` |
+| action | `db009936f341cd612be9aa47d08a0a316ec2c581c3c88d35d089ce3fa5857104` |
+| route | `/api/ec5/raw-p16-crossover-t3-ac-profile-following-successor-v1` |
+| NVS | `p16t3pf_v1 / cur_t3pf1 / boot_t3pf1` |
+| BIN | `805232 / 05c00d71a163ecfc22d0d333404ac8967eaa06b929003ce0c28dda7499615760` |
+| ELF | `13299376 / 89d20faec2d5bde42915a5fe30515c917f722ca06777b016a75c38020e83a56e` |
+
+T3 后的 W4 是独立 factory-OTP white，只接受上表 T3 的 exact source quartet：
+
+| 项 | 精确值 |
+|---|---|
+| contract | `7edf2e1916d536aa8b7d6d77be19899aab4fc6816e8c48de1e1b621bff0b7d52` |
+| descriptor | `398b8a86224185b6c6ca7b2d49bc83861f64f2a8c69afa03fbb430b9077c1f45` |
+| action | `e621ea9a05da45da4a120c2b68fbdefcad5f4a48274a5ac5290f5fcc25d7c55b` |
+| route | `/api/ec5/raw-p16-crossover-w4-after-t3-ac-profile-following-successor-white-v1` |
+| NVS | `p16w4pf_v1 / used_w4pf1` |
+| BIN | `787248 / 9f3ab672c214cdf128a01a51b2803d5a586f72fab1cad065373eead30ee63bf7` |
+| ELF | `13214976 / 16b37334ef8142ad33a8856dcf2850f751a8cf80489152766b8dc0602e278118` |
+
+W4 为单动作、fresh route/NVS/claim/output、无 retry/recovery/autochain；T3 不会自动调用 W4。
+两个 PlatformIO 环境都只有 compile-only 配置，无 upload command。
+
+人工证据链同步完成：
+
+- 既有 CA V2 人工词以 O_EXCL 封存为
+  `human-observation-ca-v2-v1.json`，bytes=`39377`，file/canonical SHA-256=
+  `8e1a93bdd15c24bb808a698633ab4495edb1c1f94fb8249934420caca4a27921 /
+  60510bc2e1cd5e9b7809a193574284a0ae63b44ec4f2a8416ac05f2c997d81e4`。已报告的四副本
+  一致事实保留；未报告字段显式为 `null/UNKNOWN/NOT_REPORTED`，所以 formal
+  `comparison_ready=false`。工具可另行输出受限的 `HUMAN_SCREEN_*` 判因，不会把它写成 formal
+  gate 或绝对色标定。
+- W3 原话“白屏，干净”封存为 `human-clean-white-authority-v1.json`，bytes=`4072`，
+  file/canonical SHA-256=
+  `5f5ff9d0c6bc023c461038e17fbc92b0fda5b475d52019bf736b91d745d5582b /
+  2fceccd9cac4af23ffc0d27f7d14a546920d586cc0efd72f0799037cdb5b614f`。它双绑定 W3 action 和最终
+  relay-OFF receipt，并明确 `OFF receipt` 不证明负载侧电气状态。
+- 未来 AC 正常只需填左/右各 code0..7 共 16 个肉眼词，并显式确认各 code 四副本
+  一致且稳定。工具才会按冻结布局展开 64 cells；任一回答为否时必须转 64-cell
+  展开表，不允许用单词覆盖不一致副本。工具保留原始紧凑输入、展开规则、canonical
+  integrity、deep recomputation 与 O_EXCL。盲填卡为
+  `docs/MF1750-RAW-P16-PROFILE-FOLLOWING-HUMAN-OBSERVATION-CARD.md`。
+
+实际上机顺序现冻结为：
+
+```text
+当前 W3 clean white + J2 OFF
+→ J2 OFF 下 app-only 写入/验证 T3
+→ fresh J2-OFF 4-GET diagnostic（0 POST/0 claim/0 refresh）
+→ relay ON，只读等待 raw BUSY=1
+→ 唯一 T3 action（1 visible refresh）
+→ 先盲填、O_EXCL 封存，再揭盲比较
+→ relay OFF，J2 OFF 下 app-only 写入/验证 W4
+→ fresh J2-OFF 4-GET diagnostic（0 POST/0 claim/0 refresh）
+→ relay ON，只读等待 raw BUSY=1
+→ 唯一 W4 white（1 visible refresh）
+→ 肉眼确认干净白后 relay OFF
+```
+
+由于现有 W3 已是 exact-bound clean-white 起点，不再额外执行一次前置白；因而下一轮计划总共
+只有 2 次 visible refresh。任意身份、artifact、W3 authority、BUSY 准入或 wire manifest 不一致都在
+claim/ARM/EXECUTE 前 fail-closed。本节全部为离线工作：未 flash、reset、访问设备网络/COM/
+继电器或刷新屏幕。
+
+最终离线验证：两固件 compile-only 和 artifact postflight PASS；T3/W4 `dry_validate`
+均返回 `PASS / artifacts_verified=true`；CA/W3 人工 authority 深验 PASS。主线对本轮相关测试
+复跑=`52 passed`；其中独立 closure=`7 passed`，覆盖双固件假设备 J2-OFF
+`4 GET / 0 POST / 0 claim / 0 refresh / O_EXCL`、fresh 身份隔离、旧 T3 tombstone、
+wire 正负门、W4 exact source quartet 与无 upload surface。Ruff check/format 和 py_compile
+均 PASS。
+
 ### 5.2 固定顺序
 
 ```text
@@ -560,6 +655,8 @@ eligible_for_t2_discovery = <true only when all 16 groups PASS>
 GitHub 提交必须是可验证的阶段快照，不把未完成实验写成完成，不混入 PCB、应用层或其他 campaign
 的无关脏改动。
 
-本阶段只发布本文与 `docs/STATUS_HANDOFF.md` 两份跟踪文档。照片分析器、T1/T2 comparator、runner
-修改及其测试继续留在本地：在补齐根级依赖清单、clean-machine 安装／测试命令、确定性生成物和
+本阶段只发布本文、`docs/STATUS_HANDOFF.md` 与
+`docs/MF1750-RAW-P16-PROFILE-FOLLOWING-HUMAN-OBSERVATION-CARD.md` 三份跟踪文档。
+照片分析器、T1/T2 comparator、runner 修改及其测试继续留在本地：在补齐根级依赖清单、
+clean-machine 安装／测试命令、确定性生成物和
 完整依赖闭包前，不把它们提交为可复现代码，也不提交 ignored `.pio` 构建产物。
