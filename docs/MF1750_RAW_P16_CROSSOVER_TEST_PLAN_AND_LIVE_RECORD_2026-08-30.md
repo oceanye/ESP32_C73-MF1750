@@ -528,6 +528,20 @@ d3c0d2e12804c459d03872479da91bfce81ebcff039128f7395ebdbb937ef551`；capture pack
 仍 OFF，屏幕仍为 W3 干净白，没有访问相机、设备网络、COM 或继电器，没有 flash/reset/
 refresh/rewire。
 
+### 5.1I 日间相机 setup-only 预检失败并安全停止（2026-08-31 06:03）
+
+exact relay 只读查询为 channel1 commanded `OFF`；DirectShow 唯一识别目标 48MP
+`VID_32E4:PID_4801`，没有选择双目 `VID_1BCF:PID_0B15`。由于正式 capture pack 在相机打开前
+即要求角点并永久 claim，先按 setup-only、非核心证据边界拍一张固定正式档预检图。
+
+预检 JPEG=`camera-t3-daylight-setup-white-20260831-060144.jpg`，`366555 bytes`，SHA-256=
+`2ac5fce31b4929efefaa3cd4951e0c52b690366d775e856d653f10a030966ad4`；capture sidecar
+深验 PASS，`5352 bytes`，SHA-256=
+`caf5cab00fcd4a79f5009279d023fb20e02bea7bdf53d6ff2f972218a84517b8`。画面没有面板，且
+mean RGB 仅 `[5.464085, 7.100415, 10.886859]`，无法取得本次四角或合格白参考。按日间执行卡
+立即停止：正式 W3 attempt 未消耗，T3/W4 未安装、未 claim、未执行，J2 保持 OFF，0 次可见
+刷新。待操作者重新对准 48MP 镜头并补足照明后，从 setup-only 几何预检重新开始。
+
 ### 5.2 固定顺序
 
 ```text

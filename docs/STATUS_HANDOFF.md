@@ -4,7 +4,30 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-08-31 05:45 +08:00`
+最后更新：`2026-08-31 06:03 +08:00`
+
+## 2026-08-31 06:03 日间 48MP 几何预检停止：面板未入镜、固定档严重欠曝（最高优先级）
+
+- 操作者授权天亮后试拍。本轮先完成 exact-bound relay 只读查询；COM14/channel1 返回
+  commanded `OFF`、`off_gate_passed=true`、`electrical_state_proven=false`。receipt 位于
+  `.test-output/hardware/MF1750_RAW_P16_CROSSOVER_T3_AC_PROFILE_FOLLOWING_SUCCESSOR_CAMERA_DAYLIGHT_V1/relay-pre-white-query-20260831-055924388.json`。
+- DirectShow 枚举唯一命中 `48MP USB Camera / VID_32E4:PID_4801`；双目
+  `USB Camera / VID_1BCF:PID_0B15` 与 OBS Virtual Camera 均未被选用。
+- 因正式 capture pack 必须在开相机前先取得角点并永久 claim，而仓库尚无适用于当前画面的
+  本帧角点采集入口，先取得一张明确标为 setup-only、非核心证据的 exact-camera 预检帧。
+  JPEG=`camera-t3-daylight-setup-white-20260831-060144.jpg`，bytes/SHA-256=
+  `366555 / 2ac5fce31b4929efefaa3cd4951e0c52b690366d775e856d653f10a030966ad4`；
+  sidecar 深验 PASS，bytes/SHA-256=
+  `5352 / caf5cab00fcd4a79f5009279d023fb20e02bea7bdf53d6ff2f972218a84517b8`。
+- 预检图没有包含面板，镜头朝向桌椅区域；固定正式档 `4000×3000 / exposure=-6 / focus79 /
+  WB4600` 下 mean RGB=`[5.464085, 7.100415, 10.886859]`，RGB 低端裁切比例分别约
+  `77.18% / 66.35% / 51.76%`，不具备角点、白参考或颜色粗筛资格。
+- 因此正式 W3 capture attempt **尚未消耗**；capture-contract/claims/results 均不存在。
+  T3/W4 action 也均未安装、未 claim、未执行。J2 保持 commanded OFF，屏幕仍保留 W3 白，
+  本轮没有 flash、reset、ESP32 网络请求或 display refresh。
+- 下一步只需操作者把 48MP 镜头重新对准屏幕，使整个有效显示区完整入镜，并保证日光或补光足够；
+  回复“相机已对准、屏幕完整入镜、光线已开”后，先重新做 setup-only 预检。预检通过前不得
+  消耗正式 W3 名额或进入 T3。
 
 ## 2026-08-31 05:45 T3 日间 48MP 辅助粗筛与 W4 状态门离线就绪（最高优先级）
 
