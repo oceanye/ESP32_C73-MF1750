@@ -1,7 +1,7 @@
 # MF1750 RAW-P16 跨 Profile 判因计划与实测台账
 
 日期：`2026-08-30`
-当前状态：`T1 三帧位置门 FAIL / W1 白收容与48MP复核 PASS / T2冻结`
+当前状态：`T1正式门FAIL / W1白收容PASS / 白平场粗筛16/16 PASS / 原T2冻结、fresh T2 discovery successor可准备`
 当前面板：`clean factory-OTP white retained`
 当前 J2：`commanded/query OFF`
 
@@ -16,6 +16,9 @@
 
 本文不是颜色标定报告。没有绝对色卡／光谱测量、独立重复和跨位置复现之前，任何结果都只能
 称为相机相对候选，不能称为稳定新色、可用调色板色或灰阶。
+
+后续自动流程采用“粗筛门”和“精确资格门”分层；粗筛结果只用于减少上机搜索空间，不能替代
+资格门或颜色标定。
 
 ## 2. 固定设备与安全边界
 
@@ -288,6 +291,37 @@ sidecar=`5091 bytes / d855422f0717ef3a427ef006d5a2185f36ad18f55cf437fe665885a61e
 且保护脚本均立即 OFF；随后才用冻结默认 `poll_seconds=65` 执行上述唯一 W1 action。该记录不计为
 W1 action retry。
 
+### 5.1D 白平场粗筛回放（2026-08-30 15:44）
+
+按“普通环境光只作粗筛”的新口径，新增独立离线工具，用 W1 factory-OTP 白图按 T1 每帧
+homography 在相同逻辑位置重采样并平场。工具深校验三张 T1 analysis 及其 photo/sidecar/action、
+W1 post-capture analysis 及其绑定，并要求四次 capture 的 48MP instance、mount、请求设置、
+frame 前后实际设置和 `4000x3000` 尺寸完全相同。
+
+左下阴影使 W1 中 `CS1-R3-C0-CODE3` 的参考 `L*=5.28725`、`CS1-R3-C1-CODE2` 的参考
+`L*=17.898226`，低于冻结门 `25`，因此这两个位置在三帧中均剔除；对应组仍有三位置，不构成
+整组失败。回放结果：
+
+```text
+state = PASS_COARSE_SCREEN
+groups = 16 PASS / 0 REVIEW / 0 FAIL
+maximum_position_de00 = 5.384516695
+maximum_temporal_center_de76 = 0.533904711
+eligible_for_t2_discovery = true
+formal_gate_evaluated = false
+formal_advance_to_t2_permitted = false
+qualified_colour_count = 0
+```
+
+O_EXCL 报告=`T1.white-normalized-coarse-screen-v1.json`，bytes=`293550`，文件 SHA-256=
+`4abbcf56bfb390e8cfb394f67eb8d6209fc35d845d1b096b096234973f4f50ea`，canonical=
+`3b080f2288c45f0ac5cdba9023b90a4f320d4b514bedece2372b72cf6b39d8ad`。主线程将新工具／测试与
+原 strict analyzer/comparator 联合复验为 `46 passed`，Ruff check/format 与 py_compile PASS。
+
+该 PASS 仅证明现有照片足以进行宽色桶发现，不翻转 5.1B 的 formal FAIL，也不授权执行原 T2。
+后续可以基于该报告新建 discovery-only T2 successor；出现粗候选后，再把少量命中送入人工观察
+或受控照明下的正式资格门。
+
 ### 5.2 固定顺序
 
 ```text
@@ -322,7 +356,53 @@ T1 position gate FAIL -> mandatory W1 white containment PASS -> STOP
 - code3、5、6、7 为重点，code4 为暗色 guard，code0、1、2 为内部控制；
 - 先拍整屏，再由固定 overlay 给出 controller/profile/code/replicate，屏内不画文字。
 
-### 5.4 判定门
+### 5.4A 自动粗筛门（仅用于发现与排队）
+
+48MP 相机在普通环境光下只承担几何确认、明显外观差异筛选、边界／条纹／残留检查和证据留档，
+不承担绝对色值、精细 ΔE、灰阶等级或正式 palette 标定。允许画面存在缓慢照明梯度，但不允许
+活动区被遮挡、严重失焦、明显过曝／欠曝或 ROI 几何失败。
+
+粗筛优先使用同一机位、同一设置下的 factory-OTP 白场作同位置平场：
+
+```text
+RGB_norm = clip(220 * RGB_candidate / RGB_white_reference)
+```
+
+邻近白缝归一可作为同帧交叉检查。自动机只分宽色桶，不输出精确色名：暗／黑、中性／白、
+暖色（红粉橙棕）、黄／橄榄、绿、青／蓝绿、蓝／靛紫；明度另分五个宽档。固定门如下：
+
+- 白参考格 `L* < 25` 时该位置无效并剔除，不让强阴影拖垮整组；
+- 每个 controller/code 每帧至少 `3/4` 有效位置，三帧至少 `2/3` 有效；
+- 每组主色桶至少 `3/4` 一致；有色组 circular hue 跨度 `<=35°` 为 PASS、`35–60°` 为 REVIEW、
+  `>60°` 为 FAIL；
+- 同位置白平场后的组内最大 `ΔE00 <=8` 为 PASS、`8–12` 为 REVIEW、`>12` 为 FAIL；
+- 三帧组中心漂移 `ΔE76 <=3` 为 PASS、`3–6` 为 REVIEW、`>6` 为 FAIL；
+- 同 profile 左右复核时，每 code 至少 `3/4` 同位置匹配、全画面至少 `28/32` 匹配；T1 的
+  AC 两侧 profile 不同，因此不得套用该左右一致门；
+- 相对已知七色 controls，最近控制 `ΔE00 <=8` 记已知近似，`8–15` 交人工复核；只有 `>15`、
+  跨宽色桶／明度桶且同时通过位置与时间门，才能记粗候选；
+- 只出现明暗变化时记录为 `NEW_SHADE_CANDIDATE`，不称为新色相；
+- 若原始差异明显但白平场后下降至少 `50%`，记 `LIGHTING_SUSPECT`，不记真实位置差异。
+
+粗筛只输出 `PASS / REVIEW / FAIL`，并可附加 `LIGHTING_SUSPECT`、`NEW_SHADE_CANDIDATE`、
+`BOTTOM_EDGE_ANOMALY`。白场忽略可拟合的平滑照明渐变，只拦截局部色斑、旧网格、固定条纹和
+中心接缝。若底边暗覆盖率比上／左／右三边中位数高超过 `15` 个百分点，且最长连续暗段超过
+格宽 `50%`，记底边异常。格内网点、条纹、底边线、灰边、接缝或残影存在时，即使外观新颖也
+不得记为强候选。
+
+粗筛 PASS 只允许建立 fresh、明确标记为 discovery-only 的 T2 successor，供快速发现；不允许
+执行原已冻结 T2，也不产生任何合格颜色。机器结果必须显式保持：
+
+```text
+screening_only = true
+qualified_colour_count = 0
+formal_gate_evaluated = false
+formal_advance_to_t2_permitted = false
+supersedes_consumed_t1 = false
+eligible_for_t2_discovery = <true only when all 16 groups PASS>
+```
+
+### 5.4B 精确资格门（原门不变）
 
 候选只有同时通过以下门，才允许从“mixed-R20 外观候选”升级为“profile-following 候选”：
 
@@ -404,7 +484,8 @@ T1 position gate FAIL -> mandatory W1 white containment PASS -> STOP
 2. **离线完成后**：记录构建、静态检查、单元测试、pack/dry-validation，状态只写
    `OFFLINE_READY`；
 3. **每个真屏 action 后**：立即记录 action ID、时序、结果、异常、J2 状态和 evidence 哈希；
-4. **照片／人工观察后**：保留原始措辞和相机分析，明确区分 observed、candidate、qualified；
+4. **照片／人工观察后**：同时保留原始观察、粗筛标签和正式资格状态；严禁把粗筛
+   `PASS/REVIEW` 写成 `qualified`；
 5. **安全收尾后**：记录独立白场和 relay OFF，不以继电器命令冒充下游电气证明；
 6. **阶段门关闭时**：更新 `docs/STATUS_HANDOFF.md`，只暂存本阶段相关文件，检查 staged diff，
    运行对应测试后 commit 并 push `origin/main`；

@@ -4,7 +4,31 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-08-30 14:20 +08:00`
+最后更新：`2026-08-30 15:44 +08:00`
+
+## 2026-08-30 15:44 48MP 白平场粗筛已落地并回放 PASS / 仅允许 T2 discovery successor（最高优先级）
+
+- 按用户要求，相机职责已从“精准颜色识别”降为“粗筛／排队”。新增本地独立工具
+  `tools/mf1750_raw_p16_crossover_t1_white_normalized_coarse_screen.py`；它不修改原严格
+  analyzer/comparator，也不访问相机、网络、COM、继电器或屏幕。
+- 粗筛把三张已密封 T1 atlas 的每格 RGB 用同一机位 W1 factory-OTP 白图的同位置 RGB 平场，
+  固定公式=`clip(220*T1_RGB/W1_RGB,0,255)`。三张 T1 与 W1 的 48MP instance、mount、请求参数、
+  frame 前后实际参数和 `4000x3000` 尺寸必须全等；白参考 `L*<25` 的位置只作无效样本，不拖垮
+  其余 `3/4` 位置。
+- 现有证据回放结果=`PASS_COARSE_SCREEN`：`16 PASS / 0 REVIEW / 0 FAIL`；左下强阴影对应
+  `CS1-R3-C0-CODE3` 与 `CS1-R3-C1-CODE2` 被剔除，其余每组仍满足最少三位置；最大组内
+  `ΔE00=5.384516695`，最大三帧中心漂移 `ΔE76=0.533904711`。
+- O_EXCL 报告=`T1.white-normalized-coarse-screen-v1.json`，bytes=`293550`，文件 SHA-256=
+  `4abbcf56bfb390e8cfb394f67eb8d6209fc35d845d1b096b096234973f4f50ea`，canonical=
+  `3b080f2288c45f0ac5cdba9023b90a4f320d4b514bedece2372b72cf6b39d8ad`。
+- 结论边界固定为 `eligible_for_t2_discovery=true`，同时保持
+  `formal_gate_evaluated=false / formal_advance_to_t2_permitted=false /
+  qualified_colour_count=0 / consumed_t1_state_changed=false`。它没有翻转原 T1 formal FAIL，
+  也没有执行原已冻结 T2；下一步只能建立 fresh、明确 discovery-only 的 T2 successor。
+- 主线程联合回归=`46 passed`；新增两文件 Ruff check/format 和 py_compile PASS。工具与测试仍属
+  本地未发布代码，继续受 clean-machine 依赖／确定性生成物闭包约束。
+- 本轮只有离线回放与文档更新；当前屏幕仍为 W1 干净白，J2 commanded/query OFF，未发生
+  flash、reset、refresh、rewire 或 relay 动作。
 
 ## 2026-08-30 14:20 RAW-P16 crossover T1 位置门 FAIL，W1 白收容 PASS，J2 OFF / T2 冻结（最高优先级）
 
@@ -62,6 +86,11 @@
 - 当前面板保持干净白，J2 commanded/query OFF；T1 action 与 W1 action 均永久消费，禁止重跑。
   下一步先离线固化局部白参考照明诊断并改善补光，再以 fresh identity 重做 T1 资格复核；当前
   T2/T3 不得执行。
+- 后续 48MP 自动识别先采用非资格性粗筛：允许普通照明下用同位置白场平场、宽色桶、宽明暗档
+  和明显缺陷作候选排队，不再让相机直接承担精准颜色识别。已消费 T1 的正式
+  `FAIL_T1_POSITION_TEMPORAL_PREFLIGHT`、`qualified_colour_count=0` 和
+  `advance_to_t2_permitted=false` 均保持不变。粗筛全组 PASS 最多只允许建立 fresh、
+  discovery-only 的 T2 successor；它不执行原已冻结 T2，也不把候选升级为合格颜色。
 
 ## 2026-08-30 12:02 RAW-P16 日光取证、独立刷白和相机白场复核完成（最高优先级）
 
