@@ -1,8 +1,8 @@
 # MF1750 RAW-P16 跨 Profile 判因计划与实测台账
 
 日期：`2026-08-30`
-当前状态：`RAW-P16 已拍照分析 / 独立白场收容已完成 / AC↔CA 本地六镜像就绪、代码发布阻断、尚未上机`
-当前面板：`factory-OTP white retained`
+当前状态：`T1 三帧位置门 FAIL / W1 白收容与48MP复核 PASS / T2冻结`
+当前面板：`clean factory-OTP white retained`
 当前 J2：`commanded/query OFF`
 
 ## 1. 文档用途
@@ -160,7 +160,8 @@ private/local IPv4 并使用 no-proxy/no-redirect requester。主线程在原始
 均 PASS，但 12 个精确 BIN/ELF 哈希 FAIL。ELF 嵌入绝对 checkout path，ignored 本地 Wi-Fi
 配置也影响镜像；即使使用同一未披露的本地配置，T1 BIN 仍有 65 bytes 因嵌入 identity／
 checksum 不同。共享 foundation 还混入多项历史 campaign，并存在依赖／测试闭包和 vendor LUT
-再分发边界。因此当前仅为 `LOCAL_OFFLINE_READY / NOT LIVE-EXECUTED`，GitHub 代码提交
+再分发边界。因此该段离线封存时仅为 `LOCAL_OFFLINE_READY / NOT LIVE-EXECUTED`。随后 T1 与 W1
+已按本文 5.1A–5.1C 实际执行并永久消费；T2/W2/T3/W3 仍未执行。GitHub 代码提交继续
 `NO-GO`；已发布的计划和证据文档不等价于代码可复现性声明。
 
 详细命令、身份与哈希见：
@@ -178,6 +179,115 @@ checksum 不同。共享 foundation 还混入多项历史 campaign，并存在�
 需要把 profile 效应与物理左右、固定位置、照明梯度和历史状态拆开。下一轮不直接继续枚举新
 波形，而是先回答：同一个 R20 profile 换到另一控制器后，候选外观是否跟随 profile。
 
+### 5.1A T1 AC 真屏实时记录（2026-08-30 13:34）
+
+T1 已从“离线就绪”推进为“唯一真屏 action 已完成且永久消费”。本次没有自动进入 W1、T2
+或任何后续动作：
+
+- frozen BIN SHA-256=`86ec547ae7e4f0b8d74a383efa48d14346f20275c8b9452e13274c9f0496c800`；
+- J2-OFF app-only flash/verify=`PASS`，flash evidence SHA-256=
+  `eec952a0e5897bb100105ec907a69828495992faeecf356ce90a915596b80305`；
+- J2-OFF diagnostic=`PASS`，boot=`17c47ed59ccb4a8b`，`4 GET / 0 POST / 0 claim /
+  0 refresh`，diagnostic SHA-256=
+  `226a99f3b88c1f1d138dd490ca8d721565a4c3de960ac26cc40b6cb52ef170f6`；
+- action=`73ff6d58686acdd88929b9c0d9e983818c75abb7ad7f1ccebf34219dd82a7c72`，
+  `complete_pass / COMPLETE / 1 driver / 1 visible refresh`；
+- PON/DRF/POF=`260/33921/151 ms`，driver total=`46622 ms`，无 timeout、retry、
+  recovery 或 autochain；
+- action 文件 SHA-256=
+  `483b7ebd97367327a1a81a1826e76b228d3b9c9f850e8e809c5a0ca5faf34e09`；
+- action 后 exact-bound relay query=`OFF / off_gate_passed=true`，receipt SHA-256=
+  `c929e8eaa5adb54a6a0691962c4b09e89cd2ff5aad56c37da2fd5f7887e92cbf`，
+  `electrical_state_proven=false`。
+
+执行前另取一张 48MP retained white 机位／质量探针；相机 exact VID/PID 和所有固定设置通过，
+JPEG/sidecar SHA-256=`48804b36...62c0d / fb396b0e...a24e`。照片整屏可见，但环境偏暗且左下
+阴影明显，故只作 pre-white 连续性与机位证据，不作绝对色标定。当前面板在 J2 OFF 下保留
+T1 atlas。`13:39` 三张正式 retained capture 已完成，文件绑定如下：
+
+| 帧 | JPEG bytes / SHA-256 | sidecar bytes / SHA-256 |
+|---:|---|---|
+| 01 | `1413323 / 409a15c7c6a1af2709cf5c7e076e0a0d02cafa54aac9edc3fe827c67c46c1ce6` | `5276 / 8e16fdf00bebde85415529f8659e997e5ecfd912944d463f76db9b101a7063c9` |
+| 02 | `1400857 / d20f806edeb5e20556d566f5d1de1ffe1acd0de6197ac1dceffc8f537a7c401a` | `5273 / b2e5633e178b3089d8c2239dcb5e356311882ead3192d92d9ac8db46dd66d9e8` |
+| 03 | `1398316 / bd7e013ce63ae4f3ec4a2807e9791d3fc3d8a4b8aa7e005003efb4bf2b3fe3b1` | `5270 / 217f2345aa217c3d769eada1e899d78c5f956f5febfa9257df97638e91dd693b` |
+
+三帧均锁定 48MP exact DirectShow path 和固定设置，设置写入／前后 readback／深校验通过，
+read failures=`0`；整屏和色块可见，但环境偏暗，所以只能作同批 camera-relative 比较。专用
+分析必须先决定流程分支：PASS 才允许 `W1→T2`；FAIL 仍必须做 W1 安全白收容，但禁止 T2/T3。
+尚未产生任何合格新色、profile-following 或 controller parity 结论。
+
+### 5.1B T1 三帧分析与位置门（2026-08-30 13:44–14:02）
+
+专用分析器严格绑定 T1 campaign/contract/action、packed-frame SHA、双 DTM、48MP sidecar 和当前
+照片四角；每帧输出 `64` 个格、每个 controller/code 四个位置。几何门均 PASS：panel area
+fraction=`0.1991`，minimum projected cell side=`96.49 px`，全部 cell 在照片内。逐帧 analysis：
+
+| 帧 | analysis bytes / SHA-256 |
+|---:|---|
+| 01 | `115994 / 77fdc1f1b82fec3837834c2243c22f4b10e5a75782392a6a3a9895f22ed292ec` |
+| 02 | `116013 / 1e49d46a68b744df2d4f9b2752ada149a06b225a95b998eac3ddf9dde841bb48` |
+| 03 | `116013 / 6e0d7fe41125e21e51709eb055bff86a112288838c8b205532a65e8a80159145` |
+
+三帧使用同一 camera-lock，时间漂移很小；但同 code 四个位置的聚合门失败。固定门限为
+`6.6031868158 ΔE76`，五个失败组如下：
+
+| controller/code | consistency maximum ΔE76 |
+|---|---:|
+| CS1/code1 | 7.158026 |
+| CS1/code2 | 8.963159 |
+| CS1/code3 | 27.224901 |
+| CS2/code3 | 6.655854 |
+| CS2/code5 | 7.393698 |
+
+正式结果为 `FAIL_T1_POSITION_TEMPORAL_PREFLIGHT / POSITION_DEPENDENT_INCONCLUSIVE`。
+首版 O_EXCL 报告文件 SHA-256=`15cde97b902f9f1b123a898d18f85e0457b459e4c71a184a2ecba21fc2cb3d66`
+保留不变；它曾把 W1 安全收容与 T2 推进合成一个字段。v2 通过 source path、file SHA 和旧 canonical
+integrity 显式 supersede，文件 SHA-256=
+`18856952b913768cc4c946daae1039ac37096ac5f0baa0b360bf48921c0aebc4`，canonical=
+`619efdec2af37254a2a183a6212b96ec32b4733efa35e9236ff28b9872bc0005`，并固定：
+
+```text
+w1_containment_required = true
+advance_to_t2_permitted = false
+diagnostic_reason = POSITION_DEPENDENT_INCONCLUSIVE
+qualified_colour_count = 0
+```
+
+只读局部白参考诊断进一步发现：失败点大多落在左下阴影。按每格上下白缝作局部线性 RGB 参考后，
+五个明显位置候选的三帧中位 max ΔE00 从约 `5.96/5.95/24.95/7.13/6.20` 降至
+`2.38/3.94/4.53/1.97/2.71`；其中四组与局部照明相关性很强，CS1/code2 仍保留 borderline
+残差。该计算仅为 non-qualifying illumination diagnostic，不能翻转原始门。正式复核必须改善
+均匀补光，并以 fresh campaign 重拍后重新通过未经自动放宽的原始门。
+
+### 5.1C W1 白场安全收容（2026-08-30 14:07–14:20）
+
+T1 FAIL 只阻止 T2，不阻止 W1 白场清理。W1 执行结果：
+
+- BIN SHA-256=`4dc8e0333b9a37839af18cca0c76ad36d94bd621b6cbc7510b8d775dfd3e2b81`；
+- relay pre-flash exact query=`OFF`；app-only write/verify PASS，flash evidence SHA-256=
+  `beb0c07cca4699b547cf4fe0b172f67ee3483cc35d9b34c49a1a1566abc213ab`；
+- fresh J2-OFF diagnostic PASS，boot=`89243ae1014aa53d`，`4 GET / 0 POST / 0 claim /
+  0 refresh`，文件 SHA-256=`10c0629dce6065f0ac8292de6145e34193e2b0f74c602848d254be81b96b627b`；
+- action=`f8cf26e3c344d78ddebd06a570ad19f7cad879cf8b5d6d3f9ce620e86bd850a5`，
+  `complete_pass / COMPLETE / 1 driver / 1 visible refresh`；
+- PON/DRF/POF=`180/22521/141 ms`、driver total=`35013 ms`，无 timeout、retry、recovery、
+  autochain；action file/canonical SHA-256=`d0a936c2...fb57 / dd7f1fb2...d253`；
+- 最终 exact-bound relay OFF receipt SHA-256=
+  `3095af42f93f1b953a1b92eb6cea782e58def95e669464a5df4ae11bade71c7d`，仍只证明命令／查询状态，
+  `electrical_state_proven=false`。
+
+正式 48MP 白场照片=`564113 bytes / 4e07791e227bee276266574c64c4b5afaa017b09e5b57181bda79c2f310bf37d`；
+sidecar=`5091 bytes / d855422f0717ef3a427ef006d5a2185f36ad18f55cf437fe665885a61e7cccfd`。
+独立 O_EXCL 视觉分析=`PASS / confidence=medium`，analysis ID=`9324718e...395b`、文件 SHA-256=
+`3c294dd75e186cdbc1407a8eb91a7429d7b637d30dd14cba9c1526258ca469e4`。活动区为干净白场，
+原 4×8 色块、轮廓、条纹、底边异常、中心接缝及孤立色斑均未见。因画面欠曝且左下有明显阴影，
+该门只证明可见残留清除，不证明绝对白点或空间均匀度。
+
+正式 action 前有两次 pre-claim 安全拒绝：一次误把 OFF-only exact query 用于 ON 状态，另一次传入
+了不合法的 `poll_seconds=1`。两次均在 ARM/EXECUTE/action output 前终止，`0 claim / 0 refresh`，
+且保护脚本均立即 OFF；随后才用冻结默认 `poll_seconds=65` 执行上述唯一 W1 action。该记录不计为
+W1 action retry。
+
 ### 5.2 固定顺序
 
 ```text
@@ -193,6 +303,15 @@ T3: fresh white -> AC-repeat -> 固定相机拍照
 
 `AC` 表示 CS1=A、CS2=C；`CA` 表示 CS1=C、CS2=A。T1、T2、T3 必须使用 fresh
 campaign、fresh NVS、独立一次性 action 和独立收容，不复用已消费凭证。
+
+当前实测分支已经停在：
+
+```text
+T1 position gate FAIL -> mandatory W1 white containment PASS -> STOP
+```
+
+因此上面的 T2/T3 只是新的 fresh successor 在新 T1 通过原始位置门后的条件流程，不是当前待执行
+队列。已消费的 T1/W1 不得重跑，也不得用局部白参考诊断翻转原始 gate。
 
 ### 5.3 位置平衡画面
 
@@ -242,7 +361,7 @@ campaign、fresh NVS、独立一次性 action 和独立收容，不复用已消�
 - `qualified_gray_levels=0`、`qualified_brightness_levels=0`；
 - 空间抖动可形成视觉灰，但不满足本项目“单个像素点颜色控制”的目标。
 
-AC↔CA 完成后，从通过的同一色相族中选择至少三个候选，要求：
+新的 T1 位置门通过且 AC↔CA 完成后，从通过的同一色相族中选择至少三个候选，要求：
 
 1. 四位置一致；
 2. profile 交换后仍复现；
@@ -294,3 +413,7 @@ AC↔CA 完成后，从通过的同一色相族中选择至少三个候选，要
 
 GitHub 提交必须是可验证的阶段快照，不把未完成实验写成完成，不混入 PCB、应用层或其他 campaign
 的无关脏改动。
+
+本阶段只发布本文与 `docs/STATUS_HANDOFF.md` 两份跟踪文档。照片分析器、T1/T2 comparator、runner
+修改及其测试继续留在本地：在补齐根级依赖清单、clean-machine 安装／测试命令、确定性生成物和
+完整依赖闭包前，不把它们提交为可复现代码，也不提交 ignored `.pio` 构建产物。

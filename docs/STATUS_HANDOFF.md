@@ -4,7 +4,64 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-08-30 12:48 +08:00`
+最后更新：`2026-08-30 14:20 +08:00`
+
+## 2026-08-30 14:20 RAW-P16 crossover T1 位置门 FAIL，W1 白收容 PASS，J2 OFF / T2 冻结（最高优先级）
+
+- 本地冻结 T1 BIN=`86ec547ae7e4f0b8d74a383efa48d14346f20275c8b9452e13274c9f0496c800`
+  在 J2 commanded OFF 下只写 app `0x10000`，write 后独立 verify PASS；ESP32 仍为
+  `COM8 / MAC a4:cb:8f:d9:fc:d4`。flash evidence SHA-256=
+  `eec952a0e5897bb100105ec907a69828495992faeecf356ce90a915596b80305`。
+- T1 在 `192.168.1.11` 的 fresh J2-OFF diagnostic PASS：boot=
+  `17c47ed59ccb4a8b`，`4 GET / 0 POST / 0 claim / 0 visible refresh`，next ordinal=`1`，
+  diagnostic SHA-256=`226a99f3b88c1f1d138dd490ca8d721565a4c3de960ac26cc40b6cb52ef170f6`。
+- 执行前 48MP exact-bound 白屏质量探针通过相机身份、固定参数与 sidecar 深校验；JPEG/sidecar
+  SHA-256=`48804b36...62c0d / fb396b0e...a24e`。整屏可见且仍为白屏方向，但当前画面偏暗、
+  左下阴影明显，只能作为 retained pre-white 连续性与机位证据，不能用于绝对色标定。
+- 唯一 T1 AC action=`73ff6d58...7c72` 已 `complete_pass / COMPLETE`：恰好 `1` driver、
+  `1` visible refresh，PON/DRF/POF=`260/33921/151 ms`，driver total=`46622 ms`，无
+  timeout/retry/recovery/autochain。action 文件 SHA-256=
+  `483b7ebd97367327a1a81a1826e76b228d3b9c9f850e8e809c5a0ca5faf34e09`；claim 已永久消费，
+  T1 不得重跑。
+- action 后 relay 已 OFF，exact-bound query=`commanded_state OFF / off_gate_passed=true`，receipt
+  SHA-256=`c929e8eaa5adb54a6a0691962c4b09e89cd2ff5aad56c37da2fd5f7887e92cbf`；仍无下游
+  量测，`electrical_state_proven=false`。当时面板双稳态保留 T1 AC 位置平衡 atlas。
+- `13:39` 已使用唯一允许的 `48MP / VID_32E4:PID_4801` 连续取得三张 T1 retained atlas
+  正式帧；三次均为 schema v2、exact DirectShow path、固定 `4000x3000 MJPG / exposure -6 /
+  focus79 / WB4600`，全部设置写入与前后 readback 通过、read failures=`0`。JPEG SHA-256=
+  `409a15c7...c1ce6 / d20f806e...c401a / bd7e013c...fe3b1`；sidecar SHA-256=
+  `8e16fdf0...7063c9 / b2e5633e...6d9e8 / 217f2345...d693b`。照片完整覆盖屏幕，色块清晰；
+  环境仍偏暗，因此只能作同批 camera-relative 比较。
+- 三张逐帧分析均通过 identity、action、相机、几何和 `64 cells / 16 controller-code groups`
+  深校验；analysis JSON SHA-256=`77fdc1f1...92ec / 1e49d46a...bb48 / 6e0d7fe4...9145`。
+  三帧同一 camera-lock，跨帧时间漂移很小，但四位置门固定 FAIL。正式 v2 预检报告
+  SHA-256=`18856952b913768cc4c946daae1039ac37096ac5f0baa0b360bf48921c0aebc4`，
+  canonical=`619efdec...0005`，结论=`POSITION_DEPENDENT_INCONCLUSIVE`、
+  `w1_containment_required=true / advance_to_t2_permitted=false`。阈值=`6.6031868 ΔE76`；失败组为
+  `CS1/code1=7.1580`、`CS1/code2=8.9632`、`CS1/code3=27.2249`、`CS2/code3=6.6559`、
+  `CS2/code5=7.3937`。qualified new colour=`0`，不得宣称 profile-following、controller parity、
+  稳定新色或灰阶。
+- 首版 O_EXCL 预检 SHA-256=`15cde97b...3d66` 曾把 W1 安全收容与 T2 推进合成一个字段；原文件
+  未覆盖、未删除，v2 通过原文件 path/file SHA/canonical 显式 supersede，并纠正为“W1 必须、
+  T2 禁止”。
+- W1 frozen BIN=`4dc8e0333b9a37839af18cca0c76ad36d94bd621b6cbc7510b8d775dfd3e2b81`
+  已在 exact relay-OFF 后 app-only 写入并独立 verify PASS；flash evidence SHA-256=
+  `beb0c07cca4699b547cf4fe0b172f67ee3483cc35d9b34c49a1a1566abc213ab`。fresh J2-OFF
+  diagnostic=`4 GET / 0 POST / 0 claim / 0 refresh`、boot=`89243ae1014aa53d`，文件 SHA-256=
+  `10c0629dce6065f0ac8292de6145e34193e2b0f74c602848d254be81b96b627b`。
+- 唯一 W1 action=`f8cf26e3...50a5` 为 `complete_pass / COMPLETE / 1 driver / 1 visible refresh`，
+  PON/DRF/POF=`180/22521/141 ms`、driver total=`35013 ms`，无 timeout/retry/recovery/
+  autochain。action file/canonical SHA-256=`d0a936c2...fb57 / dd7f1fb2...d253`。保护脚本随后
+  relay OFF，最终 exact-bound OFF receipt SHA-256=`3095af42f93f1b953a1b92eb6cea782e58def95e669464a5df4ae11bade71c7d`；
+  `electrical_state_proven=false` 保留。
+- 指定的 48MP 相机已取得 W1 白场全屏照片；JPEG/sidecar SHA-256=
+  `4e07791e...f37d / d855422f...ccfd`。独立 O_EXCL 视觉分析=`PASS / confidence=medium`，
+  analysis ID=`9324718e...395b`、文件 SHA-256=`3c294dd7...69e4`：活动区为干净白场，原 4×8
+  色块、色斑、轮廓、条纹、底边异常和中心接缝均未见。画面欠曝且左下有明显阴影，因此只证明
+  “可见残留清除”，不证明绝对白点或空间均匀度。
+- 当前面板保持干净白，J2 commanded/query OFF；T1 action 与 W1 action 均永久消费，禁止重跑。
+  下一步先离线固化局部白参考照明诊断并改善补光，再以 fresh identity 重做 T1 资格复核；当前
+  T2/T3 不得执行。
 
 ## 2026-08-30 12:02 RAW-P16 日光取证、独立刷白和相机白场复核完成（最高优先级）
 
