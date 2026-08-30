@@ -4,7 +4,50 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-08-30 15:44 +08:00`
+最后更新：`2026-08-30 20:43 +08:00`
+
+## 2026-08-30 20:43 T2 discovery successor V2 人工粗发现完成，W3 白收容 PASS，J2 OFF（最高优先级）
+
+- fresh discovery-only T2 V2 action=
+  `c184e610cc2ac464ca152eb1af7a0a9f746e5d92c38da53b673de9c0dcdcfd1f`
+  已 `complete_pass / COMPLETE`；每侧为 `4×8` 位置平衡 atlas，恰好
+  `1 driver / 1 visible refresh`，driver total=`41913 ms`，
+  PON/DRF/POF=`261/29211/150 ms`，无 timeout/retry/recovery/autochain。
+  action evidence=
+  `.test-output/hardware/MF1750_RAW_P16_CROSSOVER_T2_CA_COARSE_DISCOVERY_SUCCESSOR_20260830_V2/action-01-position-balanced-atlas.json`，
+  bytes=`46464`，file/canonical SHA-256=
+  `490df32422ec362f20c09e40d60d1e86e3f8bb46e9820f624004a4f07d08a989 /
+  a7fc644e46586a5ebe8a1d447062a0ad6b0db8b8c2121ca61c3d842980e6bbcb`。
+- action 前的失败均为 pre-mutation 诊断：初版 V2 host adapter 遗留 V1 baseline-role
+  和 action-round 绑定，修正后 fresh J2-OFF diagnostic PASS；随后两次 ON 准入读到
+  raw `BUSY=0` 并立即保护性 OFF。这些路径均为 `0 POST / 0 claim / 0 refresh`，
+  不计 action retry。host 修正的正负 wire-validator 回归已通过；联合 V2 定向回归=`32 passed`，
+  Ruff 和 py_compile PASS。
+- 人工观察第一行：
+  `CS1/commented535(C)=[橄榄,黑,绿,白,浅黄,蓝,黄,黑]`；
+  `CS2/active535(A)=[红,粉,绿,白,棕,蓝,深粉,深蓝]`。
+  同一侧四行呈相同的八色集合、顺序不同，保留观察期间外观稳定。
+- 上述颜色词只属于人工粗发现。候选尚未在受控照明下完成色卡或 48MP 定量分析，
+  未证明绝对色、单像素新颜料、跨位置/跨批重复性、profile-following 或正式调色板资格；
+  `qualified_colour_count=0`，原 T1 正式门 FAIL 不翻转，原冻结 T2/T3 仍未执行。
+- 精确绑定 T2 V2 的 W3 factory-OTP-white action=
+  `b37e6e5846eecff74b0d478dcdcf5223cdb20f2aa794a2b7f264c42bc21a87e9`
+  已 `complete_pass / COMPLETE / 1 driver / 1 visible refresh`，driver total=`35014 ms`，
+  PON/DRF/POF=`180/22521/140 ms`，无 timeout/retry/recovery/autochain。
+  action evidence=
+  `.test-output/hardware/MF1750_RAW_P16_CROSSOVER_W3_T2_DISCOVERY_SUCCESSOR_V2_WHITE_20260830_V1/action-01-factory-otp-white.json`，
+  bytes=`29734`，file/canonical SHA-256=
+  `445181448ab4ff7bdd19d646cff24f3dd8fec89b329512b9f90ad6c3b2d257ef /
+  624df0db0c082a151f54a051ca45209f4114b67a1643c358269d3efe444d611f`。
+  操作者确认最终全屏干净白。
+- 本轮发现继电器 ON 后 raw BUSY 准入电平存在建立延迟。以后 relay ON receipt 不能直接
+  作为 action admission；只允许先用只读 GET 确认 raw `BUSY=1`，在此之前不得 claim、
+  ARM 或 EXECUTE。若准入电平未建立，则保护性 OFF；不得用固定 sleep 或动作尝试代替确认。
+- 最终 OFF receipt=
+  `.test-output/hardware/MF1750_RAW_P16_CROSSOVER_W3_T2_DISCOVERY_SUCCESSOR_V2_WHITE_20260830_V1/relay-post-action-protective-off-20260830-204303.json`，
+  SHA-256=`febbab71fcbca53130179424775caf6245990d6098f4fab8a1478474b537bae1`；
+  commanded/query=`OFF`，当前屏幕保留干净白。继电器无下游量测，
+  `electrical_state_proven=false`。
 
 ## 2026-08-30 15:44 48MP 白平场粗筛已落地并回放 PASS / 仅允许 T2 discovery successor（最高优先级）
 

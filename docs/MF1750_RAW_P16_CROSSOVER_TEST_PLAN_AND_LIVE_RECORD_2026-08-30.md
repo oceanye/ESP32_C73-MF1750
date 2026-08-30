@@ -1,9 +1,9 @@
 # MF1750 RAW-P16 跨 Profile 判因计划与实测台账
 
 日期：`2026-08-30`
-当前状态：`T1正式门FAIL / W1白收容PASS / 白平场粗筛16/16 PASS / 原T2冻结、fresh T2 discovery successor可准备`
+当前状态：`T1正式门FAIL / discovery-only T2 V2人工粗发现完成 / W3白收容PASS / 候选未资格化`
 当前面板：`clean factory-OTP white retained`
-当前 J2：`commanded/query OFF`
+当前 J2：`commanded/query OFF；electrical_state_proven=false`
 
 ## 1. 文档用途
 
@@ -34,6 +34,9 @@
   `electrical_state_proven=false`；
 - 每个真屏 campaign 使用 fresh identity、fresh NVS、一次性 action 和 no-retry /
   no-recovery / no-autochain。白场收容不得复用已消费 action。
+- 继电器 ON 后 raw BUSY 准入电平可能延迟建立。relay ON receipt 或固定等待时间不等于
+  action admission；必须先只读确认当前固件合同规定的 raw `BUSY=1`，才可 claim/ARM/EXECUTE。
+  准入电平未建立时必须保护性 OFF，不得用动作尝试替代诊断。
 
 ## 3. 已完成：mixed-R20 RAW-P16 直接端点画廊
 
@@ -322,6 +325,67 @@ O_EXCL 报告=`T1.white-normalized-coarse-screen-v1.json`，bytes=`293550`，文
 后续可以基于该报告新建 discovery-only T2 successor；出现粗候选后，再把少量命中送入人工观察
 或受控照明下的正式资格门。
 
+### 5.1E fresh T2 discovery successor V2 真屏人工粗发现（2026-08-30 20:18）
+
+V1 的欠曝证据不能完成自动粗比较，因此没有放宽 `L*>=25` 门，而是使用全新
+campaign/contract/action/NVS 的 V2。V2 仍是 discovery-only，不属于正式资格门。
+
+- action=`c184e610cc2ac464ca152eb1af7a0a9f746e5d92c38da53b673de9c0dcdcfd1f`；
+- outcome=`complete_pass / COMPLETE / 1 driver / 1 visible refresh`；
+- driver total=`41913 ms`，PON/DRF/POF=`261/29211/150 ms`；
+- 每侧 `4×8` 位置平衡 atlas，无 retry/recovery/autochain；
+- action evidence/file SHA-256=
+  `.test-output/hardware/MF1750_RAW_P16_CROSSOVER_T2_CA_COARSE_DISCOVERY_SUCCESSOR_20260830_V2/action-01-position-balanced-atlas.json /
+  490df32422ec362f20c09e40d60d1e86e3f8bb46e9820f624004a4f07d08a989`。
+
+action 前的失败全部在 mutation 之前终止。初版 V2 host adapter 仍绑定 V1 的
+baseline-role 和 action round；修正为 V2 role/round 后 fresh J2-OFF diagnostic PASS。之后两次
+relay ON 准入读到 raw `BUSY=0`，均在 claim/ARM/EXECUTE 之前保护性 OFF。上述路径均为
+`0 POST / 0 claim / 0 visible refresh`，是设置诊断，不是 action retry。V2 host 适配器已增加
+真实形状 version/manifest 正负 wire-validator 回归；联合 V2 定向回归=`32 passed`，
+Ruff 和 py_compile PASS。
+
+人工第一行颜色词为：
+
+```text
+CS1 / C = [橄榄, 黑, 绿, 白, 浅黄, 蓝, 黄, 黑]
+CS2 / A = [红, 粉, 绿, 白, 棕, 蓝, 深粉, 深蓝]
+```
+
+同一侧四行呈相同颜色集合、不同排列，保留观察期间外观稳定。这里的“橄榄、粉、深粉、
+棕、深蓝”等均为人工宽色词，不是色卡值或相机量化结果，不得据此声明新单像素颜料、
+绝对颜色、正式灰阶、跨位置一致或可用调色板。当前仍固定：
+
+```text
+screening_only = true
+formal_gate_evaluated = false
+qualified_colour_count = 0
+original_t2_or_t3_executed = false
+```
+
+### 5.1F W3 独立 factory-OTP 白收容（2026-08-30 20:42–20:43）
+
+W3 精确绑定上述 T2 V2 身份和 action：
+
+- action=`b37e6e5846eecff74b0d478dcdcf5223cdb20f2aa794a2b7f264c42bc21a87e9`；
+- outcome=`complete_pass / COMPLETE / 1 driver / 1 visible refresh`；
+- driver total=`35014 ms`，PON/DRF/POF=`180/22521/140 ms`；
+- 无 timeout/retry/recovery/autochain；
+- action evidence/file SHA-256=
+  `.test-output/hardware/MF1750_RAW_P16_CROSSOVER_W3_T2_DISCOVERY_SUCCESSOR_V2_WHITE_20260830_V1/action-01-factory-otp-white.json /
+  445181448ab4ff7bdd19d646cff24f3dd8fec89b329512b9f90ad6c3b2d257ef`。
+
+W3 首次 relay ON 后 raw `BUSY=0`，因此只做保护性 OFF，没有 claim/POST/refresh。再次 ON 后
+经只读查询明确得到 `BUSY=1`，才执行上述唯一 W3 action；该过程同样不计 action retry。
+
+操作者确认最终全屏干净白。随后 exact-bound relay OFF/query OFF；最终 receipt SHA-256=
+`febbab71fcbca53130179424775caf6245990d6098f4fab8a1478474b537bae1`。
+当前屏幕双稳态保留干净白，`electrical_state_proven=false`。
+
+现场同时确认：继电器 ON 后 raw BUSY 准入电平可能延迟建立。后续流程必须在 ON 后只读轮询，
+确认 raw `BUSY=1` 后才允许 claim/ARM/EXECUTE；relay ON receipt 或固定等待时间均不能替代
+该门。
+
 ### 5.2 固定顺序
 
 ```text
@@ -338,14 +402,15 @@ T3: fresh white -> AC-repeat -> 固定相机拍照
 `AC` 表示 CS1=A、CS2=C；`CA` 表示 CS1=C、CS2=A。T1、T2、T3 必须使用 fresh
 campaign、fresh NVS、独立一次性 action 和独立收容，不复用已消费凭证。
 
-当前实测分支已经停在：
+正式资格分支仍固定为：
 
 ```text
 T1 position gate FAIL -> mandatory W1 white containment PASS -> STOP
 ```
 
-因此上面的 T2/T3 只是新的 fresh successor 在新 T1 通过原始位置门后的条件流程，不是当前待执行
-队列。已消费的 T1/W1 不得重跑，也不得用局部白参考诊断翻转原始 gate。
+原 T2/T3 正式资格动作仍禁止且未执行。5.1D 只另行释放了 fresh、discovery-only successor；
+其 V2 人工粗发现和 W3 安全收容见 5.1E–5.1F，不翻转上述正式分支，也不产生合格颜色。
+已消费的 T1/W1/T2-successor-V2/W3 不得重跑，也不得用局部白参考诊断翻转原始 gate。
 
 ### 5.3 位置平衡画面
 
