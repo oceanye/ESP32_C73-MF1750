@@ -14,7 +14,7 @@ The analyzer accepts only the project formal still profile from `README camera.m
 - current W3 white and all three T3 frames must have the same exact camera instance, `mount_id`, requested settings, effective settings before/after, and dimensions;
 - the separate fresh-V2 exposure `-3` profile is rejected. Profiles cannot be mixed.
 
-T3 remains human-primary. Camera evidence is optional, camera-relative, and incapable of making an absolute-colour or formal-qualification claim. The only automatic conclusions are:
+T3 remains human-primary. Camera evidence is optional, camera-relative, and incapable of making an absolute-colour or formal-qualification claim. Camera-only evidence can establish stability and image quality, but it cannot decide profile-following versus physical-side-following. Without a truthful T3 human seed its ceiling is `HUMAN_CAMERA_SCREEN_REVIEW`, and the primary decision remains `NOT_EARNED`. The only automatic conclusions are:
 
 - `HUMAN_CAMERA_SCREEN_PASS`
 - `HUMAN_CAMERA_SCREEN_REVIEW`
@@ -40,25 +40,23 @@ TLx,TLy;TRx,TRy;BRx,BRy;BLx,BLy
 
 Do not reuse one string by assumption. Record the white corners and all three atlas corner sets from their own 4000x3000 JPEGs. Each quadrilateral must be convex, in-bounds, at least 8% of the photo, and project every one of the 64 cells in-bounds with a minimum cell side of 20 px. The analyzer warps each photo with its own homography, then checks pairwise corresponding-corner drift and residual phase alignment.
 
-## Future capture command shape
+## Attended two-phase capture command shape
 
-The existing capture tool is the only component that should touch the camera in the attended daylight session. The same options apply to the current W3 white and each T3 frame; only action/photo/sidecar paths change.
+Only the bounded T3 capture pack may touch the camera in this attended workflow. Do not call the generic camera tool directly because that would bypass the attempt ledger. `acquire` permanently claims an attempt before the camera opens, accepts no corners, and seals exactly one JPEG/sidecar/action snapshot. Only after inspecting that exact JPEG may the offline-only `admit` bind its corners. Each successful acquisition must reach a terminal admission before another acquisition.
 
 ```powershell
-python tools/mf1750_camera_capture_evidence.py capture-retained `
-  --action-result <EXACT_ACTION_RESULT.json> `
-  --photo <OUTPUT_4000x3000.jpg> `
-  --sidecar <OUTPUT_CAPTURE.json> `
-  --mount-id <ONE_FROZEN_SESSION_MOUNT_ID> `
-  --coverage full_panel `
-  --width 4000 --height 3000 --fps 15 `
-  --warmup-frames 8 --require-all-setting-writes `
-  --autofocus 0 --focus 79 `
-  --auto-exposure 0.25 --exposure -6 `
-  --auto-white-balance 0 --white-balance-temperature 4600
+$camRoot = '.test-output/hardware/MF1750_RAW_P16_CROSSOVER_T3_AC_PROFILE_FOLLOWING_SUCCESSOR_CAMERA_DAYLIGHT_V1'
+python -B tools/mf1750_raw_p16_crossover_t3_camera_capture_pack.py acquire `
+  --slot <w3-white-reference|t3-retained-atlas> `
+  --output-root $camRoot --action-result <EXACT_ACTION_RESULT.json> `
+  --mount-id <ONE_FROZEN_SESSION_MOUNT_ID>
+python -B tools/mf1750_raw_p16_crossover_t3_camera_capture_pack.py admit `
+  --slot <SAME_SLOT> --attempt <ACQUIRE_RETURNED_ATTEMPT> `
+  --output-root $camRoot `
+  --panel-corners '<THIS_JPEG_TL_TR_BR_BL>'
 ```
 
-This is a future attended command template, not authorization to execute hardware now. Capture the white while W3 clean white is still retained, then execute T3 exactly once under its own runbook, command the relay off, and capture three T3 retained frames with unchanged mount/settings.
+This is an attended command template, not authorization to execute hardware while the operator is absent. Capture and admit the white while W3 clean white is still retained, then execute T3 exactly once under its own runbook, command the relay off, and capture/admit three T3 retained frames with unchanged mount/settings. Seal only after all four frames pass deep replay. The legacy one-phase `capture` command is disabled.
 
 ## Camera-only report
 
@@ -106,13 +104,15 @@ python tools/mf1750_raw_p16_crossover_profile_following_human_observation.py sea
   --output <sealed-human-observation.json>
 ```
 
+The sealed AC observation must then be compared with the already bound T2/CA human reference using `compare`. Only that human categorical comparison may earn the profile-following versus physical-side screen; the camera report alone may not.
+
 ## Checks and downgrade rules
 
 - White reference: every sampled cell must have `L* >= 25`. Any cell below 25 is `FAIL`; minimum `L*` from 25 through below 35 is `REVIEW`. Noise, clipping, or normalization saturation can lower confidence and force `REVIEW`.
 - Geometry: malformed, singular, off-photo, too-small, or under-resolved corners are rejected fail-closed before a report because no honest 64-cell measurement exists. For valid geometry, maximum cross-capture corner drift is `PASS <= 12 px`, `REVIEW <= 30 px`, otherwise `FAIL`.
 - Alignment confidence: the three independently warped atlas frames use phase correlation. Weak response or residual shift lowers confidence; low confidence forces at least `REVIEW` rather than inventing a defect or a pass.
-- Four copies: the frozen daylight-plan gate is group maximum `Delta E00 <= 8` for `PASS`, `<= 12` for `REVIEW`, otherwise `FAIL`. The old single-frame 3/5 position heuristic does not decide this item.
-- Temporal stability: each physical cell across three frames uses maximum `Delta E76 <= 3` for `PASS`, `<= 6` for `REVIEW`, otherwise `FAIL`.
+- Four copies: the frozen daylight-plan gate is group maximum `Delta E00 <= 8` for `PASS`, `(8, 12]` for `REVIEW`, otherwise `FAIL`. The old single-frame 3/5 position heuristic does not decide this item.
+- Temporal stability: each physical cell across three frames uses maximum `Delta E76 <= 3` for `PASS`, `(3, 6]` for `REVIEW`, otherwise `FAIL`.
 - Controls 2/3/5: a separate existing camera-relative cross-controller 3/5 `Delta E00` heuristic is reported, together with exact human label equality when a seed is supplied.
 - Artifacts: the screen reports inner-cell 3x3 residuals, horizontal and vertical bands, the lower logical band against each controller's code-7 background, human edge/stripe/residual flags, and frame stability.
 

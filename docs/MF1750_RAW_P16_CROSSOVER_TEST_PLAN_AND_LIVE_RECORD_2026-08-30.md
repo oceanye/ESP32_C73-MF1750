@@ -542,7 +542,58 @@ mean RGB 仅 `[5.464085, 7.100415, 10.886859]`，无法取得本次四角或合�
 立即停止：正式 W3 attempt 未消耗，T3/W4 未安装、未 claim、未执行，J2 保持 OFF，0 次可见
 刷新。待操作者重新对准 48MP 镜头并补足照明后，从 setup-only 几何预检重新开始。
 
+### 5.1J 两阶段 capture、W4 PASS-only 与 daylight V3 离线收口（2026-08-31 09:15）
+
+操作者离场并要求今天后续只做离线代码。保留 5.1I 的 05:59 relay query 和 06:01 setup-only
+相机历史；从本次修订开始没有新增 camera/relay/COM/ESP32-network/flash/reset/visible-refresh。
+现场状态仅继承为 commanded OFF、W3 clean white、`electrical_state_proven=false`；未重新量测。
+正式 W3 attempt 仍为 0，T3/W4 仍未安装、claim 或执行。
+
+旧正式采集接口的“拍照前必须知道该照片四角”时序循环已消除。T3 capture pack 现在严格为：
+
+```text
+acquire: claim-before-camera -> one immutable JPEG/sidecar/action snapshot, no corners
+admit: admission-claim-before-corner-parse -> same-JPEG geometry/gates -> terminal result
+```
+
+成功 acquisition 未 terminal admit 前禁止下一次 acquire；错误角点或 gate failure 永久消耗该
+admission，不能换角重审。legacy `capture` 在任何写入／相机调用前 fail-closed；setup-only 使用
+独立最多两次账本且永不进入正式 bundle。W3 最多 2 attempts；T3 为取得三张 accepted 图最多
+5 attempts，必须逐张 `acquire -> admit` 后才拍下一张。
+
+W4 post-white wrapper 同步改为两阶段，并对 canonical attempt claim、acquisition、admission、
+evidence path/action snapshot 的 bytes/hash/integrity 全链深重放；两类重签篡改测试均拒绝。只有
+`full_screen_white_gate.passed=true` 且 classification=`PASS` 才 terminal ACCEPTED 并允许
+seal；REVIEW/FAIL 保留分类但 terminal REJECTED，只能显式消耗剩余的 attempt 2。人工确认白屏
+可作安全 fallback，但不能虚构 camera seal。
+
+证据权限同时收紧：camera-only 只回答 64 格几何、四副本、三帧稳定性和画面瑕疵；无真实
+T3 human seed 时最高为 `HUMAN_CAMERA_SCREEN_REVIEW`，profile-vs-side=`NOT_EARNED`。要判定
+profile-following 或 physical-side-following，必须封存当前 T3 的左右各 code0..7 共 16 个
+真实人眼词并确认四副本稳定，再与已绑定 T2/CA human reference 比较。缺 seed 不阻塞独立 W4
+安全收容，但主问题保持 pending，`qualified_colour_count=0`。
+
+T3/W4 app-only helper 的真实 reset 序列也已进入 V3：write 为
+`--before default_reset --after no_reset`，verify 为 `--before no_reset --after hard_reset`，应用
+只启动一次；额外／人工 reset=0。每个 runner 的 raw `BUSY=1` 门仍位于 exact 4 GET 后、任何
+claim/ARM/POST 前；两次 visible action 均 retry/recovery/autochain=0。
+
+O_EXCL V3 状态门为
+`.test-output/offline/MF1750_RAW_P16_CROSSOVER_T3_CAMERA_W4_DAYLIGHT_PLAN_20260831_V3.json`，
+`36734 bytes / SHA-256 4c3c1d2ff056a28506fd335ee9576167e7b627d679b2c03d4c854a2b9f95a212`，
+canonical integrity=`88510a3090d62dd2950fca0c0768d28001c5e5bf957ac97ec01525f52b04bed7`，
+共 14 steps。旧 V1/V2 不覆盖、只作历史；V2 已不能通过当前 deterministic rebuild。
+
+最终 SHA-256：T3 capture pack=
+`4b8de02588c4fbf4f73914129118f019080d6231347b97831fe9df9f3f91d6ca`，W4 wrapper=
+`c2c9c5c8cb11867d04d98d51849a080163a379354fdb3c510fb11a8cc2af9024`，daylight plan source=
+`c3582a7f7d9db5a409c62460fe0f417a990e6af471f24e9252c058c3d944245b`。联合离线回归
+`174 passed / 696.69 s`；格式化后 plan `9 passed / 90.75 s`、W4 `17 passed / 244.27 s`；
+format check、Ruff、py_compile PASS，全部为 fake/synthetic evidence。
+
 ### 5.2 固定顺序
+
+> 本节保留历史正式资格路线；它不覆盖 5.1J 当前 successor 的两阶段 T3/W4 现场流程。
 
 ```text
 T1: fresh white -> AC 位置平衡 atlas -> 固定相机拍照

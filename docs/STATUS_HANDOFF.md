@@ -4,7 +4,49 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-08-31 06:03 +08:00`
+最后更新：`2026-08-31 09:15 +08:00`
+
+## 2026-08-31 09:15 T3/W4 两阶段取证 V3 离线就绪，等待下次有人值守（最高优先级）
+
+- 操作者已离场并明确今天后续只做离线代码。本节从该离场点起严格保持 0 camera/relay/COM/
+  ESP32-network/flash/reset/visible-refresh；不改写 05:59 relay query 与 06:01 setup-only 相机的
+  更早历史事实。当前只继承：relay commanded `OFF`、`electrical_state_proven=false`、屏幕按
+  双稳态保留 W3 clean white；正式 W3 camera attempt=0，T3/W4 仍未安装、claim 或执行。
+- T3 capture pack 已消除“照片存在前预填本帧四角”的循环：`acquire` 在开相机前 O_EXCL claim，
+  不接收 corners，只封存一张 JPEG/sidecar/action snapshot；随后纯离线 `admit` 在解析这张
+  exact JPEG 的 corners 前先 O_EXCL admission claim，再写 terminal ACCEPTED/REJECTED。成功
+  acquisition 未 terminal admit 前禁止下一次 acquire；错误角点、gate failure 与旧 `capture`
+  路径均 fail-closed，不得改角重审、自动 retry/fallback/autochain。setup-only 独立最多 2 次，
+  `formal_evidence=false`。
+- W4 post-white wrapper 采用同一两阶段结构，并补齐 canonical claim/acquisition/admission/
+  evidence 路径和哈希深重放；两类重签篡改负测均被拒绝。只有
+  `full_screen_white_gate.passed=true` 且 classification=`PASS` 才 ACCEPTED/seal；REVIEW/FAIL
+  保留分类但 terminal REJECTED，同一 attempt 不可重 admit，只能在最多 2 次总预算内显式拍
+  attempt 2。若两次均未 PASS，只能由操作者明确确认 clean white，人工 fallback 不生成 seal。
+- 相机权限边界已收紧：camera-only 只赚取 64 格几何、四副本、三帧稳定性与底边／条纹／残留
+  粗筛；没有真实 T3 human seed 时最高 `HUMAN_CAMERA_SCREEN_REVIEW`，profile-vs-side=
+  `NOT_EARNED`。要回答主问题，必须把当前 T3 左右各 code0..7 共 16 个真实人眼词与四副本稳定
+  确认封存，再与 exact T2/CA human reference 比较；没有 seed 仍可先执行独立 W4 安全收容。
+- T3/W4 app-only helper 的 reset 语义已如实写入计划：write 使用
+  `--before default_reset --after no_reset`，verify 使用 `--before no_reset --after hard_reset`，
+  应用只启动一次；额外／人工 reset=0。两次 visible action 的 raw `BUSY=1` 门仍位于各自冻结
+  runner 的 exact 4 GET 之后、任何 claim/ARM/POST 之前，retry/recovery/autochain=0。
+- current V3 已 O_EXCL 封存：
+  `.test-output/offline/MF1750_RAW_P16_CROSSOVER_T3_CAMERA_W4_DAYLIGHT_PLAN_20260831_V3.json`，
+  bytes/SHA-256=`36734 / 4c3c1d2ff056a28506fd335ee9576167e7b627d679b2c03d4c854a2b9f95a212`，
+  canonical integrity=`88510a3090d62dd2950fca0c0768d28001c5e5bf957ac97ec01525f52b04bed7`，
+  14 steps。V1/V2 作为历史保留；V2 已不能通过当前 deterministic rebuild，不得继续作为 current。
+- 最终工具 SHA-256：T3 capture pack=
+  `4b8de02588c4fbf4f73914129118f019080d6231347b97831fe9df9f3f91d6ca`；W4 wrapper=
+  `c2c9c5c8cb11867d04d98d51849a080163a379354fdb3c510fb11a8cc2af9024`；daylight plan source=
+  `c3582a7f7d9db5a409c62460fe0f417a990e6af471f24e9252c058c3d944245b`。联合离线回归=
+  `174 passed / 696.69 s`；格式化后 plan `9 passed / 90.75 s`、W4 `17 passed / 244.27 s`；
+  format check、Ruff、py_compile PASS，全部使用 fake/synthetic evidence。
+- 当前执行卡为
+  `docs/MF1750_RAW_P16_CROSSOVER_T3_CAMERA_W4_DAYLIGHT_RUNBOOK_2026-08-31.md`，详细计划为
+  `docs/MF1750_RAW_P16_CROSSOVER_T3_W4_NEXT_ATTENDED_TEST_PLAN_2026-08-31.md`。下次只需操作者在场、
+  相机完整对准且光照可用；先 setup-only，不消耗正式名额。正常预计 15–25 分钟；仅在取景失败、
+  camera REVIEW、主问题需要 16 个词或末端白异常时暂停人工判断。
 
 ## 2026-08-31 06:03 日间 48MP 几何预检停止：面板未入镜、固定档严重欠曝（最高优先级）
 
