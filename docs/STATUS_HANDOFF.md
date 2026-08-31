@@ -4,9 +4,101 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-08-31 13:38 +08:00`
+最后更新：`2026-08-31 16:56 +08:00`
+
+## 2026-08-31 16:56 T3 V2 局部判读完成，W4 白屏恢复完成并保护性 OFF（最高优先级）
+
+- T3 V2 的 W3 白参考 + 三张 retained atlas 局部筛查已完成离线判读并通过独立深重放；报告：
+  `.test-output/hardware/MF1750_RAW_P16_CROSSOVER_T3_AC_PROFILE_FOLLOWING_SUCCESSOR_V2_CAMERA_PARTIAL_DUAL_3X8_V1/partial-profile-camera-screen.json`，
+  bytes/file/canonical SHA-256=`270928 /
+  6376c4bfedad01edfe898fb3c3126e7c22089b3644bbe9d128aee44712489d51 /
+  e8a840ad491e855d068acc8665606195fdced6ea749d0c022183a2bef486a39e`。自动终态为
+  `PARTIAL_CAMERA_SCREEN_REVIEW / machine_confidence=HIGH`，不是 FAIL：空间三副本、三帧对齐、
+  白参考及控制码 2/3/5 均 PASS；时序最大 ΔE76=`4.211125`、水平带最大 ΔE00=`4.323357`
+  与单 cell residual maximum ΔE00=`5.566369` 处于 REVIEW 区间。
+- 相机相对 code/profile 差异呈明确结构：active-vs-commented 的 code0/1/4/6 ΔE00 分别为
+  `56.325990 / 55.459843 / 42.058774 / 50.389034`；control code2/3/5 为
+  `2.000122 / 0.836058 / 1.269330`，code7=`10.824445`。这支持“两套 profile 对部分单像素码
+  产生显著不同结果”的局部筛查结论，但仍是 `CAMERA_RELATIVE_DESCRIPTIVE_ONLY`；
+  `formal_full_panel_evidence=false / profile_following_decision_earned=false /
+  qualified_colour_count=0`，不能据此命名或宣称稳定新色。
+- W4 V2 app-only 写入与独立 verify PASS：BIN=`787296 /
+  311c30e3e3541108292bd135716d398e22942c34b7b2f25eaa90dcf486215093`；fresh one-shot
+  exact IPv4/MAC binding、J2-OFF 四 GET、raw BUSY 门均通过。W4 action
+  `7d600b1a0072a1966e5240dec8756094962066d2ebd3fff555af2d93da3407f4` 随后
+  `complete_pass / COMPLETE / campaign_complete=true`：恰好 `1 ARM / 1 EXECUTE / 1 driver /
+  1 visible refresh`，driver total=`35022 ms`、PON/DRF/POF=`180/22531/140 ms`，无
+  retry/recovery/autochain。action evidence bytes/file/canonical SHA-256=`30300 /
+  11196c4cc5dade801d99b647e08fcccee02521acfbe0d3785c77d05a4697fb98 /
+  74ff3af94ebb4c2f58270d7cd9672a359b2e21332149a8a422feaa3967fd753d`。
+- action 后 COM14/channel1 已保护性 `OFF` 并独立回读 `off_gate_passed=true`；receipt
+  bytes/file/canonical SHA-256=`1807 /
+  f5d53a3c2374fbce9758a81dd75da869a2b56f021877c16d27296d7a8fe3f46e /
+  f7d734ff497accb411b65c45a66a2f0c7523419623da4f2e85670fca679f42ed`。继电器没有负载侧
+  电压反馈，故 `electrical_state_proven=false` 保留。
+- relay OFF 后用唯一允许的 `48MP USB Camera / VID_32E4:PID_4801` 拍得一张 exact retained
+  partial 帧；图中未见 atlas 色块，显示区呈白场。JPEG=`658852 /
+  2808039da93adfe44a27104576af003c164a61db266ff823d33fe7a548e5cb56`，sidecar
+  bytes/file/canonical SHA-256=`5458 /
+  8a88f4aafdca7e529b97286cb480e86076ea03da6eccd848a4ff3ee1122d3f38 /
+  83372788f20fe4c0845f3c1f42f52142f078cb3a05e02ae37e800848ab7baa61`，深验 PASS。因暗光、
+  遮挡且合同明确为 partial retained/INCONCLUSIVE，这不是 formal full-white seal；若需要正式收口，
+  待操作者方便时补一句“全屏干净白、无色块/色斑残留”即可，不需要重刷。
+- 当前安全状态：W4 action 与 claim 已永久消费，不得重放；relay commanded OFF；ESP32 保留 W4
+  固件；屏幕按双稳态保留白场。下一步只能是离线归档/代码测试/计划，或另建 fresh identity 的
+  新试验，不能复用本轮 T3/W4 route/action/claim。
+
+## 2026-08-31 16:21 T3 V2 单次刷新完成，三帧 partial bundle 已封存，W4 pending（阶段记录）
+
+- fresh T3 V2 action `73f6e97b49b5bd8c46edbba9edffde99967dcb170be6150082dc7c68100fada5`
+  已 `complete_pass / COMPLETE / campaign_complete=true`：恰好 `1 driver / 1 visible refresh`，
+  driver total=`46643 ms`，PON/DRF/POF=`261/33941/151 ms`，无 retry/recovery/autochain。
+  action evidence 位于
+  `.test-output/hardware/MF1750_RAW_P16_CROSSOVER_T3_AC_PROFILE_FOLLOWING_SUCCESSOR_20260831_V2/action-01-position-balanced-atlas.json`，
+  bytes/file/canonical SHA-256=`64782 / e7ba8d10f5428372e0462835274cfdebeef5f19d0b8ab354fdcdfadf534a4ec3 /
+  4070a4381d7641f98bef0c84ed2fc2f885a5795ba43599f62812d9e4918c2b4e`。这仍是
+  `EXPERIMENTAL_HUMAN_PRIMARY...REVIEW_ONLY` screening，不是 formal colour qualification。
+- action 后已执行保护性断开并独立回读：COM14/channel1 `commanded_state=OFF / target_state=OFF /
+  off_gate_passed=true / contact_switch_performed=true`，无自动 retry/recovery；
+  `electrical_state_proven=false` 仍保留。receipt=
+  `.test-output/hardware/MF1750_RAW_P16_CROSSOVER_T3_AC_PROFILE_FOLLOWING_SUCCESSOR_20260831_V2/relay-post-action-protective-off.json`，
+  bytes/file/canonical SHA-256=`1807 / 009bce63d8d0b86de7bd6083a1d5c39656a64f1d1f77a4135fd7a8e0c3d428a2 /
+  e566c2dee32a24b5a2f8c990c1bb7b653e5c40fa5fca806f1abbe27836874397`。屏幕按双稳态保留
+  T3 V2 atlas。
+- 固定 48MP 机位下，W3 局部白参考 attempt 1 与 T3 retained-atlas attempts 1/2/3 均按
+  `acquire -> admit` 独立消费并得到 `PARTIAL_ACCEPTED`；admit 阶段相机调用与硬件 I/O 均为 0。
+  三张 T3 JPEG bytes/SHA-256 依次为
+  `942848 / b0aa9633fe48e7dda5d919550e2f9746488671214d36b936a650ff720b894385`、
+  `937416 / 0f55a7c4741f3240f8a47e2bbc083213a1c916ba7505ad90996578665c72fccc`、
+  `936503 / 49a003d78afcf11c26fcb4c9306cab129f9babb05a1c19954000a2029ee8a152`；对应 sidecar
+  SHA-256 为 `c122b3a4206d5cd1416041227f8683feddced6d8d0a812ca8749a5cd87190a93`、
+  `7a88009a710af1ca984c0b534d4ef75a381189ccf9d38d46f730f2143e1cfdfb`、
+  `e3c097d9beb8c2df6575a28e6a423c455584dadacc6ad8bb08a7f31fbebe1a11`。
+- O_EXCL sealed partial bundle 位于
+  `.test-output/hardware/MF1750_RAW_P16_CROSSOVER_T3_AC_PROFILE_FOLLOWING_SUCCESSOR_V2_CAMERA_PARTIAL_DUAL_3X8_V1/partial-capture-bundle.json`，
+  bytes/file/canonical SHA-256=`29748 / e02c213b27415bfa2d2dc7dcdf761a60d9c855a15ab917e0a763e7c6b8efed8b /
+  57da5577b83522c2b790c48b34dc1a3c247b7a349475092f2db8f581ccafd88b`。accepted counts=
+  `W3 white 1 + T3 frames 3`；每帧只覆盖双侧 top `3x8` 共 48 格、每 controller/code 三个空间
+  副本。白参考与三帧的全部两两几何记录均 `max=0 px / RMS=0 px`，通过冻结门限
+  `max <=15 px / RMS <=8 px`。
+- partial 权限没有越界：`formal_full_panel_evidence=false / full_panel_geometry_evaluated=false /
+  profile_following_decision_earned=false / qualified_colour_count=0`，ROI 外统一
+  `NOT_EVALUATED_OUTSIDE_SELECTED_ROI`。W4 V2 white **尚未执行**，无 W4 live output 或 claim；
+  bundle 明确 `w4_post_white_included_in_this_bundle=false` 且
+  `w4_post_white_full_screen_seal_earned=false`。下一次可见动作仍是 pending W4，不得把当前 partial
+  bundle 写成 full-white seal。
 
 ## 2026-08-31 13:38 固定机位局部 ROI 获准，T3 在首个 GET 前置诊断失败并保护性停止（最高优先级）
+
+> `14:13 +08:00` 的后续只读定位已解释本次 `WinError 10061`：Windows
+> `Get-NetIPAddress` 显示 `192.168.1.7/24` 是本机 `ifIndex=16` 的地址，并非 ESP32；被动
+> `Get-NetNeighbor` 仍把 ESP32 精确 MAC `A4-CB-8F-D9-FC-D4` 映射到
+> `192.168.1.11`，但状态为 `STALE`，所以 `.11` 只可作为单一候选，尚不是新鲜在线或应用身份
+> 证明。被动 O_EXCL evidence=`2850 / 4c2fe6c04c90119a776099a187340fa91f8e7cb0b92482ada232af201ebe8fd8`，
+> 明确为 `fresh_binding_passed=false / 0 ping / 0 HTTP / 0 device API / 0 mutation /
+> 0 refresh`。新增 one-shot literal-IPv4/MAC 门只允许一个候选、先拒绝本机地址，并可在未来
+> 明确授权下只发一次 ICMP 后复核 exact MAC；离线负测 `7 passed`。本轮没有再次操作 relay、
+> COM、ESP32 或屏幕。fresh T3 V2/W4 与 partial `3x8` 工具仍在离线构建/回归，未宣布可上机。
 
 - 操作者后续明确授权读取 48MP 相机、操作继电器与执行刷新，并允许改为固定
   机位的局部可见区筛查。本轮不得被 09:15 的“从离场点后只做离线”历史描述覆盖。
@@ -134,13 +226,14 @@
   `.test-output/offline/MF1750_RAW_P16_CROSSOVER_T3_CAMERA_W4_DAYLIGHT_PLAN_20260831_V2.json`，
   bytes/SHA-256=`27457 / d3c0d2e12804c459d03872479da91bfce81ebcff039128f7395ebdbb937ef551`；
   初版 V1 保留但被 V2 明确替代。
-- 四帧 capture pack 已就绪：
+- 四帧 capture pack 已就绪（以下为本历史阶段当时源码身份）：
   `tools/mf1750_raw_p16_crossover_t3_camera_capture_pack.py`，SHA-256=
   `5608ac7c24fd7fad28d5279cdcafae4bc2fd85ee098d9dd5850d12bf8e0522de`。每次调用最多采一帧，
   相机打开前先永久 O_EXCL claim；白参考最多 2 attempts、T3 三帧总计最多 5 attempts，失败不
-  自动 retry/fallback。四张图各用本帧四角，逐帧检查 64 格投影；对应角漂移上限 `30 px`，
-  同时严格要求 camera instance/mount/requested/effective settings/尺寸全等。
-- camera-only analyzer 已就绪：
+  自动 retry/fallback。四张图各用本帧四角，逐帧检查 64 格投影；后续 partial V2 frozen
+  contract 已把跨帧门收紧为最大角漂移 `<=15 px` 且 RMS 漂移 `<=8 px`（本历史阶段的早期
+  宽松值不再是 current），同时严格要求 camera instance/mount/requested/effective settings/尺寸全等。
+- camera-only analyzer 已就绪（以下为本历史阶段当时源码身份）：
   `tools/mf1750_raw_p16_crossover_t3_profile_following_camera_observation.py`，SHA-256=
   `1a75d63fea7a3d32adb431a8083c58b3d1f0e3ccb16b12fddb8b9c8b78d2a40c`。无人工 seed 仍生成完整
   64 格报告，但最高只能 REVIEW 且不生成 compact；只有真实完整 seed 才可综合 PASS 并 O_EXCL
