@@ -4,7 +4,45 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-08-31 09:15 +08:00`
+最后更新：`2026-08-31 13:38 +08:00`
+
+## 2026-08-31 13:38 固定机位局部 ROI 获准，T3 在首个 GET 前置诊断失败并保护性停止（最高优先级）
+
+- 操作者后续明确授权读取 48MP 相机、操作继电器与执行刷新，并允许改为固定
+  机位的局部可见区筛查。本轮不得被 09:15 的“从离场点后只做离线”历史描述覆盖。
+- 13:20 setup-only attempt 1 唯一命中 `48MP USB Camera / VID_32E4:PID_4801`，图像
+  `4000x3000`；屏幕左右两半都入镜，白屏可见，但右下受黑色物体遮挡、底边有线缆且
+  左右照明不均，因此不具备 full-panel 正式证据资格。JPEG bytes/SHA-256=
+  `877871 / 3942444e8775b270fbe080d32658c84822e45415fda9adff0ef21008ac0dbc1e`；sidecar=
+  `5364 / def690aa4c6ce6353dc9b62f6bf6f7bc7010222b258c7989a69f2626af0af8d4`，
+  `formal_evidence=false / eligible_for_core_bundle=false`。setup-only 总预算已用 1/2。
+- 固定机位可用的新筛查范围定为独立
+  `PARTIAL_DUAL_3X8_TOP_ROWS_V1`：CS1/CS2 各取逻辑 rows `0..2` 与 8 列，每帧 48 格，
+  每 controller/profile/code 有 3 个空间副本，三帧共 9 样本。现图仅用于规划的 block
+  quad 约为 CS1 `[(826,536),(1911,528),(1959,1328),(783,1368)]`、CS2
+  `[(1999,527),(3006,520),(3140,1287),(2055,1324)]`；正式 partial admission 仍必须绑定
+  各自 exact JPEG 的当前 quad，不得把这两组估计坐标硬编码成真值。左右白场约相差
+  `9.6 OpenCV Lab-L`，必须各侧按自身 W3 白基线归一化，禁止直接比较左右绝对 RGB。
+- 13:36 fresh exact-bound relay query 确认 COM14/channel1 commanded `OFF`、
+  `off_gate_passed=true`。随后只向 COM8 `0x10000` 写入 T3 V1 app，app-only write 内建哈希及
+  独立 verify 都 PASS；BIN=`805232 / 05c00d71a163ecfc22d0d333404ac8967eaa06b929003ce0c28dda7499615760`，
+  flash evidence=`7069 / d72f41f9af347437a394e19cd59759a7331a4aa5496ee74cf84123992788897c`。
+  未写 bootloader/partition/NVS，应用只启动一次。
+- 随后的 J2-OFF 冻结诊断在第 1 个
+  `GET /api/ec5/raw-p16-crossover-t3-ac-profile-following-successor-v1/version` 即得到
+  `WinError 10061 / 目标积极拒绝连接`。诊断终态为
+  `j2_off_diagnostic_failed_no_claim`，精确计数为 `1 GET / 0 POST / 0 claim / 0 ARM /
+  0 EXECUTE / 0 visible refresh`；evidence=`2112 /
+  8bd0510a539a93d7a0d4740dd550c8d0535f06805061e7ee8708a944d63ae738`。按 no-retry 合同没有重发、
+  扫描、fallback 或 recovery。
+- 13:38 独立 exact-bound 查询再次确认 relay commanded `OFF`；receipt=
+  `1248 / 345973ac5bde6f4488d66279f7072479512c4edbf1c8339b3af374b2f0ab49db`。屏幕未执行
+  T3，仍按双稳态保留原 W3 白屏；W4 未安装、未执行。当前 ESP32 app 为已验证写入的
+  T3 V1，但 V1 diagnostic 已终态失败，禁止重用。
+- 下一步先离线生成 fresh T3 successor（新 route/campaign/action/NVS/output）与独立
+  partial-ROI 证据合同；下次在 relay OFF 下先重新建立 exact device endpoint，不复用本次
+  V1 diagnostic/action。W4 的 full-white 安全动作可保留，但 partial 白图不得伪装为 full-white
+  camera seal。
 
 ## 2026-08-31 09:15 T3/W4 两阶段取证 V3 离线就绪，等待下次有人值守（最高优先级）
 

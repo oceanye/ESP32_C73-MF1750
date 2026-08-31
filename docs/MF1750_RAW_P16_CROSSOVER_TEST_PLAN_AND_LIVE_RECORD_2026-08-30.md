@@ -591,6 +591,34 @@ canonical integrity=`88510a3090d62dd2950fca0c0768d28001c5e5bf957ac97ec01525f52b0
 `174 passed / 696.69 s`；格式化后 plan `9 passed / 90.75 s`、W4 `17 passed / 244.27 s`；
 format check、Ruff、py_compile PASS，全部为 fake/synthetic evidence。
 
+### 5.1K 固定机位局部双侧筛查放行，T3 首 GET 失败并在刷新前停止（2026-08-31 13:38）
+
+操作者后续授权相机、继电器和刷新，同意不再要求整屏相机几何，而是从固定画面
+中选取左右两个可见局部区。13:20 的 exact 48MP setup-only 图已能同时看到两半屏和白屏，
+但右下遮挡、底边线缆及照明梯度使其不能进入 full-panel core bundle。JPEG/sidecar 为
+`877871 / 3942444e8775b270fbe080d32658c84822e45415fda9adff0ef21008ac0dbc1e` 与
+`5364 / def690aa4c6ce6353dc9b62f6bf6f7bc7010222b258c7989a69f2626af0af8d4`，明确为 setup-only。
+
+离线几何审计将下一版独立模式定义为 `PARTIAL_DUAL_3X8_TOP_ROWS_V1`：左右各保留逻辑
+rows 0..2 与 8 列，每帧 48 格、每 controller/profile/code 3 空间副本、三帧 9 样本。
+该模式只能产生局部稳定性和 profile/code 筛查；第四行、底边、整屏 seam 与屏外异常均是
+`NOT_EVALUATED_OUTSIDE_SELECTED_ROI`，不得声称 64 格、四副本、full-panel PASS 或正式
+profile-following。左右白场约差 9.6 OpenCV Lab-L，因此每侧必须用同侧 W3 白参考归一化。
+
+现场先 exact-bound query 确认 relay OFF；随后在 J2-OFF 下将冻结 T3 V1 仅写入 COM8 app
+`0x10000`，write 内建哈希与独立 verify 均 PASS。flash evidence=`7069 /
+d72f41f9af347437a394e19cd59759a7331a4aa5496ee74cf84123992788897c`。但 fresh J2-OFF diagnostic 的第
+1 个 `/version` GET 对 `http://192.168.1.7` 返回 `WinError 10061`，立即终止为
+`j2_off_diagnostic_failed_no_claim`。终态证据=`2112 /
+8bd0510a539a93d7a0d4740dd550c8d0535f06805061e7ee8708a944d63ae738`；精确计数为
+`1 GET / 0 POST / 0 claim / 0 ARM / 0 EXECUTE / 0 visible refresh`。没有重试、扫描、fallback
+或 recovery。最终 relay 独立查询仍为 OFF，receipt=`1248 /
+345973ac5bde6f4488d66279f7072479512c4edbf1c8339b3af374b2f0ab49db`。屏幕仍保留 W3 白，W4 未安装。
+
+该 V1 diagnostic 已终态失败，不得重放。下一步必须先以独立只读路线重新确定 exact endpoint，再生成
+新 route/campaign/action/NVS/output 的 fresh T3 successor 和独立 partial-ROI 证据合同。W4 full-white 收容
+边界保持不变；局部白图不产生 full-white camera seal。
+
 ### 5.2 固定顺序
 
 > 本节保留历史正式资格路线；它不覆盖 5.1J 当前 successor 的两阶段 T3/W4 现场流程。

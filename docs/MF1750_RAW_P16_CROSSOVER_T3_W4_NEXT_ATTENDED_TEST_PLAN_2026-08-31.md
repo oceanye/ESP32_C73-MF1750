@@ -1,5 +1,9 @@
 # MF1750 T3/W4 下一次有人值守测试计划
 
+> **2026-08-31 13:38 替代说明：** 本文的 full-panel V3 路线已因固定机位局部 ROI 选择和
+> T3 V1 首 GET 终态失败而停止。未产生 claim、POST 或刷新，relay 最后复核 OFF。下一执行入口为
+> `docs/MF1750_RAW_P16_CROSSOVER_T3_PARTIAL_DUAL_3X8_RECOVERY_PLAN_2026-08-31.md`，不重用 V1。
+
 状态：`OFFLINE READY / NOT EXECUTED`
 
 ## 1. 当前起点

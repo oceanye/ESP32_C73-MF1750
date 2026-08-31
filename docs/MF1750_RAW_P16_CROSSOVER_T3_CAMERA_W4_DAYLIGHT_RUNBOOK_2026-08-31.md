@@ -1,5 +1,12 @@
 # MF1750 T3 相机辅助与 W4 白收容执行卡
 
+> **2026-08-31 13:38 状态更新：** 本 full-panel V3 卡作为历史冻结路线保留。操作者已改选
+> 固定机位的双侧局部 `3x8` 筛查；T3 V1 app 已写入且 verify PASS，但首个 J2-OFF
+> `/version` GET 连接被拒绝，以 `0 POST / 0 claim / 0 refresh` 停止，relay 复核 OFF。
+> 当前执行入口改为
+> `docs/MF1750_RAW_P16_CROSSOVER_T3_PARTIAL_DUAL_3X8_RECOVERY_PLAN_2026-08-31.md`；不得重放本卡的
+> V1 diagnostic/action。
+
 状态：`OFFLINE READY / NOT EXECUTED`
 V3 离线冻结：`2026-08-31 09:00 +08:00`
 
