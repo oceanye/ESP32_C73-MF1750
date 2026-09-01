@@ -15,6 +15,21 @@
 空间抖动、交错条纹和网点只属于空间混色，不计作单像素颜色。CS1 与 CS2 是两个独立的物理
 颜色系统；左右差异不能互相充当副本，也不能拼成明度阶梯。
 
+### 256 色／10 阶的冻结口径
+
+最终研究目标现明确为 `256` 个总逻辑槽位，而不是 `256×10`：
+
+```text
+16 个中性色槽
++ 12 个彩色色相族 × 2 条彩度/轻微色相子轨 × 10 个明度档
+= 256 个单像素逻辑颜色槽
+```
+
+十二个彩色色相族为 `R/RO/O/Y/YG/G/T/C/B/I/V/M`。十阶是每条彩度／子色相轨的目标纵轴，
+不是当前能力声明；实际按 `3阶→5阶→10阶` 递进。全屏色数必须由 CS1/CS2 两套独立 recipe
+经过显式跨 controller 光学匹配后计数，不能相加，也不能把同名 slot 的集合交集当作匹配证据。
+完整口径和替代方法见 `MF1750_256_COLOR_10_LIGHTNESS_TARGET_AND_ADJUSTED_SEARCH_2026-09-01.md`。
+
 ## 功能路径与当前状态
 
 | 门 | 功能 | 当前状态 | 通过后进入 |
@@ -56,9 +71,12 @@ claim 身份，精确绑定 V3 白恢复、48MP retained review 和 relay-OFF �
 - 至少两次 fresh-white construction 一致后，才能获得复现证据；三次及长时保持后置；
 - 没有命中时，不进入大规模色相穷举，先完成下一种有界明度机制。
 
-历史配方无命中后的有限后备顺序为：已知兼容的 controller-specific profile 端点 → 经离线
-极性与 fixture 检查的有界 R20 phase family。未知寄存器／LUT 命令穷举禁止；波形中断因风险较高
-后置。
+历史配方无命中后的有限后备顺序现调整为：已知兼容完整 profile 的直接 endpoint 三阶复核 →
+两套完整 profile 的 endpoint 地图 → 不修改 LUT、每次 BUSY 正常结束的局部完整刷新剂量梯级。
+现有 T3 partial-camera 数据中的 `CS1 active C0/C6/C1` 分别约为
+`L*=31.17/50.53/68.25`、总色相角跨度约 `9.8°`，是首个三阶复核候选，但仍为 camera-relative
+REVIEW、`qualified=0`。R20 record 字段和极性未解析，所以有界 R20 phase family 继续
+`OFFLINE BLOCKED`；禁止 hybrid profile、任意字节插值、未知命令穷举和 BUSY 中断。
 
 ## 功能优先的展开顺序
 

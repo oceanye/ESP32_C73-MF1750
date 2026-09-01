@@ -4,7 +4,242 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-08-31 16:56 +08:00`
+最后更新：`2026-09-01 13:38 +08:00`
+
+## 2026-09-01 13:38 256 色／10 阶口径冻结，明度路线改为完整 endpoint 优先（最高优先级）
+
+- 用户确认上午明度差异不明显并要求更换方法。最终目标现精确定义为 **256 个总单像素逻辑
+  调色板槽**，不是 `256×10`：`16 neutral + 12 hue families × 2 chroma/sub-hue tracks ×
+  10 lightness ranks = 256`。十二色相族为 `R/RO/O/Y/YG/G/T/C/B/I/V/M`；十阶按
+  `3→5→10` 逐级证明，物理跨度不足时不得降低门槛硬凑。全屏色数必须有 CS1/CS2 各自 recipe
+  及显式跨 controller 光学匹配证据，不能把两侧计数相加或把同名 slot 交集直接计色。
+- `STABLE_CODE0_LUMA_LATIN_V3` 的 identical-target repeat 路径已降级：L3 CS2 历史码中值
+  跨度 `7.059 L*`，L4 收敛到 `2.157 L*`，不足以生成稳定明度层。sealed F1 position-balanced
+  history 固件保留为备选诊断，不再作为首选明度发生器；没有新的 live action 被授权或执行。
+- 新首选 P1 来自既有 T3 partial-camera 数据：同一 `CS1 + active complete profile` 内，
+  C0/C6/C1 的 camera-relative `L*≈31.17/50.53/68.25`，总色相角跨度约 `9.8°`。这只是
+  `THREE_LEVEL_ENDPOINT_CANDIDATE / qualified=0`；下一 live firmware 必须使用 fresh identity、
+  每侧 `4×8` 位置平衡八码完整 endpoint atlas、controller-local 分析和独立 factory-OTP white
+  successor。命中后直接进入局部 HOLD 与 fresh-white reconstruction，不做原位 repeat。
+- 后备顺序冻结为：P1 完整 profile endpoint 三阶复核 → P2 两套完整已知 profile 各自建八码
+  endpoint 地图 → P3 不修改 LUT、每次 BUSY 正常结束的完整 PTLW 刷新剂量 `1/2/4/7/10`
+  粗阶梯。R20 `8×11` record 尚无可靠字段／极性语义，故 phase family 继续 `OFFLINE BLOCKED`；
+  禁止 header/body hybrid、任意 profile 字节插值、未知命令扫描、邻芯片 LUT 移植和 BUSY 中断。
+- 新的纯离线 `host.static_photo.palette_target_coverage` 已实现 schema V2：冻结 12×2×10+16
+  目标网格、单像素／无抖动硬门、CS1/CS2 独立 coverage、3→5→10 milestone、显式
+  `CrossControllerOpticalMatchEvidence` 及 panel admission fail-closed；两侧均有256个 controller-local
+  slot 但没有匹配证据时状态只能是 `CONTROLLER_TARGET_COMPLETE_PANEL_MATCH_PENDING`。
+  定向 `18 passed`，全部 static-photo `130 passed`，Ruff、py_compile 与 import smoke PASS。
+- 详细口径与真屏次序见
+  `docs/MF1750_256_COLOR_10_LIGHTNESS_TARGET_AND_ADJUSTED_SEARCH_2026-09-01.md`；总照片路线已同步
+  `docs/MF1750_SINGLE_PIXEL_PHOTO_FUNCTION_ROADMAP_2026-09-01.md`。本节没有相机、硬件、COM、
+  设备网络、继电器、刷写、复位或刷新动作；面板继续保留白场，relay/J2 仍为最后记录的
+  commanded OFF，`electrical_state_proven=false`。
+
+## 2026-09-01 12:40 功能优先链离线收口：明度→HOLD→fresh 重建→照片执行（最高优先级）
+
+- 用户再次纠正方向：当前先扩展可组合功能，不继续大量枚举新色。固定顺序为稳定基色后的真实
+  单像素明度／灰度机制 → 局部 HOLD → 独立白锚 fresh reconstruction → 稳定基色明度族 →
+  controller-specific palette → 照片逐像素映射 → multi-LUT HOLD schedule → fixed-photo bundle。
+  更多色相、第三次复现、60/600 秒和长时可靠性继续后置；空间抖动永不计作单像素颜色。
+- fresh `LUMA_GRAY_MECHANISM_POSITION_BALANCED_V3` 仍是下一真屏入口；主／独立白 successor
+  已离线审计 PASS，31/31 SHA 项通过。G1/G2/G3 后若无候选，不执行 G4，直接独立刷白收尾。
+- 候选专用 `POSITION_BALANCED_GRAY_HOLD_SUCCESSOR_V1` 主固件及独立白 successor 已封印；
+  main contract/BIN=`329e0bb6075291cc2bbdc1045a642b055b06fb8d312d2a7761b1332358e04229 /
+  5a0d80b7391ae8f171747a1505521ff7193757bef86bf5e34bfb1f5be2d95db8`，white contract/BIN=
+  `79ac7bae08b912cdcbf3d959029d56c740407275ef70c91de738b8205dcaa433 /
+  7fe34992e9f0060d5b164d5c6f761ad38b755446854bd4bd22a65e52716a769b`；24/24 SHA 项通过。
+- `host.static_photo.position_balanced_hold_compare` 已实现 T0=G3、T1=H1、T2=H2 的精确
+  controller-local REVIEW：检查候选格保持、H1 保持、H2 出现、四边纯色和四副本完整性；缺探针
+  固定为未测试，绝不自动生成 passed palette evidence。定向 `10 passed`。
+- 独立第二次构色 `POSITION_BALANCED_GRAY_FRESH_RECONSTRUCTION_V1` 已离线封印：main
+  contract/BIN=`5d76fda3bf199d29538ec0c6555db4a294b6b11ffb5805613805b4f759b7d132 /
+  9b8493903baa1c656cf387481a52f217293d2f2ccedb09afebd2cdeda400f2a3`；R3-only white
+  successor contract/BIN=`648be46177390b2640e619d23324b68ebb59c431b731c4c03e4e2973c5550318 /
+  e78cd7b18d8c020d09f1fc554cd4f0f2063cfcd8c3b590391ed637b0260bba45`；审计=
+  `PASS_OFFLINE_SEALED_LIVE_EXECUTION_GATED`，24/24 SHA 项通过。
+- 离线照片链现已实现 `lightness_family_plan`、`controller_palette_inventory`、
+  `multi_lut_hold_schedule`、`fixed_photo_execution` 和新增的 `function_first_orchestrator`。后者强制
+  依赖顺序；一个 READY 明度族只开放自己的有限 palette 子集，未通过的族继续排除，不必等待
+  全部基色，也不能提前进入新色枚举。
+- 主代理复验：static-photo 专项 `112 passed`；F1/HOLD/reconstruction 关键链 `85 passed`；
+  功能框架 JSON `15 passed`；Ruff PASS；F1/HOLD/reconstruction 四项独立审计均 PASS。
+  当前仍为 `0 qualified new colours / 0 gray levels / 0 lightness levels`，这些是离线就绪而非真屏
+  结论。
+- 已用 26 个文件的显式白名单把纯离线 static-photo 功能框架同步到 GitHub main：commit
+  `082ff62`。没有使用 `git add -A`；runtime 固件闭包、现场日志／照片／继电器证据、`.pio`、密钥、
+  PCB 及用户其他脏改均未进入该提交。
+- 本节没有硬件、网络、COM、相机、继电器、刷写、复位或刷新动作。面板继续保留上一节的白场，
+  relay/J2 仍为最后记录的 commanded OFF，`electrical_state_proven=false`；下一次 live 必须从
+  fresh F1 G1→G2→G3 的独立人工门开始。
+
+## 2026-09-01 10:55 V3 L4 与独立白恢复闭环；主线固定为明度机制→HOLD→白屏重建（最高优先级）
+
+- `STABLE_CODE0_LUMA_LATIN_V3` 的 L4 已在原 boot `46ae55ad22b2a55e` 完成：与 L3 使用完全
+  相同的 active/code0 target 和 frame，每个 action 仍恰好 `1 driver / 1 visible refresh`，无
+  retry、recovery 或 autochain。L4 action 文件 SHA-256=
+  `50d20d6eacb7d477e3310a80057a04d6949a2d2a13885d14d09eaf04cf4fa810`。
+- L3/L4 均补拍 `48MP USB Camera / VID_32E4:PID_4801`、完全相同 `exposure=-4` 的全屏帧；
+  JPEG SHA-256 分别为 `d2c62688a445c75088a87ed40df919948f8e454b3dd998153b1af1dfe5df7f90`
+  与 `75a0b898506bedbc85aeea0830220bbe210b9ccc978394769b97f02f4298394e`。同曝光主报告
+  `l3-l4-same-exposure-m4-controller-local-lightness-repeat-v2.json` 文件 SHA-256=
+  `c008fc1ec20fbc0db2e49153a1716af89c918445239b540f15eb517c6a69b4ae`。
+- CS2 的 L3 历史码中值跨度为 `7.059 L*`，L4 后收敛为 `2.157 L*`，保留率 `30.56%`；
+  centred 逐格 `|Delta L*| P95=4.647`、逐码中值最大偏差 `4.118 L*`，均越过稳定门。
+  因此 identical-target repeat 对该一次性历史明度信号为阴性，当前仍为
+  `0 qualified new colours / 0 gray levels / 0 lightness levels`。这只否定在原区域再次写相同
+  target；不否定先构色、随后用局部 PTLW/HOLD 避开该区域的功能路径。
+- V3 独立 factory-OTP white successor 已唯一执行并 COMPLETE：action 文件／canonical
+  SHA-256=`9ebc3ca4f32ceba8cbb356aece938d28e922e016f875ab10aa082338993b509b /`
+  `555b94739704096bde278ee3e0c3eb5ac901ccc7d390481f725093467a6c414b`，恰好一次 driver／刷新，
+  总时长 `35.023 s`。48MP `exposure=-4` 白屏 JPEG SHA-256=
+  `f04bc44ad4e92007f7ffd2a730a28fe602acf18d34b98d2540c5959c7a46d92a`；严格 review 仅在
+  “未见明显旧网格／色斑／粗大横竖条／中心接缝”范围 PASS，不证明绝对白点或精密均匀度。
+- 随后 COM14/channel1 已命令并独立查询 `OFF`；回执文件／canonical SHA-256=
+  `1fa84d45b7374fce680bdadcde0edb2142adfa408b5511edfa75dd20f0b09626 /`
+  `5ebe1472699eccfd53b4b7013f67de6e818734342d6a4f680b148f7a5ce19400`。
+  `electrical_state_proven=false` 保留；面板按双稳态保留白场，ESP32 保留白 successor 固件。
+- 用户再次固定开发顺序：先扩完整功能链，不先扩大色相枚举。下一真屏优先为 fresh-bound
+  `LUMA_GRAY_MECHANISM_POSITION_BALANCED_V3`，回答 16 个位置平衡 recipe 是否能产生单像素
+  灰阶／同色相明度差；命中后才进入局部 HOLD 和跨 LUT 共存。更多颜色组合、三次重复、
+  60/600 秒及长期可靠性后置。
+- 资格框架已按实测修正：历史明度 recipe 不再要求在原像素上 identical-target repeat；必须先
+  通过局部 HOLD，再从独立 factory-OTP 白锚重新执行完整构色链至少两次，最后独立白恢复。
+  `host.static_photo.controller_palette_inventory` 与 `multi_lut_hold_schedule` 已能分别表示
+  `fresh-white-reconstruction` 和传统 direct-target repeat，二者不可混淆；空间抖动仍禁止计色。
+  当前 static-photo 专项 `57 passed`、Ruff／py_compile PASS，无硬件动作。
+- fresh 明度 V3 与后继 `LIGHTNESS_HOLD_FUNCTION_CHAIN_V1` 正在离线封印；未完成独立构建、
+  runner/source-authority 和白 successor 门前不得刷写。当前 J2 保持 OFF。
+
+## 2026-09-01 10:01 V3 离线审计 PASS，L1→L2→L3 真屏 COMPLETE，48MP 粗筛待裁决（最高优先级）
+
+- `STABLE_CODE0_LUMA_LATIN_V3` 先前的两个 runner 阻断已修复：W11 无外部刷新门只用于
+  diagnostic/L1，L2–L4 改为验证同 boot 的 fixed prior-COMPLETE 链；独立白恢复补齐四个
+  GET transcript、fresh-NVS、artifact-before-network、O_EXCL、no-retry 及重算 canonical
+  篡改负测。修复后专项 `26 passed / 93.32 s`，Ruff、主／白 `dry-validate`、clean rebuild
+  和独立复审均 PASS；08:39 节中的 `V3 BLOCK` 只是已被本节取代的历史快照。
+- 主 BIN/ELF=`799792 / 16f63947918d244e27edd0a7f3d0c3f4ff895fa02cbc26c31461c9d91ea7b737`
+  与 `13286636 / c3e763105daeec2bc610daef2aad7e4b8c138d3c95cf414fa343aa067adcdcdb`；
+  独立白恢复 BIN/ELF=`787248 / 804aadd5a9b82a02a01bc0431750790666d2ba56352d43b3add7f89245dff907`
+  与 `13214376 / 2c70314c8b54f012845370bddc56e5bcf8ef1f808a6854776f3105868108630a`。
+  主 contract=`472cb28efa39538963cc94da3d8442f2a0e35603fdd41f38eb973bcb600f8302`。
+- relay commanded OFF 时完成 app-only `0x10000` 写入／verify，随后 exact
+  `192.168.1.11 ↔ A4-CB-8F-D9-FC-D4` 单候选绑定 PASS。J2-OFF diagnostic 在 boot
+  `46ae55ad22b2a55e` 得到 `4 GET / 0 POST / 0 driver / 0 visible refresh`、fresh NVS，
+  且严格绑定 W11 camera-visible clean-white source gate。W11 白锚已被 V3 L1 消费；
+  V2 现在不得继续引用该旧白锚。
+- relay 在 L1 前受权并命令 `ON`后，L1/L2/L3 均在同一 boot 分别
+  `complete_pass / COMPLETE / result=true / 1 driver / 1 visible refresh`；单次 driver 总时长
+  为 `46623 / 41901 / 46614 ms`，累计 driver=`3`，无 timeout、retry、recovery 或
+  autochain。L3 后 `next_ordinal=4 / campaign_complete=false`，所以 L4 只是尚未执行的
+  显式可选 identical-target repeat，不得写成已完成。
+- `10:01:32 +08:00` 仅用本项目的 `48MP USB Camera / VID_32E4:PID_4801`
+  对 L3 retained 画面完成一张 full-panel `4000×3000` live-synchronized 拍摄；未使用
+  `VID_1BCF:PID_0B15` 双目相机。JPEG bytes/SHA-256=`781767 /
+  9e42a67ab768a4dd024a2b03a964095cd99a9533ef43348d2d5af3238c95c6d5`；sidecar
+  bytes/file/canonical SHA-256=`5154 /
+  7ec85c94db33a819fb31bc9c8d10793b66fbb96659dd19e7df414132c296a6c3 /
+  a049739a398c74541e135abcdb82e25f823a5b9c0128b1088174118a5088cdb1`。其自动评估是
+  `INCONCLUSIVE / confidence=low / analysis_source=none`，只允许 controller-local 相对粗筛。
+- 拍摄时最后一份精确继电器控制记录仍为 COM14/channel1 commanded `ON`；该回执
+  `electrical_state_proven=false`，不外推为负载侧电压证明。本节是 L3 拍摄时点快照：
+  L4 尚未执行，V3 独立 factory-OTP white containment 也尚未执行。
+- 当前资格结论保持为
+  `qualified_new_colours=0 / qualified_neutral_gray_levels=0 / qualified_lightness_levels=0`。
+  在 L3 图像分析和可选 L4 同目标复核结束前，不将任何视觉差异命名为新色、灰阶
+  或稳定明度层级。无论是否执行 L4，本分支最后都必须执行自身绑定的独立
+  白恢复并保护性 OFF，才能转入下一个功能分支。
+
+## 2026-09-01 08:39 T4 V5 COMPLETE、W11 白恢复相机收口，功能主线转入明度／灰阶（最高优先级）
+
+- T4 V4 在任何设备网络请求、claim、ARM、EXECUTE 或 driver 之前被 host fail-closed 拒绝，
+  已只读封存为 `NOT_EXECUTED` 并永久禁止重试。fresh T4 V5 修正后完成一次且仅一次：
+  `COMPLETE / result=true / 1 driver / 1 visible refresh / 46.632 s`，无 retry、recovery 或
+  autochain。V5 为同一 `4×8` code 布局下的两套 R20 对照，不得写成“同一 LUT 左右结果不同”。
+- exact `48MP USB Camera / VID_32E4:PID_4801` 留存 V5 atlas；照片中左侧偏黄绿／橄榄、
+  蓝绿和深色，右侧偏红／粉、橙棕、蓝及深色。操作者确认：`没错，你看的是对的。继续推进`。
+  该结果仍为 camera-relative/human-confirmed 描述，`qualified_colour_count=0`。
+- fresh W11 在 J2 OFF 下完成 app-only 写入、独立 verify、exact
+  `192.168.1.11 ↔ A4-CB-8F-D9-FC-D4` 绑定与 `4 GET / 0 POST / 0 driver / 0 refresh`
+  diagnostic；唯一 factory-OTP white action 为 `COMPLETE / 1 driver / 1 visible refresh /
+  35.023 s`，无 retry/recovery/autochain。action file/canonical SHA-256=
+  `e48ee37c34e6984f15656267e8d915a8552b210f8dd465610ca1c438ee79c3b0 /
+  42271e6b8d705366be1decf070b5a9d0fb1515f5b9136ebc1e33a79a33401a11`。
+- W11 action 后 relay 已保护性 OFF 并独立查询通过；`electrical_state_proven=false` 保留。
+  48MP post-white JPEG SHA-256=
+  `0dc805e0014d0092e7d032b467eccd2d11490cec97ea6b280594fa25550d7816`；严格审查 JSON
+  file/canonical SHA-256=
+  `c88d22d8ab241daeccb28e01a722c166fdc07bef50f7c55024ba57204008d9a9 /
+  617201f980461d76864be7199f50c5878747ccf777349286ffbe78699da34d7d`。结论仅为
+  camera-visible clean-white containment：未见 V5 彩块、明显色斑、横竖条或中心接缝异常；
+  不证明绝对白点、精密均匀度或不存在微弱残留。
+- 当前现场状态：relay commanded `OFF`，面板按双稳态保留 W11 白场，ESP32 保留 W11 固件；
+  W11 action/claim 已永久消费，禁止重放。下一次只允许 fresh successor，并须重新执行 J2-OFF
+  app-only flash/verify、exact binding 与 fresh diagnostic。
+- 用户将开发优先级改为“先拓展完整功能路径，再扩更多色相”：稳定基色 → 明度／灰阶机制 →
+  identical-target 稳定性 → 局部 HOLD 跨 LUT 共存 → 可用调色板 → 静态照片逐像素映射。
+  空间抖动不计入颜色成果；CS1/CS2 分别评价。更多色相、三次 fresh repeat 与 60/600 秒长测后置。
+- 两个 fresh successor 正在离线实现且尚未刷写／上屏：
+  `LUMA_GRAY_MECHANISM_POSITION_BALANCED_V2` 与 `STABLE_CODE0_LUMA_LATIN_V3`；旧
+  `runtime_lut_luma_gray_v1` 不得直接上机。机器框架为
+  `docs/MF1750_FUNCTION_PATH_FRAMEWORK_2026-09-01.json`，当日逐步证据见
+  `docs/MF1750_TRUE_SCREEN_TEST_LOG_2026-09-01.md`。
+- 首选上机分支为 `STABLE_CODE0_LUMA_LATIN_V3`：固定稳定 target code，先隔离同一颜色的明度
+  差异；`LUMA_GRAY_MECHANISM_POSITION_BALANCED_V2` 改为首选分支阴性后的备选。二者仍是
+  W11 的互斥 first-successor branches，不得直接串行。
+- 人可读的完整功能先后关系、判定门与最短上机路径见
+  `docs/MF1750_SINGLE_PIXEL_PHOTO_FUNCTION_ROADMAP_2026-09-01.md`；机器可读真值仍以同日 JSON
+  framework 为准。
+- 功能框架的软件链已从“计划”推进到可执行的离线接口：
+  `host/static_photo/lightness_screen.py` 负责 controller/profile/target 内的单像素灰阶／明度
+  粗筛与 identical-target repeat 门；`host/static_photo/multi_lut_hold_schedule.py` 负责只有在
+  recipe、HOLD、恢复和跨 profile 保持证据全部合格后才生成照片逐像素多 LUT 调度。两者都不
+  访问设备、不自动授予颜色资格；相关框架测试当前 `30 passed`、Ruff PASS。
+- V2 已 `offline-frozen / independent-audit PASS`：专项 `9 passed`、Ruff、两套 dry-validate 与
+  clean rebuild 重现均通过。主 BIN/ELF=`800928 / decacb3a…d5248`、
+  `13297804 / 91dd3d82…6677`；独立白恢复 BIN/ELF=`787440 / 70fc1512…a1d7`、
+  `13214356 / 6b750b7e…570e`。G4 为人工显式 repeat，不自动串联。V2 可作为备选，但尚未上机。
+- 首选 V3 当前仍为 BLOCK：主 runner 对 L2/L3 错用“自 W11 无刷新”确认，白恢复 fallback
+  diagnostic 深验也不完整。两处均必须修复并补篡改负测、clean rebuild 和独立复审；在此之前
+  不得刷写或执行 V3。当前仍保持 relay/J2 commanded OFF 和 W11 retained white。
+
+## 2026-09-01 00:12 T4 故障根因确认，W9 原厂白恢复 COMPLETE 并保护性 OFF（最高优先级）
+
+- 操作者现场确认此前异常时确有 `GND` 脱落，重新插好后上电检查正常；这是 T4
+  `DRF 60001 ms timeout` 的强合理电气根因，但不能把已封存的 T4 追溯改判成功。T4 仍为
+  `FAULT / 1 driver / partial panel mutation possible / no retry`。
+- 首个故障绑定白恢复 W8 在 `4 GET + ARM POST` 后因 host/device intent 字符串不一致得到
+  `HTTP 400 intent_mismatch`；精确计数为 `0 EXECUTE / 0 driver / 0 visible refresh`，claim 已永久
+  消费且 W8 禁止重试。随后 COM14/channel1 已保护性 OFF，故这一步没有改变 T4 彩色中间态。
+- fresh W9 修正并逐字绑定通用 ARM/EXECUTE intent；离线 `21 passed`、Ruff、clean build、
+  `dry-validate` 与独立审计均 PASS。最终 contract/descriptor/action=
+  `33cdb659c99b89808fda9679b559b1ad76b4326e66d08274caceb7d77f2dfba5 /
+  a5f01dd65e9956109c47d4564446f3cf104085999a0b017189a3a93fcf06fe1d /
+  72c7ab97a607aacf42c2bbe3bc8f5ac121489cfc3e47ca0fb978f04f698f5910`；BIN/ELF=
+  `787104 / f450f3f1293de0f103ac0593895d0cedc25cc6c43f219d11c9e303ba80b5b0d9` 与
+  `13214976 / a47fff6cfed1a997efaed6f5bd14a094a5246e5a3f4a6d9a1c96c2be656e7c44`。
+- relay OFF 下 W9 app-only write+verify、exact `192.168.1.11 ↔ A4-CB-8F-D9-FC-D4` 绑定和
+  fresh same-boot J2-OFF `4 GET / 0 POST / 0 claim / 0 refresh` 诊断均 PASS；boot=
+  `18ed070645471e0a`、状态 `READY / fresh NVS / driver 0`。随后唯一 W9 action 得到
+  `complete_pass / COMPLETE / campaign_complete=true`：恰好 `1 ARM / 1 EXECUTE / 1 driver /
+  1 visible refresh`，driver total=`35023 ms`，PON/DRF/POF=`180/22531/140 ms`，无 timeout、
+  retry、recovery 或 autochain。action evidence bytes/file/canonical SHA-256=`29040 /
+  26ef448478d5680a19869ffbb0982cfb65db14e6bd20880961eb021a0d90097a /
+  2c6c818300dc0f72f01607fefaae2467d816ff449c64daa3c8eadb26510bd350`；claim=
+  `1834 / beabfecebc4afbe7411eda1bfc088b0e7537b87a997e9da7db33129cc0d4b708 /
+  77f8a337b5197b89e8d78dc6b205f620fa0da80aff5f37a39064a161be27e80c`。
+- action 后 COM14/channel1 已保护性 `OFF` 并独立回读 `off_gate_passed=true`；receipt
+  bytes/file/canonical SHA-256=`1802 /
+  0af2b5b0725d0eb0bb3738882a0b772165a1cf17f45599d19d92976679f41033 /
+  488533e223ac2f9021368f9762c1bf05c393f5bb47be706af882fb3fb57ea368`。继电器没有负载侧
+  电压反馈，故 `electrical_state_proven=false` 保留。W9 action/claim 已永久消费，禁止重放。
+- relay OFF 后，exact `48MP USB Camera / VID_32E4:PID_4801` 在固定 `-6` 档的首帧因现场暗光
+  严重欠曝，未用于判定；随后仅为残留检查补拍非标定 `exposure=-3` 帧，整块显示区入镜，视觉上
+  呈均匀白场，未见彩色块、边框、条纹或色斑残留。JPEG bytes/SHA-256=`877922 /
+  101fe976cab99052804d304a4f10695e720f71a0bb3077e55fe86cff33034c04`；sidecar=
+  `3098 / 02f5b4e6a4862e78ae3f4687ba3ae8f9d91f794e6444ffab7ddf67aa151c4d8a`。因 W9 尚未加入旧
+  generic camera action allowlist，且本帧采用自适应亮度档，它只支持“当前保留画面无明显残留”
+  的辅助结论，`formal_evidence=false / action_continuity_claimed=false`，不得用于绝对颜色标定。
 
 ## 2026-08-31 16:56 T3 V2 局部判读完成，W4 白屏恢复完成并保护性 OFF（最高优先级）
 
