@@ -1,0 +1,390 @@
+{
+  "schema_version": 2,
+  "framework_id": "MF1750_SINGLE_PIXEL_PHOTO_FUNCTION_PATH_20260901_V2",
+  "status": "FUNCTION_FIRST_OFFLINE_CHAIN_READY_LIVE_EVIDENCE_PENDING",
+  "scope": {
+    "primary_use": "static_photo_display",
+    "pixel_model": "single_pixel_transport_code_history",
+    "spatial_dithering_allowed_as_colour_evidence": false,
+    "controllers_evaluated_separately": true,
+    "automatic_unique_colour_claims": false
+  },
+  "current_state": {
+    "snapshot_at": "2026-09-01T12:40:55+08:00",
+    "terminal_live_action": "V3_INDEPENDENT_FACTORY_OTP_WHITE_COMPLETE",
+    "relay_commanded_state": "OFF",
+    "downstream_electrical_zero_proven": false,
+    "camera_visible_screen_state": "WHITE_NO_OBVIOUS_BLOCKS_BLOTCHES_GROSS_STRIPES_OR_CENTER_SEAM",
+    "w11_retained_white_anchor": "CONSUMED_BY_V3_L1",
+    "v3_optional_l4_repeat": "COMPLETE_NEGATIVE_STABILITY_DIAGNOSTIC",
+    "v3_factory_otp_white_containment": "COMPLETE_CAMERA_VISIBLE_LIMITED_PASS",
+    "stable_base_visual_groups_observed": 7,
+    "qualified_new_colours": 0,
+    "qualified_neutral_gray_levels": 0,
+    "qualified_lightness_levels": 0,
+    "qualified_cross_lut_palette_slots": 0,
+    "qualified_photo_palette_slots": 0
+  },
+  "evidence_camera": {
+    "name": "48MP USB Camera",
+    "vid": "32E4",
+    "pid": "4801",
+    "allowed_for_this_project": true,
+    "explicitly_excluded_device": "VID_1BCF:PID_0B15 binocular USB camera",
+    "colour_use": "coarse controller-local relative screening only until lighting and colour-card geometry are controlled"
+  },
+  "live_f2_v3_snapshot": {
+    "test_id": "STABLE_CODE0_LUMA_LATIN_V3",
+    "contract_id": "472cb28efa39538963cc94da3d8442f2a0e35603fdd41f38eb973bcb600f8302",
+    "boot_nonce": "46ae55ad22b2a55e",
+    "offline_audit": "PASS_26_TESTS_RUFF_DRY_VALIDATE_CLEAN_REBUILD_INDEPENDENT_REVIEW",
+    "completed_visible_ordinals": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "driver_calls_per_completed_action": 1,
+    "visible_refreshes_per_completed_action": 1,
+    "no_retry": true,
+    "no_recovery": true,
+    "no_autochain": true,
+    "optional_l4_repeat_executed": true,
+    "same_exposure_comparison": {
+      "exposure": -4,
+      "l3_jpeg_sha256": "d2c62688a445c75088a87ed40df919948f8e454b3dd998153b1af1dfe5df7f90",
+      "l4_jpeg_sha256": "75a0b898506bedbc85aeea0830220bbe210b9ccc978394769b97f02f4298394e",
+      "report_file_sha256": "c008fc1ec20fbc0db2e49153a1716af89c918445239b540f15eb517c6a69b4ae",
+      "cs2_l3_median_span_l_star": 7.059,
+      "cs2_l4_median_span_l_star": 2.157,
+      "cs2_span_retention_percent": 30.56,
+      "cs2_centered_cell_abs_delta_l_star_p95": 4.647,
+      "cs2_max_code_median_deviation_l_star": 4.118,
+      "repeat_gate": "FAIL_COLLAPSED"
+    },
+    "qualification_decision": "ZERO_QUALIFIED_NEW_COLOURS_GRAY_LEVELS_OR_LIGHTNESS_LEVELS"
+  },
+  "white_containment": {
+    "test_id": "STABLE_CODE0_LUMA_LATIN_V3_WHITE_SUCCESSOR_V1",
+    "action_file_sha256": "9ebc3ca4f32ceba8cbb356aece938d28e922e016f875ab10aa082338993b509b",
+    "action_canonical_sha256": "555b94739704096bde278ee3e0c3eb5ac901ccc7d390481f725093467a6c414b",
+    "jpeg_sha256": "f04bc44ad4e92007f7ffd2a730a28fe602acf18d34b98d2540c5959c7a46d92a",
+    "review_file_sha256": "50ce755e3ed04790819c326bbbb1e6a2fdc3c6b587899f02b00da588d5e2d625",
+    "review_integrity_sha256": "7de626ce68c5dc2952a0c17cdc41cd59ced97191f14344713f71bcb6b4a5ab40",
+    "review_scope": "NO_OBVIOUS_BLOCKS_BLOTCHES_GROSS_STRIPES_OR_CENTER_SEAM",
+    "absolute_white_or_precision_uniformity_proven": false,
+    "relay_off_file_sha256": "1fa84d45b7374fce680bdadcde0edb2142adfa408b5511edfa75dd20f0b09626",
+    "relay_off_canonical_sha256": "5ebe1472699eccfd53b4b7013f67de6e818734342d6a4f680b148f7a5ce19400"
+  },
+  "priority_order": [
+    "FACTORY_OTP_WHITE_BASELINE_AND_CONTAINMENT",
+    "STABLE_BASE_HUE_LIGHTNESS_LATIN_SCREEN",
+    "POSITION_BALANCED_GRAY_LIGHTNESS_MECHANISM",
+    "LOCAL_HOLD_CROSS_LUT_COEXISTENCE",
+    "FRESH_WHITE_RECONSTRUCTION_REPRODUCIBILITY",
+    "STABLE_BASE_HUE_LIGHTNESS_FAMILY_GENERALIZATION",
+    "USABLE_PALETTE_MODEL",
+    "STATIC_PHOTO_PIXEL_MAPPING",
+    "FIXED_STATIC_PHOTO_EXECUTION_CAMPAIGN",
+    "MORE_HUE_ENUMERATION",
+    "LONG_DURATION_AND_MULTI_RUN_RELIABILITY"
+  ],
+  "software_pipeline": [
+    {
+      "order": 1,
+      "component": "host.static_photo.lightness_screen",
+      "status": "IMPLEMENTED_OFFLINE",
+      "input": "controller/profile/target/recipe/replica bound Lab measurements plus single-pixel-purity and boundary gates",
+      "output": "controller-local coarse lightness candidate pairs; qualified count remains zero",
+      "fail_closed": "Never pool CS1/CS2 or LUT profiles; reject spatial impurity, dirty boundaries, insufficient replicas, position instability, inadequate L* separation, or hue drift."
+    },
+    {
+      "order": 2,
+      "component": "tools.mf1750_runtime_lut_luma_gray_mechanism_position_balanced_v3_photo_analyzer",
+      "status": "IMPLEMENTED_OFFLINE_48MP_128_CELL_CONTROLLER_LOCAL",
+      "input": "exact G3 or G4 action, live-synchronized 48MP capture sidecar, bound JPEG, and either direct V3 geometry or an exactly compatible sealed Latin V3 homography",
+      "output": "128-cell Lab and four-edge observations plus sixteen recipes times four replicas screened independently on each controller",
+      "fail_closed": "Reject the binocular camera, changed camera instance/backend/mount/resolution/settings, insufficient visible geometry, action/JPEG/hash drift, controller pooling, or any automatic qualification claim."
+    },
+    {
+      "order": 3,
+      "component": "host.static_photo.controller_palette_inventory",
+      "status": "IMPLEMENTED_OFFLINE_FRESH_WHITE_RECONSTRUCTION_MODE_ADDED",
+      "input": "exact candidate fingerprints plus independent reproducibility, local-HOLD, white-recovery, and cross-profile evidence",
+      "output": "controller-specific qualified recipes only after every selected reproducibility gate passes",
+      "fail_closed": "History-conditioned lightness requires fresh-white reconstruction; an in-place identical-target repeat cannot substitute for it."
+    },
+    {
+      "order": 4,
+      "component": "host.static_photo.v3_lightness_workflow",
+      "status": "IMPLEMENTED_OFFLINE_STRICT_SAME_EXPOSURE_BINDING",
+      "input": "exact L3 analysis and exact L3/L4 same-exposure comparison",
+      "output": "HOLD, independent white baseline, fresh reconstruction, and final white plan",
+      "fail_closed": "No shortlist auto-promotion, no in-place target repeat after HOLD, no hardware authorization or autochain."
+    },
+    {
+      "order": 5,
+      "component": "host.static_photo.position_balanced_hold_compare",
+      "status": "IMPLEMENTED_OFFLINE_T0_T1_T2_48MP_REVIEW_ONLY",
+      "input": "exact F1 G3 T0 and candidate-HOLD H1/H2 T1/T2 analyses, actions, captures, JPEGs, camera lock, and probe geometry",
+      "output": "controller-local candidate retention, H1 retention, H2 appearance, edge-purity, same-profile HOLD, and directional cross-LUT review drafts",
+      "fail_closed": "Reject identity/camera/geometry/visible-cell drift, controller pooling, spatial dithering, incomplete four-replica recipes, missing probes, dirty edges, overwrite, or any automatic passed palette evidence."
+    },
+    {
+      "order": 6,
+      "component": "host.static_photo.fresh_reconstruction_compare",
+      "status": "IMPLEMENTED_OFFLINE_FULL_OR_PARTIAL_48MP_REVIEW_ONLY",
+      "input": "two different fresh-white construction campaigns with byte-identical G1/G2/G3 optical payload identities and exactly comparable 48MP analyses",
+      "output": "controller-local per-cell and per-recipe fresh-reconstruction review plus non-qualifying evidence drafts",
+      "fail_closed": "Reject same action reuse, payload drift, camera/settings/geometry drift, unequal visible-cell sets, controller pooling, or recipes lacking all four visible replicas; qualified counts remain zero."
+    },
+    {
+      "order": 7,
+      "component": "host.static_photo.lightness_family_plan",
+      "status": "IMPLEMENTED_OFFLINE_PARTIAL_PALETTE_SUBSETS_SUPPORTED",
+      "input": "controller-specific stable endpoint evidence and one exact source-middle-target lightness mechanism, plus ordered gate evidence",
+      "output": "position-balanced C0..C7 family batches with four replicas per recipe and independently admitted ready-family subsets",
+      "fail_closed": "Reject controller/profile/code mismatch, spatial dithering, skipped gates, reused evidence, or unproven mechanisms; unready families are excluded rather than inferred."
+    },
+    {
+      "order": 8,
+      "component": "host.static_photo.multi_lut_hold_schedule",
+      "status": "IMPLEMENTED_OFFLINE_HARDWARE_CAPABILITY_PENDING",
+      "input": "qualified controller-specific recipes and qualified per-profile HOLD capabilities",
+      "output": "source/middle/target passes ordered by LUT profile with HOLD codes outside the active profile",
+      "fail_closed": "Reject candidate recipes, controller mismatch, unqualified HOLD/recovery/reconstruction, incomplete profile order, or a later profile unable to retain every earlier profile."
+    },
+    {
+      "order": 9,
+      "component": "static-photo palette and pixel mapping",
+      "status": "EXISTING_BASELINE_AWAITS_QUALIFIED_HARDWARE_PALETTE",
+      "input": "qualified single-pixel palette recipes",
+      "output": "per-pixel recipe assignment and multi-LUT execution schedule",
+      "fail_closed": "Spatial dithering is not accepted as colour evidence or as a substitute for a qualified single-pixel palette slot."
+    },
+    {
+      "order": 10,
+      "component": "host.static_photo.fixed_photo_execution",
+      "status": "IMPLEMENTED_OFFLINE_BUNDLE_EXPORT_AWAITS_QUALIFIED_SCHEDULE",
+      "input": "one sealed MultiLutHoldSchedule plus sealed source-white authority and an explicit independent-white-successor requirement",
+      "output": "fixed packed-frame binaries, manual one-shot action identities, codegen metadata, canonical manifest, and SHA256SUMS",
+      "fail_closed": "Reject any schedule/frame/mask/profile/order drift, unready recipe, missing source-white authority, runtime raw frame or dynamic payload ingress, overwrite, or implied live authority."
+    },
+    {
+      "order": 11,
+      "component": "host.static_photo.function_first_orchestrator",
+      "status": "IMPLEMENTED_OFFLINE_CAPABILITY_ORDER_ENFORCED",
+      "input": "one integrity-verified stable-base lightness-family plan plus distinct sealed downstream artifact hashes",
+      "output": "deterministic next-function gate, admitted ready-family subset, blocked downstream stages, and deferred hue/reliability status",
+      "fail_closed": "Reject skipped dependencies, zero-ready-family photo artifacts, artifact hash reuse, tampered family plans, hardware actions, or automatic colour qualification; one ready family unlocks only its limited subset."
+    }
+  ],
+  "lightness_mechanism_paths": [
+    {
+      "id": "M1",
+      "mechanism": "history_recipe_lightness",
+      "status": "ACTIVE_NEXT_IN_F1",
+      "decision": "Keep only controller-local, recipe-following, position-repeatable single-pixel differences."
+    },
+    {
+      "id": "M2",
+      "mechanism": "local_hold_before_reconstruction",
+      "status": "REQUIRED_AFTER_F1_HIT",
+      "decision": "Construct once, then avoid rewriting candidate pixels while known compatible LUT probes update outside regions."
+    },
+    {
+      "id": "M3",
+      "mechanism": "fresh_white_reconstruction",
+      "status": "SOFTWARE_MODEL_IMPLEMENTED_LIVE_EVIDENCE_PENDING",
+      "decision": "Rebuild the complete source-middle-target recipe from an independent white anchor at least twice."
+    },
+    {
+      "id": "M4",
+      "mechanism": "controller_specific_profile_endpoint",
+      "status": "PROFILE_SENSITIVITY_OBSERVED_LIGHTNESS_NOT_PROVEN",
+      "decision": "Use paired known-compatible profiles only after endpoint hue and lightness are separately measured."
+    },
+    {
+      "id": "M5",
+      "mechanism": "known_compatible_r20_phase_family",
+      "status": "OFFLINE_EVIDENCE_REQUIRED",
+      "decision": "Permit only bounded derivatives of parsed compatible profiles with fixture and polarity checks; no unknown register or LUT command sweep."
+    },
+    {
+      "id": "M6",
+      "mechanism": "waveform_interruption_intermediate_state",
+      "status": "HIGH_RISK_DEFERRED",
+      "decision": "Use only after lower-risk function paths fail, with independent cutoff hardware and factory-white containment."
+    }
+  ],
+  "stages": [
+    {
+      "id": "F0",
+      "name": "factory_otp_white_baseline_and_containment",
+      "status": "V3_WHITE_SUCCESSOR_CAMERA_VISIBLE_LIMITED_PASS_RELAY_OFF",
+      "claim_boundary": "No obvious prior grid, colour stain, gross stripe, or centre-seam defect; absolute white point and precision uniformity are not proven.",
+      "next_gate": "fresh successor source-lineage binding"
+    },
+    {
+      "id": "F1",
+      "name": "position_balanced_gray_lightness_mechanism",
+      "status": "FRESH_V3_MAIN_AND_WHITE_SUCCESSOR_OFFLINE_AUDIT_PASS_NEXT_LIVE_PRIORITY",
+      "test_id": "LUMA_GRAY_MECHANISM_POSITION_BALANCED_V3",
+      "campaign_id": "EC5_LUMA_GRAY_MECHANISM_POSITION_BALANCED_V3",
+      "contract_id": "a114a46bec02b5de80c1f63757723e90cf8e101a81429a8f47eabadc471e3b88",
+      "firmware_sha256": "f19eca9e771dedb1c62c25ae017e602bf25ef31f0086aeb26f65bd4575353b22",
+      "white_successor_contract_id": "19990cdb72503ad98c282d6c5358ba5b0ddd7c9d354f1fc16d7079efd611070d",
+      "white_successor_firmware_sha256": "3acadd182c2579e0a45015750cdb73ccddea51358a4068a7dfa4fba333125b1a",
+      "offline_sha256_manifest_entries": 31,
+      "objective": "Determine whether 16 balanced history recipes produce spatially repeatable neutral or same-hue lightness-separated single-pixel states.",
+      "recipes": 16,
+      "replicas_per_recipe_per_controller": 4,
+      "visible_actions_minimum": 3,
+      "in_place_identical_target_repeat_planned": false,
+      "containment_required": true,
+      "offline_screening_component": "host.static_photo.lightness_screen"
+    },
+    {
+      "id": "F2",
+      "name": "stable_base_hue_lightness_latin_screen",
+      "status": "L1_L2_L3_L4_COMPLETE_REPEAT_COLLAPSE_WHITE_CONTAINED",
+      "test_id": "STABLE_CODE0_LUMA_LATIN_V3",
+      "objective": "Characterize whether a fixed stable target hue retains history-dependent lightness after an identical target refresh.",
+      "result": "ONE_SHOT_CS2_REVIEW_SIGNAL_NOT_IDENTICAL_TARGET_REPEATABLE",
+      "qualified_levels": 0
+    },
+    {
+      "id": "F3",
+      "name": "fresh_white_reconstruction_reproducibility",
+      "status": "OFFLINE_COMPARATOR_AND_RECONSTRUCTION_MAIN_WHITE_SUCCESSOR_SEALED_LIVE_EVIDENCE_PENDING",
+      "objective": "Prove a history-conditioned recipe by rebuilding it from independent factory-white anchors rather than overwriting the original pixels.",
+      "software_component": "host.static_photo.fresh_reconstruction_compare",
+      "campaign_id": "EC5_POSITION_BALANCED_GRAY_FRESH_RECONSTRUCTION_V1",
+      "contract_id": "5d76fda3bf199d29538ec0c6555db4a294b6b11ffb5805613805b4f759b7d132",
+      "firmware_sha256": "9b8493903baa1c656cf387481a52f217293d2f2ccedb09afebd2cdeda400f2a3",
+      "white_successor_contract_id": "648be46177390b2640e619d23324b68ebb59c431b731c4c03e4e2973c5550318",
+      "white_successor_firmware_sha256": "e78cd7b18d8c020d09f1fc554cd4f0f2063cfcd8c3b590391ed637b0260bba45",
+      "offline_sha256_manifest_entries": 24,
+      "minimum_fresh_constructions": 2,
+      "in_place_identical_target_repeat_allowed": false,
+      "remaining_gate": "HOLD-white live COMPLETE/claim/OFF/clean-white, first G3 evidence, reconstruction R3 COMPLETE, and same-geometry same-settings camera comparison."
+    },
+    {
+      "id": "F4",
+      "name": "local_hold_cross_lut_coexistence",
+      "status": "CANDIDATE_SPECIFIC_MAIN_AND_WHITE_SUCCESSOR_OFFLINE_AUDIT_PASS_LIVE_G3_PENDING",
+      "objective": "Preserve already written regions while a later compatible LUT updates selected pixels or regions.",
+      "known_positive_evidence": "Black, blue, and green local regions accumulated without visible refresh of retained regions in corrected geometry trials.",
+      "campaign_id": "EC5_POSITION_BALANCED_GRAY_HOLD_SUCCESSOR_V1",
+      "contract_id": "329e0bb6075291cc2bbdc1045a642b055b06fb8d312d2a7761b1332358e04229",
+      "firmware_sha256": "5a0d80b7391ae8f171747a1505521ff7193757bef86bf5e34bfb1f5be2d95db8",
+      "white_successor_contract_id": "79ac7bae08b912cdcbf3d959029d56c740407275ef70c91de738b8205dcaa433",
+      "white_successor_firmware_sha256": "7fe34992e9f0060d5b164d5c6f761ad38b755446854bd4bd22a65e52716a769b",
+      "candidate_cells_retained": 128,
+      "probe_windows_outside_candidate_grid": true,
+      "comparison_component": "host.static_photo.position_balanced_hold_compare",
+      "clean_transport": "full-C7 preload, one inclusive PTLW per controller, cropped DTM, PON/DRF00/POF00",
+      "remaining_gate": "Create exact F1 G3 COMPLETE with no G4 result, then bind T0/T1/T2 controller-local HOLD and directional cross-LUT review evidence."
+    },
+    {
+      "id": "F4A",
+      "name": "stable_base_hue_lightness_family_generalization",
+      "status": "OFFLINE_FRAMEWORK_IMPLEMENTED_WAITING_FOR_FIRST_MECHANISM_HIT",
+      "objective": "Apply one proven source-middle-target lightness mechanism to existing stable hue endpoints, producing controller-specific light/mid/dark families before enumerating additional hues.",
+      "software_component": "host.static_photo.lightness_family_plan",
+      "new_hue_enumeration": false,
+      "partial_palette_subset_allowed": true,
+      "per_hue_required_gates": [
+        "controller_local_lightness_screen",
+        "local_hold",
+        "fresh_white_reconstruction",
+        "factory_white_recovery"
+      ]
+    },
+    {
+      "id": "F5",
+      "name": "usable_palette_model",
+      "status": "BLOCKED_BY_F1_F3_F4",
+      "objective": "Represent each usable colour as a controller-specific source, middle, target, reproducibility mode, LUT profile, and local-HOLD sequence."
+    },
+    {
+      "id": "F6",
+      "name": "static_photo_pixel_mapping",
+      "status": "OFFLINE_MULTI_LUT_HOLD_SCHEDULER_IMPLEMENTED_NO_HARDWARE_PALETTE_QUALIFIED",
+      "objective": "Map photograph pixels to qualified controller-specific palette recipes without spatial dithering, then schedule grouped local refreshes by LUT profile.",
+      "software_component": "host.static_photo.multi_lut_hold_schedule",
+      "fail_closed_behavior": "Reject candidate recipes, controller-half mismatch, unqualified HOLD or reconstruction, incomplete profile order, and any later LUT not proven to retain every earlier profile."
+    },
+    {
+      "id": "F7",
+      "name": "fixed_static_photo_execution_campaign",
+      "status": "OFFLINE_BUNDLE_FRAMEWORK_IMPLEMENTED_BLOCKED_BY_QUALIFIED_PALETTE_AND_F6_SCHEDULE",
+      "objective": "Convert one sealed multi-LUT photo schedule into fixed compile-time frames and explicit one-shot actions with an independently bound factory-white successor.",
+      "software_component": "host.static_photo.fixed_photo_execution",
+      "runtime_raw_frame_ingress": false,
+      "dynamic_lut_or_payload_ingress": false,
+      "required_gates": [
+        "qualified_controller_palette",
+        "qualified_directional_cross_lut_retention",
+        "sealed_photo_schedule_sha256",
+        "source_white_authority",
+        "independent_factory_otp_white_successor"
+      ]
+    }
+  ],
+  "coarse_screening_gates": {
+    "single_pixel_purity": {
+      "spatial_dither_or_interleaved_stripes": "REJECT",
+      "visible_internal_band_or_dot_pattern": "REJECT",
+      "bottom_edge_line_or_irregular_boundary": "REJECT_FOR_PALETTE_QUALIFICATION"
+    },
+    "position_repeatability": {
+      "required_valid_replicas": "all",
+      "p95_delta_e76_max": 6.6032
+    },
+    "chromatic_lightness_candidate": {
+      "absolute_delta_l_star_min": 8.0,
+      "hue_angle_difference_degrees_max": 10.0,
+      "camera_result_class": "COARSE_RELATIVE_SCREEN_ONLY"
+    },
+    "neutral_candidate": {
+      "neutral_ab_distance_max": 8.0,
+      "l_star_min": 15.0,
+      "l_star_max": 85.0,
+      "camera_result_class": "COARSE_RELATIVE_SCREEN_ONLY"
+    },
+    "reproducibility": {
+      "history_recipe_mode": "FRESH_WHITE_RECONSTRUCTION",
+      "minimum_fresh_constructions": 2,
+      "in_place_identical_target_repeat_allowed_for_history_recipe": false,
+      "v3_identical_target_repeat_result": "FAIL_COLLAPSED"
+    },
+    "controller_rule": "CS1 and CS2 are independent physical colour systems; cross-controller differences are never counted as lightness levels or replicas.",
+    "qualification_authority": "No camera analysis or firmware action automatically grants a qualified colour."
+  },
+  "execution_safety": {
+    "fresh_campaign_identity_required": true,
+    "fresh_nvs_claim_required": true,
+    "source_gate": "V3 white successor COMPLETE plus exact 48MP clean-white review and relay-OFF evidence",
+    "next_live_successor": "F1 LUMA_GRAY_MECHANISM_POSITION_BALANCED_V3; offline independent audit and its own white successor are complete",
+    "sequential_test_policy": "Every mutating branch ends in its independently bound factory-OTP white containment before another branch is rebound.",
+    "app_only_flash_while_j2_off": true,
+    "j2_off_diagnostic_required": true,
+    "exactly_one_driver_call_per_visible_action": true,
+    "no_retry": true,
+    "no_fallback": true,
+    "no_recovery": true,
+    "no_autochain": true,
+    "factory_otp_white_containment_is_independent_successor": true
+  },
+  "deferred_work": {
+    "more_hue_search": true,
+    "third_fresh_run_qualification": true,
+    "retention_60_seconds": true,
+    "retention_600_seconds": true,
+    "long_duration_reliability": true,
+    "precision_colour_card_calibration": true,
+    "unknown_register_or_lut_command_sweep": "PROHIBITED",
+    "spatial_dither_colour_expansion": "OUT_OF_SCOPE"
+  }
+}
