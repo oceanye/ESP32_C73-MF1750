@@ -1,0 +1,195 @@
+{
+  "schema_version": 2,
+  "kind": "mf1750-runtime-lut-hue-brightness-yellow-olive-v1-offline-build-evidence",
+  "generated_at": "2026-08-27T00:49:33+08:00",
+  "offline_only": true,
+  "hardware_accessed": false,
+  "device_network_accessed": false,
+  "serial_or_com_accessed": false,
+  "relay_accessed": false,
+  "firmware_flashed": false,
+  "device_reset": false,
+  "display_refreshed": false,
+  "live_authorized": false,
+  "target_selection": {
+    "global_header": "active",
+    "transport_code": 2,
+    "target_hue_id": "Y_ACTIVE_CODE2_CS1_YELLOW_OLIVE_CANDIDATE_UNCALIBRATED",
+    "catalog_id": "94eabf2d00b2f0e90e86201f54923029b25182c140c757023b77f8f302165fd8",
+    "cs1_provisional_appearance": "yellow/olive-yellow",
+    "cs2_provisional_appearance": "salmon-pink",
+    "controller_color_equivalence_claimed": false,
+    "qualified_hue_name": null,
+    "qualified_brightness_levels": 0,
+    "selection_basis": [
+      "host/extended_color/mf1750_target_hues.py:Y sole direct seed is CS1 active code2",
+      "docs/MF1750_TARGET_HUE_LIGHTNESS_AND_EDGE_PLAN_2026-08-24.md:Y maps to CS1 code2 and active CS1 code2 maps to yellow-olive",
+      "docs/MF1750_STAGE3_RUNTIME_LUT_PARTIAL_HOLD_V3_PLAN_2026-08-23.md:atlas-derived mapping records CS1 code2 yellow/olive-yellow and CS2 code2 salmon-pink",
+      "docs/STATUS_HANDOFF.md:catalog ID and zero-qualified-colours boundary"
+    ]
+  },
+  "campaign": {
+    "variant_key": "L535_TARGET_HUE_YELLOW_OLIVE_BRIGHTNESS_HISTORY_8X8_ABA_V1",
+    "campaign_id": "EC5_TARGET_HUE_YELLOW_OLIVE_BRIGHTNESS_8X8_ABA_V1",
+    "contract_id": "47cff189c5719306693af8c0fe6cec7f6ae42ea7b9c3f82bfba94eecd0484899",
+    "nvs_namespace": "rlhyob_v1",
+    "cursor_nvs_key": "cursor_yob1",
+    "nvs_key": "cursor_yob1",
+    "boot_binding_nvs_key": "boot_yob1",
+    "route_prefix": "/api/ec5/target-hue-yellow-olive-brightness-v1/",
+    "recipes_per_controller": 64,
+    "physical_observations": 128,
+    "spatial_dither": false,
+    "partial_refresh": false,
+    "runtime_code7_used_as_white": false,
+    "factory_otp_white_ordinals": [1, 6],
+    "global_header_sequence": [null, "active", "commented", "active", "active", null],
+    "device_enforced_same_boot": {
+      "encoding": "uint64_first_fresh_setup_boot_nonce",
+      "write_once": true,
+      "initialization_precondition": "cursor_absent_and_ready_ordinal_1",
+      "gate_points": ["setup", "arm", "execute", "dispatch"],
+      "setup_gate_precedes_epd_begin": true,
+      "arm_gate_precedes_armed_persist": true,
+      "execute_gate_precedes_consumed_persist": true,
+      "dispatch_gate_precedes_driver_call": true,
+      "reboot_resume_allowed": false,
+      "containment_round_trip_resume_allowed": false,
+      "direct_exact_post_after_reboot_allowed": false,
+      "nvs_clear_route_present": false
+    },
+    "ordinal_4_fast_gate": {
+      "negative_if_no_clear_same_row_same_target_difference": "seal_main_campaign",
+      "ordinal_5_on_negative": false,
+      "ordinal_6_on_negative": false,
+      "negative_recovery": "relay_off_then_fresh_independent_factory_otp_white_containment",
+      "ordinal_5_requires_explicit_visible_candidate_confirmation": true,
+      "ordinal_6_requires_accepted_ordinal_5": true
+    },
+    "descriptor_ids": [
+      "1dc425968891e72e4fb377ef692d1a092f3e62ee00a9beec454cc689c0607abd",
+      "656dab642504883363dceb94411df7abbba0c4e21ebd06630839b649f458457f",
+      "dbc836f85c23355aed4866f6a7614981a0b59bdb51b05dc9e802b8133a4575ea",
+      "08af57d294e026daf2e9c85651f495dc24cae64d94a5ddfe41fdb6370459d361",
+      "83b27983aa3040a47130dd6cb2d7510655869797d53f32deb82cad49681b3cf8",
+      "3638dc93576652ecbfa6747d4a1c5bc40124f14141e4d1ea5c2d3e9a5546a5eb"
+    ],
+    "action_ids": [
+      "479f3cd677ac2c3b65fa9950fad622533b9c678bb0d7146394b0bf78aed83c52",
+      "012f89ef6a8194cdcbff17720a833861825d7d9655f517c2da92e86d91caea29",
+      "1d307a7c22bf54340d90ec3eaee548040933b899c159480898a4d96dbf494f4a",
+      "7cfe7a0c92411656fa0ba0f1f512393818ab86e750ec71f4e2adaee0fff6d0fa",
+      "9fe8f7f1c271e4003e04ec42de0e2e27f623d0185bb942271d769ebe49cb180a",
+      "f2695ebfec6ed1e887ae5561696fe81591f6908454e0268df2b069d4826fa585"
+    ]
+  },
+  "main_build": {
+    "platformio_config": "platformio.runtime_lut_hue_brightness_yellow_olive_v1.ini",
+    "environment": "ec5_runtime_lut_hue_brightness_yellow_olive_v1",
+    "clean_build": true,
+    "upload_target_invoked": false,
+    "firmware_bin": {
+      "bytes": 802208,
+      "sha256": "7e45f52dcafdea3c5f9962631a8c1b13bc0390131e3bebc0f5accecd8c5a8563"
+    },
+    "firmware_elf": {
+      "bytes": 13299612,
+      "sha256": "5a8fabd61f3230d640323873f29b055acb0eef5197769efded3ce114f0615ae5"
+    },
+    "linker_map": {
+      "bytes": 12038615,
+      "sha256": "2263e918a5b53789737bbae7ae418da692534b797b793da2f974db3b5e9b01e2"
+    },
+    "firmware_bin_app_descriptor_elf_sha256": "5a8fabd61f3230d640323873f29b055acb0eef5197769efded3ce114f0615ae5",
+    "device_reports_running_elf_sha256": true,
+    "host_requires_exact_running_elf_sha256": true,
+    "describe_artifact_binding": true,
+    "describe_live_authorized": false,
+    "describe_runner_flashes_firmware": false
+  },
+  "dependency_boundary": {
+    "evidence": "docs/MF1750_RUNTIME_LUT_HUE_BRIGHTNESS_YELLOW_OLIVE_V1_DEPENDENCY_BOUNDARY_2026-08-27.json",
+    "evidence_sha256": "492be3c5a7851ed86ec4304b03d766a73ffde27c762836d56b72a7b587ca80fc",
+    "device_reports_complete_dependency_manifest": false,
+    "device_reports_running_elf_identity_only": true,
+    "exact_link_input_inventory_bound_by_map": true,
+    "complete_transitive_source_and_build_host_sbom_claimed": false
+  },
+  "independent_factory_white_containment": {
+    "campaign_id": "EC5_TARGET_HUE_YELLOW_OLIVE_BRIGHTNESS_V1_WHITE_CONTAINMENT",
+    "contract_id": "fbedf22afbe6129e2824b9726f8be16f8b949c77cf02eb49d9707166d1ec095b",
+    "nvs_namespace": "rlhyocw_v1",
+    "nvs_key": "used_yocw1",
+    "route_prefix": "/api/ec5/target-hue-yellow-olive-brightness-v1/white-containment",
+    "descriptor_id": "99e0f93b79a8aef9e1e3256c76aec517d0bf37be8ee1b5d3074ee83c3296c3be",
+    "action_id": "ac05c0d290e91a33e92f3eccb00bce68d35b6852bae813dfabbb6950d485d45b",
+    "clean_build": true,
+    "upload_target_invoked": false,
+    "campaign_nvs_dependency": false,
+    "main_campaign_resume_after_containment": false,
+    "firmware_bin": {
+      "bytes": 786544,
+      "sha256": "80dfebbd0f609203d1b4f7f9784389815bf0f54d8e3efb4b5fa42febc0b61ec1"
+    },
+    "firmware_elf": {
+      "bytes": 13214132,
+      "sha256": "4e846aca492bac6dc2d460c87aeb46a76eba97fc292fc5dde8536b73f84ee8e8"
+    },
+    "describe_artifact_binding": true,
+    "describe_network_requests": 0,
+    "describe_visible_refreshes": 0
+  },
+  "verification": {
+    "focused_and_adjacent_pytest": {
+      "command_scope": [
+        "tests/test_mf1750_target_hue_catalog.py",
+        "tests/test_mf1750_runtime_lut_hue_brightness_blue_v1.py",
+        "tests/test_mf1750_runtime_lut_hue_brightness_blue_v1_white_containment.py",
+        "tests/test_mf1750_runtime_lut_hue_brightness_yellow_olive_v1.py",
+        "tests/test_mf1750_runtime_lut_hue_brightness_yellow_olive_v1_white_containment.py"
+      ],
+      "collected": 99,
+      "passed": 99,
+      "failed": 0
+    },
+    "yellow_olive_focused_pytest": {
+      "collected": 51,
+      "passed": 51,
+      "failed": 0
+    },
+    "device_same_boot_direct_post_reboot_negative_test": "pass",
+    "containment_round_trip_no_resume_negative_test": "pass",
+    "ordinal_4_negative_early_seal_test": "pass",
+    "running_elf_identity_negative_test": "pass",
+    "embedded_app_descriptor_elf_sha_test": "pass",
+    "ruff_check": "pass",
+    "ruff_format_check": "pass",
+    "py_compile": "pass",
+    "main_pack_dry_validate": "pass",
+    "main_describe_dry_validate": "pass",
+    "containment_pack_artifact_verify": "pass",
+    "containment_describe_dry_validate": "pass"
+  },
+  "source_sha256": {
+    "platformio.runtime_lut_hue_brightness_yellow_olive_v1.ini": "afa14f5696ad1619c6c0455750027b596881b2cbd20c462c0d57346f2fab9482",
+    "platformio.runtime_lut_hue_brightness_yellow_olive_v1_white_containment.ini": "7e6316616a0c9decb42b7b5c1c4c25c9db5f11328c0b1104079ff49af866fbb3",
+    "src/ec5_runtime_lut_hue_brightness_yellow_olive_v1_main.cpp": "642449bfbcb34797dd0d83f502d343a731ecf61aee024fe04cd52f64e192f282",
+    "src/ec5_runtime_lut_hue_brightness_yellow_olive_v1_epd_driver.cpp": "a133ee6334a25dff5a27df3a101bacfdda189a89d967eb2ebd29143fb6f7f0d6",
+    "src/ec5_runtime_lut_hue_brightness_yellow_olive_v1_identity.inc": "f8a987ef5d1ccfdf1051f04d72a2666506b98ce5493a252483a1abc87ab13604",
+    "src/ec5_runtime_lut_hue_brightness_yellow_olive_v1_main_config.inc": "721cf9a7fd1aba127500e9fe35ba7f2cfa88f0af081827deff4899d53f53d9a7",
+    "src/ec5_runtime_lut_hue_brightness_yellow_olive_v1_program.inc": "87dd994cc6aadbc923968c5f2f87ce3c82788acae55cbd69b176c7dce2c518a3",
+    "src/ec5_runtime_lut_hue_brightness_yellow_olive_v1_driver.inc": "9e374ae96f7ef838b231008c6641b32a5117e1e68dc75be4c131dc2352fcf6ce",
+    "src/ec5_runtime_lut_hue_brightness_yellow_olive_v1_white_containment_main.cpp": "907e81aeb2b425cc7ec01759370d669dbdc0d5e729087b9514bdfa34169a8fe0",
+    "src/ec5_runtime_lut_hue_brightness_yellow_olive_v1_white_containment_identity.inc": "08527bf01e1a1b52124e7f04705eda7b04587f7d0b3e98c4fb104156a7f51cc6",
+    "tools/mf1750_runtime_lut_hue_brightness_yellow_olive_v1_pack.py": "7b9abff99ee3c86653ecc769dd46ddadf95425eb99b42b523703023804f323e1",
+    "tools/mf1750_runtime_lut_hue_brightness_yellow_olive_v1_once.py": "e2ba1e3c5839e6c656772e7a3e613fbc92e7fd274b68af79e6c46176c8c45629",
+    "tools/mf1750_runtime_lut_hue_brightness_yellow_olive_v1_white_containment_pack.py": "2142b7fa14f8fd70069d31f9ee85f41207037a208f7b573899fed2fc4cdfda44",
+    "tools/mf1750_runtime_lut_hue_brightness_yellow_olive_v1_white_containment_once.py": "b17961ec86e3ec4bb6b6c81885dab0e6ab29d180d623be98340bfe803e10c54a",
+    "tests/test_mf1750_runtime_lut_hue_brightness_yellow_olive_v1.py": "b22c56e57783b767526f6224f230f05e0a3f47787598412330ece2c883ca1562",
+    "tests/test_mf1750_runtime_lut_hue_brightness_yellow_olive_v1_white_containment.py": "55ce6c7fd104096f1fc246c45840b32ee9ec2041da22602694878b19aaee3c65",
+    "docs/MF1750_STAGE3_TARGET_HUE_YELLOW_OLIVE_BRIGHTNESS_LADDER_V1_2026-08-26.md": "15156d5d3826e2501ec893b5ffdee4281587d88fb67f11b9bda987c97a454fd7",
+    "docs/MF1750_RUNTIME_LUT_HUE_BRIGHTNESS_YELLOW_OLIVE_V1_DEPENDENCY_BOUNDARY_2026-08-27.json": "492be3c5a7851ed86ec4304b03d766a73ffde27c762836d56b72a7b587ca80fc"
+  },
+  "tomorrow_sequence_reference": "docs/MF1750_STAGE3_TARGET_HUE_YELLOW_OLIVE_BRIGHTNESS_LADDER_V1_2026-08-26.md#6",
+  "freeze_statement": "No device, network, COM, relay, flash, reset, power, or visible-refresh operation was performed while preparing this evidence."
+}

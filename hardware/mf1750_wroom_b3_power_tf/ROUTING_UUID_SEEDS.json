@@ -1,0 +1,151 @@
+{
+  "schema": 1,
+  "project": "mf1750_wroom_b3_power_tf",
+  "policy": {
+    "generator": "pcbnew.KIID.SeedGenerator",
+    "requirements": [
+      "Every additive or controlled-reroute builder must use a project-unique seed.",
+      "Every builder must prove that its newly generated UUID set has zero intersection with its source PCB.",
+      "Every merge builder must prove that imported branch UUID sets are pairwise disjoint.",
+      "A seed remains occupied even when its candidate is rejected; rejected geometry may still exist in evidence artifacts."
+    ]
+  },
+  "known_collisions": [
+    {
+      "seed_decimal": 1750851,
+      "occupied_owner": "route_mf1750_wroom_b3_edge_dcdc_en_r8d.py",
+      "rejected_owner": "route_mf1750_wroom_b3_ps_hold_r8e.py",
+      "disposition": "The rejected PS_HOLD branch must never be merged; all eight generated UUIDs collide with different DCDC_EN objects."
+    }
+  ],
+  "assignments": [
+    {
+      "seed_decimal": 17505,
+      "owner": "route_mf1750_wroom_b3_r5_u4.py",
+      "status": "legacy_occupied"
+    },
+    {
+      "seed_decimal": 17506,
+      "owner": "route_mf1750_wroom_b3_bq_power_r5.py",
+      "status": "legacy_occupied"
+    },
+    {
+      "seed_decimal": 17507,
+      "owner": "route_mf1750_wroom_b3_epd_boundary_r5.py",
+      "status": "legacy_occupied"
+    },
+    {
+      "seed_decimal": 17509,
+      "owner": "route_mf1750_wroom_b3_epd_boundary_r6.py",
+      "status": "legacy_occupied"
+    },
+    {
+      "seed_decimal": 1750713,
+      "owner": "route_mf1750_wroom_b3_epd_mcu_r7.py",
+      "status": "occupied"
+    },
+    {
+      "seed_decimal": 1750811,
+      "owner": "route_mf1750_wroom_b3_internal_control_r8.py",
+      "status": "occupied"
+    },
+    {
+      "seed_decimal": 1750821,
+      "owner": "route_mf1750_wroom_b3_dcdc_pg_r8b.py",
+      "status": "occupied"
+    },
+    {
+      "seed_decimal": 1750831,
+      "owner": "route_mf1750_wroom_b3_pwr_int_n_r8c.py",
+      "status": "occupied"
+    },
+    {
+      "seed_decimal": 1750841,
+      "owner": "route_mf1750_wroom_b3_dcdc_en_r8d.py",
+      "status": "rejected_but_reserved"
+    },
+    {
+      "seed_decimal": 1750851,
+      "owner": "route_mf1750_wroom_b3_edge_dcdc_en_r8d.py",
+      "status": "occupied",
+      "collision_note": "The rejected route_mf1750_wroom_b3_ps_hold_r8e.py reused this seed. Its eight generated UUIDs collide with eight different DCDC_EN objects and that branch must never be merged."
+    },
+    {
+      "seed_decimal": 1750852,
+      "owner": "route_mf1750_wroom_b3_ps_hold_controlled_r8e.py",
+      "status": "occupied"
+    },
+    {
+      "seed_decimal": 1750861,
+      "owner": "route_mf1750_wroom_b3_boot_n_r8e.py",
+      "status": "occupied"
+    },
+    {
+      "seed_decimal": 1750871,
+      "owner": "route_mf1750_wroom_b3_pwr_button_n_r8e.py",
+      "status": "occupied"
+    },
+    {
+      "seed_decimal": 1750881,
+      "owner": "route_mf1750_wroom_b3_user_key_1_n_r10.py",
+      "status": "occupied"
+    },
+    {
+      "seed_decimal": 1750891,
+      "owner": "route_mf1750_wroom_b3_user_key_2_n_r12.py",
+      "status": "occupied"
+    },
+    {
+      "seed_decimal": 1750901,
+      "owner": "route_mf1750_wroom_b3_mcu_en_r14.py",
+      "status": "occupied"
+    },
+    {
+      "seed_decimal": 1750911,
+      "owner": "route_mf1750_wroom_b3_uart0_pair_r14.py",
+      "status": "occupied"
+    },
+    {
+      "seed_decimal": 1750921,
+      "owner": "route_mf1750_wroom_b3_button_conflict_remediation_r13.py",
+      "status": "occupied"
+    },
+    {
+      "seed_decimal": 1750931,
+      "owner": "route_mf1750_wroom_b3_jtag_bundle_r15.py",
+      "status": "occupied"
+    },
+    {
+      "seed_decimal": 1750941,
+      "owner": "build_mf1750_wroom_b3_in1_gnd_plane_r14.py",
+      "status": "audit_only_not_used_for_geometry"
+    },
+    {
+      "seed_decimal": 1750951,
+      "owner": "route_mf1750_wroom_b3_tf_spi_r17.py",
+      "status": "reserved_for_candidate"
+    },
+    {
+      "seed_decimal": 1750961,
+      "owner": "route_mf1750_wroom_b3_control_service_remediation_r17.py",
+      "status": "occupied"
+    },
+    {
+      "seed_decimal": 1750971,
+      "owner": "route_mf1750_wroom_b3_sys3v3_r18.py",
+      "status": "reserved_for_candidate"
+    },
+    {
+      "seed_decimal": 3018487553,
+      "seed_hex": "0xB3EA7701",
+      "owner": "build_mf1750_wroom_b3_r7_edge_access_probe.py",
+      "status": "occupied"
+    },
+    {
+      "seed_decimal": 3018487809,
+      "seed_hex": "0xB3EA7801",
+      "owner": "build_mf1750_wroom_b3_r8_epd_edge_access.py",
+      "status": "occupied"
+    }
+  ]
+}

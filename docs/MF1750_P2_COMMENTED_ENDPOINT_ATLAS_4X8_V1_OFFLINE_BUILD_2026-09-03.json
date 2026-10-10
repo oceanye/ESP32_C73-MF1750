@@ -1,0 +1,290 @@
+{
+  "action_descriptor_sha256": "dcbbb2f433c84d8804678f41a77cca21c14705383b5893b36fb8e9f3e036c9bc",
+  "action_sha256": "ec26e0f76f194f0e6c58a2879310dfccd9d110656bff62dc4f230086105777b9",
+  "artifacts": {
+    "firmware.bin": {
+      "bytes": 798496,
+      "path": ".pio/build-p2-commented-endpoint-atlas-4x8-v1/ec5_p2_commented_endpoint_atlas_4x8_v1/firmware.bin",
+      "sha256": "61d7704f4dfbcfd3b2ec21aa1eb571b400bf5ee391ababe6e4da1dc54010935d"
+    },
+    "firmware.elf": {
+      "bytes": 13286496,
+      "path": ".pio/build-p2-commented-endpoint-atlas-4x8-v1/ec5_p2_commented_endpoint_atlas_4x8_v1/firmware.elf",
+      "sha256": "451b7663aabd40a0771161c334c41f1f9be39ff0d47b2b7a7342b4edda9f7ac1"
+    }
+  },
+  "authority_source_hashes": {
+    "ec5_p1_active_endpoint_atlas_4x8_v1_driver.inc": {
+      "bytes": 39164,
+      "path": "src/ec5_p1_active_endpoint_atlas_4x8_v1_driver.inc",
+      "sha256": "a62b5562e568345696739ee35e6d44e6307c6e8181f626203459d4bd9f0a6bf3"
+    },
+    "ec5_p1_active_endpoint_atlas_4x8_v1_program.inc": {
+      "bytes": 44810,
+      "path": "src/ec5_p1_active_endpoint_atlas_4x8_v1_program.inc",
+      "sha256": "fdad0f85503861c49609598685357a63889793a33bd8b79a6645800b48c19bbd"
+    },
+    "mf1750_p2_commented_endpoint_atlas_4x8_v1_audit.py": {
+      "bytes": 7377,
+      "path": "tools/mf1750_p2_commented_endpoint_atlas_4x8_v1_audit.py",
+      "sha256": "cd4fa910b7f2a8355c1ad3f918bbdb8faacaf5cda9b86c29296443657412ab3e"
+    },
+    "mf1750_p2_commented_endpoint_atlas_4x8_v1_build.py": {
+      "bytes": 6161,
+      "path": "tools/mf1750_p2_commented_endpoint_atlas_4x8_v1_build.py",
+      "sha256": "4509ce3df8bdc1bf2e3c24636b7840efdbc0331c0c63878910478c125a0226ed"
+    },
+    "mf1750_p2_commented_endpoint_atlas_4x8_v1_codegen.py": {
+      "bytes": 13815,
+      "path": "tools/mf1750_p2_commented_endpoint_atlas_4x8_v1_codegen.py",
+      "sha256": "bdfa5a11750af112554da4abf0b9dfa49c35007bbde379be1b72d245dd81334c"
+    },
+    "mf1750_p2_commented_endpoint_atlas_4x8_v1_once.py": {
+      "bytes": 83158,
+      "path": "tools/mf1750_p2_commented_endpoint_atlas_4x8_v1_once.py",
+      "sha256": "8995b08f9e15612426cf2bb72462de46c8dcea1e9f289915d9c32faf0cd78491"
+    },
+    "mf1750_p2_commented_endpoint_atlas_4x8_v1_pack.py": {
+      "bytes": 12637,
+      "path": "tools/mf1750_p2_commented_endpoint_atlas_4x8_v1_pack.py",
+      "sha256": "a365ae27fd275d6dd3cb0df2eedc0016b340731e4ae31f3719ec6c9dbb595adb"
+    },
+    "mf1750_p2_retained_clean_white_human_review.py": {
+      "bytes": 21222,
+      "path": "tools/mf1750_p2_retained_clean_white_human_review.py",
+      "sha256": "fa6640bea3da03635caf5255c22bd6e26ef03f8dd9401c2ebd9b578d47289e3d"
+    },
+    "platformio.p2_commented_endpoint_atlas_4x8_v1.ini": {
+      "bytes": 1004,
+      "path": "platformio.p2_commented_endpoint_atlas_4x8_v1.ini",
+      "sha256": "20a046f98c02daa41a1030974a229b51d57e0610305906e4778af9f50ce42a99"
+    }
+  },
+  "authority_sources": {
+    "ec5_p1_active_endpoint_atlas_4x8_v1_driver.inc": {
+      "bytes": 39164,
+      "path": "src/ec5_p1_active_endpoint_atlas_4x8_v1_driver.inc",
+      "sha256": "a62b5562e568345696739ee35e6d44e6307c6e8181f626203459d4bd9f0a6bf3"
+    },
+    "ec5_p1_active_endpoint_atlas_4x8_v1_program.inc": {
+      "bytes": 44810,
+      "path": "src/ec5_p1_active_endpoint_atlas_4x8_v1_program.inc",
+      "sha256": "fdad0f85503861c49609598685357a63889793a33bd8b79a6645800b48c19bbd"
+    },
+    "mf1750_p2_commented_endpoint_atlas_4x8_v1_audit.py": {
+      "bytes": 7377,
+      "path": "tools/mf1750_p2_commented_endpoint_atlas_4x8_v1_audit.py",
+      "sha256": "cd4fa910b7f2a8355c1ad3f918bbdb8faacaf5cda9b86c29296443657412ab3e"
+    },
+    "mf1750_p2_commented_endpoint_atlas_4x8_v1_build.py": {
+      "bytes": 6161,
+      "path": "tools/mf1750_p2_commented_endpoint_atlas_4x8_v1_build.py",
+      "sha256": "4509ce3df8bdc1bf2e3c24636b7840efdbc0331c0c63878910478c125a0226ed"
+    },
+    "mf1750_p2_commented_endpoint_atlas_4x8_v1_codegen.py": {
+      "bytes": 13815,
+      "path": "tools/mf1750_p2_commented_endpoint_atlas_4x8_v1_codegen.py",
+      "sha256": "bdfa5a11750af112554da4abf0b9dfa49c35007bbde379be1b72d245dd81334c"
+    },
+    "mf1750_p2_commented_endpoint_atlas_4x8_v1_once.py": {
+      "bytes": 83158,
+      "path": "tools/mf1750_p2_commented_endpoint_atlas_4x8_v1_once.py",
+      "sha256": "8995b08f9e15612426cf2bb72462de46c8dcea1e9f289915d9c32faf0cd78491"
+    },
+    "mf1750_p2_commented_endpoint_atlas_4x8_v1_pack.py": {
+      "bytes": 12637,
+      "path": "tools/mf1750_p2_commented_endpoint_atlas_4x8_v1_pack.py",
+      "sha256": "a365ae27fd275d6dd3cb0df2eedc0016b340731e4ae31f3719ec6c9dbb595adb"
+    },
+    "mf1750_p2_retained_clean_white_human_review.py": {
+      "bytes": 21222,
+      "path": "tools/mf1750_p2_retained_clean_white_human_review.py",
+      "sha256": "fa6640bea3da03635caf5255c22bd6e26ef03f8dd9401c2ebd9b578d47289e3d"
+    },
+    "platformio.p2_commented_endpoint_atlas_4x8_v1.ini": {
+      "bytes": 1004,
+      "path": "platformio.p2_commented_endpoint_atlas_4x8_v1.ini",
+      "sha256": "20a046f98c02daa41a1030974a229b51d57e0610305906e4778af9f50ce42a99"
+    }
+  },
+  "camera_accessed": false,
+  "campaign_id": "EC5_P2_COMMENTED_ENDPOINT_ATLAS_4X8_V1",
+  "commands": [
+    [
+      "C:\\Users\\Ye\\.platformio\\penv\\Scripts\\pio.exe",
+      "run",
+      "-c",
+      "platformio.p2_commented_endpoint_atlas_4x8_v1.ini",
+      "-t",
+      "clean"
+    ],
+    [
+      "C:\\Users\\Ye\\.platformio\\penv\\Scripts\\pio.exe",
+      "run",
+      "-c",
+      "platformio.p2_commented_endpoint_atlas_4x8_v1.ini"
+    ]
+  ],
+  "contract_id": "6eb7be2835fac28df8922c86ab6236a7bd8cc81152ea72ad3be47bdc266ac216",
+  "controller_dtm_sha256": "b64c835514b4b6110002c1c2cb366a93bf804f5953229107fa52b27de83dfe0f",
+  "device_or_campaign_network_accessed": false,
+  "display_refreshed": false,
+  "firmware_flashed": false,
+  "frame_sha256": "d8ee6b0889c8c2e92e3d0d34410f93d90f924816c59987de496ef0ca27ac1768",
+  "generated_sources": {
+    "ec5_p2_commented_endpoint_atlas_4x8_v1_driver.inc": {
+      "bytes": 39380,
+      "path": ".pio/generated-p2-commented-endpoint-atlas-4x8-v1/ec5_p2_commented_endpoint_atlas_4x8_v1_driver.inc",
+      "sha256": "fde25ab31d6117164698cad7433455bf00bc1f6fd713e6aae01f1b0e96fd2948"
+    },
+    "ec5_p2_commented_endpoint_atlas_4x8_v1_epd_driver.cpp": {
+      "bytes": 211,
+      "path": ".pio/generated-p2-commented-endpoint-atlas-4x8-v1/ec5_p2_commented_endpoint_atlas_4x8_v1_epd_driver.cpp",
+      "sha256": "f6c6e367d269795106006b84e93cd8fad0a8db709fe7be83314b3e66db77acda"
+    },
+    "ec5_p2_commented_endpoint_atlas_4x8_v1_identity.inc": {
+      "bytes": 3187,
+      "path": ".pio/generated-p2-commented-endpoint-atlas-4x8-v1/ec5_p2_commented_endpoint_atlas_4x8_v1_identity.inc",
+      "sha256": "dd6519d8bb62012c7a138acfdebdc95ae100646a69121c39e6c197ed7c6af913"
+    },
+    "ec5_p2_commented_endpoint_atlas_4x8_v1_main.cpp": {
+      "bytes": 62,
+      "path": ".pio/generated-p2-commented-endpoint-atlas-4x8-v1/ec5_p2_commented_endpoint_atlas_4x8_v1_main.cpp",
+      "sha256": "754a9db086979ca6b54795de970125797b423ec53778942ddb18fc1ec32a11fb"
+    },
+    "ec5_p2_commented_endpoint_atlas_4x8_v1_main_config.inc": {
+      "bytes": 5708,
+      "path": ".pio/generated-p2-commented-endpoint-atlas-4x8-v1/ec5_p2_commented_endpoint_atlas_4x8_v1_main_config.inc",
+      "sha256": "96801f363b69f6c3919f421d76afa9d2d23bc6821dd03de920233657fbe138e3"
+    },
+    "ec5_p2_commented_endpoint_atlas_4x8_v1_program.inc": {
+      "bytes": 44821,
+      "path": ".pio/generated-p2-commented-endpoint-atlas-4x8-v1/ec5_p2_commented_endpoint_atlas_4x8_v1_program.inc",
+      "sha256": "23c9e1b4b8fa6ae9a6ede0b8bf394130b1e4ddfba01139a5f23c78911cecd20b"
+    }
+  },
+  "global_tuple_id": "1d4efb64203093929779a31321695100a6c778367157d633a2dcccabdbdc4038",
+  "hardware_accessed": false,
+  "kind": "mf1750-p2-commented-endpoint-atlas-4x8-v1-offline-build",
+  "offline_authority_seal": {
+    "algorithm": "sha256-canonical-json-authority-sources-v1",
+    "sha256": "cf13d027890e3411a76b5dfa17be73797e295efe4df81c957991dd3a3ab2affa",
+    "sources": {
+      "ec5_p1_active_endpoint_atlas_4x8_v1_driver.inc": {
+        "bytes": 39164,
+        "path": "src/ec5_p1_active_endpoint_atlas_4x8_v1_driver.inc",
+        "sha256": "a62b5562e568345696739ee35e6d44e6307c6e8181f626203459d4bd9f0a6bf3"
+      },
+      "ec5_p1_active_endpoint_atlas_4x8_v1_program.inc": {
+        "bytes": 44810,
+        "path": "src/ec5_p1_active_endpoint_atlas_4x8_v1_program.inc",
+        "sha256": "fdad0f85503861c49609598685357a63889793a33bd8b79a6645800b48c19bbd"
+      },
+      "mf1750_p2_commented_endpoint_atlas_4x8_v1_audit.py": {
+        "bytes": 7377,
+        "path": "tools/mf1750_p2_commented_endpoint_atlas_4x8_v1_audit.py",
+        "sha256": "cd4fa910b7f2a8355c1ad3f918bbdb8faacaf5cda9b86c29296443657412ab3e"
+      },
+      "mf1750_p2_commented_endpoint_atlas_4x8_v1_build.py": {
+        "bytes": 6161,
+        "path": "tools/mf1750_p2_commented_endpoint_atlas_4x8_v1_build.py",
+        "sha256": "4509ce3df8bdc1bf2e3c24636b7840efdbc0331c0c63878910478c125a0226ed"
+      },
+      "mf1750_p2_commented_endpoint_atlas_4x8_v1_codegen.py": {
+        "bytes": 13815,
+        "path": "tools/mf1750_p2_commented_endpoint_atlas_4x8_v1_codegen.py",
+        "sha256": "bdfa5a11750af112554da4abf0b9dfa49c35007bbde379be1b72d245dd81334c"
+      },
+      "mf1750_p2_commented_endpoint_atlas_4x8_v1_once.py": {
+        "bytes": 83158,
+        "path": "tools/mf1750_p2_commented_endpoint_atlas_4x8_v1_once.py",
+        "sha256": "8995b08f9e15612426cf2bb72462de46c8dcea1e9f289915d9c32faf0cd78491"
+      },
+      "mf1750_p2_commented_endpoint_atlas_4x8_v1_pack.py": {
+        "bytes": 12637,
+        "path": "tools/mf1750_p2_commented_endpoint_atlas_4x8_v1_pack.py",
+        "sha256": "a365ae27fd275d6dd3cb0df2eedc0016b340731e4ae31f3719ec6c9dbb595adb"
+      },
+      "mf1750_p2_retained_clean_white_human_review.py": {
+        "bytes": 21222,
+        "path": "tools/mf1750_p2_retained_clean_white_human_review.py",
+        "sha256": "fa6640bea3da03635caf5255c22bd6e26ef03f8dd9401c2ebd9b578d47289e3d"
+      },
+      "platformio.p2_commented_endpoint_atlas_4x8_v1.ini": {
+        "bytes": 1004,
+        "path": "platformio.p2_commented_endpoint_atlas_4x8_v1.ini",
+        "sha256": "20a046f98c02daa41a1030974a229b51d57e0610305906e4778af9f50ce42a99"
+      }
+    }
+  },
+  "offline_build_only": true,
+  "preflight": {
+    "action_id": "ec26e0f76f194f0e6c58a2879310dfccd9d110656bff62dc4f230086105777b9",
+    "authority_source_seal": {
+      "algorithm": "sha256-canonical-json-authority-sources-v1",
+      "sha256": "cf13d027890e3411a76b5dfa17be73797e295efe4df81c957991dd3a3ab2affa",
+      "sources": {
+        "ec5_p1_active_endpoint_atlas_4x8_v1_driver.inc": {
+          "bytes": 39164,
+          "path": "src/ec5_p1_active_endpoint_atlas_4x8_v1_driver.inc",
+          "sha256": "a62b5562e568345696739ee35e6d44e6307c6e8181f626203459d4bd9f0a6bf3"
+        },
+        "ec5_p1_active_endpoint_atlas_4x8_v1_program.inc": {
+          "bytes": 44810,
+          "path": "src/ec5_p1_active_endpoint_atlas_4x8_v1_program.inc",
+          "sha256": "fdad0f85503861c49609598685357a63889793a33bd8b79a6645800b48c19bbd"
+        },
+        "mf1750_p2_commented_endpoint_atlas_4x8_v1_audit.py": {
+          "bytes": 7377,
+          "path": "tools/mf1750_p2_commented_endpoint_atlas_4x8_v1_audit.py",
+          "sha256": "cd4fa910b7f2a8355c1ad3f918bbdb8faacaf5cda9b86c29296443657412ab3e"
+        },
+        "mf1750_p2_commented_endpoint_atlas_4x8_v1_build.py": {
+          "bytes": 6161,
+          "path": "tools/mf1750_p2_commented_endpoint_atlas_4x8_v1_build.py",
+          "sha256": "4509ce3df8bdc1bf2e3c24636b7840efdbc0331c0c63878910478c125a0226ed"
+        },
+        "mf1750_p2_commented_endpoint_atlas_4x8_v1_codegen.py": {
+          "bytes": 13815,
+          "path": "tools/mf1750_p2_commented_endpoint_atlas_4x8_v1_codegen.py",
+          "sha256": "bdfa5a11750af112554da4abf0b9dfa49c35007bbde379be1b72d245dd81334c"
+        },
+        "mf1750_p2_commented_endpoint_atlas_4x8_v1_once.py": {
+          "bytes": 83158,
+          "path": "tools/mf1750_p2_commented_endpoint_atlas_4x8_v1_once.py",
+          "sha256": "8995b08f9e15612426cf2bb72462de46c8dcea1e9f289915d9c32faf0cd78491"
+        },
+        "mf1750_p2_commented_endpoint_atlas_4x8_v1_pack.py": {
+          "bytes": 12637,
+          "path": "tools/mf1750_p2_commented_endpoint_atlas_4x8_v1_pack.py",
+          "sha256": "a365ae27fd275d6dd3cb0df2eedc0016b340731e4ae31f3719ec6c9dbb595adb"
+        },
+        "mf1750_p2_retained_clean_white_human_review.py": {
+          "bytes": 21222,
+          "path": "tools/mf1750_p2_retained_clean_white_human_review.py",
+          "sha256": "fa6640bea3da03635caf5255c22bd6e26ef03f8dd9401c2ebd9b578d47289e3d"
+        },
+        "platformio.p2_commented_endpoint_atlas_4x8_v1.ini": {
+          "bytes": 1004,
+          "path": "platformio.p2_commented_endpoint_atlas_4x8_v1.ini",
+          "sha256": "20a046f98c02daa41a1030974a229b51d57e0610305906e4778af9f50ce42a99"
+        }
+      }
+    },
+    "camera_accessed": false,
+    "contract_id": "6eb7be2835fac28df8922c86ab6236a7bd8cc81152ea72ad3be47bdc266ac216",
+    "device_or_campaign_network_accessed": false,
+    "display_refreshed": false,
+    "firmware_flashed": false,
+    "hardware_accessed": false,
+    "offline_only": true,
+    "relay_accessed": false,
+    "result": "PASS",
+    "serial_or_com_accessed": false
+  },
+  "relay_accessed": false,
+  "result": "PASS",
+  "schema_version": 1,
+  "serial_or_com_accessed": false,
+  "test_id": "EC5-P2-COMMENTED-ENDPOINT-ATLAS-4X8-V1"
+}

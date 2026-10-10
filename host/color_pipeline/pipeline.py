@@ -10,7 +10,15 @@ import math
 from array import array
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
-from host.epd_frame import FRAME_BYTES, HEIGHT, WIDTH, fnv1a, pack_pixels, validate_frame
+from host.epd_frame import (
+    FRAME_BYTES,
+    HEIGHT,
+    PHYSICAL_COLOR_CODES,
+    WIDTH,
+    fnv1a,
+    pack_pixels,
+    validate_frame,
+)
 
 from .color import LinearRGB, SRGB8_TO_LINEAR, delta_e_ciede2000, linear_rgb_to_lab
 from .palette import (
@@ -36,6 +44,7 @@ REPORT_CANONICAL_HASH_SCOPE = (
     "entire report object excluding report_integrity; UTF-8 JSON with sorted "
     "keys, no whitespace, ensure_ascii=false, allow_nan=false"
 )
+UNCONSTRAINED_PHYSICAL_CODE = 0xFF
 
 
 class DitherMode(str, Enum):
@@ -557,6 +566,55 @@ def _quantize_codes(
     return bytes(codes)
 
 
+def build_protection_constraints(
+    image: RasterImage,
+    *,
+    palette: Optional[Palette] = None,
+    options: Optional[PipelineOptions] = None,
+) -> bytes:
+    """Return per-pixel fixed colour codes for C2 protection semantics.
+
+    An unconstrained pixel is encoded as ``0xff``.  Protected white pixels,
+    edge pixels and every text-mode pixel contain one of the six physical
+    codes.  S1 algorithms consume this mask so the existing C2 controls do not
+    silently stop working when a different halftoner is selected.
+    """
+
+    if type(image) is not RasterImage:
+        raise ColorPipelineError("image must be a RasterImage instance")
+    selected_palette = reference_palette() if palette is None else palette
+    if type(selected_palette) is not Palette:
+        raise ColorPipelineError("palette must be a Palette instance or None")
+    selected_options = PipelineOptions() if options is None else options
+    if type(selected_options) is not PipelineOptions:
+        raise ColorPipelineError("options must be a PipelineOptions instance or None")
+    entries = selected_palette.entries
+    white_code = next(entry.code for entry in entries if entry.code == 1)
+    black_code = next(entry.code for entry in entries if entry.code == 0)
+    constraints = bytearray(
+        (UNCONSTRAINED_PHYSICAL_CODE,) * (image.width * image.height)
+    )
+    edges = (
+        _edge_mask(image, selected_options.edge_threshold)
+        if selected_options.preserve_edges and not selected_options.text_mode
+        else None
+    )
+    for index in range(len(constraints)):
+        rgb, alpha = _pixel_linear(image, index)
+        if selected_options.text_mode:
+            constraints[index] = (
+                white_code
+                if _is_protected_white(rgb, alpha, selected_options)
+                or _luminance(rgb) >= selected_options.text_luminance_threshold
+                else black_code
+            )
+        elif _is_protected_white(rgb, alpha, selected_options):
+            constraints[index] = white_code
+        elif edges is not None and edges[index]:
+            constraints[index] = entries[_nearest_two(rgb, entries)[0]].code
+    return bytes(constraints)
+
+
 def quantize_image(
     image: RasterImage,
     *,
@@ -613,7 +671,15 @@ def quantize_image(
     else:
         authorization_reason = "explicit_uncalibrated_palette_opt_in"
     codes = _quantize_codes(image, selected_palette, selected_options)
-    frame = pack_pixels(codes, image.width, image.height)
+    # The palette's render_path declares the code semantics: the stock OTP
+    # contract ships only the six physical codes, while the measured L535
+    # R20 path drives all eight nibbles (white=7).
+    pack_allowed = (
+        list(range(8))
+        if selected_palette.render_path == "l535_r20"
+        else PHYSICAL_COLOR_CODES
+    )
+    frame = pack_pixels(codes, image.width, image.height, allowed_colors=pack_allowed)
     counts_by_code = {entry.code: 0 for entry in selected_palette.entries}
     for code in codes:
         counts_by_code[code] += 1
@@ -706,5 +772,12 @@ def quantize_panel_image(
     )
     if len(result.frame) != FRAME_BYTES:
         raise AssertionError("panel frame length invariant failed")
-    validate_frame(result.frame)
+    validate_frame(
+        result.frame,
+        allowed_colors=(
+            list(range(8))
+            if result.palette.render_path == "l535_r20"
+            else PHYSICAL_COLOR_CODES
+        ),
+    )
     return result

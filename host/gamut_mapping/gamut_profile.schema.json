@@ -1,0 +1,286 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/mf1750/gamut-profile-v1.schema.json",
+  "title": "MF-1750 gamut characterization profile v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "profile_id",
+    "profile_version",
+    "pipeline_compatibility",
+    "palette",
+    "model",
+    "measurement",
+    "panel",
+    "firmware",
+    "environment",
+    "rendering_presets",
+    "trust",
+    "canonical_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "kind": {"const": "mf1750-gamut-profile"},
+    "profile_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,127}$"
+    },
+    "profile_version": {"$ref": "#/$defs/semver"},
+    "pipeline_compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["color_pipeline_version", "gamut_mapper_version"],
+      "properties": {
+        "color_pipeline_version": {"$ref": "#/$defs/semver"},
+        "gamut_mapper_version": {"$ref": "#/$defs/semver"}
+      }
+    },
+    "palette": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "canonical_sha256"],
+      "properties": {
+        "id": {"$ref": "#/$defs/nonempty"},
+        "canonical_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "characterization_level",
+        "approximation",
+        "pure_sample_refs",
+        "mixture_samples"
+      ],
+      "properties": {
+        "kind": {
+          "enum": ["linear_xyz_convex_v1", "measured_point_cloud_v1"]
+        },
+        "characterization_level": {
+          "enum": ["reference", "measured_primaries", "measured_mixtures"]
+        },
+        "approximation": {"type": "boolean"},
+        "pure_sample_refs": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/pure_sample_ref"}
+        },
+        "mixture_samples": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/mixture_sample"}
+        }
+      }
+    },
+    "measurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "measurement_id",
+        "raw_artifact_sha256",
+        "units",
+        "illuminant",
+        "observer",
+        "geometry",
+        "backing",
+        "instrument",
+        "instrument_calibration_date",
+        "measured_at"
+      ],
+      "properties": {
+        "measurement_id": {"$ref": "#/$defs/nullable_nonempty"},
+        "raw_artifact_sha256": {"$ref": "#/$defs/nullable_sha256"},
+        "units": {"const": "relative_cie_xyz_y1"},
+        "illuminant": {"const": "D65"},
+        "observer": {"const": "2deg"},
+        "geometry": {"$ref": "#/$defs/nullable_nonempty"},
+        "backing": {"$ref": "#/$defs/nullable_nonempty"},
+        "instrument": {"$ref": "#/$defs/nullable_nonempty"},
+        "instrument_calibration_date": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "string", "format": "date"}
+          ]
+        },
+        "measured_at": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "string", "format": "date-time"}
+          ]
+        }
+      }
+    },
+    "panel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model", "panel_id", "batch"],
+      "properties": {
+        "model": {"const": "MF-17506-M009F-T"},
+        "panel_id": {"$ref": "#/$defs/nullable_nonempty"},
+        "batch": {"$ref": "#/$defs/nullable_nonempty"}
+      }
+    },
+    "firmware": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commit", "waveform_version"],
+      "properties": {
+        "commit": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+          ]
+        },
+        "waveform_version": {"$ref": "#/$defs/nullable_nonempty"}
+      }
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "temperature_c",
+        "temperature_tolerance_c",
+        "relative_humidity_percent"
+      ],
+      "properties": {
+        "temperature_c": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "number", "minimum": -40, "maximum": 100}
+          ]
+        },
+        "temperature_tolerance_c": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "number", "minimum": 0, "maximum": 30}
+          ]
+        },
+        "relative_humidity_percent": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "number", "minimum": 0, "maximum": 100}
+          ]
+        }
+      }
+    },
+    "rendering_presets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relative-colorimetric", "perceptual", "saturation"],
+      "properties": {
+        "relative-colorimetric": {"$ref": "#/$defs/rendering_preset"},
+        "perceptual": {"$ref": "#/$defs/rendering_preset"},
+        "saturation": {"$ref": "#/$defs/rendering_preset"}
+      }
+    },
+    "trust": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fingerprint_trust", "source_statement", "signature"],
+      "properties": {
+        "fingerprint_trust": {
+          "const": "audit fingerprint only; not a digital signature or trust-store decision"
+        },
+        "source_statement": {"$ref": "#/$defs/nonempty"},
+        "signature": {"$ref": "#/$defs/nullable_nonempty"}
+      }
+    },
+    "canonical_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "nullable_sha256": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/sha256"}
+      ]
+    },
+    "nonempty": {"type": "string", "minLength": 1, "maxLength": 4096},
+    "nullable_nonempty": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/nonempty"}
+      ]
+    },
+    "physical_code": {"enum": [0, 1, 2, 3, 5, 6]},
+    "pure_sample_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "sample_id", "artifact_sha256"],
+      "properties": {
+        "code": {"$ref": "#/$defs/physical_code"},
+        "sample_id": {"$ref": "#/$defs/nonempty"},
+        "artifact_sha256": {"$ref": "#/$defs/nullable_sha256"}
+      }
+    },
+    "mixture_sample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sample_id",
+        "mask_id",
+        "area_fractions",
+        "xyz",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "sample_id": {"$ref": "#/$defs/nonempty"},
+        "mask_id": {"$ref": "#/$defs/nonempty"},
+        "area_fractions": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["code", "fraction"],
+            "properties": {
+              "code": {"$ref": "#/$defs/physical_code"},
+              "fraction": {"type": "number", "exclusiveMinimum": 0, "maximum": 1}
+            }
+          }
+        },
+        "xyz": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {"type": "number", "minimum": 0, "maximum": 2}
+        },
+        "artifact_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "rendering_preset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "tone_gamma",
+        "compression_knee",
+        "saturation_boost",
+        "lightness_weight",
+        "chroma_weight",
+        "hue_weight"
+      ],
+      "properties": {
+        "version": {"$ref": "#/$defs/semver"},
+        "tone_gamma": {"type": "number", "minimum": 0.25, "maximum": 4},
+        "compression_knee": {"type": "number", "minimum": 0, "maximum": 1},
+        "saturation_boost": {"type": "number", "minimum": 0, "maximum": 1},
+        "lightness_weight": {"type": "number", "minimum": 0, "maximum": 10},
+        "chroma_weight": {"type": "number", "minimum": 0, "maximum": 10},
+        "hue_weight": {"type": "number", "minimum": 0, "maximum": 10}
+      }
+    }
+  }
+}

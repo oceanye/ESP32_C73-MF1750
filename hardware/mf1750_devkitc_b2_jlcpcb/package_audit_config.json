@@ -1,0 +1,54 @@
+{
+  "allow_extra_csv_columns": false,
+  "allowed_cpl_sides": [
+    "Top"
+  ],
+  "audit_all_zip_files": true,
+  "bom_csv": "upload/JLCPCB_BOM_MF1750_DEVKITC_B2_SMT.csv",
+  "bom_headers": [
+    "Comment",
+    "Designator",
+    "Footprint",
+    "LCSC Part #"
+  ],
+  "comment_header": "Comment",
+  "cpl_csv": "upload/JLCPCB_CPL_MF1750_DEVKITC_B2_SMT.csv",
+  "cpl_headers": [
+    "Designator",
+    "Mid X",
+    "Mid Y",
+    "Rotation",
+    "Layer"
+  ],
+  "cpl_rotation_header": "Rotation",
+  "cpl_side_header": "Layer",
+  "cpl_x_header": "Mid X",
+  "cpl_y_header": "Mid Y",
+  "designator_header": "Designator",
+  "designator_pattern": "[A-Za-z][A-Za-z0-9_]*[0-9][A-Za-z0-9_]*",
+  "footprint_header": "Footprint",
+  "gerber_required_patterns": [
+    "^mf1750_devkitc_b2_pcba_margin-F_Cu[.]gtl$",
+    "^mf1750_devkitc_b2_pcba_margin-In1_Cu[.]g1$",
+    "^mf1750_devkitc_b2_pcba_margin-In2_Cu[.]g2$",
+    "^mf1750_devkitc_b2_pcba_margin-B_Cu[.]gbl$",
+    "^mf1750_devkitc_b2_pcba_margin-F_Mask[.]gts$",
+    "^mf1750_devkitc_b2_pcba_margin-B_Mask[.]gbs$",
+    "^mf1750_devkitc_b2_pcba_margin-F_Paste[.]gtp$",
+    "^mf1750_devkitc_b2_pcba_margin-Top Silkscreen[.]gto$",
+    "^mf1750_devkitc_b2_pcba_margin-Bottom Silkscreen[.]gbo$",
+    "^mf1750_devkitc_b2_pcba_margin-Edge_Cuts[.]gm1$",
+    "^mf1750_devkitc_b2_pcba_margin-PTH[.]drl$",
+    "^mf1750_devkitc_b2_pcba_margin-NPTH[.]drl$"
+  ],
+  "gerber_zip": "upload/JLCPCB_PCB_MF1750_DEVKITC_B2_4L.zip",
+  "lcsc_header": "LCSC Part #",
+  "lcsc_pattern": "C[1-9][0-9]*",
+  "manifest": "MANIFEST.json",
+  "package_hashes": "PACKAGE_HASHES.txt",
+  "require_all_zips_in_package_hashes": true,
+  "require_manifest_files_in_sha256sums": true,
+  "require_manifest_in_sha256sums": true,
+  "sha256sums": "SHA256SUMS.txt",
+  "upload_dir": "upload"
+}

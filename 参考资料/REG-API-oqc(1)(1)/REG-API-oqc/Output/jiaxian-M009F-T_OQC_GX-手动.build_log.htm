@@ -1,0 +1,128 @@
+<html>
+<body>
+<pre>
+<h1>礦ision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: μVision V5.33.0.0
+Copyright (C) 2020 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: 12 bbljm@qq.com, 12, LIC=FYKYW-QXYDY-Z9PG9-43P24-0PQ1W-5BZ2I
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Plus  Version: 5.33.0.0
+Toolchain Path:  D:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 7 (build 960)
+Assembler:       Armasm.exe V5.06 update 7 (build 960)
+Linker/Locator:  ArmLink.exe V5.06 update 7 (build 960)
+Library Manager: ArmAr.exe V5.06 update 7 (build 960)
+Hex Converter:   FromElf.exe V5.06 update 7 (build 960)
+CPU DLL:         SARMCM3.DLL V5.33.0.0
+Dialog DLL:      DCM.DLL V1.17.3.0
+Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.0.8.0
+Dialog DLL:      TCM.DLL V1.48.0.0
+ 
+<h2>Project:</h2>
+D:\工作文件\工作文件\墨方资料\edp\E6\jiaxian\7.5\REG-API-oqc\Projects\MDK-ARM\atk_f103.uvprojx
+Project File Date:  03/18/2026
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Keil_v5\ARM\ARMCC\Bin'
+Rebuild target 'USART'
+assembling startup_stm32f103xe.s...
+compiling stm32f1xx_it.c...
+compiling system_stm32f1xx.c...
+compiling iap.c...
+compiling key.c...
+compiling UartDataDeal.c...
+..\..\User\UartDataDeal.c(129): warning:  #177-D: function "Display_pattern_add"  was declared but never referenced
+  static void Display_pattern_add(Pattern_InitTypeDef *data,uint8_t* value)
+..\..\User\UartDataDeal.c: 1 warning, 0 errors
+compiling main.c...
+..\..\Sample Code\E28xx.h(103): warning:  #1295-D: Deprecated declaration program_int - give arg types
+  unsigned char  program_int();
+..\..\User\main.c(123): warning:  #177-D: variable "otpflg"  was declared but never referenced
+  	unsigned char otpflg = 0xFF;
+..\..\User\main.c(124): warning:  #177-D: variable "uidflg"  was declared but never referenced
+  		unsigned char uidflg = 0xFF;
+..\..\User\main.c(125): warning:  #177-D: variable "vcomflg"  was declared but never referenced
+  		unsigned char vcomflg = 0xFF;
+..\..\User\main.c(54): warning:  #177-D: function "EPD_initial_noOTP"  was declared but never referenced
+  static void EPD_initial_noOTP(void)
+..\..\User\main.c: 5 warnings, 0 errors
+compiling EDP_init.c...
+..\..\User\EDP_init.c(906): warning:  #177-D: variable "a_index"  was declared but never referenced
+      unsigned long a_index = 0, b_index = 0;
+..\..\User\EDP_init.c(906): warning:  #177-D: variable "b_index"  was declared but never referenced
+      unsigned long a_index = 0, b_index = 0;
+..\..\User\EDP_init.c: 2 warnings, 0 errors
+compiling sys.c...
+compiling stm32f1xx_hal_cortex.c...
+compiling stm32f1xx_hal.c...
+compiling delay.c...
+compiling pattern.c...
+..\..\User\pattern.c(55): warning:  #177-D: label "a"  was declared but never referenced
+  a:	for (i = 0; i < pattern_num;i++)
+..\..\User\pattern.c: 1 warning, 0 errors
+compiling usart.c...
+compiling stm32f1xx_hal_dma.c...
+compiling stm32f1xx_hal_uart.c...
+compiling stm32f1xx_hal_usart.c...
+compiling stm32f1xx_hal_gpio_ex.c...
+compiling stm32f1xx_hal_rcc_ex.c...
+compiling stm32f1xx_hal_gpio.c...
+compiling stm32f1xx_hal_flash.c...
+compiling stm32f1xx_hal_rcc.c...
+compiling led.c...
+compiling stmflash.c...
+compiling stm32f1xx_hal_exti.c...
+compiling stm32f1xx_hal_flash_ex.c...
+compiling stm32f1xx_hal_spi.c...
+compiling stm32f1xx_hal_tim_ex.c...
+compiling stm32f1xx_hal_tim.c...
+compiling gtim.c...
+compiling spi.c...
+compiling norflash.c...
+compiling E28xx.c...
+..\..\Sample Code\E28xx.h(103): warning:  #1295-D: Deprecated declaration program_int - give arg types
+  unsigned char  program_int();
+..\..\Sample Code\otp.h(88): warning:  #1-D: last line of file ends without a newline
+..\..\Sample Code\E28xx.c(512): warning:  #940-D: missing return statement at end of non-void function "writeUserData" 
+  }
+..\..\Sample Code\E28xx.c(596): warning:  #177-D: variable "i"  was declared but never referenced
+  	int i;
+..\..\Sample Code\E28xx.c(887): warning:  #177-D: variable "i"  was declared but never referenced
+    unsigned int i=0;
+..\..\Sample Code\E28xx.c(1173): warning:  #177-D: function "checkBusyHigh"  was declared but never referenced
+  static void checkBusyHigh(void) // If BUSYN=0 then waiting
+..\..\Sample Code\E28xx.c(1179): warning:  #177-D: function "checkBusyLow"  was declared but never referenced
+  static void checkBusyLow(void) // If BUSYN=1 then waiting
+..\..\Sample Code\E28xx.c(141): warning:  #177-D: function "getMutipleSPIData"  was declared but never referenced
+  static void getMutipleSPIData(unsigned int counter)
+..\..\Sample Code\E28xx.c: 8 warnings, 0 errors
+compiling comm.c...
+..\..\Sample Code\comm.c(162): warning:  #185-D: dynamic initialization in unreachable code
+  	unsigned char status = 0;
+..\..\Sample Code\comm.c(348): warning:  #1-D: last line of file ends without a newline
+  }
+..\..\Sample Code\comm.c(36): warning:  #177-D: variable "pinMap"  was declared but never referenced
+  } pinMap[] = {
+..\..\Sample Code\comm.c: 3 warnings, 0 errors
+linking...
+Program Size: Code=12424 RO-data=307564 RW-data=568 ZI-data=6512  
+FromELF: creating hex file...
+"..\..\Output\jiaxian-M009F-T_OQC_GX-手动.axf" - 0 Error(s), 20 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: Keil
+                http://www.keil.com/pack/Keil.STM32F1xx_DFP.2.3.0.pack
+                Keil.STM32F1xx_DFP.2.3.0
+                STMicroelectronics STM32F1 Series Device Support, Drivers and Examples
+
+<h2>Collection of Component include folders:</h2>
+  D:\Users\yinruoyu\AppData\Local\Arm\Packs\Keil\STM32F1xx_DFP\2.3.0\Device\Include
+
+<h2>Collection of Component Files used:</h2>
+Build Time Elapsed:  00:00:24
+</pre>
+</body>
+</html>

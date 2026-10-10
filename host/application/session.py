@@ -342,16 +342,36 @@ class ApplicationSession:
 
     def local_abort(self) -> Mapping[str, Any]:
         result = self.adapter.local_abort()
+        if self.artifact is not None:
+            self._require_current_result_identity(result, "local abort")
+        remote_job_may_continue = result.get("remote_job_may_continue")
+        new_submission_locked = result.get("new_submission_locked")
+        if type(remote_job_may_continue) is not bool:
+            raise SessionError("local abort must report remote_job_may_continue as boolean")
+        if type(new_submission_locked) is not bool:
+            raise SessionError("local abort must report new_submission_locked as boolean")
+        if remote_job_may_continue and not new_submission_locked:
+            raise SessionError(
+                "local abort cannot unlock while the remote job may continue"
+            )
         self.state = SessionState.LOCAL_ABORTED
-        self.refresh_locked = False
+        # With no remote cancel route, discarding local polling state cannot
+        # authorize a second refresh while the first job outcome is unknown.
+        self.refresh_locked = new_submission_locked
         self.recovery_available = False
-        self.last_error = None
+        self.last_error = (
+            (
+                "local monitoring stopped; the remote refresh may still be active"
+                if remote_job_may_continue
+                else "local monitoring stopped before diagnostic safe-finish closure"
+            )
+            if new_submission_locked
+            else None
+        )
         self._preflight_identity = None
         self._preflight_mappings = None
         self._armed_identity = None
         self._protocol_identity = None
-        if self.artifact is not None:
-            self._require_current_result_identity(result, "local abort")
         return self._record_result(result)
 
     def application_report(self) -> Mapping[str, Any]:
@@ -391,6 +411,14 @@ class ApplicationSession:
                 artifact is not None and artifact.upload_authorized
             ),
             "refresh_locked": self.refresh_locked,
+            "local_abort_quarantine": bool(
+                state is SessionState.LOCAL_ABORTED and self.refresh_locked
+            ),
+            "remote_job_may_continue": bool(
+                state is SessionState.LOCAL_ABORTED
+                and last_device_result is not None
+                and last_device_result.get("remote_job_may_continue") is True
+            ),
             "recovery_available": self.recovery_available,
             "error": self.last_error,
             "offline_verified": bool(

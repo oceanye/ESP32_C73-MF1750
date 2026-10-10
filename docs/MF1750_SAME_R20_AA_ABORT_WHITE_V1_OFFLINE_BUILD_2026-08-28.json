@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "kind": "mf1750-same-r20-aa-abort-white-v1-offline-build",
+  "generated_at": "2026-08-28T18:28:22.0407645+08:00",
+  "result": "PASS_OFFLINE_ONLY",
+  "scope": {
+    "hardware_accessed": false,
+    "device_network_accessed": false,
+    "serial_or_com_accessed": false,
+    "relay_accessed": false,
+    "firmware_flashed": false,
+    "device_reset": false,
+    "display_refreshed": false,
+    "claim_created": false
+  },
+  "identity": {
+    "build_tag": "MF1750_EC5_SAME_R20_AA_ABORT_WHITE_V1_SINGLE_APP_BOOT_2026-08-28",
+    "test_id": "EC5-SAME-R20-AA-ABORT-WHITE-V1",
+    "campaign_id": "EC5_SAME_R20_AA_ABORT_WHITE_V1",
+    "environment": "ec5_same_r20_aa_abort_white_v1",
+    "platformio_environment": "ec5_sr20_aa_abort_white_v1",
+    "device_api_version": "MF1750_EC5_SAME_R20_AA_ABORT_WHITE_DEVICE_V1",
+    "identity_revision": "same-r20-aa-abort-white-v1",
+    "base_route": "/api/ec5/same-r20-aa-abort-white-v1",
+    "nvs_namespace": "sr20aaw_v1",
+    "nvs_key": "used_aaw1",
+    "classification": "FACTORY_OTP_WHITE_SAME_R20_AA_ABORT_TERMINAL_ONE_ACTION_NO_RUNTIME_PAYLOAD",
+    "descriptor_id": "65e534e7632bab1320b2d40f531bb00c55bdfaaf56441e52b1920837ba12d66c",
+    "action_id": "902629decf24660f7cbb7495336f8f15b250097398aa4965d1c3b1d4ec79b268",
+    "contract_id": "08e2683209d66e5f4a4149733e0b446abc81be29b2ed6cec1637ddafd66f0399"
+  },
+  "source_termination": {
+    "campaign_id": "EC5_SAME_R20_PARITY_2X4_V1",
+    "contract_id": "718d6cf628cd14a869b73f77f6414fcdd8a5b364863849899403afde2f3463f8",
+    "firmware_bin_sha256": "d65fb20b3e3843563561340d6bb450fc469ade4e503fec87eec3f0369e30977f",
+    "firmware_elf_sha256": "bf15d35d12af897d89afd2ab65141a50dd3dc4e2350877abc3ada530f8de94b6",
+    "completed_ordinal": 1,
+    "completed_action_id": "7dd101c61553c9a10b97beeb7c3c8ce26e79c410d3b2ac3040db572065fd49f4",
+    "completed_action_role": "SAME_R20_ACTIVE_ACTIVE_ATLAS",
+    "completed_action_outcome": "complete_pass",
+    "next_ordinal_observed": 2,
+    "ordinal2_consumption_forbidden": true,
+    "resume_forbidden": true,
+    "campaign_terminal_by_successor": true
+  },
+  "camera_gate": {
+    "frame_count": 4,
+    "direct_bound_photo_and_analysis_file_count": 8,
+    "synchronous_live_frame_count": 1,
+    "j2_off_retained_frame_count": 3,
+    "all_four_input_classifications": "CAMERA_RELATIVE_CONTROLLER_MISMATCH_CANDIDATE",
+    "aggregate_classification": "CAMERA_RELATIVE_REPEAT_MISMATCH_CANDIDATE",
+    "unanimous_threshold_exceedance_codes": [1, 2],
+    "controller_equivalence_proven": false,
+    "hardware_mismatch_proven": false,
+    "qualified_new_colour": false,
+    "repeat_report": {
+      "path": ".test-output/hardware/MF1750_SAME_R20_PARITY_20260828_V1/aa-four-frame-retained-repeat-report.json",
+      "bytes": 17459,
+      "sha256": "172f3570e33701c9cf10a8d9f3c4fbb4c146e8fa8ee26d6f5a3e2f369809b67d",
+      "canonical_integrity_sha256": "665f204c878303a3a0d5fc8de85545dc679a776a8e2eee420747ca887ed7ac02",
+      "report_id": "60b1c65ec69a28ab44b6c32547db2975199e2a74237463e86018abae494e91c1"
+    }
+  },
+  "relay_off_query_receipt": {
+    "path": ".test-output/hardware/MF1750_SAME_R20_PARITY_20260828_V1/relay-channel1-off-post-aa-repeats.json",
+    "bytes": 1251,
+    "sha256": "c523566cf21a518108e27f47ceb7a030d3e19205a0abab0fa283f36461568c35",
+    "commanded_state": "OFF",
+    "off_gate_passed": true,
+    "contact_switch_performed": false,
+    "electrical_state_proven": false,
+    "boundary": "host prerequisite only; firmware does not infer or trust load-side voltage"
+  },
+  "action_contract": {
+    "action_count": 1,
+    "role": "FACTORY_OTP_WHITE_CONTAINMENT",
+    "driver_entry": "epdDisplayCompiledFactoryOtpWhiteRecovery",
+    "driver_call_count_max": 1,
+    "visible_refresh_count_max": 1,
+    "startup_refresh": false,
+    "runtime_payload": false,
+    "raw_frame_ingress": false,
+    "raw_lut_ingress": false,
+    "r20_present": false,
+    "r21_present": false,
+    "retry": false,
+    "automatic_recovery": false,
+    "automatic_chaining": false,
+    "source_ordinal2_consumption": false,
+    "source_campaign_resume": false
+  },
+  "artifacts": {
+    "firmware_bin": {
+      "path": ".pio/build-sr20-aa-abort-white-v1/ec5_sr20_aa_abort_white_v1/firmware.bin",
+      "bytes": 788048,
+      "sha256": "1d7e83fcbc978392d4935120297797ea83529373cb98d865e2a257667e3be1dd"
+    },
+    "firmware_elf": {
+      "path": ".pio/build-sr20-aa-abort-white-v1/ec5_sr20_aa_abort_white_v1/firmware.elf",
+      "bytes": 13215292,
+      "sha256": "e3fc134167afd571a0ce1e6a83afb224d0f6e7c888b14873c4bc0f6f7ac2b87f"
+    }
+  },
+  "source_files": [
+    {"path": "platformio.same_r20_aa_abort_white_v1.ini", "bytes": 836, "sha256": "93de85ce63722a75527b4ea6a50aa6547756cf52b6aa1d4a8f277a3a061debc1"},
+    {"path": "src/ec5_sr20_aa_abort_white_v1.cpp", "bytes": 196, "sha256": "bce603fbb3798aa7300dc2545286434b5cfc590a5eb90aac9190d13d43ea18c7"},
+    {"path": "src/ec5_same_r20_aa_abort_white_v1_identity.inc", "bytes": 2453, "sha256": "8b93f926078211fc3fdf41010bdad618dbe5028761c47de4fa7a989216a8c786"},
+    {"path": "src/ec5_same_r20_aa_abort_white_v1_main.cpp", "bytes": 28367, "sha256": "b205ae8334cfc7980a41523dc148c52e5f30af81c9e5712c0b271f4c82a2bb8f"},
+    {"path": "tools/mf1750_same_r20_aa_abort_white_v1_pack.py", "bytes": 23157, "sha256": "3e0074b55e0b139a0f39733fb4af00cbb5b9938919a63ebbf91bdaad5082c98f"},
+    {"path": "tools/mf1750_same_r20_aa_abort_white_v1_once.py", "bytes": 40338, "sha256": "7e964121c4bd32c48b8fa1511ed94f8cc03b2fb332fabee96ec1ac9ddae02718"},
+    {"path": "tests/test_mf1750_same_r20_aa_abort_white_v1.py", "bytes": 24967, "sha256": "41b59e68766c754cf094a524019e0dbd74fb289f15f89f0049cb482bc9cb2f9c"}
+  ],
+  "fixed_future_live_paths": {
+    "root": ".test-output/hardware/MF1750_SAME_R20_AA_ABORT_WHITE_20260828_V1",
+    "app_only_flash": ".test-output/hardware/MF1750_SAME_R20_AA_ABORT_WHITE_20260828_V1/app-only-single-boot-flash.json",
+    "j2_off_diagnostic": ".test-output/hardware/MF1750_SAME_R20_AA_ABORT_WHITE_20260828_V1/j2-off-diagnostic.json",
+    "action": ".test-output/hardware/MF1750_SAME_R20_AA_ABORT_WHITE_20260828_V1/action-01-factory-otp-white.json",
+    "claims_root": ".test-output/hardware/.mf1750_same_r20_aa_abort_white_v1_claims",
+    "preflight_state_at_record_time": "all_new_live_paths_absent"
+  },
+  "validation_commands": {
+    "clean_build": "C:/Users/Ye/.platformio/penv/Scripts/platformio.exe run -c platformio.same_r20_aa_abort_white_v1.ini -t clean; C:/Users/Ye/.platformio/penv/Scripts/platformio.exe run -c platformio.same_r20_aa_abort_white_v1.ini",
+    "dry_validate": "C:/Users/Ye/.platformio/penv/Scripts/python.exe tools/mf1750_same_r20_aa_abort_white_v1_once.py dry-validate",
+    "pytest": "python -m pytest -q tests/test_mf1750_same_r20_aa_abort_white_v1.py",
+    "broader_regression": "python -m pytest -q tests/test_mf1750_same_r20_aa_abort_white_v1.py tests/test_mf1750_runtime_lut_same_r20_parity_v1.py tests/test_mf1750_same_r20_parity_evidence_bundle.py tests/test_mf1750_app_only_single_boot_flash.py tests/test_mf1750_runtime_lut_hue_brightness_redpink_v3_white_containment_successor.py",
+    "ruff": "python -m ruff check tools/mf1750_same_r20_aa_abort_white_v1_pack.py tools/mf1750_same_r20_aa_abort_white_v1_once.py tests/test_mf1750_same_r20_aa_abort_white_v1.py",
+    "format": "python -m ruff format --check tools/mf1750_same_r20_aa_abort_white_v1_pack.py tools/mf1750_same_r20_aa_abort_white_v1_once.py tests/test_mf1750_same_r20_aa_abort_white_v1.py",
+    "py_compile": "python -m py_compile tools/mf1750_same_r20_aa_abort_white_v1_pack.py tools/mf1750_same_r20_aa_abort_white_v1_once.py tests/test_mf1750_same_r20_aa_abort_white_v1.py"
+  },
+  "validation": {
+    "clean_platformio_build": "PASS",
+    "ram_used_bytes": 45912,
+    "ram_total_bytes": 327680,
+    "flash_used_bytes": 787681,
+    "flash_total_bytes": 3342336,
+    "focused_pytest": "18 passed",
+    "broader_regression_pytest": "68 passed",
+    "ruff_check": "PASS",
+    "ruff_format_check": "PASS",
+    "python_py_compile": "PASS",
+    "dry_validate": "PASS",
+    "dry_validate_network_requests": 0,
+    "dry_validate_visible_refreshes": 0
+  }
+}

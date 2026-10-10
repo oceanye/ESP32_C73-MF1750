@@ -1,0 +1,10 @@
+﻿Designator,Rotation,Top-side verification
+J1,180.00,pin 1 is the leftmost signal pad in assembled-board top view; cable exits top edge
+D1,180.00,pad1/K=VPH; body rotation 180 deg
+D2,180.00,pad1/K=GND; body rotation 180 deg
+D3,0.00,pad1/K=NEG_PUMP_H; body rotation 0 deg
+D4,0.00,pad1/K=SW_C; body rotation 0 deg
+Q1,90.00,"SI1308EDL: pad1=GDRH/G, pad2=RESEH/S, pad3=SW_H/D; rotation 90 deg"
+Q2,0.00,"AO3401A: pad1=GDRC/G, pad2=V_B/S, pad3=SW_C/D; rotation 0 deg"
+R16,0.00,FIT; independent CS2 to SL_CSB
+R15,0.00,DNP; no BOM/CPL/paste aperture

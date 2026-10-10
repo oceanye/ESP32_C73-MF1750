@@ -1,0 +1,34 @@
+//=================================================================================================
+//                   E6 13 inch Customer FW Reference Code 
+//
+// File Name : comm.h
+// Author : Electronic Design Dept. II
+// Data : 2024.08.20
+// Version : 1.0
+// Copyright : E Ink Holdings Inc.
+//=================================================================================================
+
+#ifndef __COMM_H__
+#define __COMM_H__
+
+#endif //#ifndef __COMM_H__
+
+
+#ifdef __COMM_C__
+#define __COMM_EXTERN__
+#else
+#define __COMM_EXTERN__ extern
+#endif
+
+__COMM_EXTERN__ unsigned char initialSpi(void);
+__COMM_EXTERN__ unsigned char initialGpio(void);
+__COMM_EXTERN__ void delayms(unsigned int delayTime);
+__COMM_EXTERN__ unsigned char spiTransmitCommand(unsigned char commandBuf);
+__COMM_EXTERN__ unsigned char spiTransmitData(const unsigned char *dataBuffer, unsigned long dataLength);
+__COMM_EXTERN__ unsigned char spiReceiveData(unsigned char *dataBuffer, unsigned long dataLength);
+__COMM_EXTERN__ unsigned char spiTransmitLargeData(unsigned char commandBuf, unsigned char *dataBuffer, unsigned long dataLength);
+__COMM_EXTERN__ unsigned char spiTransmit(unsigned char commandBuf,const unsigned char *dataBuffer, unsigned int dataLength);
+__COMM_EXTERN__ unsigned char spiReceive(unsigned char commandBuf, unsigned char *dataBuffer, unsigned int dataLength);
+__COMM_EXTERN__ void setGpioLevel(unsigned char pinNumber, unsigned char voltageLevel);
+__COMM_EXTERN__ unsigned char getGpioLevel(unsigned char pinNumber);
+

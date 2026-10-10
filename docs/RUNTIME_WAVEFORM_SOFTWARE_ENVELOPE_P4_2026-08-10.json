@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "kind": "mf1750-runtime-waveform-software-envelope-p4",
+  "completed_at": "2026-08-10T09:21:48+08:00",
+  "classification": "SOFTWARE_ENVELOPE_READY_LIVE_HARD_BLOCKED",
+  "milestones": {
+    "p0a_self_reported_contract_fused": true,
+    "p0b_byte_backed_evidence_and_exact_sequence_contract": true,
+    "p1_zero_io_execution_plan": true,
+    "p2_compile_disabled_mock_only_transport_model": true,
+    "p3_non_materializable_twelve_action_campaign": true,
+    "p4_regression_build_and_handoff": true
+  },
+  "production_state": {
+    "registered_format_count": 0,
+    "firmware_compile_gate_enabled": false,
+    "materialized_runtime_profile_count": 0,
+    "materialized_campaign_action_count": 0,
+    "runtime_waveform_firmware_binary_generated": false,
+    "authorization_token_generated": false,
+    "hardware_execution_eligible": false,
+    "execution_ready": false,
+    "visible_refresh_authorized": false
+  },
+  "tests": {
+    "p0_through_p3_runtime_waveform": {
+      "passed": 57,
+      "failed": 0,
+      "skipped": 0,
+      "exit_code": 0
+    },
+    "runtime_waveform_stm32_audit_and_repo_contract": {
+      "passed": 93,
+      "failed": 0,
+      "skipped": 0,
+      "exit_code": 0
+    },
+    "ec5_recovery_adjacent_after_required_rebuild": {
+      "passed": 52,
+      "failed": 0,
+      "skipped": 1,
+      "exit_code": 0
+    },
+    "final_combined": {
+      "passed": 145,
+      "failed": 0,
+      "skipped": 1,
+      "exit_code": 0
+    },
+    "resolved_environment_only_failure": {
+      "initial_passed": 51,
+      "initial_failed": 1,
+      "initial_skipped": 1,
+      "initial_exit_code": 1,
+      "failure": "recovery firmware.bin/firmware.elf absent after the other PlatformIO configuration reused and cleaned .pio/build",
+      "resolution": "rebuild the recovery environment, verify its exact binary identity, then rerun the full adjacent group",
+      "production_code_failure": false
+    },
+    "ruff_exit_code": 0,
+    "py_compile_exit_code": 0,
+    "stm32_compatibility_ready": false,
+    "stm32_hardware_accessed": false,
+    "stm32_network_accessed": false,
+    "stm32_serial_accessed": false,
+    "stm32_waveform_decrypted": false
+  },
+  "builds": {
+    "default_current_worktree": {
+      "environment": "esp32-s3-devkitc-1",
+      "success": true,
+      "reproduced_twice_in_p4": true,
+      "firmware_bytes": 815744,
+      "firmware_sha256": "7f7468d36768b50b4f1a403905270b023ad72ed7390984c18b117a60efd66480",
+      "runtime_waveform_sources_in_build": false,
+      "note": "This reproducible current-worktree identity differs from the 2026-08-09 source-era 611cf5c0...daf9 identity. P0b-P4 changed no src/ or PlatformIO file and this build is not a substitute for the frozen RC2G artifact."
+    },
+    "ec5_color_lab_recovery": {
+      "environment": "esp32-s3-devkitc-1-ec5-color-lab-recovery",
+      "success": true,
+      "firmware_bytes": 791616,
+      "firmware_sha256": "f8f86fcada49a327f6a797f7b29e69888b740b0045b5fb407894f8efedc7e793",
+      "matches_current_measured_firmware_identity": true,
+      "runtime_waveform_sources_in_build": false
+    },
+    "upload_performed": false,
+    "serial_port_opened": false,
+    "device_network_accessed": false
+  },
+  "placeholder_campaign": {
+    "path": ".test-output/offline/MF1750_RUNTIME_WAVEFORM_PLACEHOLDER_CAMPAIGN_20260810_V1",
+    "file_count": 9,
+    "action_count": 12,
+    "materialized_action_count": 0,
+    "campaign_canonical_sha256": "440060467661ee04048f4301bbe263a6c48dc9232c75782083bfbe8957aff5d4",
+    "campaign_file_sha256": "d6bc261a3130255649deb915b2407fae171b3415c61e89e40c96e19f2d377080",
+    "layout_file_sha256": "e8a442731ec2c9ffea0bc8c0a4f2dc9a05a6c7c812c613d37818f05ea3ac1362",
+    "action_dag_file_sha256": "2c88f392beefeadba34cf5b4489e811156341c0d473947df54f202ecd242f2a9",
+    "sha256sums_file_sha256": "aad06b3ccd9f58dbd674a8c4bf5ea444aff47a211a928206d2d5008d79d874c1",
+    "firmware_binary_generated": false,
+    "visible_refresh_authorized": false
+  },
+  "source_sha256": {
+    "host/runtime_waveform/__init__.py": "2a7d7cf80282b4343837ecad7131f3acf5d3922bc21b19bc50fd6dc74e3dc921",
+    "host/runtime_waveform/contracts.py": "c1462dda4fa329033a57f5f6fd8f9ab1f6c27ef3ae9ef737315cd3d58ea1cfa9",
+    "host/runtime_waveform/virtual_palette.py": "26f6b39f7524f5f81f0adf9eb5c0f60ed8f19d5cfa3c812334586279449fa1c5",
+    "host/runtime_waveform/format_registry.py": "88b905ab94fd9d85574774036bedb0978715cbf12ed39f44baf32d20ae65c980",
+    "host/runtime_waveform/evidence.py": "9fcd3e2cafd332c78f6f16d793676fb3c6947bf82e769a0966c59130b1700c30",
+    "host/runtime_waveform/execution_plan.py": "b030e42e3320a0ea98874a2a556151897202b57ee0bedd83cb7541e9891bce19",
+    "host/runtime_waveform/transport_state_machine.py": "a8edfe8e9e3375e60e9defebe1cdd53626c47357e704f7a08a4030ad957cd680",
+    "host/runtime_waveform/campaign.py": "39d790c65080df98b50be0771b9ba661e274438ec219d732681c8ff8f732d39a",
+    "tools/mf1750_runtime_waveform_contract.py": "14a67cc40ae681a5885dae02386de227af0cffe2d8c0fc3552d59fbb46285df7",
+    "tools/mf1750_runtime_waveform_campaign.py": "d8646cd488328dfd3239e46eacad812cb5e853d3ace79c382526038bf4b571d2",
+    "tests/runtime_waveform_fixture.py": "28a7a714558a7bc7c5607c7b29084994703fee03ab7c49e14fd503fec16f6ee4",
+    "tests/test_runtime_waveform_contract.py": "a1877c3adef09ed30970028e10fed3953c93f8a926bf62d8a19f644ff50a2697",
+    "tests/test_runtime_waveform_evidence.py": "f81ac78d1cfd1d7a72df10976b369b773fa71d4937662f15f1c478d75bc2db52",
+    "tests/test_runtime_waveform_execution_plan.py": "c231a317592076c65b1ba8769234369a945522950c9cb835c873a70707693665",
+    "tests/test_runtime_waveform_transport_state_machine.py": "70ce960249d5c1ac64980fa01dc29a81f718b87a48b8f58142bc2cfa5ccf032f",
+    "tests/test_runtime_waveform_campaign.py": "8a119f902e25723fb5fab83e66d8747f18ea44b489ce99e95e4e719992c50564"
+  },
+  "external_hard_blockers": [
+    "exact current panel serial/batch and both controller revisions with matching statement",
+    "plaintext decoded current-panel 3-bit profile or portable loadWF source/ESP32 ABI",
+    "documented 0x20/0x21 fields, exact lengths, controller targets, and order",
+    "approved VCOM/high-voltage/PLL/frame/phase/temperature limits and tolerances",
+    "K0 OTP-equivalent runtime profile plus byte/optical/electrical equivalence method",
+    "validated runtime-to-OTP recovery semantics and white recovery contract",
+    "readback or vendor-approved count/hash integrity substitute",
+    "sacrificial panel, current limiting, live current/temperature monitoring, and physical cutoff",
+    "independent vendor/panel-owner review identity and conclusion"
+  ],
+  "safety": {
+    "j2_last_user_confirmed_state": "OFF",
+    "panel_last_user_confirmed_state": "clean_white",
+    "hardware_accessed": false,
+    "com8_accessed": false,
+    "device_network_accessed": false,
+    "firmware_uploaded": false,
+    "visible_refresh_performed": false,
+    "authorization_consumed": false,
+    "lut_or_electrical_parameters_inferred": false
+  },
+  "next_entry": "docs/STATUS_HANDOFF.md",
+  "next_action": "When all external inputs arrive, stop and return them for independent high-level review before any live firmware implementation or panel plan."
+}

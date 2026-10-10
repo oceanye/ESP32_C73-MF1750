@@ -1,0 +1,2 @@
+#define MF1750_RUNTIME_LUT_HUE_BRIGHTNESS_BLUE_V1_BUILD 1
+#include "ec5_runtime_lut_cross_palette_v1_main.cpp"

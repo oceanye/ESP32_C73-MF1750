@@ -1,0 +1,65 @@
+** Drc report for mf1750_devkitc_b1_single_power_layer.kicad_pcb **
+** Created on 2026-08-13T20:40:19 **
+** Report includes: Errors, Warnings, Exclusions **
+
+** Found 13 DRC violations **
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0123 mm)
+    Local override; error
+    @(26.7365 mm, 31.2877 mm): Via [/VDD] on F.Cu - B.Cu
+    @(5.5000 mm, 32.0000 mm): Track [/V_B] on In2.Cu, length 32.3625 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1687 mm)
+    Local override; error
+    @(5.5000 mm, 32.0000 mm): Track [/V_B] on In2.Cu, length 32.3625 mm
+    @(38.5200 mm, 33.1400 mm): PTH pad 31 [unconnected-(J2-J3-14_GPIO0-Pad31)] of J2
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1687 mm)
+    Local override; error
+    @(38.5200 mm, 33.1400 mm): PTH pad 31 [unconnected-(J2-J3-14_GPIO0-Pad31)] of J2
+    @(37.8625 mm, 28.4500 mm): Track [/V_B] on In2.Cu, length 3.5500 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1405 mm)
+    Local override; error
+    @(8.0400 mm, 33.1400 mm): PTH pad 43 [unconnected-(J2-J3-2_GPIO43/TX-Pad43)] of J2
+    @(8.4750 mm, 27.5000 mm): Track [/V_B] on In2.Cu, length 4.5000 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1400 mm)
+    Local override; error
+    @(5.5000 mm, 33.1400 mm): PTH pad 44 [/GND] of J2
+    @(5.5000 mm, 29.2250 mm): Track [/V_B] on In2.Cu, length 2.7750 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0728 mm)
+    Local override; error
+    @(8.0400 mm, 33.1400 mm): PTH pad 43 [unconnected-(J2-J3-2_GPIO43/TX-Pad43)] of J2
+    @(11.0000 mm, 33.0000 mm): Track [/V_B] on In2.Cu, length 2.7158 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /V_B 和 unconnected-(J2-J3-3_GPIO44{slash}RX-Pad42))
+    Local override; error
+    @(11.0000 mm, 41.5000 mm): Track [/V_B] on In2.Cu, length 8.5000 mm
+    @(10.5800 mm, 33.1400 mm): PTH pad 42 [unconnected-(J2-J3-3_GPIO44/RX-Pad42)] of J2
+[shorting_items]: 短路了两个不同网络的项目 (网络 /V_B 和 /PREVGL)
+    Local override; error
+    @(5.5000 mm, 32.0000 mm): Track [/V_B] on In2.Cu, length 32.3625 mm
+    @(18.4926 mm, 31.8909 mm): Via [/PREVGL] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /V_B 和 /VDDIO)
+    Local override; error
+    @(5.5000 mm, 32.0000 mm): Track [/V_B] on In2.Cu, length 32.3625 mm
+    @(27.5524 mm, 31.9222 mm): Via [/VDDIO] on F.Cu - B.Cu
+[lib_footprint_issues]: 当前配置中不包含封装库 'MF1750_Production'
+    Local override; warning
+    @(31.0000 mm, 5.0000 mm): Footprint J1
+[lib_footprint_issues]: 当前配置中不包含封装库 'MF1750_Production'
+    Local override; warning
+    @(9.5000 mm, 27.5000 mm): Footprint L1
+[lib_footprint_issues]: 当前配置中不包含封装库 'MF1750_Production'
+    Local override; warning
+    @(46.0000 mm, 27.5000 mm): Footprint L2
+[lib_footprint_issues]: 当前配置中不包含封装库 'MF1750_Compact'
+    Local override; warning
+    @(5.5000 mm, 56.0000 mm): Footprint J2
+
+** Found 0 unconnected pads **
+
+** Found 0 Footprint errors **
+
+** Ignored checks **
+    - Tuning profile track geometries
+    - Silkscreen clearance
+    - Silkscreen clipped by solder mask
+    - Footprint doesn't match copy in library
+
+** End of Report **

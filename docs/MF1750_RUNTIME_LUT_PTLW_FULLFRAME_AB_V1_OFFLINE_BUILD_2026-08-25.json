@@ -1,0 +1,56 @@
+{
+  "schema": "mf1750-offline-build-record-v1",
+  "created_at": "2026-08-25T18:47:42+08:00",
+  "variant": "L535_FACTORY_WHITE_PTLW_FULLFRAME_AB_V1",
+  "contract_id": "9e7414f483174cc74fa8adca9c1c2ea4c23c3250f84882969f34e87efb25a8fa",
+  "environment": "ec5_runtime_lut_ptlw_fullframe_ab_v1",
+  "platformio_config": "platformio.runtime_lut_ptlw_fullframe_ab_v1.ini",
+  "build_command": "platformio run -c platformio.runtime_lut_ptlw_fullframe_ab_v1.ini -e ec5_runtime_lut_ptlw_fullframe_ab_v1",
+  "clean_build": true,
+  "build_succeeded": true,
+  "offline_only": true,
+  "hardware_accessed": false,
+  "device_network_accessed": false,
+  "serial_or_com_accessed": false,
+  "relay_accessed": false,
+  "firmware_flashed": false,
+  "device_reset": false,
+  "display_refreshed": false,
+  "artifacts": {
+    "firmware.bin": {
+      "bytes": 799408,
+      "sha256": "6e42e3b08ec8053a3efea3e4f12d334dc246abb99576454188136391fa1130fb"
+    },
+    "firmware.elf": {
+      "bytes": 13301880,
+      "sha256": "b64d7216ff240df3a736542418cf263c0112bc03469388798e19c1fb34dcc405"
+    }
+  },
+  "source_sha256": {
+    "platformio.runtime_lut_ptlw_fullframe_ab_v1.ini": "2e9fd5f50d4ed22a2a4c256dc301625b908560e53f5a32e861cbf878984c01c5",
+    "src/ec5_runtime_lut_ptlw_fullframe_ab_v1_epd_driver.cpp": "90f1fdd88b33a446a949ff6d3ba303992e5cb2314569eb24f0ecd790b582196a",
+    "src/ec5_runtime_lut_ptlw_fullframe_ab_v1_driver.inc": "1ac164d913798d746962c61ec4940a930017217dd6999cb2041957e13adbf1db",
+    "src/ec5_runtime_lut_ptlw_fullframe_ab_v1_main.cpp": "5a2b962736fa5d12a312931a38372af0411c4d8dbe97ddbfb8436d1de299d647",
+    "src/ec5_runtime_lut_ptlw_fullframe_ab_v1_program.inc": "0055b94a3df4904f21a653c323365b1f8410e2d9c0f2ff8d7b3b0d4e4b34f60b",
+    "src/ec5_runtime_lut_ptlw_fullframe_ab_v1_identity.inc": "5441fd605dc311e7674726150538d9ecfe10024184a9c23a48bd1b25ba775b3d",
+    "src/ec5_runtime_lut_ptlw_fullframe_ab_v1_main_config.inc": "22739b26adf5444fe0f322341e4d4c5319f688002f3b398fdc62fc5a472598ba",
+    "src/epd_driver.cpp": "386acdd3e2fef3d22e4b97551330d310b86d1aafc5085df35a676e9b8dad2f6c",
+    "src/ec5_chroma_grid_epd_driver.h": "d1788eb691b3dcaf5bd62a82721de8032f20bbb29e5cf52ff97e7ec4d03e0b6a",
+    "src/epd_config.h": "e8b13cf413192f344db27ec34491d0a764adb3a126173ac126c1774d418f1a8d",
+    "src/ec5_factory_otp_white_recovery_driver.inc": "99b610de70989e82fdaea709f015410af52afd99654eacc05ce2c22d7c9c7aaf",
+    "src/generated/spd1657_legacy_535_reference.inc": "cb40342fb212e232d1cfe789f60ccba9823bb0e35148f5cf916681e0c8991881",
+    "tools/mf1750_runtime_lut_ptlw_fullframe_ab_v1_pack.py": "8b09b3c44f5d48f1209a8e59eda0cbf95cd0323789348a3ab343120ba16ecaac",
+    "tools/mf1750_runtime_lut_ptlw_fullframe_ab_v1_once.py": "158abc147e160dc5d68526e9fb2fd639b6a89851160d54039e590cd677199c83",
+    "tests/test_mf1750_runtime_lut_ptlw_fullframe_ab_v1_pack.py": "ae840025085a3c9802233979d45e714abcab0b90e5d8b57899322c1029f91638",
+    "tests/test_mf1750_runtime_lut_ptlw_fullframe_ab_v1_firmware.py": "342aafd28629c6c3fbf10b093306998742ba1b63498b65968ae61e12937e9f04"
+  },
+  "verification": {
+    "dedicated_pytest": "12 passed",
+    "reference_and_prior_partial_regression_pytest": "43 passed",
+    "ruff": "passed",
+    "python_compile": "passed",
+    "runner_describe": "passed",
+    "artifact_binding": "BIN and ELF verified",
+    "live_panel_result": "not_run"
+  }
+}

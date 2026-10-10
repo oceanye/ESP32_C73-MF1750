@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "kind": "mf1750-rc2g-busyedge-offline-build-record",
+  "recorded_at": "2026-08-07T10:43:25+08:00",
+  "firmware_build_tag": "MF1750_DRIVER_RC2G_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_PHYSICAL_BUSYEDGE_2026-08-07",
+  "driver_api_version": "MF1750_R16_CASCADE_V3",
+  "git": {
+    "head": "172840c091bd963633860b5dfde6f327d30ab665",
+    "branch": "main",
+    "worktree_dirty": true,
+    "note": "The exact source candidate is identified by the file hashes below; Git HEAD alone is not sufficient."
+  },
+  "toolchain": {
+    "platformio_core": "6.1.19",
+    "environment": "esp32-s3-devkitc-1"
+  },
+  "source_sha256": {
+    "src/epd_driver.cpp": "d0e1f1418b6c714e717e64800d49ee0b7503e907cf1ce556f0f1fafe0a952a18",
+    "src/epd_driver.h": "de5394f2fae5c0bc1035d166b2479b8cb36f8b4889cf6192b064ae832a819f9c",
+    "src/main.cpp": "95b2a57024d5f5dea3c55cd4983aedd9b1704b08020f2827946d8993dc1c67dd",
+    "src/epd_config.h": "e8b13cf413192f344db27ec34491d0a764adb3a126173ac126c1774d418f1a8d",
+    "platformio.ini": "1795eec910bd4fad470b8182b503e4b36fe5749e16c381b8bb4863333743a942"
+  },
+  "artifacts": {
+    ".pio/build/esp32-s3-devkitc-1/firmware.bin": {
+      "bytes": 815664,
+      "sha256": "9df89715385f98892549d24b57a6b139fb0844e9cea52ef4fd2c961d6b0cd772"
+    },
+    ".pio/build/esp32-s3-devkitc-1/firmware.elf": {
+      "bytes": 13378772,
+      "sha256": "b59313fbac39ba0de92ecdbabacbaabbc01f53945a1b658f962ed70833bf79f6"
+    }
+  },
+  "instrumentation_scope": [
+    "PON/DRF/POF idle-before-command gates",
+    "new BUSY assertion after an idle command boundary",
+    "safe-finish BUSY samples before and after panel-facing pins are driven low",
+    "final BUSY/RST/CS1/CS2 GPIO snapshot"
+  ],
+  "unchanged_panel_contract": [
+    "1 MHz refresh SPI",
+    "1024x600 canonical frame",
+    "physical color codes 0/1/2/3/5/6",
+    "controller mapping CS1=left and CS2=right",
+    "initialization, CCSET, DTM, waveform and high-voltage command data",
+    "post-POF PSR and panel-pin-low shutdown sequence"
+  ],
+  "contains_local_wifi_configuration": true,
+  "distribution_allowed": false,
+  "compiled": true,
+  "flashed": false,
+  "device_io_performed": false,
+  "hardware_tested": false,
+  "hardware_qualified": false,
+  "qualification_note": "This record freezes an offline candidate only. Recompute the binary hash immediately before flashing and require exact equality."
+}

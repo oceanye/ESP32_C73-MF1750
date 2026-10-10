@@ -638,7 +638,6 @@ def deterministic_test_id(
     return f"MF1750-{stage.upper()}-{case.upper()}-R{repeat:03d}-{suffix}"
 
 
-@lru_cache(maxsize=None)
 def build_artifact(pattern: str, repetition: int = 1) -> OfflineFrameArtifact:
     """Generate one named offline artifact without filesystem or device I/O."""
 
@@ -647,6 +646,12 @@ def build_artifact(pattern: str, repetition: int = 1) -> OfflineFrameArtifact:
         raise ExtendedColorContractError(
             f"unknown pattern {pattern!r}; choose one of {PATTERN_NAMES}"
         )
+    return _build_artifact_cached(pattern, repeat)
+
+
+@lru_cache(maxsize=None)
+def _build_artifact_cached(pattern: str, repeat: int) -> OfflineFrameArtifact:
+    """Cache only after public arguments have passed strict type validation."""
 
     if pattern.startswith("solid-"):
         name = pattern.removeprefix("solid-")

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Apply the Rev A1 Q1/D2 electrical corrections and re-export production data.
 
 The original Rev A prototype assigned Q1 pads as 1=S, 2=G, 3=D.  Vishay's
@@ -9,7 +7,7 @@ routed board, corrects those pad nets/orientations, replaces only the short
 local Q1 routes, and then runs the normal ERC/DRC/parity/export pipeline.
 """
 
-from pathlib import Path
+from __future__ import annotations
 
 import generate_mf1750_production_v1 as design
 import route_mf1750_production_v1 as route

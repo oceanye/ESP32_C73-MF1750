@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "kind": "mf1750-gamut-profile",
+  "profile_id": "synthetic-reference-linear-xyz-v1",
+  "profile_version": "1.0.0",
+  "pipeline_compatibility": {
+    "color_pipeline_version": "2.0.0",
+    "gamut_mapper_version": "1.0.0"
+  },
+  "palette": {
+    "id": "reference-srgb-v1",
+    "canonical_sha256": "181770a2de3bb23bcc31666573279c8cde8225d2f4c27a24c9c1345dba54965e"
+  },
+  "model": {
+    "kind": "linear_xyz_convex_v1",
+    "characterization_level": "reference",
+    "approximation": true,
+    "pure_sample_refs": [
+      {
+        "code": 0,
+        "sample_id": "reference-srgb-v1-code-0",
+        "artifact_sha256": null
+      },
+      {
+        "code": 1,
+        "sample_id": "reference-srgb-v1-code-1",
+        "artifact_sha256": null
+      },
+      {
+        "code": 2,
+        "sample_id": "reference-srgb-v1-code-2",
+        "artifact_sha256": null
+      },
+      {
+        "code": 3,
+        "sample_id": "reference-srgb-v1-code-3",
+        "artifact_sha256": null
+      },
+      {
+        "code": 5,
+        "sample_id": "reference-srgb-v1-code-5",
+        "artifact_sha256": null
+      },
+      {
+        "code": 6,
+        "sample_id": "reference-srgb-v1-code-6",
+        "artifact_sha256": null
+      }
+    ],
+    "mixture_samples": []
+  },
+  "measurement": {
+    "measurement_id": null,
+    "raw_artifact_sha256": null,
+    "units": "relative_cie_xyz_y1",
+    "illuminant": "D65",
+    "observer": "2deg",
+    "geometry": null,
+    "backing": null,
+    "instrument": null,
+    "instrument_calibration_date": null,
+    "measured_at": null
+  },
+  "panel": {
+    "model": "MF-17506-M009F-T",
+    "panel_id": null,
+    "batch": null
+  },
+  "firmware": {
+    "commit": null,
+    "waveform_version": null
+  },
+  "environment": {
+    "temperature_c": null,
+    "temperature_tolerance_c": null,
+    "relative_humidity_percent": null
+  },
+  "rendering_presets": {
+    "relative-colorimetric": {
+      "version": "1.0.0",
+      "tone_gamma": 1.0,
+      "compression_knee": 1.0,
+      "saturation_boost": 0.0,
+      "lightness_weight": 1.0,
+      "chroma_weight": 1.0,
+      "hue_weight": 1.0
+    },
+    "perceptual": {
+      "version": "1.0.0",
+      "tone_gamma": 0.92,
+      "compression_knee": 0.72,
+      "saturation_boost": 0.0,
+      "lightness_weight": 1.25,
+      "chroma_weight": 0.85,
+      "hue_weight": 1.35
+    },
+    "saturation": {
+      "version": "1.0.0",
+      "tone_gamma": 1.0,
+      "compression_knee": 0.88,
+      "saturation_boost": 0.18,
+      "lightness_weight": 0.8,
+      "chroma_weight": 1.5,
+      "hue_weight": 0.75
+    }
+  },
+  "trust": {
+    "fingerprint_trust": "audit fingerprint only; not a digital signature or trust-store decision",
+    "source_statement": "Synthetic uncalibrated D65/2deg model derived only from the bound palette; offline monitor simulation, not MF-1750 measurement",
+    "signature": null
+  },
+  "canonical_sha256": "34d8b88386b19ad3717b2e7d54b1c3e072b424f186413c994eb175d1989ca2ee"
+}

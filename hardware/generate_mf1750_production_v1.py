@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Generate the MF-1750 production prototype KiCad project.
 
 This generator intentionally keeps the generated artefacts reproducible.  The
@@ -15,8 +13,9 @@ The generated PCB is an 80 mm x 75 mm, two-layer bring-up board.  Routing and
 manufacturing exports are completed by ``route_mf1750_production_v1.py``.
 """
 
+from __future__ import annotations
+
 import csv
-import json
 import re
 import sys
 import uuid
@@ -379,7 +378,7 @@ def fet_symbol(name: str, footprint: str) -> str:
             "\t\t\t(exclude_from_sim no)",
             "\t\t\t(in_bom yes)",
             "\t\t\t(on_board yes)",
-            f'\t\t\t(property "Reference" "Q" (at 0 -5.08 0) (effects (font (size 1.27 1.27))))',
+            '\t\t\t(property "Reference" "Q" (at 0 -5.08 0) (effects (font (size 1.27 1.27))))',
             f'\t\t\t(property "Value" "{name}" (at 0 5.08 0) (effects (font (size 1.27 1.27))))',
             f'\t\t\t(property "Footprint" "{footprint}" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))',
             f'\t\t\t(symbol "{name}_0_1"',

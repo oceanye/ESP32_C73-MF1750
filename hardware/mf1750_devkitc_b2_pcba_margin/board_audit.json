@@ -1,0 +1,2664 @@
+{
+  "board": "C:\\Users\\Ye\\PycharmProjects\\ESP32_C73\\hardware\\mf1750_devkitc_b2_pcba_margin\\mf1750_devkitc_b2_pcba_margin.kicad_pcb",
+  "board_sha256": "462e127279bacc894eab5e8cc242cd6d26e1d3ee87708ad398f8064b5a5c4238",
+  "checks": {
+    "assembly": {
+      "actual_dnp_refs": [
+        "R15"
+      ],
+      "actual_fit_smt_refs": [
+        "C0",
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5",
+        "C6",
+        "C7",
+        "C8",
+        "C9",
+        "C10",
+        "C11",
+        "C12",
+        "C13",
+        "C14",
+        "C15",
+        "C16",
+        "C17",
+        "C18",
+        "C19",
+        "C20",
+        "C21",
+        "C22",
+        "C23",
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "J1",
+        "L1",
+        "L2",
+        "Q1",
+        "Q2",
+        "R1",
+        "R2",
+        "R3",
+        "R4",
+        "R5",
+        "R6",
+        "R7",
+        "R8",
+        "R9",
+        "R10",
+        "R12",
+        "R13",
+        "R16"
+      ],
+      "actual_smt_layers": {
+        "C0": "F.Cu",
+        "C1": "F.Cu",
+        "C10": "F.Cu",
+        "C11": "F.Cu",
+        "C12": "F.Cu",
+        "C13": "F.Cu",
+        "C14": "F.Cu",
+        "C15": "F.Cu",
+        "C16": "F.Cu",
+        "C17": "F.Cu",
+        "C18": "F.Cu",
+        "C19": "F.Cu",
+        "C2": "F.Cu",
+        "C20": "F.Cu",
+        "C21": "F.Cu",
+        "C22": "F.Cu",
+        "C23": "F.Cu",
+        "C3": "F.Cu",
+        "C4": "F.Cu",
+        "C5": "F.Cu",
+        "C6": "F.Cu",
+        "C7": "F.Cu",
+        "C8": "F.Cu",
+        "C9": "F.Cu",
+        "D1": "F.Cu",
+        "D2": "F.Cu",
+        "D3": "F.Cu",
+        "D4": "F.Cu",
+        "J1": "F.Cu",
+        "L1": "F.Cu",
+        "L2": "F.Cu",
+        "Q1": "F.Cu",
+        "Q2": "F.Cu",
+        "R1": "F.Cu",
+        "R10": "F.Cu",
+        "R12": "F.Cu",
+        "R13": "F.Cu",
+        "R16": "F.Cu",
+        "R2": "F.Cu",
+        "R3": "F.Cu",
+        "R4": "F.Cu",
+        "R5": "F.Cu",
+        "R6": "F.Cu",
+        "R7": "F.Cu",
+        "R8": "F.Cu",
+        "R9": "F.Cu"
+      },
+      "allowed_smt_layers": [
+        "F.Cu"
+      ],
+      "errors": [],
+      "expected_dnp_refs": [
+        "R15"
+      ],
+      "expected_fit_smt_refs": [
+        "C0",
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5",
+        "C6",
+        "C7",
+        "C8",
+        "C9",
+        "C10",
+        "C11",
+        "C12",
+        "C13",
+        "C14",
+        "C15",
+        "C16",
+        "C17",
+        "C18",
+        "C19",
+        "C20",
+        "C21",
+        "C22",
+        "C23",
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "J1",
+        "L1",
+        "L2",
+        "Q1",
+        "Q2",
+        "R1",
+        "R2",
+        "R3",
+        "R4",
+        "R5",
+        "R6",
+        "R7",
+        "R8",
+        "R9",
+        "R10",
+        "R12",
+        "R13",
+        "R16"
+      ],
+      "fit_smt_count": 46,
+      "manual_refs": [
+        "J2",
+        "J3"
+      ],
+      "nonassembly_refs": [
+        "H1",
+        "H2",
+        "TP1",
+        "TP2",
+        "TP3",
+        "TP4",
+        "TP5",
+        "TP6",
+        "TP7",
+        "TP8",
+        "TP9",
+        "TP10"
+      ],
+      "required_fit_refs": [
+        "C0",
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5",
+        "C6",
+        "C7",
+        "C8",
+        "C9",
+        "C10",
+        "C11",
+        "C12",
+        "C13",
+        "C14",
+        "C15",
+        "C16",
+        "C17",
+        "C18",
+        "C19",
+        "C20",
+        "C21",
+        "C22",
+        "C23",
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "J1",
+        "J2",
+        "J3",
+        "L1",
+        "L2",
+        "Q1",
+        "Q2",
+        "R1",
+        "R2",
+        "R3",
+        "R4",
+        "R5",
+        "R6",
+        "R7",
+        "R8",
+        "R9",
+        "R10",
+        "R12",
+        "R13",
+        "R16"
+      ],
+      "status": "PASS"
+    },
+    "body_edge": {
+      "edge_bounds_mm": {
+        "bottom": 60.5,
+        "left": 0.0,
+        "right": 65.0,
+        "top": 0.0
+      },
+      "errors": [],
+      "failed_references": [],
+      "geometry_kind": "fab",
+      "geometry_layers_by_side": {
+        "B.Cu": "B.Fab",
+        "F.Cu": "F.Fab"
+      },
+      "observed_minimum_clearance_mm": 3.55,
+      "observed_minimum_location": {
+        "reference": "C0",
+        "side": "left"
+      },
+      "per_reference": {
+        "C0": {
+          "clearance_mm": {
+            "bottom": 28.65,
+            "left": 3.55,
+            "right": 60.55,
+            "top": 30.15
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 31.85,
+            "left": 3.55,
+            "right": 4.45,
+            "top": 30.15
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 3.55,
+          "status": "PASS"
+        },
+        "C1": {
+          "clearance_mm": {
+            "bottom": 35.55,
+            "left": 41.15,
+            "right": 22.15,
+            "top": 24.05
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 24.95,
+            "left": 41.15,
+            "right": 42.85,
+            "top": 24.05
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 22.15,
+          "status": "PASS"
+        },
+        "C10": {
+          "clearance_mm": {
+            "bottom": 41.85,
+            "left": 29.2,
+            "right": 33.2,
+            "top": 15.35
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 18.65,
+            "left": 29.2,
+            "right": 31.8,
+            "top": 15.35
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 15.35,
+          "status": "PASS"
+        },
+        "C11": {
+          "clearance_mm": {
+            "bottom": 41.85,
+            "left": 33.2,
+            "right": 29.2,
+            "top": 15.35
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 18.65,
+            "left": 33.2,
+            "right": 35.8,
+            "top": 15.35
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 15.35,
+          "status": "PASS"
+        },
+        "C12": {
+          "clearance_mm": {
+            "bottom": 41.85,
+            "left": 37.2,
+            "right": 25.2,
+            "top": 15.35
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 18.65,
+            "left": 37.2,
+            "right": 39.8,
+            "top": 15.35
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 15.35,
+          "status": "PASS"
+        },
+        "C13": {
+          "clearance_mm": {
+            "bottom": 42.95,
+            "left": 5.325,
+            "right": 58.325,
+            "top": 15.45
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 17.55,
+            "left": 5.325,
+            "right": 6.675,
+            "top": 15.45
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 5.325,
+          "status": "PASS"
+        },
+        "C14": {
+          "clearance_mm": {
+            "bottom": 42.35,
+            "left": 9.2,
+            "right": 53.2,
+            "top": 14.85
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 18.15,
+            "left": 9.2,
+            "right": 11.8,
+            "top": 14.85
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 9.2,
+          "status": "PASS"
+        },
+        "C15": {
+          "clearance_mm": {
+            "bottom": 40.35,
+            "left": 57.7,
+            "right": 4.7,
+            "top": 16.85
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 20.15,
+            "left": 57.7,
+            "right": 60.3,
+            "top": 16.85
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 4.7,
+          "status": "PASS"
+        },
+        "C16": {
+          "clearance_mm": {
+            "bottom": 35.825,
+            "left": 56.45,
+            "right": 6.45,
+            "top": 23.325
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 24.675,
+            "left": 56.45,
+            "right": 58.55,
+            "top": 23.325
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 6.45,
+          "status": "PASS"
+        },
+        "C17": {
+          "clearance_mm": {
+            "bottom": 35.825,
+            "left": 52.45,
+            "right": 10.45,
+            "top": 23.325
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 24.675,
+            "left": 52.45,
+            "right": 54.55,
+            "top": 23.325
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 10.45,
+          "status": "PASS"
+        },
+        "C18": {
+          "clearance_mm": {
+            "bottom": 35.325,
+            "left": 48.45,
+            "right": 14.45,
+            "top": 23.825
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 25.175,
+            "left": 48.45,
+            "right": 50.55,
+            "top": 23.825
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 14.45,
+          "status": "PASS"
+        },
+        "C19": {
+          "clearance_mm": {
+            "bottom": 35.825,
+            "left": 44.45,
+            "right": 18.45,
+            "top": 23.325
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 24.675,
+            "left": 44.45,
+            "right": 46.55,
+            "top": 23.325
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 18.45,
+          "status": "PASS"
+        },
+        "C2": {
+          "clearance_mm": {
+            "bottom": 27.7,
+            "left": 21.35,
+            "right": 40.35,
+            "top": 30.2
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 32.8,
+            "left": 21.35,
+            "right": 24.65,
+            "top": 30.2
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 21.35,
+          "status": "PASS"
+        },
+        "C20": {
+          "clearance_mm": {
+            "bottom": 42.95,
+            "left": 45.825,
+            "right": 17.825,
+            "top": 15.45
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 17.55,
+            "left": 45.825,
+            "right": 47.175,
+            "top": 15.45
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 15.45,
+          "status": "PASS"
+        },
+        "C21": {
+          "clearance_mm": {
+            "bottom": 42.95,
+            "left": 42.325,
+            "right": 21.325,
+            "top": 15.45
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 17.55,
+            "left": 42.325,
+            "right": 43.675,
+            "top": 15.45
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 15.45,
+          "status": "PASS"
+        },
+        "C22": {
+          "clearance_mm": {
+            "bottom": 28.35,
+            "left": 33.65,
+            "right": 29.65,
+            "top": 31.25
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 32.15,
+            "left": 33.65,
+            "right": 35.35,
+            "top": 31.25
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 28.35,
+          "status": "PASS"
+        },
+        "C23": {
+          "clearance_mm": {
+            "bottom": 12.7,
+            "left": 11.85,
+            "right": 49.85,
+            "top": 45.2
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 47.8,
+            "left": 11.85,
+            "right": 15.15,
+            "top": 45.2
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 11.85,
+          "status": "PASS"
+        },
+        "C3": {
+          "clearance_mm": {
+            "bottom": 13.55,
+            "left": 26.65,
+            "right": 36.65,
+            "top": 46.05
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 46.95,
+            "left": 26.65,
+            "right": 28.35,
+            "top": 46.05
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 13.55,
+          "status": "PASS"
+        },
+        "C4": {
+          "clearance_mm": {
+            "bottom": 18.7,
+            "left": 3.85,
+            "right": 57.85,
+            "top": 39.2
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 41.8,
+            "left": 3.85,
+            "right": 7.15,
+            "top": 39.2
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 3.85,
+          "status": "PASS"
+        },
+        "C5": {
+          "clearance_mm": {
+            "bottom": 18.7,
+            "left": 20.35,
+            "right": 41.35,
+            "top": 39.2
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 41.8,
+            "left": 20.35,
+            "right": 23.65,
+            "top": 39.2
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 18.7,
+          "status": "PASS"
+        },
+        "C6": {
+          "clearance_mm": {
+            "bottom": 27.35,
+            "left": 58.7,
+            "right": 3.7,
+            "top": 29.85
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 33.15,
+            "left": 58.7,
+            "right": 61.3,
+            "top": 29.85
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 3.7,
+          "status": "PASS"
+        },
+        "C7": {
+          "clearance_mm": {
+            "bottom": 41.85,
+            "left": 17.2,
+            "right": 45.2,
+            "top": 15.35
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 18.65,
+            "left": 17.2,
+            "right": 19.8,
+            "top": 15.35
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 15.35,
+          "status": "PASS"
+        },
+        "C8": {
+          "clearance_mm": {
+            "bottom": 41.85,
+            "left": 21.2,
+            "right": 41.2,
+            "top": 15.35
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 18.65,
+            "left": 21.2,
+            "right": 23.8,
+            "top": 15.35
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 15.35,
+          "status": "PASS"
+        },
+        "C9": {
+          "clearance_mm": {
+            "bottom": 41.85,
+            "left": 25.2,
+            "right": 37.2,
+            "top": 15.35
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 18.65,
+            "left": 25.2,
+            "right": 27.8,
+            "top": 15.35
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 15.35,
+          "status": "PASS"
+        },
+        "D1": {
+          "clearance_mm": {
+            "bottom": 27.85,
+            "left": 15.85,
+            "right": 46.25,
+            "top": 30.75
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 32.65,
+            "left": 15.85,
+            "right": 18.75,
+            "top": 30.75
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 15.85,
+          "status": "PASS"
+        },
+        "D2": {
+          "clearance_mm": {
+            "bottom": 19.05,
+            "left": 9.55,
+            "right": 52.55,
+            "top": 39.55
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 41.45,
+            "left": 9.55,
+            "right": 12.45,
+            "top": 39.55
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 9.55,
+          "status": "PASS"
+        },
+        "D3": {
+          "clearance_mm": {
+            "bottom": 19.05,
+            "left": 15.05,
+            "right": 47.05,
+            "top": 39.55
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 41.45,
+            "left": 15.05,
+            "right": 17.95,
+            "top": 39.55
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 15.05,
+          "status": "PASS"
+        },
+        "D4": {
+          "clearance_mm": {
+            "bottom": 27.85,
+            "left": 52.55,
+            "right": 9.55,
+            "top": 30.75
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 32.65,
+            "left": 52.55,
+            "right": 55.45,
+            "top": 30.75
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 9.55,
+          "status": "PASS"
+        },
+        "J1": {
+          "clearance_mm": {
+            "bottom": 51.57,
+            "left": 17.2,
+            "right": 19.2,
+            "top": 3.92
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 8.93,
+            "left": 17.2,
+            "right": 45.8,
+            "top": 3.92
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 3.92,
+          "status": "PASS"
+        },
+        "L1": {
+          "clearance_mm": {
+            "bottom": 27.15,
+            "left": 6.4,
+            "right": 51.4,
+            "top": 26.65
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 33.35,
+            "left": 6.4,
+            "right": 13.6,
+            "top": 26.65
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 6.4,
+          "status": "PASS"
+        },
+        "L2": {
+          "clearance_mm": {
+            "bottom": 27.15,
+            "left": 42.9,
+            "right": 14.9,
+            "top": 26.65
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 33.35,
+            "left": 42.9,
+            "right": 50.1,
+            "top": 26.65
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 14.9,
+          "status": "PASS"
+        },
+        "Q1": {
+          "clearance_mm": {
+            "bottom": 32.325,
+            "left": 15.95,
+            "right": 46.95,
+            "top": 26.825
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 28.175,
+            "left": 15.95,
+            "right": 18.05,
+            "top": 26.825
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 15.95,
+          "status": "PASS"
+        },
+        "Q2": {
+          "clearance_mm": {
+            "bottom": 28.0,
+            "left": 38.65,
+            "right": 24.65,
+            "top": 29.5
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 32.5,
+            "left": 38.65,
+            "right": 40.35,
+            "top": 29.5
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 24.65,
+          "status": "PASS"
+        },
+        "R1": {
+          "clearance_mm": {
+            "bottom": 32.15,
+            "left": 19.35,
+            "right": 42.35,
+            "top": 26.65
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 28.35,
+            "left": 19.35,
+            "right": 22.65,
+            "top": 26.65
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 19.35,
+          "status": "PASS"
+        },
+        "R10": {
+          "clearance_mm": {
+            "bottom": 38.65,
+            "left": 46.0375,
+            "right": 18.0375,
+            "top": 20.15
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 21.85,
+            "left": 46.0375,
+            "right": 46.9625,
+            "top": 20.15
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 18.0375,
+          "status": "PASS"
+        },
+        "R12": {
+          "clearance_mm": {
+            "bottom": 45.5375,
+            "left": 49.65,
+            "right": 13.65,
+            "top": 14.0375
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 14.9625,
+            "left": 49.65,
+            "right": 51.35,
+            "top": 14.0375
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 13.65,
+          "status": "PASS"
+        },
+        "R13": {
+          "clearance_mm": {
+            "bottom": 45.5375,
+            "left": 53.65,
+            "right": 9.65,
+            "top": 14.0375
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 14.9625,
+            "left": 53.65,
+            "right": 55.35,
+            "top": 14.0375
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 9.65,
+          "status": "PASS"
+        },
+        "R16": {
+          "clearance_mm": {
+            "bottom": 19.5375,
+            "left": 39.65,
+            "right": 23.65,
+            "top": 40.0375
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 40.9625,
+            "left": 39.65,
+            "right": 41.35,
+            "top": 40.0375
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 19.5375,
+          "status": "PASS"
+        },
+        "R2": {
+          "clearance_mm": {
+            "bottom": 43.15,
+            "left": 14.0375,
+            "right": 50.0375,
+            "top": 15.65
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 17.35,
+            "left": 14.0375,
+            "right": 14.9625,
+            "top": 15.65
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 14.0375,
+          "status": "PASS"
+        },
+        "R3": {
+          "clearance_mm": {
+            "bottom": 32.15,
+            "left": 55.85,
+            "right": 5.85,
+            "top": 26.65
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 28.35,
+            "left": 55.85,
+            "right": 59.15,
+            "top": 26.65
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 5.85,
+          "status": "PASS"
+        },
+        "R4": {
+          "clearance_mm": {
+            "bottom": 13.5375,
+            "left": 3.65,
+            "right": 59.65,
+            "top": 46.0375
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 46.9625,
+            "left": 3.65,
+            "right": 5.35,
+            "top": 46.0375
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 3.65,
+          "status": "PASS"
+        },
+        "R5": {
+          "clearance_mm": {
+            "bottom": 28.15,
+            "left": 27.0375,
+            "right": 37.0375,
+            "top": 30.65
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 32.35,
+            "left": 27.0375,
+            "right": 27.9625,
+            "top": 30.65
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 27.0375,
+          "status": "PASS"
+        },
+        "R6": {
+          "clearance_mm": {
+            "bottom": 13.5375,
+            "left": 18.15,
+            "right": 45.15,
+            "top": 46.0375
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 46.9625,
+            "left": 18.15,
+            "right": 19.85,
+            "top": 46.0375
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 13.5375,
+          "status": "PASS"
+        },
+        "R7": {
+          "clearance_mm": {
+            "bottom": 13.5375,
+            "left": 22.15,
+            "right": 41.15,
+            "top": 46.0375
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 46.9625,
+            "left": 22.15,
+            "right": 23.85,
+            "top": 46.0375
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 13.5375,
+          "status": "PASS"
+        },
+        "R8": {
+          "clearance_mm": {
+            "bottom": 13.5375,
+            "left": 7.65,
+            "right": 55.65,
+            "top": 46.0375
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 46.9625,
+            "left": 7.65,
+            "right": 9.35,
+            "top": 46.0375
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 7.65,
+          "status": "PASS"
+        },
+        "R9": {
+          "clearance_mm": {
+            "bottom": 38.65,
+            "left": 42.5375,
+            "right": 21.5375,
+            "top": 20.15
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 21.85,
+            "left": 42.5375,
+            "right": 43.4625,
+            "top": 20.15
+          },
+          "geometry_layer": "F.Fab",
+          "minimum_clearance_mm": 20.15,
+          "status": "PASS"
+        }
+      },
+      "required_minimum_clearance_mm": 2.5,
+      "status": "PASS"
+    },
+    "copper_layers": {
+      "actual": [
+        "F.Cu",
+        "In1.Cu",
+        "In2.Cu",
+        "B.Cu"
+      ],
+      "count": 4,
+      "errors": [],
+      "expected": [
+        "F.Cu",
+        "In1.Cu",
+        "In2.Cu",
+        "B.Cu"
+      ],
+      "status": "PASS"
+    },
+    "courtyard_edge": {
+      "edge_bounds_mm": {
+        "bottom": 60.5,
+        "left": 0.0,
+        "right": 65.0,
+        "top": 0.0
+      },
+      "errors": [],
+      "failed_references": [],
+      "geometry_kind": "courtyard",
+      "geometry_layers_by_side": {
+        "B.Cu": "B.CrtYd",
+        "F.Cu": "F.CrtYd"
+      },
+      "observed_minimum_clearance_mm": 2.995,
+      "observed_minimum_location": {
+        "reference": "R4",
+        "side": "left"
+      },
+      "per_reference": {
+        "C0": {
+          "clearance_mm": {
+            "bottom": 27.995,
+            "left": 3.245,
+            "right": 60.245,
+            "top": 29.495
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 32.505,
+            "left": 3.245,
+            "right": 4.755,
+            "top": 29.495
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 3.245,
+          "status": "PASS"
+        },
+        "C1": {
+          "clearance_mm": {
+            "bottom": 35.245,
+            "left": 40.495,
+            "right": 21.495,
+            "top": 23.745
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 25.255,
+            "left": 40.495,
+            "right": 43.505,
+            "top": 23.745
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 21.495,
+          "status": "PASS"
+        },
+        "C10": {
+          "clearance_mm": {
+            "bottom": 41.175,
+            "left": 28.875,
+            "right": 32.875,
+            "top": 14.675
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 19.325,
+            "left": 28.875,
+            "right": 32.125,
+            "top": 14.675
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 14.675,
+          "status": "PASS"
+        },
+        "C11": {
+          "clearance_mm": {
+            "bottom": 41.175,
+            "left": 32.875,
+            "right": 28.875,
+            "top": 14.675
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 19.325,
+            "left": 32.875,
+            "right": 36.125,
+            "top": 14.675
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 14.675,
+          "status": "PASS"
+        },
+        "C12": {
+          "clearance_mm": {
+            "bottom": 41.175,
+            "left": 36.875,
+            "right": 24.875,
+            "top": 14.675
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 19.325,
+            "left": 36.875,
+            "right": 40.125,
+            "top": 14.675
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 14.675,
+          "status": "PASS"
+        },
+        "C13": {
+          "clearance_mm": {
+            "bottom": 42.275,
+            "left": 4.995,
+            "right": 57.995,
+            "top": 14.775
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 18.225,
+            "left": 4.995,
+            "right": 7.005,
+            "top": 14.775
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 4.995,
+          "status": "PASS"
+        },
+        "C14": {
+          "clearance_mm": {
+            "bottom": 41.675,
+            "left": 8.875,
+            "right": 52.875,
+            "top": 14.175
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 18.825,
+            "left": 8.875,
+            "right": 12.125,
+            "top": 14.175
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 8.875,
+          "status": "PASS"
+        },
+        "C15": {
+          "clearance_mm": {
+            "bottom": 39.675,
+            "left": 57.375,
+            "right": 4.375,
+            "top": 16.175
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 20.825,
+            "left": 57.375,
+            "right": 60.625,
+            "top": 16.175
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 4.375,
+          "status": "PASS"
+        },
+        "C16": {
+          "clearance_mm": {
+            "bottom": 35.495,
+            "left": 55.775,
+            "right": 5.775,
+            "top": 22.995
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 25.005,
+            "left": 55.775,
+            "right": 59.225,
+            "top": 22.995
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 5.775,
+          "status": "PASS"
+        },
+        "C17": {
+          "clearance_mm": {
+            "bottom": 35.495,
+            "left": 51.775,
+            "right": 9.775,
+            "top": 22.995
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 25.005,
+            "left": 51.775,
+            "right": 55.225,
+            "top": 22.995
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 9.775,
+          "status": "PASS"
+        },
+        "C18": {
+          "clearance_mm": {
+            "bottom": 34.995,
+            "left": 47.775,
+            "right": 13.775,
+            "top": 23.495
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 25.505,
+            "left": 47.775,
+            "right": 51.225,
+            "top": 23.495
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 13.775,
+          "status": "PASS"
+        },
+        "C19": {
+          "clearance_mm": {
+            "bottom": 35.495,
+            "left": 43.775,
+            "right": 17.775,
+            "top": 22.995
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 25.005,
+            "left": 43.775,
+            "right": 47.225,
+            "top": 22.995
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 17.775,
+          "status": "PASS"
+        },
+        "C2": {
+          "clearance_mm": {
+            "bottom": 27.375,
+            "left": 20.675,
+            "right": 39.675,
+            "top": 29.875
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 33.125,
+            "left": 20.675,
+            "right": 25.325,
+            "top": 29.875
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 20.675,
+          "status": "PASS"
+        },
+        "C20": {
+          "clearance_mm": {
+            "bottom": 42.275,
+            "left": 45.495,
+            "right": 17.495,
+            "top": 14.775
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 18.225,
+            "left": 45.495,
+            "right": 47.505,
+            "top": 14.775
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 14.775,
+          "status": "PASS"
+        },
+        "C21": {
+          "clearance_mm": {
+            "bottom": 42.275,
+            "left": 41.995,
+            "right": 20.995,
+            "top": 14.775
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 18.225,
+            "left": 41.995,
+            "right": 44.005,
+            "top": 14.775
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 14.775,
+          "status": "PASS"
+        },
+        "C22": {
+          "clearance_mm": {
+            "bottom": 28.045,
+            "left": 32.995,
+            "right": 28.995,
+            "top": 30.945
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 32.455,
+            "left": 32.995,
+            "right": 36.005,
+            "top": 30.945
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 28.045,
+          "status": "PASS"
+        },
+        "C23": {
+          "clearance_mm": {
+            "bottom": 12.375,
+            "left": 11.175,
+            "right": 49.175,
+            "top": 44.875
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 48.125,
+            "left": 11.175,
+            "right": 15.825,
+            "top": 44.875
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 11.175,
+          "status": "PASS"
+        },
+        "C3": {
+          "clearance_mm": {
+            "bottom": 13.245,
+            "left": 25.995,
+            "right": 35.995,
+            "top": 45.745
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 47.255,
+            "left": 25.995,
+            "right": 29.005,
+            "top": 45.745
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 13.245,
+          "status": "PASS"
+        },
+        "C4": {
+          "clearance_mm": {
+            "bottom": 18.375,
+            "left": 3.175,
+            "right": 57.175,
+            "top": 38.875
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 42.125,
+            "left": 3.175,
+            "right": 7.825,
+            "top": 38.875
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 3.175,
+          "status": "PASS"
+        },
+        "C5": {
+          "clearance_mm": {
+            "bottom": 18.375,
+            "left": 19.675,
+            "right": 40.675,
+            "top": 38.875
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 42.125,
+            "left": 19.675,
+            "right": 24.325,
+            "top": 38.875
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 18.375,
+          "status": "PASS"
+        },
+        "C6": {
+          "clearance_mm": {
+            "bottom": 26.675,
+            "left": 58.375,
+            "right": 3.375,
+            "top": 29.175
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 33.825,
+            "left": 58.375,
+            "right": 61.625,
+            "top": 29.175
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 3.375,
+          "status": "PASS"
+        },
+        "C7": {
+          "clearance_mm": {
+            "bottom": 41.175,
+            "left": 16.875,
+            "right": 44.875,
+            "top": 14.675
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 19.325,
+            "left": 16.875,
+            "right": 20.125,
+            "top": 14.675
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 14.675,
+          "status": "PASS"
+        },
+        "C8": {
+          "clearance_mm": {
+            "bottom": 41.175,
+            "left": 20.875,
+            "right": 40.875,
+            "top": 14.675
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 19.325,
+            "left": 20.875,
+            "right": 24.125,
+            "top": 14.675
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 14.675,
+          "status": "PASS"
+        },
+        "C9": {
+          "clearance_mm": {
+            "bottom": 41.175,
+            "left": 24.875,
+            "right": 36.875,
+            "top": 14.675
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 19.325,
+            "left": 24.875,
+            "right": 28.125,
+            "top": 14.675
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 14.675,
+          "status": "PASS"
+        },
+        "D1": {
+          "clearance_mm": {
+            "bottom": 27.625,
+            "left": 14.925,
+            "right": 45.325,
+            "top": 30.525
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 32.875,
+            "left": 14.925,
+            "right": 19.675,
+            "top": 30.525
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 14.925,
+          "status": "PASS"
+        },
+        "D2": {
+          "clearance_mm": {
+            "bottom": 18.825,
+            "left": 8.625,
+            "right": 51.625,
+            "top": 39.325
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 41.675,
+            "left": 8.625,
+            "right": 13.375,
+            "top": 39.325
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 8.625,
+          "status": "PASS"
+        },
+        "D3": {
+          "clearance_mm": {
+            "bottom": 18.825,
+            "left": 14.125,
+            "right": 46.125,
+            "top": 39.325
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 41.675,
+            "left": 14.125,
+            "right": 18.875,
+            "top": 39.325
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 14.125,
+          "status": "PASS"
+        },
+        "D4": {
+          "clearance_mm": {
+            "bottom": 27.625,
+            "left": 51.625,
+            "right": 8.625,
+            "top": 30.525
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 32.875,
+            "left": 51.625,
+            "right": 56.375,
+            "top": 30.525
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 8.625,
+          "status": "PASS"
+        },
+        "J1": {
+          "clearance_mm": {
+            "bottom": 50.575,
+            "left": 16.475,
+            "right": 18.475,
+            "top": 3.375
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 9.925,
+            "left": 16.475,
+            "right": 46.525,
+            "top": 3.375
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 3.375,
+          "status": "PASS"
+        },
+        "L1": {
+          "clearance_mm": {
+            "bottom": 26.825,
+            "left": 5.525,
+            "right": 50.525,
+            "top": 26.325
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 33.675,
+            "left": 5.525,
+            "right": 14.475,
+            "top": 26.325
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 5.525,
+          "status": "PASS"
+        },
+        "L2": {
+          "clearance_mm": {
+            "bottom": 26.825,
+            "left": 42.025,
+            "right": 14.025,
+            "top": 26.325
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 33.675,
+            "left": 42.025,
+            "right": 50.975,
+            "top": 26.325
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 14.025,
+          "status": "PASS"
+        },
+        "Q1": {
+          "clearance_mm": {
+            "bottom": 31.525,
+            "left": 15.875,
+            "right": 46.875,
+            "top": 26.025
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 28.975,
+            "left": 15.875,
+            "right": 18.125,
+            "top": 26.025
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 15.875,
+          "status": "PASS"
+        },
+        "Q2": {
+          "clearance_mm": {
+            "bottom": 27.775,
+            "left": 37.425,
+            "right": 23.425,
+            "top": 29.275
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 32.725,
+            "left": 37.425,
+            "right": 41.575,
+            "top": 29.275
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 23.425,
+          "status": "PASS"
+        },
+        "R1": {
+          "clearance_mm": {
+            "bottom": 31.845,
+            "left": 18.695,
+            "right": 41.695,
+            "top": 26.345
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 28.655,
+            "left": 18.695,
+            "right": 23.305,
+            "top": 26.345
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 18.695,
+          "status": "PASS"
+        },
+        "R10": {
+          "clearance_mm": {
+            "bottom": 37.995,
+            "left": 45.745,
+            "right": 17.745,
+            "top": 19.495
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 22.505,
+            "left": 45.745,
+            "right": 47.255,
+            "top": 19.495
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 17.745,
+          "status": "PASS"
+        },
+        "R12": {
+          "clearance_mm": {
+            "bottom": 45.245,
+            "left": 48.995,
+            "right": 12.995,
+            "top": 13.745
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 15.255,
+            "left": 48.995,
+            "right": 52.005,
+            "top": 13.745
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 12.995,
+          "status": "PASS"
+        },
+        "R13": {
+          "clearance_mm": {
+            "bottom": 45.245,
+            "left": 52.995,
+            "right": 8.995,
+            "top": 13.745
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 15.255,
+            "left": 52.995,
+            "right": 56.005,
+            "top": 13.745
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 8.995,
+          "status": "PASS"
+        },
+        "R16": {
+          "clearance_mm": {
+            "bottom": 19.245,
+            "left": 38.995,
+            "right": 22.995,
+            "top": 39.745
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 41.255,
+            "left": 38.995,
+            "right": 42.005,
+            "top": 39.745
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 19.245,
+          "status": "PASS"
+        },
+        "R2": {
+          "clearance_mm": {
+            "bottom": 42.495,
+            "left": 13.745,
+            "right": 49.745,
+            "top": 14.995
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 18.005,
+            "left": 13.745,
+            "right": 15.255,
+            "top": 14.995
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 13.745,
+          "status": "PASS"
+        },
+        "R3": {
+          "clearance_mm": {
+            "bottom": 31.845,
+            "left": 55.195,
+            "right": 5.195,
+            "top": 26.345
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 28.655,
+            "left": 55.195,
+            "right": 59.805,
+            "top": 26.345
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 5.195,
+          "status": "PASS"
+        },
+        "R4": {
+          "clearance_mm": {
+            "bottom": 13.245,
+            "left": 2.995,
+            "right": 58.995,
+            "top": 45.745
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 47.255,
+            "left": 2.995,
+            "right": 6.005,
+            "top": 45.745
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 2.995,
+          "status": "PASS"
+        },
+        "R5": {
+          "clearance_mm": {
+            "bottom": 27.495,
+            "left": 26.745,
+            "right": 36.745,
+            "top": 29.995
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 33.005,
+            "left": 26.745,
+            "right": 28.255,
+            "top": 29.995
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 26.745,
+          "status": "PASS"
+        },
+        "R6": {
+          "clearance_mm": {
+            "bottom": 13.245,
+            "left": 17.495,
+            "right": 44.495,
+            "top": 45.745
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 47.255,
+            "left": 17.495,
+            "right": 20.505,
+            "top": 45.745
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 13.245,
+          "status": "PASS"
+        },
+        "R7": {
+          "clearance_mm": {
+            "bottom": 13.245,
+            "left": 21.495,
+            "right": 40.495,
+            "top": 45.745
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 47.255,
+            "left": 21.495,
+            "right": 24.505,
+            "top": 45.745
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 13.245,
+          "status": "PASS"
+        },
+        "R8": {
+          "clearance_mm": {
+            "bottom": 13.245,
+            "left": 6.995,
+            "right": 54.995,
+            "top": 45.745
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 47.255,
+            "left": 6.995,
+            "right": 10.005,
+            "top": 45.745
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 6.995,
+          "status": "PASS"
+        },
+        "R9": {
+          "clearance_mm": {
+            "bottom": 37.995,
+            "left": 42.245,
+            "right": 21.245,
+            "top": 19.495
+          },
+          "footprint_layer": "F.Cu",
+          "geometry_bounds_mm": {
+            "bottom": 22.505,
+            "left": 42.245,
+            "right": 43.755,
+            "top": 19.495
+          },
+          "geometry_layer": "F.CrtYd",
+          "minimum_clearance_mm": 19.495,
+          "status": "PASS"
+        }
+      },
+      "required_minimum_clearance_mm": 2.5,
+      "status": "PASS"
+    },
+    "edge_cuts": {
+      "actual_height_mm": 60.5,
+      "actual_width_mm": 65.0,
+      "bounds_mm": {
+        "bottom": 60.5,
+        "left": 0.0,
+        "right": 65.0,
+        "top": 0.0
+      },
+      "drawing_count": 1,
+      "errors": [],
+      "expected_height_mm": 60.5,
+      "expected_width_mm": 65.0,
+      "representation": "single_rect",
+      "status": "PASS",
+      "tolerance_mm": 0.001
+    },
+    "fab_courtyard": {
+      "errors": [],
+      "geometry_layers_by_side": {
+        "B.Cu": {
+          "courtyard": "B.CrtYd",
+          "fab": "B.Fab"
+        },
+        "F.Cu": {
+          "courtyard": "F.CrtYd",
+          "fab": "F.Fab"
+        }
+      },
+      "observed_minimum_clearance_mm": 0.075,
+      "observed_minimum_location": {
+        "reference": "Q1",
+        "side": "left"
+      },
+      "per_reference": {
+        "C0": {
+          "clearance_mm": {
+            "bottom": 0.655,
+            "left": 0.305,
+            "right": 0.305,
+            "top": 0.655
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.305,
+          "status": "PASS"
+        },
+        "C1": {
+          "clearance_mm": {
+            "bottom": 0.305,
+            "left": 0.655,
+            "right": 0.655,
+            "top": 0.305
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.305,
+          "status": "PASS"
+        },
+        "C10": {
+          "clearance_mm": {
+            "bottom": 0.675,
+            "left": 0.325,
+            "right": 0.325,
+            "top": 0.675
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.325,
+          "status": "PASS"
+        },
+        "C11": {
+          "clearance_mm": {
+            "bottom": 0.675,
+            "left": 0.325,
+            "right": 0.325,
+            "top": 0.675
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.325,
+          "status": "PASS"
+        },
+        "C12": {
+          "clearance_mm": {
+            "bottom": 0.675,
+            "left": 0.325,
+            "right": 0.325,
+            "top": 0.675
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.325,
+          "status": "PASS"
+        },
+        "C13": {
+          "clearance_mm": {
+            "bottom": 0.675,
+            "left": 0.33,
+            "right": 0.33,
+            "top": 0.675
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.33,
+          "status": "PASS"
+        },
+        "C14": {
+          "clearance_mm": {
+            "bottom": 0.675,
+            "left": 0.325,
+            "right": 0.325,
+            "top": 0.675
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.325,
+          "status": "PASS"
+        },
+        "C15": {
+          "clearance_mm": {
+            "bottom": 0.675,
+            "left": 0.325,
+            "right": 0.325,
+            "top": 0.675
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.325,
+          "status": "PASS"
+        },
+        "C16": {
+          "clearance_mm": {
+            "bottom": 0.33,
+            "left": 0.675,
+            "right": 0.675,
+            "top": 0.33
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.33,
+          "status": "PASS"
+        },
+        "C17": {
+          "clearance_mm": {
+            "bottom": 0.33,
+            "left": 0.675,
+            "right": 0.675,
+            "top": 0.33
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.33,
+          "status": "PASS"
+        },
+        "C18": {
+          "clearance_mm": {
+            "bottom": 0.33,
+            "left": 0.675,
+            "right": 0.675,
+            "top": 0.33
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.33,
+          "status": "PASS"
+        },
+        "C19": {
+          "clearance_mm": {
+            "bottom": 0.33,
+            "left": 0.675,
+            "right": 0.675,
+            "top": 0.33
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.33,
+          "status": "PASS"
+        },
+        "C2": {
+          "clearance_mm": {
+            "bottom": 0.325,
+            "left": 0.675,
+            "right": 0.675,
+            "top": 0.325
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.325,
+          "status": "PASS"
+        },
+        "C20": {
+          "clearance_mm": {
+            "bottom": 0.675,
+            "left": 0.33,
+            "right": 0.33,
+            "top": 0.675
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.33,
+          "status": "PASS"
+        },
+        "C21": {
+          "clearance_mm": {
+            "bottom": 0.675,
+            "left": 0.33,
+            "right": 0.33,
+            "top": 0.675
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.33,
+          "status": "PASS"
+        },
+        "C22": {
+          "clearance_mm": {
+            "bottom": 0.305,
+            "left": 0.655,
+            "right": 0.655,
+            "top": 0.305
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.305,
+          "status": "PASS"
+        },
+        "C23": {
+          "clearance_mm": {
+            "bottom": 0.325,
+            "left": 0.675,
+            "right": 0.675,
+            "top": 0.325
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.325,
+          "status": "PASS"
+        },
+        "C3": {
+          "clearance_mm": {
+            "bottom": 0.305,
+            "left": 0.655,
+            "right": 0.655,
+            "top": 0.305
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.305,
+          "status": "PASS"
+        },
+        "C4": {
+          "clearance_mm": {
+            "bottom": 0.325,
+            "left": 0.675,
+            "right": 0.675,
+            "top": 0.325
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.325,
+          "status": "PASS"
+        },
+        "C5": {
+          "clearance_mm": {
+            "bottom": 0.325,
+            "left": 0.675,
+            "right": 0.675,
+            "top": 0.325
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.325,
+          "status": "PASS"
+        },
+        "C6": {
+          "clearance_mm": {
+            "bottom": 0.675,
+            "left": 0.325,
+            "right": 0.325,
+            "top": 0.675
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.325,
+          "status": "PASS"
+        },
+        "C7": {
+          "clearance_mm": {
+            "bottom": 0.675,
+            "left": 0.325,
+            "right": 0.325,
+            "top": 0.675
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.325,
+          "status": "PASS"
+        },
+        "C8": {
+          "clearance_mm": {
+            "bottom": 0.675,
+            "left": 0.325,
+            "right": 0.325,
+            "top": 0.675
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.325,
+          "status": "PASS"
+        },
+        "C9": {
+          "clearance_mm": {
+            "bottom": 0.675,
+            "left": 0.325,
+            "right": 0.325,
+            "top": 0.675
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.325,
+          "status": "PASS"
+        },
+        "D1": {
+          "clearance_mm": {
+            "bottom": 0.225,
+            "left": 0.925,
+            "right": 0.925,
+            "top": 0.225
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.225,
+          "status": "PASS"
+        },
+        "D2": {
+          "clearance_mm": {
+            "bottom": 0.225,
+            "left": 0.925,
+            "right": 0.925,
+            "top": 0.225
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.225,
+          "status": "PASS"
+        },
+        "D3": {
+          "clearance_mm": {
+            "bottom": 0.225,
+            "left": 0.925,
+            "right": 0.925,
+            "top": 0.225
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.225,
+          "status": "PASS"
+        },
+        "D4": {
+          "clearance_mm": {
+            "bottom": 0.225,
+            "left": 0.925,
+            "right": 0.925,
+            "top": 0.225
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.225,
+          "status": "PASS"
+        },
+        "J1": {
+          "clearance_mm": {
+            "bottom": 0.995,
+            "left": 0.725,
+            "right": 0.725,
+            "top": 0.545
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.545,
+          "status": "PASS"
+        },
+        "L1": {
+          "clearance_mm": {
+            "bottom": 0.325,
+            "left": 0.875,
+            "right": 0.875,
+            "top": 0.325
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.325,
+          "status": "PASS"
+        },
+        "L2": {
+          "clearance_mm": {
+            "bottom": 0.325,
+            "left": 0.875,
+            "right": 0.875,
+            "top": 0.325
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.325,
+          "status": "PASS"
+        },
+        "Q1": {
+          "clearance_mm": {
+            "bottom": 0.8,
+            "left": 0.075,
+            "right": 0.075,
+            "top": 0.8
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.075,
+          "status": "PASS"
+        },
+        "Q2": {
+          "clearance_mm": {
+            "bottom": 0.225,
+            "left": 1.225,
+            "right": 1.225,
+            "top": 0.225
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.225,
+          "status": "PASS"
+        },
+        "R1": {
+          "clearance_mm": {
+            "bottom": 0.305,
+            "left": 0.655,
+            "right": 0.655,
+            "top": 0.305
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.305,
+          "status": "PASS"
+        },
+        "R10": {
+          "clearance_mm": {
+            "bottom": 0.655,
+            "left": 0.2925,
+            "right": 0.2925,
+            "top": 0.655
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.2925,
+          "status": "PASS"
+        },
+        "R12": {
+          "clearance_mm": {
+            "bottom": 0.2925,
+            "left": 0.655,
+            "right": 0.655,
+            "top": 0.2925
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.2925,
+          "status": "PASS"
+        },
+        "R13": {
+          "clearance_mm": {
+            "bottom": 0.2925,
+            "left": 0.655,
+            "right": 0.655,
+            "top": 0.2925
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.2925,
+          "status": "PASS"
+        },
+        "R16": {
+          "clearance_mm": {
+            "bottom": 0.2925,
+            "left": 0.655,
+            "right": 0.655,
+            "top": 0.2925
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.2925,
+          "status": "PASS"
+        },
+        "R2": {
+          "clearance_mm": {
+            "bottom": 0.655,
+            "left": 0.2925,
+            "right": 0.2925,
+            "top": 0.655
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.2925,
+          "status": "PASS"
+        },
+        "R3": {
+          "clearance_mm": {
+            "bottom": 0.305,
+            "left": 0.655,
+            "right": 0.655,
+            "top": 0.305
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.305,
+          "status": "PASS"
+        },
+        "R4": {
+          "clearance_mm": {
+            "bottom": 0.2925,
+            "left": 0.655,
+            "right": 0.655,
+            "top": 0.2925
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.2925,
+          "status": "PASS"
+        },
+        "R5": {
+          "clearance_mm": {
+            "bottom": 0.655,
+            "left": 0.2925,
+            "right": 0.2925,
+            "top": 0.655
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.2925,
+          "status": "PASS"
+        },
+        "R6": {
+          "clearance_mm": {
+            "bottom": 0.2925,
+            "left": 0.655,
+            "right": 0.655,
+            "top": 0.2925
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.2925,
+          "status": "PASS"
+        },
+        "R7": {
+          "clearance_mm": {
+            "bottom": 0.2925,
+            "left": 0.655,
+            "right": 0.655,
+            "top": 0.2925
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.2925,
+          "status": "PASS"
+        },
+        "R8": {
+          "clearance_mm": {
+            "bottom": 0.2925,
+            "left": 0.655,
+            "right": 0.655,
+            "top": 0.2925
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.2925,
+          "status": "PASS"
+        },
+        "R9": {
+          "clearance_mm": {
+            "bottom": 0.655,
+            "left": 0.2925,
+            "right": 0.2925,
+            "top": 0.655
+          },
+          "courtyard_layer": "F.CrtYd",
+          "fab_layer": "F.Fab",
+          "footprint_layer": "F.Cu",
+          "minimum_clearance_mm": 0.2925,
+          "status": "PASS"
+        }
+      },
+      "required_minimum_clearance_mm": 0.05,
+      "status": "PASS"
+    },
+    "paste_layers": {
+      "enabled": {
+        "B.Paste": true,
+        "F.Paste": true
+      },
+      "errors": [],
+      "required_layers": [
+        "F.Paste"
+      ],
+      "status": "PASS"
+    },
+    "rule_areas": {
+      "actual_count": 5,
+      "areas": [
+        {
+          "covers_required_layers": true,
+          "missing_required_layers": [],
+          "name": "DEVKITC_ANTENNA_KEEP_OUT"
+        },
+        {
+          "covers_required_layers": true,
+          "missing_required_layers": [],
+          "name": "EDGE_TOP_KEEP_OUT"
+        },
+        {
+          "covers_required_layers": true,
+          "missing_required_layers": [],
+          "name": "EDGE_RIGHT_KEEP_OUT"
+        },
+        {
+          "covers_required_layers": true,
+          "missing_required_layers": [],
+          "name": "EDGE_LEFT_KEEP_OUT"
+        },
+        {
+          "covers_required_layers": true,
+          "missing_required_layers": [],
+          "name": "EDGE_BOTTOM_KEEP_OUT"
+        }
+      ],
+      "errors": [],
+      "expected_names": [
+        "DEVKITC_ANTENNA_KEEP_OUT",
+        "EDGE_TOP_KEEP_OUT",
+        "EDGE_RIGHT_KEEP_OUT",
+        "EDGE_LEFT_KEEP_OUT",
+        "EDGE_BOTTOM_KEEP_OUT"
+      ],
+      "minimum_count": 5,
+      "required_copper_layers": [
+        "F.Cu",
+        "In1.Cu",
+        "In2.Cu",
+        "B.Cu"
+      ],
+      "status": "PASS"
+    },
+    "vias": {
+      "allowed_types": [
+        "through"
+      ],
+      "counts_by_type": {
+        "through": 75
+      },
+      "errors": [],
+      "status": "PASS",
+      "total_count": 75
+    }
+  },
+  "config": "C:\\Users\\Ye\\PycharmProjects\\ESP32_C73\\hardware\\mf1750_devkitc_b2_pcba_margin\\board_audit_config.json",
+  "errors": [],
+  "failed_checks": [],
+  "kicad_version": "10.0.3",
+  "schema": 1,
+  "status": "PASS"
+}

@@ -1,0 +1,1033 @@
+** Drc report for fpc_cloud_probe.kicad_pcb **
+** Created on 2026-08-13T21:03:35 **
+** Report includes: Errors, Warnings, Exclusions **
+
+** Found 255 DRC violations **
+[track_not_centered_on_via]: Track endpoint not centered on via
+    Local override; error
+    @(20.2500 mm, 7.6090 mm): Track [/SL_CSB] on F.Cu, length 2.1486 mm
+    @(19.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[track_not_centered_on_via]: Track endpoint not centered on via
+    Local override; error
+    @(18.7307 mm, 9.1283 mm): Track [/SL_CSB] on F.Cu, length 5.0373 mm
+    @(19.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[track_not_centered_on_via]: Track endpoint not centered on via
+    Local override; error
+    @(22.0000 mm, 13.0250 mm): Track [/VSH_LV] on F.Cu, length 6.0104 mm
+    @(22.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[track_not_centered_on_via]: Track endpoint not centered on via
+    Local override; error
+    @(26.0000 mm, 13.0250 mm): Track [/VSH_LV2] on F.Cu, length 1.0607 mm
+    @(26.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[track_not_centered_on_via]: Track endpoint not centered on via
+    Local override; error
+    @(30.0000 mm, 13.0250 mm): Track [/VSL] on F.Cu, length 3.8891 mm
+    @(30.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[track_not_centered_on_via]: Track endpoint not centered on via
+    Local override; error
+    @(33.1123 mm, 13.0250 mm): Track [/VSL_LV] on F.Cu, length 0.8877 mm
+    @(34.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[track_not_centered_on_via]: Track endpoint not centered on via
+    Local override; error
+    @(27.7500 mm, 7.6627 mm): Track [/VSL_LV] on F.Cu, length 7.5834 mm
+    @(33.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[track_not_centered_on_via]: Track endpoint not centered on via
+    Local override; error
+    @(34.7213 mm, 9.7463 mm): Track [/VSL_LV2] on F.Cu, length 4.6368 mm
+    @(38.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[track_not_centered_on_via]: Track endpoint not centered on via
+    Local override; error
+    @(29.7500 mm, 7.7621 mm): Track [/REFP] on F.Cu, length 1.5865 mm
+    @(31.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[track_not_centered_on_via]: Track endpoint not centered on via
+    Local override; error
+    @(40.1736 mm, 8.8839 mm): Track [/REFP] on F.Cu, length 5.8918 mm
+    @(40.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[track_not_centered_on_via]: Track endpoint not centered on via
+    Local override; error
+    @(30.8718 mm, 8.8839 mm): Track [/REFP] on F.Cu, length 9.3018 mm
+    @(31.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[track_not_centered_on_via]: Track endpoint not centered on via
+    Local override; error
+    @(46.5798 mm, 10.8938 mm): Track [/CP1N] on F.Cu, length 2.5320 mm
+    @(44.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+[track_not_centered_on_via]: Track endpoint not centered on via
+    Local override; error
+    @(44.0478 mm, 10.8938 mm): Track [/CP1N] on F.Cu, length 4.6638 mm
+    @(44.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /REFN)
+    Local override; error
+    @(40.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(38.7946 mm, 9.3446 mm): Track [/REFN] on F.Cu, length 5.2402 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /REFP 和 /GND)
+    Local override; error
+    @(40.1736 mm, 8.8839 mm): Track [/REFP] on F.Cu, length 5.8918 mm
+    @(40.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1352 mm)
+    Local override; error
+    @(19.7500 mm, 7.5267 mm): Track [/FPL_VCOM] on F.Cu, length 1.4144 mm
+    @(19.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1929 mm)
+    Local override; error
+    @(35.7949 mm, 8.4437 mm): Track [/TSCL] on F.Cu, length 0.2312 mm
+    @(36.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /RESEC 和 /GND)
+    Local override; error
+    @(23.1150 mm, 23.0181 mm): Track [/RESEC] on B.Cu, length 17.3245 mm
+    @(23.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1601 mm)
+    Local override; error
+    @(36.5601 mm, 5.8112 mm): Track [/VDDD] on B.Cu, length 8.9789 mm
+    @(36.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /GDRH)
+    Local override; error
+    @(19.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(19.3146 mm, 5.5172 mm): Track [/GDRH] on B.Cu, length 15.9111 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1210 mm)
+    Local override; error
+    @(36.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(35.9584 mm, 8.2802 mm): Via [/TSCL] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSH 和 /GND)
+    Local override; error
+    @(24.0089 mm, 9.3379 mm): Track [/VSH] on F.Cu, length 2.4623 mm
+    @(24.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1000 mm)
+    Local override; error
+    @(24.5000 mm, 25.0000 mm): Track [/VPH] on B.Cu, length 15.9015 mm
+    @(24.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSL_LV 和 /GND)
+    Local override; error
+    @(27.7500 mm, 7.6627 mm): Track [/VSL_LV] on F.Cu, length 7.5834 mm
+    @(32.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSL_LV2 和 /GND)
+    Local override; error
+    @(34.7213 mm, 9.7463 mm): Track [/VSL_LV2] on F.Cu, length 4.6368 mm
+    @(37.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1000 mm)
+    Local override; error
+    @(24.5000 mm, 25.0000 mm): Track [/VPH] on B.Cu, length 15.9015 mm
+    @(24.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0399 mm)
+    Local override; error
+    @(37.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(36.5601 mm, 5.8112 mm): Track [/VDDD] on B.Cu, length 8.9789 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1563 mm)
+    Local override; error
+    @(33.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(31.0175 mm, 8.4437 mm): Track [/TSCL] on F.Cu, length 4.7774 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /REFN)
+    Local override; error
+    @(41.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(38.7946 mm, 9.3446 mm): Track [/REFN] on F.Cu, length 5.2402 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0710 mm)
+    Local override; error
+    @(31.5290 mm, 17.8593 mm): Track [/TSDA] on B.Cu, length 10.0573 mm
+    @(32.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /RESEL 和 /GND)
+    Local override; error
+    @(22.2500 mm, 7.6271 mm): Track [/RESEL] on F.Cu, length 3.6429 mm
+    @(20.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /REFP 和 /GND)
+    Local override; error
+    @(40.1736 mm, 8.8839 mm): Track [/REFP] on F.Cu, length 5.8918 mm
+    @(44.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /PREVGL)
+    Local override; error
+    @(20.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(20.0408 mm, 6.9366 mm): Track [/PREVGL] on B.Cu, length 14.4749 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /VSH_LV)
+    Local override; error
+    @(24.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(22.0000 mm, 13.0250 mm): Track [/VSH_LV] on F.Cu, length 6.0104 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSH 和 /GND)
+    Local override; error
+    @(21.6871 mm, 9.3379 mm): Track [/VSH] on F.Cu, length 2.3218 mm
+    @(23.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1023 mm)
+    Local override; error
+    @(40.1736 mm, 8.8839 mm): Track [/REFP] on F.Cu, length 5.8918 mm
+    @(42.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1023 mm)
+    Local override; error
+    @(40.1736 mm, 8.8839 mm): Track [/REFP] on F.Cu, length 5.8918 mm
+    @(41.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSL_LV 和 /GND)
+    Local override; error
+    @(27.7500 mm, 7.6627 mm): Track [/VSL_LV] on F.Cu, length 7.5834 mm
+    @(29.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /REFP 和 /GND)
+    Local override; error
+    @(40.1736 mm, 8.8839 mm): Track [/REFP] on F.Cu, length 5.8918 mm
+    @(41.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1250 mm)
+    Local override; error
+    @(23.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(22.0000 mm, 13.0250 mm): Pad 1 [/VSH_LV] of C8 on F.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0190 mm)
+    Local override; error
+    @(43.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(29.5925 mm, 25.0000 mm): Track [/PREVGH] on B.Cu, length 20.2672 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /SI0 和 /GND)
+    Local override; error
+    @(25.7312 mm, 12.7134 mm): Track [/SI0] on B.Cu, length 7.9137 mm
+    @(29.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1000 mm)
+    Local override; error
+    @(24.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(24.5000 mm, 25.0000 mm): Track [/VPH] on B.Cu, length 15.9015 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /RESEC 和 /GND)
+    Local override; error
+    @(23.1150 mm, 23.0181 mm): Track [/RESEC] on B.Cu, length 17.3245 mm
+    @(23.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1563 mm)
+    Local override; error
+    @(34.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(31.0175 mm, 8.4437 mm): Track [/TSCL] on F.Cu, length 4.7774 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /REFP 和 /GND)
+    Local override; error
+    @(40.1736 mm, 8.8839 mm): Track [/REFP] on F.Cu, length 5.8918 mm
+    @(43.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSL_LV 和 /GND)
+    Local override; error
+    @(34.0000 mm, 13.0250 mm): Pad 1 [/VSL_LV] of C11 on F.Cu
+    @(34.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSH_LV 和 /GND)
+    Local override; error
+    @(26.2500 mm, 8.7750 mm): Track [/VSH_LV] on F.Cu, length 2.1500 mm
+    @(26.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0619 mm)
+    Local override; error
+    @(24.0089 mm, 9.3379 mm): Track [/VSH] on F.Cu, length 2.4623 mm
+    @(25.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /VSH_LV)
+    Local override; error
+    @(22.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(22.0000 mm, 13.0250 mm): Track [/VSH_LV] on F.Cu, length 6.0104 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSL_LV2 和 /GND)
+    Local override; error
+    @(34.7213 mm, 9.7463 mm): Track [/VSL_LV2] on F.Cu, length 4.6368 mm
+    @(36.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1096 mm)
+    Local override; error
+    @(24.5000 mm, 9.0985 mm): Track [/VPH] on B.Cu, length 0.7797 mm
+    @(25.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /PREVGH)
+    Local override; error
+    @(43.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(29.5925 mm, 25.0000 mm): Track [/PREVGH] on B.Cu, length 20.2672 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1601 mm)
+    Local override; error
+    @(36.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(36.5601 mm, 5.8112 mm): Track [/VDDD] on B.Cu, length 8.9789 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GDRH 和 /GND)
+    Local override; error
+    @(19.3146 mm, 5.5172 mm): Track [/GDRH] on B.Cu, length 15.9111 mm
+    @(19.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSL_LV2 和 /GND)
+    Local override; error
+    @(38.0000 mm, 13.0250 mm): Pad 1 [/VSL_LV2] of C12 on F.Cu
+    @(38.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VDDIO 和 /GND)
+    Local override; error
+    @(38.2500 mm, 7.7351 mm): Track [/VDDIO] on B.Cu, length 7.4000 mm
+    @(38.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1982 mm)
+    Local override; error
+    @(44.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(44.0478 mm, 10.8938 mm): Track [/CP1N] on F.Cu, length 4.6638 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /PREVGH)
+    Local override; error
+    @(44.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(43.9236 mm, 10.6689 mm): Track [/PREVGH] on B.Cu, length 4.9456 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSH_LV2 和 /GND)
+    Local override; error
+    @(26.0000 mm, 13.0250 mm): Track [/VSH_LV2] on F.Cu, length 1.0607 mm
+    @(27.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /PREVGH)
+    Local override; error
+    @(44.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(43.9236 mm, 10.6689 mm): Track [/PREVGH] on B.Cu, length 4.9456 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /REFN)
+    Local override; error
+    @(38.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(30.7100 mm, 9.3446 mm): Track [/REFN] on F.Cu, length 8.0846 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1250 mm)
+    Local override; error
+    @(34.0000 mm, 13.0250 mm): Pad 1 [/VSL_LV] of C11 on F.Cu
+    @(33.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /VSH_LV2)
+    Local override; error
+    @(27.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(26.7500 mm, 12.2750 mm): Track [/VSH_LV2] on F.Cu, length 5.6500 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /VSL_LV)
+    Local override; error
+    @(31.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(27.7500 mm, 7.6627 mm): Track [/VSL_LV] on F.Cu, length 7.5834 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /VDDIO)
+    Local override; error
+    @(38.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(38.2500 mm, 7.7351 mm): Track [/VDDIO] on B.Cu, length 7.4000 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /SCL 和 /GND)
+    Local override; error
+    @(32.6063 mm, 7.7507 mm): Track [/SCL] on B.Cu, length 11.6100 mm
+    @(33.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GDRC 和 /GND)
+    Local override; error
+    @(22.3279 mm, 24.8068 mm): Track [/GDRC] on B.Cu, length 19.3043 mm
+    @(22.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1290 mm)
+    Local override; error
+    @(31.5290 mm, 17.8593 mm): Track [/TSDA] on B.Cu, length 10.0573 mm
+    @(31.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /REFP 和 /GND)
+    Local override; error
+    @(40.1736 mm, 8.8839 mm): Track [/REFP] on F.Cu, length 5.8918 mm
+    @(42.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1250 mm)
+    Local override; error
+    @(31.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(30.0000 mm, 13.0250 mm): Pad 1 [/VSL] of C10 on F.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /VSH_LV)
+    Local override; error
+    @(26.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(22.0000 mm, 13.0250 mm): Track [/VSH_LV] on F.Cu, length 6.0104 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1290 mm)
+    Local override; error
+    @(31.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(31.5290 mm, 17.8593 mm): Track [/TSDA] on B.Cu, length 10.0573 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1000 mm)
+    Local override; error
+    @(24.5000 mm, 25.0000 mm): Track [/VPH] on B.Cu, length 15.9015 mm
+    @(25.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSL 和 /GND)
+    Local override; error
+    @(30.0000 mm, 13.0250 mm): Track [/VSL] on F.Cu, length 3.8891 mm
+    @(30.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /VSH_LV2)
+    Local override; error
+    @(27.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(26.7500 mm, 12.2750 mm): Track [/VSH_LV2] on F.Cu, length 5.6500 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSL_LV2 和 /GND)
+    Local override; error
+    @(34.7213 mm, 9.7463 mm): Track [/VSL_LV2] on F.Cu, length 4.6368 mm
+    @(38.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /SI0 和 /GND)
+    Local override; error
+    @(25.7312 mm, 12.7134 mm): Track [/SI0] on B.Cu, length 7.9137 mm
+    @(27.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /VSL)
+    Local override; error
+    @(27.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(27.2500 mm, 10.2750 mm): Track [/VSL] on F.Cu, length 3.6500 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VDDIO 和 /GND)
+    Local override; error
+    @(38.2500 mm, 7.7351 mm): Track [/VDDIO] on B.Cu, length 7.4000 mm
+    @(38.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSH_LV 和 /GND)
+    Local override; error
+    @(22.0000 mm, 13.0250 mm): Track [/VSH_LV] on F.Cu, length 6.0104 mm
+    @(25.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /PREVGL)
+    Local override; error
+    @(20.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(20.0408 mm, 6.9366 mm): Track [/PREVGL] on B.Cu, length 14.4749 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0487 mm)
+    Local override; error
+    @(31.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(29.2500 mm, 7.8846 mm): Track [/REFN] on F.Cu, length 2.0648 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1250 mm)
+    Local override; error
+    @(38.0000 mm, 13.0250 mm): Pad 1 [/VSL_LV2] of C12 on F.Cu
+    @(39.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1000 mm)
+    Local override; error
+    @(24.5000 mm, 25.0000 mm): Track [/VPH] on B.Cu, length 15.9015 mm
+    @(25.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1352 mm)
+    Local override; error
+    @(19.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(18.7499 mm, 8.5268 mm): Track [/FPL_VCOM] on F.Cu, length 5.3057 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1023 mm)
+    Local override; error
+    @(40.1736 mm, 8.8839 mm): Track [/REFP] on F.Cu, length 5.8918 mm
+    @(44.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0399 mm)
+    Local override; error
+    @(36.5601 mm, 5.8112 mm): Track [/VDDD] on B.Cu, length 8.9789 mm
+    @(37.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSH 和 /GND)
+    Local override; error
+    @(18.0000 mm, 13.0250 mm): Track [/VSH] on F.Cu, length 5.2143 mm
+    @(19.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GDRH 和 /GND)
+    Local override; error
+    @(19.3146 mm, 5.5172 mm): Track [/GDRH] on B.Cu, length 15.9111 mm
+    @(19.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1290 mm)
+    Local override; error
+    @(31.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(31.5290 mm, 17.8593 mm): Track [/TSDA] on B.Cu, length 10.0573 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1250 mm)
+    Local override; error
+    @(26.0000 mm, 13.0250 mm): Pad 1 [/VSH_LV2] of C9 on F.Cu
+    @(25.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /SI0 和 /GND)
+    Local override; error
+    @(25.7312 mm, 12.7134 mm): Track [/SI0] on B.Cu, length 7.9137 mm
+    @(30.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1000 mm)
+    Local override; error
+    @(24.5000 mm, 25.0000 mm): Track [/VPH] on B.Cu, length 15.9015 mm
+    @(25.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VCP1 和 /GND)
+    Local override; error
+    @(46.4135 mm, 11.2955 mm): Track [/VCP1] on F.Cu, length 2.5596 mm
+    @(44.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /VSL_LV)
+    Local override; error
+    @(34.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(33.1123 mm, 13.0250 mm): Track [/VSL_LV] on F.Cu, length 0.8877 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /RESEC 和 /GND)
+    Local override; error
+    @(23.1150 mm, 23.0181 mm): Track [/RESEC] on B.Cu, length 17.3245 mm
+    @(23.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSL_LV2 和 /GND)
+    Local override; error
+    @(30.4696 mm, 9.7463 mm): Track [/VSL_LV2] on F.Cu, length 4.2517 mm
+    @(32.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /REFN)
+    Local override; error
+    @(42.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(38.7946 mm, 9.3446 mm): Track [/REFN] on F.Cu, length 5.2402 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0434 mm)
+    Local override; error
+    @(35.5566 mm, 8.6820 mm): Track [/TSCL] on B.Cu, length 7.6537 mm
+    @(36.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /PREVGH)
+    Local override; error
+    @(42.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(29.5925 mm, 25.0000 mm): Track [/PREVGH] on B.Cu, length 20.2672 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0710 mm)
+    Local override; error
+    @(32.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(31.5290 mm, 17.8593 mm): Track [/TSDA] on B.Cu, length 10.0573 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /VSH_LV)
+    Local override; error
+    @(22.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(22.0000 mm, 13.0250 mm): Pad 1 [/VSH_LV] of C8 on F.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /GDRC)
+    Local override; error
+    @(22.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(22.3279 mm, 24.8068 mm): Track [/GDRC] on B.Cu, length 19.3043 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0710 mm)
+    Local override; error
+    @(31.5290 mm, 17.8593 mm): Track [/TSDA] on B.Cu, length 10.0573 mm
+    @(32.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1982 mm)
+    Local override; error
+    @(43.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(44.0478 mm, 10.8938 mm): Track [/CP1N] on F.Cu, length 4.6638 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1250 mm)
+    Local override; error
+    @(31.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(30.0000 mm, 13.0250 mm): Pad 1 [/VSL] of C10 on F.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSL_LV2 和 /GND)
+    Local override; error
+    @(30.4696 mm, 9.7463 mm): Track [/VSL_LV2] on F.Cu, length 4.2517 mm
+    @(34.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1250 mm)
+    Local override; error
+    @(30.0000 mm, 13.0250 mm): Pad 1 [/VSL] of C10 on F.Cu
+    @(29.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VDD 和 /GND)
+    Local override; error
+    @(37.2500 mm, 7.7429 mm): Track [/VDD] on B.Cu, length 7.6240 mm
+    @(37.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1290 mm)
+    Local override; error
+    @(31.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(31.5290 mm, 17.8593 mm): Track [/TSDA] on B.Cu, length 10.0573 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1384 mm)
+    Local override; error
+    @(36.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(35.9584 mm, 8.2802 mm): Track [/TSCL] on B.Cu, length 0.5682 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /SCL 和 /GND)
+    Local override; error
+    @(32.6063 mm, 7.7507 mm): Track [/SCL] on B.Cu, length 11.6100 mm
+    @(33.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1250 mm)
+    Local override; error
+    @(38.0000 mm, 13.0250 mm): Pad 1 [/VSL_LV2] of C12 on F.Cu
+    @(37.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0605 mm)
+    Local override; error
+    @(18.0000 mm, 13.0250 mm): Track [/VSH] on F.Cu, length 5.2143 mm
+    @(22.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GDRC 和 /GND)
+    Local override; error
+    @(22.3279 mm, 24.8068 mm): Track [/GDRC] on B.Cu, length 19.3043 mm
+    @(22.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0399 mm)
+    Local override; error
+    @(36.5601 mm, 5.8112 mm): Track [/VDDD] on B.Cu, length 8.9789 mm
+    @(37.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /VCP1)
+    Local override; error
+    @(41.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(43.8539 mm, 11.2955 mm): Track [/VCP1] on F.Cu, length 5.0967 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSH_LV2 和 /GND)
+    Local override; error
+    @(26.0000 mm, 13.0250 mm): Pad 1 [/VSH_LV2] of C9 on F.Cu
+    @(26.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /SI0 和 /GND)
+    Local override; error
+    @(25.7312 mm, 12.7134 mm): Track [/SI0] on B.Cu, length 7.9137 mm
+    @(26.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1880 mm)
+    Local override; error
+    @(31.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(28.2500 mm, 7.5267 mm): Track [/VSL_LV2] on F.Cu, length 3.1390 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSH_LV2 和 /GND)
+    Local override; error
+    @(26.7500 mm, 12.2750 mm): Track [/VSH_LV2] on F.Cu, length 5.6500 mm
+    @(27.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /SI0 和 /GND)
+    Local override; error
+    @(25.7312 mm, 19.9624 mm): Track [/SI0] on B.Cu, length 7.2490 mm
+    @(26.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /SI0 和 /GND)
+    Local override; error
+    @(25.7312 mm, 12.7134 mm): Track [/SI0] on B.Cu, length 7.9137 mm
+    @(27.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1290 mm)
+    Local override; error
+    @(31.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(31.5290 mm, 17.8593 mm): Track [/TSDA] on B.Cu, length 10.0573 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /SL_CSB)
+    Local override; error
+    @(19.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(20.2500 mm, 7.6090 mm): Track [/SL_CSB] on F.Cu, length 2.1486 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0399 mm)
+    Local override; error
+    @(36.5601 mm, 5.8112 mm): Track [/VDDD] on B.Cu, length 8.9789 mm
+    @(37.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /REFN 和 /GND)
+    Local override; error
+    @(30.7100 mm, 9.3446 mm): Track [/REFN] on F.Cu, length 8.0846 mm
+    @(37.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0399 mm)
+    Local override; error
+    @(36.5601 mm, 5.8112 mm): Track [/VDDD] on B.Cu, length 8.9789 mm
+    @(37.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSL_LV2 和 /GND)
+    Local override; error
+    @(34.7213 mm, 9.7463 mm): Track [/VSL_LV2] on F.Cu, length 4.6368 mm
+    @(35.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSL 和 /GND)
+    Local override; error
+    @(30.0000 mm, 13.0250 mm): Pad 1 [/VSL] of C10 on F.Cu
+    @(30.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1566 mm)
+    Local override; error
+    @(35.5566 mm, 8.6820 mm): Track [/TSCL] on B.Cu, length 7.6537 mm
+    @(35.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSH_LV2 和 /GND)
+    Local override; error
+    @(26.0000 mm, 13.0250 mm): Track [/VSH_LV2] on F.Cu, length 1.0607 mm
+    @(26.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0557 mm)
+    Local override; error
+    @(24.9692 mm, 7.5267 mm): Track [/VPH] on F.Cu, length 1.4432 mm
+    @(24.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /SI0 和 /GND)
+    Local override; error
+    @(25.7312 mm, 12.7134 mm): Track [/SI0] on B.Cu, length 7.9137 mm
+    @(26.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSL_LV2 和 /GND)
+    Local override; error
+    @(28.2500 mm, 7.5267 mm): Track [/VSL_LV2] on F.Cu, length 3.1390 mm
+    @(30.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /REFN)
+    Local override; error
+    @(42.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(38.7946 mm, 9.3446 mm): Track [/REFN] on F.Cu, length 5.2402 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0190 mm)
+    Local override; error
+    @(29.5925 mm, 25.0000 mm): Track [/PREVGH] on B.Cu, length 20.2672 mm
+    @(42.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /SI0)
+    Local override; error
+    @(29.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(25.7312 mm, 12.7134 mm): Track [/SI0] on B.Cu, length 7.9137 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1025 mm)
+    Local override; error
+    @(43.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(38.7946 mm, 9.3446 mm): Track [/REFN] on F.Cu, length 5.2402 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /RESEC 和 /GND)
+    Local override; error
+    @(23.1150 mm, 23.0181 mm): Track [/RESEC] on B.Cu, length 17.3245 mm
+    @(23.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /VSL_LV)
+    Local override; error
+    @(30.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(27.7500 mm, 7.6627 mm): Track [/VSL_LV] on F.Cu, length 7.5834 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /VCP1)
+    Local override; error
+    @(43.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(43.8539 mm, 11.2955 mm): Track [/VCP1] on F.Cu, length 5.0967 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSL 和 /GND)
+    Local override; error
+    @(30.0000 mm, 13.0250 mm): Track [/VSL] on F.Cu, length 3.8891 mm
+    @(28.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /SI0)
+    Local override; error
+    @(28.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(25.7312 mm, 12.7134 mm): Track [/SI0] on B.Cu, length 7.9137 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSL_LV 和 /GND)
+    Local override; error
+    @(27.7500 mm, 7.6627 mm): Track [/VSL_LV] on F.Cu, length 7.5834 mm
+    @(33.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VPH 和 /GND)
+    Local override; error
+    @(23.9487 mm, 8.5472 mm): Via [/VPH] on F.Cu - B.Cu
+    @(24.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /SCL 和 /GND)
+    Local override; error
+    @(32.6063 mm, 7.7507 mm): Track [/SCL] on B.Cu, length 11.6100 mm
+    @(33.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /RESEL 和 /GND)
+    Local override; error
+    @(22.2500 mm, 7.6271 mm): Track [/RESEL] on F.Cu, length 3.6429 mm
+    @(21.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /VPH)
+    Local override; error
+    @(24.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(24.5000 mm, 9.0985 mm): Track [/VPH] on B.Cu, length 0.7797 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /RESEH 和 /GND)
+    Local override; error
+    @(21.2500 mm, 23.8675 mm): Track [/RESEH] on B.Cu, length 16.1213 mm
+    @(21.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1000 mm)
+    Local override; error
+    @(24.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(24.5000 mm, 25.0000 mm): Track [/VPH] on B.Cu, length 15.9015 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GDRH 和 /GND)
+    Local override; error
+    @(19.3146 mm, 5.5172 mm): Track [/GDRH] on B.Cu, length 15.9111 mm
+    @(19.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GDRC 和 /GND)
+    Local override; error
+    @(22.3279 mm, 24.8068 mm): Track [/GDRC] on B.Cu, length 19.3043 mm
+    @(22.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /CP1N 和 /GND)
+    Local override; error
+    @(46.5798 mm, 10.8938 mm): Track [/CP1N] on F.Cu, length 2.5320 mm
+    @(44.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1601 mm)
+    Local override; error
+    @(36.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(36.5601 mm, 5.8112 mm): Track [/VDDD] on B.Cu, length 8.9789 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /PREVGH)
+    Local override; error
+    @(44.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(43.9236 mm, 10.6689 mm): Track [/PREVGH] on B.Cu, length 4.9456 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSH 和 /GND)
+    Local override; error
+    @(18.0000 mm, 13.0250 mm): Track [/VSH] on F.Cu, length 5.2143 mm
+    @(21.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /SL_CSB)
+    Local override; error
+    @(19.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(18.7307 mm, 9.1283 mm): Track [/SL_CSB] on F.Cu, length 5.0373 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /RESEH 和 /GND)
+    Local override; error
+    @(21.2500 mm, 23.8675 mm): Track [/RESEH] on B.Cu, length 16.1213 mm
+    @(21.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /RESEL)
+    Local override; error
+    @(19.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(19.6741 mm, 10.2030 mm): Track [/RESEL] on F.Cu, length 2.7021 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VDDIO 和 /GND)
+    Local override; error
+    @(38.2500 mm, 7.7351 mm): Track [/VDDIO] on B.Cu, length 7.4000 mm
+    @(38.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0190 mm)
+    Local override; error
+    @(41.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(29.5925 mm, 25.0000 mm): Track [/PREVGH] on B.Cu, length 20.2672 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1023 mm)
+    Local override; error
+    @(43.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(40.1736 mm, 8.8839 mm): Track [/REFP] on F.Cu, length 5.8918 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /PREVGL 和 /GND)
+    Local override; error
+    @(20.0408 mm, 6.9366 mm): Track [/PREVGL] on B.Cu, length 14.4749 mm
+    @(20.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VCP1 和 /GND)
+    Local override; error
+    @(43.8539 mm, 11.2955 mm): Track [/VCP1] on F.Cu, length 5.0967 mm
+    @(42.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /VSL_LV2)
+    Local override; error
+    @(33.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(30.4696 mm, 9.7463 mm): Track [/VSL_LV2] on F.Cu, length 4.2517 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /SCL 和 /GND)
+    Local override; error
+    @(32.6063 mm, 7.7507 mm): Track [/SCL] on B.Cu, length 11.6100 mm
+    @(33.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0012 mm)
+    Local override; error
+    @(39.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(38.7946 mm, 9.3446 mm): Track [/REFN] on F.Cu, length 5.2402 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1601 mm)
+    Local override; error
+    @(36.5601 mm, 5.8112 mm): Track [/VDDD] on B.Cu, length 8.9789 mm
+    @(36.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1250 mm)
+    Local override; error
+    @(23.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(22.0000 mm, 13.0250 mm): Pad 1 [/VSH_LV] of C8 on F.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSL_LV 和 /GND)
+    Local override; error
+    @(34.0000 mm, 13.0250 mm): Pad 1 [/VSL_LV] of C11 on F.Cu
+    @(34.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /RESEC 和 /GND)
+    Local override; error
+    @(23.1150 mm, 23.0181 mm): Track [/RESEC] on B.Cu, length 17.3245 mm
+    @(23.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1250 mm)
+    Local override; error
+    @(26.0000 mm, 13.0250 mm): Pad 1 [/VSH_LV2] of C9 on F.Cu
+    @(27.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /REFN)
+    Local override; error
+    @(39.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(38.7946 mm, 9.3446 mm): Track [/REFN] on F.Cu, length 5.2402 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1250 mm)
+    Local override; error
+    @(39.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(38.0000 mm, 13.0250 mm): Pad 1 [/VSL_LV2] of C12 on F.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1601 mm)
+    Local override; error
+    @(36.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(36.5601 mm, 5.8112 mm): Track [/VDDD] on B.Cu, length 8.9789 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /REFN)
+    Local override; error
+    @(41.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(38.7946 mm, 9.3446 mm): Track [/REFN] on F.Cu, length 5.2402 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /PREVGL)
+    Local override; error
+    @(20.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(20.0408 mm, 6.9366 mm): Track [/PREVGL] on B.Cu, length 14.4749 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1114 mm)
+    Local override; error
+    @(28.2500 mm, 7.5267 mm): Track [/VSL_LV2] on F.Cu, length 3.1390 mm
+    @(30.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1563 mm)
+    Local override; error
+    @(35.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(31.0175 mm, 8.4437 mm): Track [/TSCL] on F.Cu, length 4.7774 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VDDIO 和 /GND)
+    Local override; error
+    @(38.2500 mm, 7.7351 mm): Track [/VDDIO] on B.Cu, length 7.4000 mm
+    @(38.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1566 mm)
+    Local override; error
+    @(35.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(35.5566 mm, 8.6820 mm): Track [/TSCL] on B.Cu, length 7.6537 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /CP2N 和 /GND)
+    Local override; error
+    @(46.1761 mm, 11.6972 mm): Track [/CP2N] on F.Cu, length 2.4936 mm
+    @(44.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1250 mm)
+    Local override; error
+    @(34.0000 mm, 13.0250 mm): Pad 1 [/VSL_LV] of C11 on F.Cu
+    @(35.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1250 mm)
+    Local override; error
+    @(21.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(22.0000 mm, 13.0250 mm): Pad 1 [/VSH_LV] of C8 on F.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /RESEH 和 /GND)
+    Local override; error
+    @(21.2500 mm, 23.8675 mm): Track [/RESEH] on B.Cu, length 16.1213 mm
+    @(21.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1566 mm)
+    Local override; error
+    @(35.5566 mm, 8.6820 mm): Track [/TSCL] on B.Cu, length 7.6537 mm
+    @(35.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1563 mm)
+    Local override; error
+    @(32.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(31.0175 mm, 8.4437 mm): Track [/TSCL] on F.Cu, length 4.7774 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /RESEH 和 /GND)
+    Local override; error
+    @(21.2500 mm, 23.8675 mm): Track [/RESEH] on B.Cu, length 16.1213 mm
+    @(21.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0710 mm)
+    Local override; error
+    @(31.5290 mm, 17.8593 mm): Track [/TSDA] on B.Cu, length 10.0573 mm
+    @(32.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1096 mm)
+    Local override; error
+    @(24.5000 mm, 25.0000 mm): Track [/VPH] on B.Cu, length 15.9015 mm
+    @(24.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /REFN)
+    Local override; error
+    @(33.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(30.7100 mm, 9.3446 mm): Track [/REFN] on F.Cu, length 8.0846 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1250 mm)
+    Local override; error
+    @(34.0000 mm, 13.0250 mm): Pad 1 [/VSL_LV] of C11 on F.Cu
+    @(35.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1337 mm)
+    Local override; error
+    @(30.4696 mm, 9.7463 mm): Track [/VSL_LV2] on F.Cu, length 4.2517 mm
+    @(30.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /SCL 和 /GND)
+    Local override; error
+    @(32.6063 mm, 7.7507 mm): Track [/SCL] on B.Cu, length 11.6100 mm
+    @(33.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1566 mm)
+    Local override; error
+    @(35.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(35.5566 mm, 8.6820 mm): Track [/TSCL] on B.Cu, length 7.6537 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /REFN)
+    Local override; error
+    @(40.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(38.7946 mm, 9.3446 mm): Track [/REFN] on F.Cu, length 5.2402 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0710 mm)
+    Local override; error
+    @(31.5290 mm, 17.8593 mm): Track [/TSDA] on B.Cu, length 10.0573 mm
+    @(32.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1250 mm)
+    Local override; error
+    @(30.0000 mm, 13.0250 mm): Pad 1 [/VSL] of C10 on F.Cu
+    @(29.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1566 mm)
+    Local override; error
+    @(35.5566 mm, 8.6820 mm): Track [/TSCL] on B.Cu, length 7.6537 mm
+    @(35.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /VSL_LV2)
+    Local override; error
+    @(31.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(30.4696 mm, 9.7463 mm): Track [/VSL_LV2] on F.Cu, length 4.2517 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSH 和 /GND)
+    Local override; error
+    @(18.0000 mm, 13.0250 mm): Track [/VSH] on F.Cu, length 5.2143 mm
+    @(20.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1250 mm)
+    Local override; error
+    @(21.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(22.0000 mm, 13.0250 mm): Pad 1 [/VSH_LV] of C8 on F.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /PREVGL 和 /GND)
+    Local override; error
+    @(20.0408 mm, 6.9366 mm): Track [/PREVGL] on B.Cu, length 14.4749 mm
+    @(20.0000 mm, 11.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /VSH_LV2)
+    Local override; error
+    @(27.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(26.7500 mm, 12.2750 mm): Track [/VSH_LV2] on F.Cu, length 5.6500 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /RESEH)
+    Local override; error
+    @(21.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(21.2500 mm, 23.8675 mm): Track [/RESEH] on B.Cu, length 16.1213 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1250 mm)
+    Local override; error
+    @(18.0000 mm, 13.0250 mm): Pad 1 [/VSH] of C7 on F.Cu
+    @(19.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GDRH 和 /GND)
+    Local override; error
+    @(19.3146 mm, 5.5172 mm): Track [/GDRH] on B.Cu, length 15.9111 mm
+    @(19.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1250 mm)
+    Local override; error
+    @(26.0000 mm, 13.0250 mm): Pad 1 [/VSH_LV2] of C9 on F.Cu
+    @(25.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /VSL)
+    Local override; error
+    @(30.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(30.0000 mm, 13.0250 mm): Pad 1 [/VSL] of C10 on F.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1000 mm)
+    Local override; error
+    @(24.5000 mm, 25.0000 mm): Track [/VPH] on B.Cu, length 15.9015 mm
+    @(25.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /REFN)
+    Local override; error
+    @(31.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(30.7100 mm, 9.3446 mm): Track [/REFN] on F.Cu, length 8.0846 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /CP2N)
+    Local override; error
+    @(41.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(43.6825 mm, 11.6972 mm): Track [/CP2N] on F.Cu, length 5.8980 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /CP1N)
+    Local override; error
+    @(42.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(44.0478 mm, 10.8938 mm): Track [/CP1N] on F.Cu, length 4.6638 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /REFN 和 /GND)
+    Local override; error
+    @(29.2500 mm, 7.8846 mm): Track [/REFN] on F.Cu, length 2.0648 mm
+    @(30.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /VSH_LV)
+    Local override; error
+    @(22.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(22.0000 mm, 13.0250 mm): Pad 1 [/VSH_LV] of C8 on F.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /GDRC)
+    Local override; error
+    @(22.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(22.3279 mm, 24.8068 mm): Track [/GDRC] on B.Cu, length 19.3043 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /SI0 和 /GND)
+    Local override; error
+    @(25.7312 mm, 12.7134 mm): Track [/SI0] on B.Cu, length 7.9137 mm
+    @(28.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /REFP 和 /GND)
+    Local override; error
+    @(29.7500 mm, 7.7621 mm): Track [/REFP] on F.Cu, length 1.5865 mm
+    @(31.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /RESEL)
+    Local override; error
+    @(20.0000 mm, 10.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(19.6741 mm, 10.2030 mm): Track [/RESEL] on F.Cu, length 2.7021 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /REFP)
+    Local override; error
+    @(33.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(30.8718 mm, 8.8839 mm): Track [/REFP] on F.Cu, length 9.3018 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /REFP 和 /GND)
+    Local override; error
+    @(44.3397 mm, 13.0500 mm): Track [/REFP] on F.Cu, length 1.6603 mm
+    @(44.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1566 mm)
+    Local override; error
+    @(31.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(30.2500 mm, 7.6762 mm): Track [/TSCL] on F.Cu, length 1.0854 mm
+[hole_clearance]: 孔间距违规 (<电路板配置> 中的 "孔" 约束 间距 0.2500 mm; 实际 0.0000 mm)
+    Rule: <电路板配置> 中的 "孔" 约束; error
+    @(26.0000 mm, 13.0250 mm): Pad 1 [/VSH_LV2] of C9 on F.Cu
+    @(26.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[hole_clearance]: 孔间距违规 (<电路板配置> 中的 "孔" 约束 间距 0.2500 mm; 实际 0.0000 mm)
+    Rule: <电路板配置> 中的 "孔" 约束; error
+    @(26.0000 mm, 13.0250 mm): Pad 1 [/VSH_LV2] of C9 on F.Cu
+    @(26.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[hole_clearance]: 孔间距违规 (<电路板配置> 中的 "孔" 约束 间距 0.2500 mm; 实际 0.0000 mm)
+    Rule: <电路板配置> 中的 "孔" 约束; error
+    @(34.0000 mm, 13.0250 mm): Pad 1 [/VSL_LV] of C11 on F.Cu
+    @(34.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[hole_clearance]: 孔间距违规 (<电路板配置> 中的 "孔" 约束 间距 0.2500 mm; 实际 0.0000 mm)
+    Rule: <电路板配置> 中的 "孔" 约束; error
+    @(34.0000 mm, 13.0250 mm): Pad 1 [/VSL_LV] of C11 on F.Cu
+    @(34.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[hole_clearance]: 孔间距违规 (<电路板配置> 中的 "孔" 约束 间距 0.2500 mm; 实际 0.0000 mm)
+    Rule: <电路板配置> 中的 "孔" 约束; error
+    @(38.0000 mm, 13.0250 mm): Pad 1 [/VSL_LV2] of C12 on F.Cu
+    @(38.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[hole_clearance]: 孔间距违规 (<电路板配置> 中的 "孔" 约束 间距 0.2500 mm; 实际 0.0000 mm)
+    Rule: <电路板配置> 中的 "孔" 约束; error
+    @(38.0000 mm, 13.0250 mm): Pad 1 [/VSL_LV2] of C12 on F.Cu
+    @(38.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[hole_clearance]: 孔间距违规 (<电路板配置> 中的 "孔" 约束 间距 0.2500 mm; 实际 0.0000 mm)
+    Rule: <电路板配置> 中的 "孔" 约束; error
+    @(42.5000 mm, 13.0500 mm): Pad 1 [/REFN] of C21 on F.Cu
+    @(42.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[hole_clearance]: 孔间距违规 (<电路板配置> 中的 "孔" 约束 间距 0.2500 mm; 实际 0.2270 mm)
+    Rule: <电路板配置> 中的 "孔" 约束; error
+    @(42.5000 mm, 13.0500 mm): Pad 1 [/REFN] of C21 on F.Cu
+    @(42.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[hole_clearance]: 孔间距违规 (<电路板配置> 中的 "孔" 约束 间距 0.2500 mm; 实际 0.0000 mm)
+    Rule: <电路板配置> 中的 "孔" 约束; error
+    @(42.5000 mm, 13.0500 mm): Pad 1 [/REFN] of C21 on F.Cu
+    @(43.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[hole_clearance]: 孔间距违规 (<电路板配置> 中的 "孔" 约束 间距 0.2500 mm; 实际 0.2270 mm)
+    Rule: <电路板配置> 中的 "孔" 约束; error
+    @(42.5000 mm, 13.0500 mm): Pad 1 [/REFN] of C21 on F.Cu
+    @(43.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[hole_clearance]: 孔间距违规 (<电路板配置> 中的 "孔" 约束 间距 0.2500 mm; 实际 0.0000 mm)
+    Rule: <电路板配置> 中的 "孔" 约束; error
+    @(30.0000 mm, 13.0250 mm): Pad 1 [/VSL] of C10 on F.Cu
+    @(30.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[hole_clearance]: 孔间距违规 (<电路板配置> 中的 "孔" 约束 间距 0.2500 mm; 实际 0.0000 mm)
+    Rule: <电路板配置> 中的 "孔" 约束; error
+    @(30.0000 mm, 13.0250 mm): Pad 1 [/VSL] of C10 on F.Cu
+    @(30.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[hole_clearance]: 孔间距违规 (<电路板配置> 中的 "孔" 约束 间距 0.2500 mm; 实际 0.0000 mm)
+    Rule: <电路板配置> 中的 "孔" 约束; error
+    @(22.0000 mm, 13.0250 mm): Pad 1 [/VSH_LV] of C8 on F.Cu
+    @(22.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+[hole_clearance]: 孔间距违规 (<电路板配置> 中的 "孔" 约束 间距 0.2500 mm; 实际 0.0000 mm)
+    Rule: <电路板配置> 中的 "孔" 约束; error
+    @(22.0000 mm, 13.0250 mm): Pad 1 [/VSH_LV] of C8 on F.Cu
+    @(22.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+[solder_mask_bridge]: 顶层阻焊开窗区域与不同网络的项目相连
+    Rule: <电路板配置> 中的 "阻焊层最小宽度"; error
+    @(42.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(42.5000 mm, 13.0500 mm): Pad 1 [/REFN] of C21 on F.Cu
+[solder_mask_bridge]: 顶层阻焊开窗区域与不同网络的项目相连
+    Rule: <电路板配置> 中的 "阻焊层最小宽度"; error
+    @(34.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(34.0000 mm, 13.0250 mm): Pad 1 [/VSL_LV] of C11 on F.Cu
+[solder_mask_bridge]: 顶层阻焊开窗区域与不同网络的项目相连
+    Rule: <电路板配置> 中的 "阻焊层最小宽度"; error
+    @(22.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(22.0000 mm, 13.0250 mm): Pad 1 [/VSH_LV] of C8 on F.Cu
+[solder_mask_bridge]: 顶层阻焊开窗区域与不同网络的项目相连
+    Rule: <电路板配置> 中的 "阻焊层最小宽度"; error
+    @(43.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(42.5000 mm, 13.0500 mm): Pad 1 [/REFN] of C21 on F.Cu
+[solder_mask_bridge]: 顶层阻焊开窗区域与不同网络的项目相连
+    Rule: <电路板配置> 中的 "阻焊层最小宽度"; error
+    @(38.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(38.0000 mm, 13.0250 mm): Pad 1 [/VSL_LV2] of C12 on F.Cu
+[solder_mask_bridge]: 顶层阻焊开窗区域与不同网络的项目相连
+    Rule: <电路板配置> 中的 "阻焊层最小宽度"; error
+    @(34.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(34.0000 mm, 13.0250 mm): Pad 1 [/VSL_LV] of C11 on F.Cu
+[solder_mask_bridge]: 顶层阻焊开窗区域与不同网络的项目相连
+    Rule: <电路板配置> 中的 "阻焊层最小宽度"; error
+    @(30.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(30.0000 mm, 13.0250 mm): Pad 1 [/VSL] of C10 on F.Cu
+[solder_mask_bridge]: 顶层阻焊开窗区域与不同网络的项目相连
+    Rule: <电路板配置> 中的 "阻焊层最小宽度"; error
+    @(22.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(22.0000 mm, 13.0250 mm): Pad 1 [/VSH_LV] of C8 on F.Cu
+[solder_mask_bridge]: 顶层阻焊开窗区域与不同网络的项目相连
+    Rule: <电路板配置> 中的 "阻焊层最小宽度"; error
+    @(38.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(38.0000 mm, 13.0250 mm): Pad 1 [/VSL_LV2] of C12 on F.Cu
+[solder_mask_bridge]: 顶层阻焊开窗区域与不同网络的项目相连
+    Rule: <电路板配置> 中的 "阻焊层最小宽度"; error
+    @(26.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(26.0000 mm, 13.0250 mm): Pad 1 [/VSH_LV2] of C9 on F.Cu
+[solder_mask_bridge]: 顶层阻焊开窗区域与不同网络的项目相连
+    Rule: <电路板配置> 中的 "阻焊层最小宽度"; error
+    @(30.0000 mm, 12.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(30.0000 mm, 13.0250 mm): Pad 1 [/VSL] of C10 on F.Cu
+[solder_mask_bridge]: 顶层阻焊开窗区域与不同网络的项目相连
+    Rule: <电路板配置> 中的 "阻焊层最小宽度"; error
+    @(26.0000 mm, 13.0000 mm): Via [/GND] on F.Cu - B.Cu
+    @(26.0000 mm, 13.0250 mm): Pad 1 [/VSH_LV2] of C9 on F.Cu
+[hole_to_hole]: 钻孔太靠近其他孔 (电路板配置约束 最小 0.2495 mm; 实际 0.1557 mm)
+    Rule: 电路板配置约束; warning
+    @(23.9487 mm, 8.5472 mm): Via [/VPH] on F.Cu - B.Cu
+    @(24.0000 mm, 9.0000 mm): Via [/GND] on F.Cu - B.Cu
+[lib_footprint_issues]: 当前配置中不包含封装库 'MF1750_Production'
+    Local override; warning
+    @(31.0000 mm, 5.0000 mm): Footprint J1
+[lib_footprint_issues]: 当前配置中不包含封装库 'MF1750_Production'
+    Local override; warning
+    @(9.5000 mm, 27.5000 mm): Footprint L1
+[lib_footprint_issues]: 当前配置中不包含封装库 'MF1750_Production'
+    Local override; warning
+    @(46.0000 mm, 27.5000 mm): Footprint L2
+[lib_footprint_issues]: 当前配置中不包含封装库 'MF1750_Compact'
+    Local override; warning
+    @(5.5000 mm, 56.0000 mm): Footprint J2
+
+** Found 0 unconnected pads **
+
+** Found 0 Footprint errors **
+
+** Ignored checks **
+    - Tuning profile track geometries
+    - Silkscreen clearance
+    - Silkscreen clipped by solder mask
+    - Footprint doesn't match copy in library
+
+** End of Report **

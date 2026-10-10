@@ -28,3 +28,11 @@ hardware/debug_crops/
 e2802_pdf_text.txt
 e2802_stream.bin
 mf_contact.png
+
+# Local scratch and iterative EDA staging/preview renders (kept on disk only).
+tmp/
+*.obj
+.codex/
+hardware/mf1750_wroom_b3_power_tf/staging/
+hardware/mf1750_wroom_b3_power_tf/preview/
+hardware/mf1750_wroom_b3_power_tf/staging_symbol_svg/

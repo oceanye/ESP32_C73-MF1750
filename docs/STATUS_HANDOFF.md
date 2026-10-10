@@ -1,10 +1,693 @@
 # ESP32_C73 当前状态交接
 
+> 上下文清理后的短入口：[`CONTEXT_RESET_HANDOFF_2026-09-05.md`](CONTEXT_RESET_HANDOFF_2026-09-05.md)。
+> 本页仍是完整状态权威；恢复工作时先读本页顶部最新条目。
+
 > **唯一当前状态入口。** 历史 handoff、TODO 和 runbook 保留证据与过程，但凡状态冲突，
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-09-01 13:38 +08:00`
+最后更新：`2026-10-10 07:25 +0800`
+
+## 2026-10-10 07:25 +0800 几何专项批完成（2 刷）：条纹帧 upright 无位移实证；MAP-v2 候选重判——**零新独立色**
+
+- **本轮新增刷新=2（OTP 白清 + 几何标定帧），qualified=0/256，无重发。** 白清 drf_ms=21681（基线一致）；变体 cb25e57c 进、生产 ba59c3d6 回均 verify pass；NVS 未动。批 [`GEO_PROBE_20261009_V1`](../.test-output/hardware/GEO_PROBE_20261009_V1/) manifest canonical **`f526fc49242ade352f8ff4dd031df5e06c2e890bf9a21b666d83b154e94d6067`**（32 证据自封）。终态：屏保留几何标定帧，relay OFF，MCU 生产。
+- **几何判决（高置信）**：全宽条纹标定帧渲染 **upright、无旋转、无行移**（8 条纹升序码 0..7 逐条对照会话端点验证）；角点小标记（40×40）呈色/位置不可靠（小面积转换欠驱动——标记不可作几何信号，条纹可以）。
+- **MAP-v2 探针帧和解**：upright + 整体下移一行（底部参照条卷到物理顶部）；**(历史,目标) 标签=设计标签**（行=历史、列=目标），仅物理位置平移。触发变量未定（MAP probe=L535 后 L535；geo=OTP 后；内容类 vs 刷新序未分）。
+- **14 候选重判（0 刷新，用解出的映射）**：加"须异于**全部**端点"判据后——**NEW_INTERMEDIATE=0**。唯一过双端点门的候选 (0→5) 紫罗兰 Lab(31.6,19,-52) h=290°、双侧 ΔE00=1.0，与会话码 1 端点 (32.4,18.6,-51.9) ΔE00≈0.5 → **码轴漂移：目标码 5 在此路径渲染为码 1 的紫罗兰**（非新色）。**用户问题最终答案：MAP-v2 无新独立中间态颜色。**
+- 次级机制发现：目标码 2 转换保持历史色相（矩阵第 2 列读成码轴）；转换截断（白历史行呈均匀亮色，暗端点不达）。
+- **下一入口**：①朝向机理统一表（demo 类 180° 6/6 vs 网格类 upright——差距仅在内容密度/底带，建议厂商函证 0xE9/0x20/0x21 语义 + MISO 转接板 backlog）；②v3 旋钮固件授权仍挂起；③日光鉴别 cron（绿码）继续。
+- 回归：无 host 代码变更。
+
+## 2026-10-09 22:15 +0800 MAP-v2 真屏扫图批完成（3 刷）：**无合格新色**——第三类朝向异常（未解几何）+ 转换截断，机制异常降级
+
+- **本轮新增刷新=3（OTP 白清 + history 帧 + probe 帧），qualified=0/256，无重发。** 全部 job/diagnostic 完整验证 PASS；drf_ms=21691（基线一致，面板健康）；变体 cb25e57c 进、生产 ba59c3d6 回均 verify pass,NVS 未动。批 [`CMAP_V2_LIVE_20261009_V1`](../.test-output/hardware/CMAP_V2_LIVE_20261009_V1/) manifest canonical **`2435da193107d738ade5f28718b9532f852635bf8749c4d6343a0715b10051ca`**(61 证据自封，含 15 张探针时序照片 + 全部分析脚本)。终态：屏保留探针帧，relay OFF,MCU 生产。
+- **照明门 1.032 过；台架新四边形（SIFT 1238 内点）已应用并复核有效。**
+- **朝向实况（新异常类，未解）**:history 帧 upright（行=升序码，端点逐行验证）；探针帧出现**不可单变换调和的几何**——码轴列（码 0..7 升序逐格验证）落在 rot180 位置、参照条藏青块在物理顶部（新内容非鬼影）、设计标定位读非轴内容。upright/flipud/rot180/行移 无一能同时拟合三件事实。这是继"demo 180°(6/6)""内容相关朝向"之后的**第三类朝向异常**。
+- **用户核心问题（有没有挖到新颜色）——如实回答：没有合格新独立中间态。** 端点一致性 dE00 均值 20.7（标定条 vs 白历史行）→ 按设计文档降级为**机制异常证据**;128 格中 90 格双侧不稳定，6 个 NEW_INTERMEDIATE + 8 个未映射码候选（含 Lab 与衰减曲线）留档待几何解出后重判，现不计入新色。附独立发现:**转换截断**——白历史行呈近均匀亮色，白→暗码转换未达暗端点。
+- **衰减数据**:+45s 锚帧 + 10 帧（49-82s)+ 4 帧（181-373s）全采，逐格 decay_span_L 在 `offline/cmap-analysis.json`。
+- **下一入口**:①朝向几何专项（建议：单格/单列标定帧逐位置锚定，判定是 RAM 行寻址偏移还是新变换类）;②v3 旋钮固件（表头 vsh_lv 阶梯，builder 已就绪）;③日光鉴别 cron（绿码异常，与 MAP-v2 无冲突）。
+- 回归：无 host 代码变更；此前套件与 contract 干净保持。
+
+## 2026-10-09 20:50 +0800 日光级照明重拍（0 刷新）：绿色偏暗异常**跨第二种光源复现**（L*29.8 vs 标定 47.3）；自然日光鉴别实验保留在 08:53 cron
+
+- **本轮新增刷新=0（只读相机批）；qualified=0/256。** 终态：屏幕保留 upright 全彩 demo（未动），MCU 生产固件，relay OFF。批 [`L535_DAYLIGHT_ACCEPT_20261009_V1`](../.test-output/hardware/L535_DAYLIGHT_ACCEPT_20261009_V1/) manifest canonical `f8683a489e7fb78a…`（31 证据自封）。
+- **照明门 PASS**：用户提供光源 ratio=1.032（p95=162 vs 参照 157），落在标定级区间（09-25 日光标定 ~1.0-1.1）——照明亮度已非变量。
+- **台架移动事件（第二次）**：面板在取景中变小且左上移。补救：SIFT 单应（1238/2422 内点）把冻结 quad 映射到今日取景，目视验证与 1007 批校正语义一致（同为面板外框贴边）；新 quad 与冻结 quad 均已入档。照明 ROI 仍为画面同一相对区（p95 稳健，ratio 有效）。
+- **结果（冻结门 FAIL，如实）**：raw 6/128 格 ΔE00≤3（median 10.16），白锚归一化后 median 13.94。逐码 median ΔE00(raw)：白 11.8、品红 11.0、黑 6.5、黄 23.1、**绿 30.1（实测 L*29.8 vs 标定 47.3）**。朝向仍 upright（corr 0.357 vs 正立期望，-0.099 vs 原样）。
+- **关键科学发现**：绿码异常**与 10-07 灯光 session（30.02/L*29.4）几乎逐数字一致**——第二种光源、ratio 1.032 下复现，排除"单 session 测光假象"。绿/白 L* 比 0.567 vs 调色板比 0.722（白锚归一化不救），绿相对本场白就是暗 ~18 L*。剩余鉴别：①自然日光（09-25 标定同类光谱）下是否回归 47.3；②09-25 绿端点本身是瞬态。**10-10 08:53 一次性 cron 保留**（0 刷新重拍）。
+- **MAP-v2 排期决定**：今晚**不跑**——MAP-v2 探针帧会覆盖 demo，明早日光鉴别实验将失去拍摄对象。改在明日日光窗口内紧随验收重拍后执行（3 刷预算不变）；用户若明确"现在就跑 MAP-v2、不等日光"则从其裁定。
+- 回归：本批无 host 代码变更（仅批内分析脚本）；此前 64+119 passed、contract 干净保持。
+
+## 2026-10-09 20:10 +0800 用户裁定重启**波形方案**（方向：挖掘不同色彩的中间态）；任意表生成器+首个格式注册完成（离线，0 刷新）
+
+- **本轮新增刷新=0；无设备动作。** 屏幕保留 upright 全彩 demo，relay OFF，MCU 生产固件。
+- **方向决策**：用户"重新拾起波形方案"→聚焦**挖掘不同色彩的中间态**。agent-7 全面盘点（7 组）：LUT 几何已绑定（535B=7B 头+6×88B）、三张真屏验证表、R20 传输链 30+ 次验证、runtime_waveform 信封齐备；硬缺口=任意表生成/record 语义/HOLD 证明+朝向之谜；**14 项已证伪路线清单在案**（剂量轴、identical-repeat、中性 4 级假象、multi-target 等，勿重复）。
+- **第一步交付（离线）**：`format_registry.py` 注册首个格式 `SPD1657_R20_L535_GEOMETRY_V1`（空注册表→恰一项）；生成器 `host/runtime_waveform/l535_table_builder.py`（`build_table()` 默认输出==reference 535B 逐字节，硬测试钉死；表头 6 旋钮 vsh/vsl/vsh2/vsl2/gate/pll 全经 mV 编码校验）；合同七段 4 段首次真正可填，recovery 保持 BLOCKED（HOLD 9 项义务未豁免）。差分报告 [`.test-output/offline/WAVEFORM_STRUCT_DIFF_20261009_V1/`](../.test-output/offline/WAVEFORM_STRUCT_DIFF_20261009_V1/)：**推荐第一扰动自变量=header vsh_lv（6000/6600/7200mV 阶梯，三值均真屏证明安全）**；gate 0x14 四表通用勿先扰；XOR-3 修正（active vs commented R20 表体差 389/535 字节，"只差表头"仅限 PWR/PLL 全局配置）。
+- **MAP-v2 设计+离线包已完成**：设计文档 [`MF1750_COLOR_INTERMEDIATE_MAP_V2_DESIGN_20261009.md`](MF1750_COLOR_INTERMEDIATE_MAP_V2_DESIGN_20261009.md)——每侧 8×8 全有向（历史，目标）映射（64 对，LUT 转换 A→B≠B→A），**active 电压域"从彩色态出发"空间（LH2 留白区，其 commented 域结果作对照基线）**；治理选 L535 变体路径（弃 campaign 链：无砖风险、自带 job/diagnostic 面）；刷新预算=3（OTP 白清+历史帧+探针帧），探针后 ≤90s 起 11 帧覆盖 ~300s 衰减曲线；XOR-3 标定条+参照条内建。离线包 [`.test-output/offline/CMAP_V2_20261009_R1/`](../.test-output/offline/CMAP_V2_20261009_R1/)（manifest `2e3b966c…`，audit PASS，9 帧测试全过）。**真屏入口就绪：等日光窗口（≥0.85）+ 用户确认。** 开放问题：v3 旋钮固件授权、异色历史 4 刷批排期、180° 校正分析预案、码 2/5 强信号单列标定。
+- 回归：cmap+waveform+frame_tool+palette 64 passed (+52 subtests)；runtime_waveform/l535 119 passed；`check_repo_contract.py` 干净。
+
+## 2026-10-09 18:35 +0800 **upright 全彩 demo 上屏成功**（预旋转补偿 6/6 实证）；色彩验收受照明所卡——日光重拍即可（0 刷新）
+
+- **本轮新增刷新=3（OTP 白清 + demo v2 双刷）；qualified=0/256。** 终态：MCU=生产 RC2G，relay OFF，**屏幕保留 upright 全彩 demo（demo v2 第 2 刷，干净无鬼影，用户可直接观看）**。批 [`L535_COLOR_ACCEPT_20261007_V1`](../.test-output/hardware/L535_COLOR_ACCEPT_20261007_V1/)（目录名 1007=首次中止尝试日；实际完成 10-09 18:30）manifest canonical `13d58460076b45f4…`（68 证据，含台架出框中止段——台架曾被移动，用户复位）；设计文档 §18。
+- **朝向闭环**：屏上=原 demo 意图正立（vs rot180(v2 预览) corr 0.389 vs 原样 -0.08）。**demo 帧渲染 180° 规律 6/6 实证，源图预旋转 180° 恰好抵消——L535 全彩帧路径端到端（帧生成→打包→上传→驱动→呈色→预补偿）全链路验证完成。**
+- **色彩验收 FAIL（如实，照明原因）**：raw 9/128 格 ΔE00≤3（median 9.66）；逐码 median ΔE00：白 7.9（b* 与标定几乎一致）、品红 11.1、黄 14.4、**绿 30.0（实测 L*29.4 vs 标定 47.3——灯光谱下绿显著偏暗）**。白清 interior std 30.6 示照明梯度/眩光。结论：结构链路完成；**绝对色彩=照明绑定**（调色板标定于 09-25 亮光 session，灯位/光谱差异对色相敏感码系统性超门）。
+- **下一入口（0 刷新！）**：demo 帧双稳态在屏——**日光下直接重拍**（锚帧+10 同态帧，只读相机）→ 同一提取管线对照 preview/palette 即可出日光验收结论，无需任何刷新/刷写。已设 10-08 08:53 一次性 cron 自动检查+重拍。若日光仍不过 → 选项：灯光谱重标定第二调色板（双照明 palette）或接受结构终态。
+- 面板健康：drf_ms=21691 三次 session 一致。
+- 回归：本批无 host 代码变更；此前 102 passed (+94 subtests) + contract 干净保持。
+
+## 2026-10-06 21:05 +0800 v2 A/B 判别：R20 写长与 PSR 二次改写**双双排除**；朝向根因现场手段到头（无 MISO），转厂商函证+管线预旋转务实路径（3 刷新）
+
+- **本轮新增刷新=3（OTP 白清 + v2 demo 双刷）；qualified=0/256。** 终态：MCU=生产 RC2G，relay OFF，**屏幕保留 v2 demo r3 帧（180°，无鬼影）**。批 [`L535_V2_AB_20261006_V1`](../.test-output/hardware/L535_V2_AB_20261006_V1/) manifest canonical `0804b753b449e685…`（59 证据）；设计文档 §17。照明门 1.573（强灯）。
+- **v2 变体构建（离线轨交付）**：env `esp32-s3-devkitc-1-l535-frame-v2`，bin sha `e1b6b754…`（[`.test-output/offline/L535_FRAME_FW_V2_20261006/`](../.test-output/offline/L535_FRAME_FW_V2_20261006/)，manifest `6b13cc07…`）。三处差异：级联 init PSR 单次写 {5F,E9}、R20 写全 799B、无二次改写。零差异双实证（生产 `ba59c3d6…`、v1 `cb25e57c…` 精确复现）。**取证修正**：535B 本就是厂商表全长（EDP_init.c），799B 是本仓证据容器（尾 264B 0xFF 填充）——"datasheet 要求 799"不成立；**本板无 MISO 线**（`epd_config.h:27` 仅 MOSI），PSR 回读物理不可能。
+- **判别结果**：v2 demo 两刷均 180°（corr 0.553/0.549 vs identity -0.303/-0.301）→ **R20 写长、PSR 二次改写双双排除**。最终统计：**PAL1 帧 upright 3/3、demo 帧 180° 5/5（v1×3+v2×2）**，机制不在任何已写寄存器/数据路径，剩余=厂商隐藏命令（0xE9/0x20/0x21）与 LUT RAM 寻址交互——现场手段到头，转厂商函证+MISO 转接板硬件 backlog。
+- **面板健康**：drf_ms=21691 与晨基线 21681 一致（可复现）；早前 60s 超时确证为 9 天断电深置。
+- **务实路径（已定）**：demo 类帧 host 管线预旋转 180°（demo v2 帧 `eb2a79ea…` 已是）→ upright 上屏；PAL1 类帧无需补偿。**剩余唯一待办=日光类照明（不开灯，ratio~1.0 参照系）下 demo v2 双刷+正式色彩验收**——已设 10-07 08:47 一次性 cron 检查照明。
+- 回归：frame_tool/palette/pipeline/gamut 102 passed (+94 subtests)；`check_repo_contract.py` 干净。
+
+## 2026-10-06 10:15 +0800 判别批完成：模型①证伪，**朝向=帧内容相关**（PAL1 upright 3/3、demo 180° 3/3）；静置恢复 DRF 实证；结构呈色精确、色彩待日光复核（3 刷新）
+
+- **本轮新增刷新=3（OTP 白清 + demo 双刷）；qualified=0/256。** 终态：MCU=生产 RC2G，relay OFF，**屏幕保留 demo r3 帧（180° 朝向，无鬼影）**。批 [`L535_VERIFY_20260927_V1`](../.test-output/hardware/L535_VERIFY_20260927_V1/) 总 manifest canonical `2ed62019744f7d3e…`（92 证据：两中止段+失败段+完成段）；设计文档 §15。
+- **静置恢复实证**：通电静置 20 分钟后 OTP 白清 DRF=21681ms（前次 60001ms 超时）——9 天未通电深置粒子就是超时根因；白场均匀（mean 231.1/std 13.9），PAL1 残留全清。**运维新知：长期断电后首刷需先通电静置。**
+- **模型①证伪**：OTP 清底后 demo 第 1 刷=180°（命中预测，corr 0.606 vs identity -0.341），但同帧第 2 刷**仍 180°**（预测 upright，证伪）。更新硬事实：**PAL1 帧 upright 3/3、demo 帧 180° 3/3——朝向帧内容相关**，DTM 逐字节排除数据层、几何寄存器（PSR.A UD/SHL、TRES、级联 M/S#）全排除；剩余未探区=厂商隐藏命令 0xE9/0x20/0x21 与显示 RAM 寻址交互。
+- **验收（demo r3，rot180 对齐后）**：结构呈色精确（几何 corr 0.606、ECC 精配 0.90、**六色族齐含绿、无鬼影**）；双侧一致 4/4 过；但 §5 色彩门 FAIL（raw 1/128 格 ΔE00≤3；session 白锚归一化后 12/128、median 8.82，绿 median 20.4/品红 11.4 显著偏）——主因=强灯光谱（ratio 1.268）与 09-25 标定日光（~1.0）逐色相不同，**色彩验收需日光类照明重测**。
+- **下一入口**：① 日光类照明（ratio~1.0，不开灯）下：OTP 清→刷变体→demo v2 帧（源图已 180° 预补偿）双刷→#2 正式色彩验收；② 离线固件修复：R20 写全 799B 对照实验（535 前缀嫌疑）+ PSR 回读校验。
+- 回归：本跑无 host 代码变更。
+
+## 2026-10-06 09:00 +0800 判别批刷新 #1（OTP 白清）设备侧失败：DRF 60s 超时未释放（耗 1 刷新，无重试，保护性 relay OFF）
+
+- **本轮新增刷新=1（失败的 OTP 白清）；刷写=0；qualified=0/256。** 照明门第二拍 1.14 达标（首拍 0.752 晨光未开灯停过一次）。**数据路径完全正常**（DTM 双哈希一致），失败在面板驱动执行：PON 正常(180ms)→DRF 断言 BUSY→**60s 超时未释放**（timeout_stage=DRF）→POF 清理。批 [`L535_VERIFY_20260927_V1`](../.test-output/hardware/L535_VERIFY_20260927_V1/) manifest canonical `48c655581f6b275e…`（28 证据含两段中止记录）；设计文档 §14。
+- **终态**：MCU=生产 RC2G（未刷写）；屏幕=PAL1 网格+demo v2 鬼影+部分区域被失败白清部分驱动（现场照 `post-failed-white.jpg`）；relay OFF（BUSY 异常纪律保护性断开）。
+- **DRF 挂起候选**：①面板 9 天未通电深置粒子驱动超 60s 预算（首要嫌疑）；②供电轨异常（relay 反馈门过但电压未实测）；③老化。晨温 34°C 排除低温。
+- **恢复方案（待用户确认）**：relay ON 让面板通电静置回暖 → 单跑一次生产白清观察 DRF 实际时长 → 通过则恢复原判别序列（OTP 清→刷变体→demo 双刷→#3 验收）。
+- 模型①（OTP 后首刷 L535=180°）未获判别机会，留待面板恢复。
+
+## 2026-10-06 08:35 +0800 判别+验收批中止于物理前置：J2 断开（0 刷新 0 刷写，安全收场）
+
+- **本轮新增刷新=0、刷写=0。** 通电诊断 busy=0 且 relay 三态切换读数不变 → J2 未接通（09-27 末批按刷写铁律 J2-off 后现场隔 9 天未恢复）。对照运维卡：接通 J2 后应 busy=1。
+- 中止证据 `.test-output/hardware/L535_VERIFY_20260927_V1/blocked-status.json`（8 证据绑定，批次未自封待续用）。MCU/网络/relay 回路均正常（生产 RC2G 应答、receipts 全 PASS）。
+- **当前现场终态：relay=ON（特意留置，便于接通 J2 后直接复核 busy=1）；屏幕保留 PAL1 码列帧；MCU 生产固件 `ba59c3d6…`。**
+- **恢复入口**：用户物理接通 J2 → 复核 `/api/diagnostic/status` busy=1 → 从原序列第 3 步继续（OTP 白清 → 刷变体 → demo 双刷 → #2 验收），批次目录沿用 `L535_VERIFY_20260927_V1`。预测备忘：OTP 后 demo #1=180°、#2=upright 且更干净。
+
+## 2026-09-27 12:30 +0800 探针批：逐刷交替假设**证伪**；存活模型"OTP→L535 首刷=180°，链入 L535 态后 upright"；双刷清鬼影量化证实（2 刷新用尽）
+
+- **本轮新增刷新=2（同 PAL1 帧连刷）；qualified=0/256。** 终态：relay OFF，MCU 回生产 `ba59c3d6…`，**屏幕保留 PAL1 码列帧（第 2 刷 upright）**。批 [`L535_ALTERNATION_PROBE_20260927_V1`](../.test-output/hardware/L535_ALTERNATION_PROBE_20260927_V1/)（40 证据，manifest canonical `621af71ffe5b5a25…`）；照明门 1.032 无 force；设计文档 §13 已追加。
+- **预测 vs 实测**：交替假设预测 R1=upright/R2=180°；实测 **R1=R2=upright**（亮蓝列双侧同位、B-R 剖面几乎相同 side0 128.6 vs 127.3、列序均升序）→ **逐刷翻转形式证伪**。
+- **五次 L535 渲染链与存活模型**：demo v1=180°（OTP 后首刷，高置信）→ PAL1=upright → demo v2=180°（**低置信**，鬼影污染）→ PAL1=upright → PAL1=upright。**模型①"OTP 路径刷新后的首次 L535 刷=180°，之后 L535→L535 保持 upright"拟合全部高置信点**；模型②帧内容相关（无机制，与数据层验证矛盾）；模型③未映射历史态依赖。判别实验=OTP→L535→L535 同帧三刷（下批）。
+- **鬼影衰减量化**：demo v2 残留区均亮 R0→R1→R2 = 88.5→95.8→100.9（navy 区）/ 99.0→109.2→113.3（底带）——**双刷同帧清鬼影有效**（运维对策成立）。
+- **固件修复候选（datasheet 级证据，离线待做）**：① PSR 写后回读校验（SPD1657B W/R 寄存器可读，注入点 epdLoadL535RuntimeLut PSR 写后，最低风险）；② LUT 源字节并入 init PSR 写点（消除生产写 0x69→变体改写 0xE9 的二次改写历史依赖）；③ **复核 R20 535B 前缀 vs 799B 全长**（datasheet 要求参数写全才生效，535 前缀或致 R20 静默不全——可解释呈色/鬼影异常，整条 L535 链共用此前缀）；几何寄存器已全部排除；0xE9/0x20/0x21 为 datasheet 未载厂商隐藏命令。
+- **下一入口（判别+验收合并批，3 刷新）**：OTP 白清（生产固件）→ 刷变体 → L535 demo 原帧连刷两次（模型①预测 #1=180°/#2=upright 且更干净）→ #2 对照预览正式验收。待用户裁定。
+- 回归：本批无 host 代码变更；此前 68 passed (+94 subtests) + contract 干净保持有效。
+
+## 2026-09-27 11:45 +0800 朝向定位批次：L535 呈色呈**逐刷交替旋转**（同固件先后渲染 upright 与 180°）；L535 全刷新自清被证伪（2 刷新用尽）
+
+- **本轮新增刷新=2（PAL1 码列帧 + demo v2）；qualified=0/256。** 终态：relay OFF，MCU 回刷生产 `ba59c3d6…`（NVS 未动），**屏幕保留 demo v2 帧（带 PAL1 网格鬼影）**。批 [`L535_ORIENTATION_20260927_V1`](../.test-output/hardware/L535_ORIENTATION_20260927_V1/)（63 证据，manifest canonical `a857f1ae0dbdd78e…`）；照明门 1.21 无 force；设计文档 §12 已追加。
+- **核心发现——逐刷交替**：L535 路径三次渲染 = demo v1 180°（OTP 清底后）→ PAL1 码列 **upright**（L535 后）→ demo v2 **180°**（L535 后）。码列帧朝向判定硬证据：校正后列色序 L→R 升序 0..7，唯一亮蓝列双侧均左二（180° 下应在右二），与 09-25 PAL1 链渲染一致。DTM 逐字节验证排除帧/固件数据层；**同一固件二进制（cb25e57c）同会话先后渲染 upright 和 180°** → 交替只可能在控制器扫描状态层（PSR 0xE9 / R20-R21 上传与上次驱动残留态交互）。**用户更早观察到的"左右差 180°"与 PAL1 upright 不再矛盾——两者都是交替序列的一员**。
+- **附带证伪**：批次计划假设"L535 全刷新自清"不成立——PAL1 网格强烈残留贯穿 demo v2；demo v2 量化门因鬼影+旋转不可评（如实记录未判定）。离线件 demo v2（源图 180° 预补偿，sha `eb2a79ea…`）在 [`.test-output/offline/L535_DEMO_V2_20260927_V1/`](../.test-output/offline/L535_DEMO_V2_20260927_V1/)。
+- **下一入口（探针批，2 刷新）**：① 同帧连刷两次逐拍拍照——直接验证交替假设；② 若交替证实：固件层修复方向=每次刷新前强制已知扫描态（朝向确定化），或管线按奇偶补偿；鬼影对策=内容切换前 OTP 白清或双刷。待用户裁定开跑。
+- 回归：frame_tool+palette+pipeline 68 passed (+94 subtests)；`check_repo_contract.py` 干净。
+
+## 2026-09-27 10:45 +0800 L535 全彩 demo 真屏：六色族（含绿）任意帧首次上屏成功；协议路径全 PASS；内容整体 180° 旋转待定位（2 刷新用尽）
+
+- **本轮新增刷新=2（OTP 全白清底 + L535 demo 帧），预算 2/2 用尽；qualified=0/256。** 终态：relay OFF、off_gate_passed，**屏幕保留 L535 demo 帧**，MCU 已回刷生产固件 `ba59c3d6…`（版本确认 RC2G，NVS 未动，两次均 app-only 刷写）。批 [`L535_DEMO_20260926_V1`](../.test-output/hardware/L535_DEMO_20260926_V1/)（61 证据文件，manifest canonical `88339344a6b4915e…`）。
+- **里程碑（如实分级）**：① **协议/数据路径全 PASS**——照明门 1.013 无 force、白清底均匀（std 7.1）、变体 tag 预检、DTM 双哈希与 host identity 逐字节一致、帧 unpack==预览逐字节一致；② **呈色事实成立**——L535 任意帧上屏，六色族齐（含 OTP 不可寻址的绿色），demo 全部结构与预览逐像素对应；③ **量化验收 FAIL**——内容整体旋转 180°（11 种几何候选中 global-180 相关 0.766 决定性最优，其余 ≤0.31），最佳变换下格码一致率仅 39.8%，逐码 ΔE00 超门（白 8.76/黑 11.45/黄 23.44/绿 25.56）；白 L* 56.1 vs 标定 65.5（照明光谱差异贡献）。
+- **180° 根因未定**：物理翻转已排除（相机手性正常、面板蓝胶带标记与 PAL1 逐帧一致）；PAL1 链同 SPI 序列 upright 证据（白锚交叉验证）与本次矛盾。**注：用户在更早 session 已人工观察到"左右差了 180°"，本次为同一现象的硬测量复现**。候选定位：变体固件刷 PAL1 码列帧复核朝向（区分 PSR/半区映射层 vs 帧管线）。分析细节见批次 `acceptance-verdict.json`；设计文档已追加 §11 批次结果。
+- **中途工具变更（留档）**：首次上传被 stock 码校验 fail-closed 拦下（码 7∉stock 集），但刷新已在首次调用执行（POST 202+job completed）；随后给 `mf1750_frame_tool.py` 加 `allowed_colors` 透传（默认 None=stock 不变）+ pin 测试（含反向断言），设备侧用 `l535_verify_completion.py` 对不可变证据离线补齐验证，零额外设备动作。
+- **下一入口**：定位 180° 根因（变体固件+PAL1 码列帧，1 刷新）或直接管线层 180° 补偿出 demo v2 帧再上屏验收（1 刷新）——待用户看照片后裁定。
+- 回归：frame_tool 33+52、关联套件 88+70；`check_repo_contract.py` 干净。
+
+## 2026-09-26 11:05 +0800 L535 帧路径固件变体构建完成（离线，0 刷新）；设计文档落盘；待白天亮光上屏
+
+- **本轮新增刷新=0；无设备动作。** 屏幕保留 PAL2 v2 帧（OTP），relay OFF，MCU 跑生产固件。
+- **设计文档** [`MF1750_L535_FRAME_PATH_DESIGN_2026-09-26.md`](MF1750_L535_FRAME_PATH_DESIGN_2026-09-26.md)（27 处引用脚本自查全过；§10 实施记录）。开放问题裁定：独立 main+独立 pio env；tag `MF1750_L535_FRAME_V1_20260926` 已入 `mf1750_frame_tool.py` ALLOWED_BUILD_TAGS；验收全屏 128 格；不做双模式合并。
+- **重要设计修正（实施中发现）**：`src/epd_driver.cpp` 被 17 份历史封印包+3 处活钉绑定 sha `386acdd3…`，原地注入会让全部 once-runner/pack 测试系统性转红（实测 57 errors+20 failed）。改为仓库既有惯例的**专用编译单元**：`src/l535_frame_epd_driver.cpp`（生产驱动全拷贝+`MF1750_L535_FRAME_PATH_BUILD` 门控 4 处 L535 块：放行码 0..7、`epdLoadL535RuntimeLut()` 逐字节复刻 PAL1 封印写表序列）+ `src/l535_frame_main.cpp`（仅换 tag/banner）。生产 `epd_driver.cpp`/`main.cpp` 钉值不动。
+- **构建产物** [`.test-output/offline/L535_FRAME_FW_20260926_V1/`](../.test-output/offline/L535_FRAME_FW_20260926_V1/)：变体 env `esp32-s3-devkitc-1-l535-frame`，bin sha `cb25e57c424ad7c9…`（manifest 自封+SHA256SUMS）。**生产零差异最强形式**：当前工作树 `pio run -e esp32-s3-devkitc-1` 精确复现 `ba59c3d6111a15c3…`（与 PAL2 现场已刷绑定值逐字节一致）。
+- **下一唯一入口（等用户确认白天亮光在场）**：fresh 枚举 → relay ON → OTP 全白帧清底（1 刷新）→ J2-off 刷变体 `cb25e57c…` → demo 帧（sha `e11bee60…` 钉定）POST /api/frame（1 刷新）→ 亮光拍照全屏 128 格 → 对照 `preview-quantized.png` 验收（ΔL*/ΔE00/双侧一致适用，Δh 豁免——验收"屏上=预览"）→ 封存。回退=重刷生产 bin（包内已留档）。刷新预算 2，qualified=0/256。
+- 回归：目标链 255 passed (+122 subtests)；platformio.ini 扫描 44 passed；钉值敏感类 34 passed；`check_repo_contract.py` 干净。全量回归 4753 项受 3600s 上限 27% 处中断，3 个失败全部定位为既有环境前置缺失/8 月残骸，与本次无关。
+
+## 2026-09-26 08:50 +0800 用户裁定 L535 全彩路线；L535 实测调色板+gamut+demo 帧离线全件完成（0 刷新）
+
+- **本轮新增刷新=0；无设备动作。** 屏幕保留 PAL2 v2 帧（OTP），relay OFF，MCU 跑生产固件。
+- **决策**：用户在 OTP 5 色 / 厂商核实 / L535 全彩三选项中裁定 **③ L535 全彩路线**。证据与裁决归档 [`MF1750_L535_FULLCOLOR_EVIDENCE_AND_DECISION_2026-09-26.md`](MF1750_L535_FULLCOLOR_EVIDENCE_AND_DECISION_2026-09-26.md)（OTP 实测表、PAL1 L535 标定、剂量证伪、行业调研、PAL1/PAL2 对照五路证据）。
+- **palette schema 扩展**：`render_path` 字段（otp 默认 / l535_r20）；OTP 行为逐字节不变（reference palette canonical sha 仍 `181770a2…`）；l535_r20 下码=L535 nibble（含 4/7），物理门按实测结构性质（白最亮/黑最暗/彩色 chroma>8）。gamut profile 同步绑 render_path。
+- **正式写盘**：`host/color_pipeline/palettes/mf1750_l535_measured_v1.json`（canonical `50bd8193…`，calibrated=true，绑 PAL1 亮光批 measurement）+ `host/gamut_mapping/profiles/mf1750_l535_measured_xyz_v1.json`（canonical `5d970923…`）。**这是仓库首个 calibrated=true 调色板**，全彩管线最后一个硬缺口闭合。
+- **L535 实测 6 码**（双侧中位，ΔE00≤2.31）：black=码3(L*15.8) / white=码7(L*65.5) / yellow=码4(L*58.6) / red=码1(品红族,C*~70) / green=码6(L*53.4) / blue=码0(蓝灰,L*30.3)；码 2/5 留档 extras。白列校准系数 1.004。
+- **全彩 demo 离线件** [`.test-output/offline/L535_FULLCOLOR_DEMO_20260926_V1/`](../.test-output/offline/L535_FULLCOLOR_DEMO_20260926_V1/)：合成测试图 → FS 抖动量化（管线按 render_path 选码集，OTP 默认不变）→ `demo.frame4bpp`（sha `e11bee60…`，validate_frame 0..7 显式通过）→ 实测 Lab 回渲染预览 `preview-quantized.png` → manifest 四 sha 自封。预览呈蓝灰绿调=该色域真实能力。
+- **下一唯一入口**：L535 生产路径**固件变体设计文档**（R20 加载 L535 LUT + 任意帧接收 + 设备端色表校验放行 0..7 + 清底策略 + 新安全/验收闸；无 campaign 架构、复位安全）→ 构建 → 等白天亮光+用户确认后刷写 + demo 帧上屏（1 刷新）→ 亮光拍照对照预览验收。
+- 回归：受影响套件 294 passed (+94 subtests)；extended_color 八件套 97 passed (+218 subtests)；`check_repo_contract.py` 干净。
+
+## 2026-09-25 01:30 +0800 重大发现：本面板 OTP LUT 不是 stock Spectra-6（白=2/黄=4/蓝=1/绿不可寻址）；palette v1 暂缓待用户决策
+
+- **本轮新增刷新=2（生产全白清底 + PAL2 重发）；qualified=0/256。** relay=OFF、off_gate_passed=true，屏幕保留 PAL2 v2 帧（OTP），MCU 跑生产固件。
+- **混合屏假设被否（如实记录翻转）**：PAL2 v1 照片疑似"OTP 未覆盖 L535 鬼影"（bright-diagnosis.json）；白清后重刷 v2 与 v1 逐列 ΔE00≤3.2——OTP 渲染是确定性的，v1 本就是纯净 OTP 呈现，白清假设被证据否决（诊断文档已标注翻转与教训：清底重测才是判据）。
+- **实测 OTP LUT（两批独立复现，硬事实）**：nibble→色 = `0=黑(蓝灰偏弱, L*40) / 1=蓝(浓紫罗兰, C*66) / 2=白(L*73) / 3=红(hue 5°) / 4=黄(hue 114°) / 5=白 / 6=暗(藏青近黑) / 7=白`，等位置换 σ=[0,5,1,3,2,1,0,1]。**白在 nibble 2、黄在 4、蓝在 1、绿完全不可寻址**。空间 identity 三重确证（几何残差 0.45 vs 备选 ≥37、封印映射、上传 DTM 哈希）+ 帧字节逐列复核，排除 nibble swap/空间置换/帧错误。
+- **palette v1 未写盘（正确 fail-closed）**：管线物理码表（0黑/1白/2黄/3红/5蓝/6绿）与本面板 OTP LUT 冲突——按 schema 写会让"白保护"驱蓝墨水；schema 物理门（黄 b*>蓝 b*，两列皆白）必拒。正式两 JSON 确认未写。
+- **决策点（待用户）**：① 管线颜色契约改实测 OTP LUT（black=0/white=2/yellow=4/red=3/blue=1/green=不可渲染）→ 5 色调色板；② 与厂商核实本面板 OTP 是否为定制测试表（E1002 样例表与本 OTP 不符）；③ **L535（R20 加载）是目前唯一观测到绿色的路径**（nibble 6, hue 132°）——若要绿色/全彩，生产路径需改为加载 LUT 的新路径（新安全/验收闸），PAL1 亮光批即该路径的现成标定。另注：2026-08-04"OTP 正确六色"的历史人工观察与本次两批硬测量冲突，以本次为准并建议复核当时记录。
+- 回归：223 passed (+42 subtests)；`check_repo_contract.py` 干净。诊断封印：`PAL2_CAL_ANALYSIS_20260925_V1/bright-diagnosis-v2.json`。
+
+## 2026-09-25 00:45 +0800 PAL2 生产 OTP 路径标定帧已上屏（1 刷新 PASS）；照片暗场待灯亮重拍（0 刷新）
+
+- **本轮新增刷新=1（PAL2，生产路径）；qualified=0/256。** 最终 relay=OFF、off_gate_passed=true，**屏幕保留 PAL2 标定帧（OTP stock 语义 8 码列，码 4/7 列填白）**，MCU 跑生产固件 `RC2G_R16_CCSET_…_2026-08-07`（无 campaign 绑定，复位安全）。
+- 批 [`PAL2_CAL_20260925_V1`](../.test-output/hardware/PAL2_CAL_20260925_V1/)：生产固件 pio 构建（bin sha `ba59c3d6…`）→ J2-off 刷写 → 版本预检（CS1 0,0,0,0/CS2 1,0,0,0）→ relay ON → `pal2_upload.py`（批次本地脚本：帧 sha 钉定 `d1a9577c…` + epd_frame.validate_frame + frame_tool `perform_refresh` 完整 job/diagnostic 验证）→ **POST /api/frame 1 刷新 PASS**。
+- **PAL2 帧与 PAL1 帧共享 6 码列逐字节相同**（码 4/7 列生产校验拒收故填白）——与 PAL1 亮光批构成"L535 vs OTP 唯一自变量"对照实验。设计文档 [`MF1750_PAL2_PRODUCTION_PALETTE_DESIGN_2026-09-25.md`](MF1750_PAL2_PRODUCTION_PALETTE_DESIGN_2026-09-25.md)；工具 `mf1750_pal2_swatch_frame.py`/`mf1750_pal2_photo_extract.py`；测试 221 passed (+42 subtests) + frame_tool 32 passed 无回归。
+- **未完成**：刷新后的 11 张照片是暗场（灯在刷新后熄灭，画面全黑不可用）。帧在屏上保留，等灯亮重拍（0 刷新）→ `mf1750_pal2_photo_extract.py` → `mf1750_pal1_palette_build.py --white-code 1` → `palettes/mf1750_measured_v1.json`（OTP stock 语义下黑 L*<<白 L*，schema 物理门预期通过——正是 PAL1 失败项的对照验证）。
+- 运维记录：frame_tool 只发内置 fixture，外部帧上传用批次本地脚本（`pal2_upload.py`）；`--confirm-cold-start` 语义=J2 断电 ≥10s。
+
+## 2026-09-25 00:10 +0800 PAL1 亮光批产出有效标定——但发现它测的是 L535 路径而非生产路径；转 PAL2 生产路径标定
+
+- **本轮新增刷新=0**（亮光重拍走保留帧）；qualified=0/256；屏幕保留 PAL1 帧，relay OFF。
+- **亮光重拍成功**（用户开灯，ratio 1.076 过 0.85 硬门）：`.test-output/offline/PAL1_CAL_ANALYSIS_20260925_V1/extraction-bright.json`（10 帧，码 7 白 L*=65.02 与 9-17 亮场 65.8 吻合，双侧 ΔE00≤2.31 数据质量好）。均匀性 7 格失败归因：6 格 ROI 边缘污染（内缩探针实锤单调下降）+1 格格内微特征但非离群；palette build 加了文档化列级稳健规则（4 新测试）。
+- **决定性发现**：亮光批 8 码实测（active L535 路径）：码0=蓝灰30、码1=**浓品红** C*70、码2=绿50、码3=暗紫16、码4=黄绿58.5、码5=暗紫17、码6=绿黄53、码7=白65.5——与 stock 语义完全不符且非置换。**palette schema 物理门（黑 L*<白 L*）fail-closed 正确拦截**：若按 schema 名写盘，"白保护"会去驱品红墨水。palette v1 未产出（两个正式路径 JSON 确认未写）。
+- **根因定位（explore 实证）**：**生产帧路径=OTP 波形**（`src/main.cpp:1370` POST /api/frame → `src/epd_driver.cpp` init 无 0x20/LUT 加载，`epd_config.h:52-57` stock 码语义，4bpp nibble 直写 DTM）；PAL1/LH 链每次向 R20 写 L535 表（`ec5_lightness_hold_function_chain_v1_driver.inc:308-314`，源自厂商另一份 REG-API EDP_init.c）。两条路径呈色互斥（OTP：2026-08-04 实测正确六色白=码1；L535 active：白=码7）。PAL1 数据=L535 表的有效标定，但不是生产调色板。
+- **下一唯一入口（PAL2，生产路径标定，灯亮着今晚做）**：生产固件（OTP）+ `/api/frame` POST 8 码列帧（与 PAL1 帧同布局同字节 = LUT 差唯一自变量的对照实验）→ 亮光拍照提取 → `palettes/mf1750_measured_v1.json`（calibrated=true，waveform_version=OTP）。1 刷新。
+- 回归：212 passed (+42 subtests)；`check_repo_contract.py` 干净。
+
+## 2026-09-24 22:20 +0800 PAL1 真屏 PASS（V5，1 刷新）；active 呈色与 commented 完全不同；标定待亮光重拍（0 刷新）
+
+- **本轮新增刷新=1（PAL1 V5）；刷写=4（V1/V2/V3/V5，V4 是诊断版）+1 V4；qualified=0/256。** 最终 relay=OFF、off_gate_passed=true，**屏幕保留 PAL1 帧（active 8 码列，双稳态）**，MCU 跑 PAL1 V5 固件（boot `5b4d25e139b138d9`，campaign complete）。批 [`PAL1_CAL_20260924_V1`](../.test-output/hardware/PAL1_CAL_20260924_V1/)。
+- **三轮缺陷迭代（全部如实记录在设计文档 6/7/8/9 节）**：① PAL1-R1-D1 fixture 自检失败=单 action 架构 Mid/Target 三角越界（native 审计 stub 盲区，已补洞+V2）；② V2 门拒→NVS dump 地面真值发现 pal1_v1 cursor 未写盘（boot 只写 boot key）→V3；③ V3 仍拒→V4 门位图自诊断定位 pal1_v2=769：**dump 的 esptool RTS 复位让 V2 二次启动触发绑定不匹配 fault 持久化**（dump 读于复位前，时序坑）→V5 门接受 769。运维铁律强化：**"已刷未开跑"状态下任何复位 MCU 的操作都把该命名空间砖成 769**。
+- **PAL1 V5 链真屏 PASS**（包 [`PAL1_CAL_20260925_R2`](../.test-output/offline/PAL1_CAL_20260925_R2/)，contract `97087d96…`；11 段门位图全 true 后放行）：1 ARM/1 EXECUTE/1 driver/1 refresh（45359ms），active 8 码列上屏。
+- **暗场提取（0.51，执行完整性 PASS）**：128/128 ROI、锚帧重测 ΔL*中位 0.0；**重大发现：active 路径呈色与 commented 完全不同且非平凡映射**——active C1=高色度品红（L*6.1/C*47.7）、C3/C5 近黑、C2/C4/C6 绿色族、C7 最亮；commented 下 C5 反而是最亮彩列。实证：生产调色板标定必须用 active 路径，commented 数据不能替代。L535 active 表索引语义与 stock E6 命名不同（"码 1"实为暗品红非白）。
+- **palette build 干跑 fail-closed 验证**：暗场 11 格均匀性失败按设计拒绝写盘（未放宽门）；双侧一致性门（ΔL*≤3/ΔE00≤5）在暗场无误杀（全部 ≤1.5/1.32）。
+- **下一唯一入口**：**亮光重拍（0 刷新）**——PAL1 帧保留在屏上，等照明 ≥0.85（硬门）跑一键脚本 `.test-output/hardware/PAL1_CAL_20260924_V1/offline/bright_reshoot_pal1.py`（先填温湿度）→ 提取 → `palettes/mf1750_measured_v1.json`（calibrated=true）+ 实测 gamut profile → 全彩端到端 demo（PAL2）。已设明早 7–11 点自动复查 cron（达标自动跑重拍脚本，全程只读相机+离线分析，零设备动作）。
+- 回归：209 passed (+42 subtests)；`check_repo_contract.py` 干净。
+
+## 2026-09-24 16:05 +0800 PAL1 实测调色板标定链离线全件建成（全彩 v0 主线，待 ≥0.85 照明）
+
+- **本轮新增刷新=0；qualified=0/256；无设备动作。** 屏幕保留 DOSE2 彩帧，relay OFF。
+- 设计文档 [`MF1750_PAL1_MEASURED_PALETTE_CHAIN_DESIGN_2026-09-24.md`](MF1750_PAL1_MEASURED_PALETTE_CHAIN_DESIGN_2026-09-24.md)：单 action active 头 8 码列（=生产帧路径同一 L535 active 表+冻结驱动）→ ≥0.85 硬门拍照 → calibrated palette JSON。**与剂量链性质不同：本次数据要跨 session 当校准基准，0.85 是硬门，不接受特批放低。**
+- 离线全件（子代理构建）：算法 `host/static_photo/palette_cal_pal1.py`；pack `tools/mf1750_pal1_pack.py`（NVS `pal1_v1`；设备门 6 命名空间含 lh3dose_v2 终态+lh3dose_v1 砖态 769 保留）；native 审计 47 场景 PASS；runner `tools/mf1750_pal1_once_v1.py`（scope `ONE_INDEPENDENT_PAL1_CAL_ACTION`）；调色板构建 `tools/mf1750_pal1_palette_build.py`（extraction→palette schema v2 calibrated=true，双侧一致性 ΔL*≤3/ΔE00≤5 fail-closed，白列 session 校准系数，码 4/7 extras 留档，实测 gamut profile 同步产出）。包 [`.test-output/offline/PAL1_CAL_20260924_R1/`](../.test-output/offline/PAL1_CAL_20260924_R1/)：contract `405ab788…`、BIN `d4562a93…`、编译 PASS。
+- 设计要点记录：driver_role=Source（单 action 架构 role 1 唯一自洽）；palette schema 物理码语义=生产帧 4bpp 值（白=码 1），与实验链 LUT 索引语义不同，build 按列 c→物理码 c 映射并 fail-closed。
+- 测试：PAL1 28 全绿；含回归 200 passed (+42 subtests)；`check_repo_contract.py` 干净。
+- **下一唯一入口（照明 ≥0.85 才动手）**：fresh 枚举 → 刷 PAL1 固件（**之后严禁任何 MCU 复位**）→ run --ordinal 1（1 刷新）→ 1 锚帧+10 同态帧 → extraction → `mf1750_pal1_palette_build.py` → `palettes/mf1750_measured_v1.json` + 实测 gamut profile → 端到端全彩 demo（PAL2）。已设明早 7–11 点自动照明复查 cron，达标即自动开现场。
+
+## 2026-09-24 15:10 +0800 剂量轴判决实验完成：剂量不是明度旋钮（V2 链三段 PASS + 分析定案）
+
+- **本轮新增刷新=3（SOURCE/DOSE1/DOSE2）；刷写=1（V2 主固件）；qualified=0/256。** 最终 relay=OFF、off_gate_passed=true，**屏幕保留 DOSE2 帧（双侧 8 码列彩图）**，MCU 跑 V2 主固件（boot `4d53de6fe4b39d3b` 三段同一，campaign_complete，cursor 终态）。
+- **V1 事故（如实记录，主代理操作失误）**：9-24 午后对 V1 剂量主固件做了一次 esptool `read_mac`（RTS 硬复位）→ campaign boot 绑定不匹配 → `enterFault` 永久持久化（cursor 769，driver_calls=0，**无任何刷新/ARM 发生**）。根因：反恢复设计下刷写后的首次启动即 campaign boot，之后严禁任何 MCU 复位。`lh3dose_v1` 永久锁死留作历史证据；设计文档已追加"7. 现场运维警示"。恢复=换命名空间重建：**V2 包 [`LH3_DOSE_20260924_R2`](../.test-output/offline/LH3_DOSE_20260924_R2/)（contract `d4e38701…`，BIN `82836619…`；NVS `lh3dose_v2`；设备门新增断言 V1 恰为 fault 769 保留）**，native 审计 R3 PASS（46 场景含 2 个砖态门新场景）。白锚不变、白屏画面不受影响。
+- **V2 三段链真屏 PASS**（批 [`LH3_DOSE_20260924_V1`](../.test-output/hardware/LH3_DOSE_20260924_V1/)）：SOURCE ordinal1（45347ms，active 白，白锚 `5dd81034…` 正确回显）→ DOSE1 ordinal2（40818ms，commented，8 码列上屏）→ DOSE2 ordinal3（40818ms 逐字节同帧再施加，与 DOSE1 耗时完全一致）。每段独立 fresh field/release/claim（先于 ARM），X-LH review 链正确。DOSE1/DOSE2 后各采 1 整屏+10 同态帧。设备 DHCP 漂到 192.168.1.5（fresh 绑定已重建；注意旧 .4 的邻居表缓存曾造成假阳性，串口日志实证新 IP）。
+- **判决（[`.test-output/offline/LH3_DOSE_ANALYSIS_20260924_V1/`](../.test-output/offline/LH3_DOSE_ANALYSIS_20260924_V1/)，新工具 `mf1750_lh3_dose_photo_analyzer.py` 7 测试 + 分析工具更新 15 测试）**：**SATURATED=0、DEEPENED=0、HUE_DRIFT=3（码 0 双侧、码 2 CS2 侧，Δh 5.5°–11°）、INCONCLUSIVE=13**。**剂量不是明度旋钮**——同码二次施加无一列满足"同色相加深过门"；码 0/2 呈 XOR-3 类色相漂移（设计结果 C）；白参照列揭示 ~3 L* 批间系统性偏移（暗会话），小幅变深读数不可归因于剂量。dose1 端点双侧一致性 ≤1 L*（暗会话白 L*≈40）。
+- **含义**：8 码剂量轴对本批全部码均不能作为明度级数翻倍的依据。剩余路线：① 亮光 session 重测 MAP 中间态（照明 0.85 门，需新 fresh 链）；② 行业主干——实测调色板+空间抖动（调研文档兜底路线）；③ LH3b 扩展架构（4 action 留新鲜白标定区）仅在想重复剂量/链深实验时才需要。
+- 回归：LH3 全 6 件+LH2/LH3 白 111 passed；`check_repo_contract.py` 干净；全量 host 套件已跑完：1455 测试唯一 error 仍为 8 月预存残骸（与本次无关），其余全过。
+
+## 2026-09-24 15:40 +0800 跨 session 对照补测：暗会话端点不可比（无置换证据）；全彩 v0 方向定案
+
+- 纯离线（分析工具扩展，4 新测试，共 115 passed，contract 干净）。dose1（commented 从白，链位 2）vs 亮光 MIDDLE（同姿势）8 码对照（白比率归一化）：**不可比（INCOMPARABLE）**——非 XOR-3 置换（identity 代价两侧均显著低于 xor3），但 7 个彩色码归一化后仍差 15~36 L*/5.5°~128°，只有白列一致——低照度下相机相对 Lab 非线性压缩，跨 session 比较必须在 ≥0.85 照明门内做（与 LH2 当年重开 BRIGHT 批次的经验一致）。dose1 vs dose2 的同 session 结论不受影响。
+- **全彩 v0 方向（主线）**：host 软件管线零缺口（`color_pipeline` 量化/抖动、`gamut_mapping`、`halftone_optimization`、`epd_frame` 打包、application demo 全带测试），唯一硬缺口=**实测校准调色板**（全仓库无 `calibrated: true` 调色板；palette schema v2 绑 6 物理码 0/1/2/3/5/6）。下一里程碑：**PAL1 实测调色板标定链**——active 全局头单 action 固件显示 8 码大色块（与生产帧路径同一 L535 active 表+冻结驱动），≥0.85 照明拍照提取 → calibrated palette JSON → 解锁 gamut profile 实测化与端到端全彩 demo。设计文档待写，现场等达标照明。
+
+## 2026-09-23 21:05 +0800 LH3 白真屏 PASS + 剂量真包封印 + 剂量主固件已刷；剂量三段待白天
+
+- **本轮新增刷新=1（LH3 白）；刷写=2（白固件+剂量主固件）；qualified=0/256。** 最终 relay=OFF、off_gate_passed=true，**屏幕保留均匀白场**（双稳态），MCU 跑剂量主固件。
+- **现场插曲（如实记录）**：9-22 晨首次 relay ON 后面板无电（busy=0、0.000A，两次），用户现场修复供电接线后 busy=1；修复过程中相机被碰成全黑继而倒置 180°，用户恢复机位（电源表在左、面板正立）后构图核验合格。9-22 晨证据链因 900 秒 fresh 窗过期 + 用户跨日暂停，9-23 晚全部重建（枚举/IP/照片/通电诊断/relay 收据全部 fresh）。
+- **LH3 factory-OTP 白恢复 PASS**（批 [`LH3_SOURCE_WHITE_20260922_V1`](../.test-output/hardware/LH3_SOURCE_WHITE_20260922_V1/)，9-23 20:55）：fresh 枚举（COM8/COM14 身份不变）→ exact IP → 白固件刷写（9-22，`20610db0…`）→ diagnose-j2-off PASS → relay ON（修复后）→ 通电诊断 busy=1 → **1 ARM/1 EXECUTE/1 driver/1 refresh**，终态 COMPLETE、cursor2、boot `628d5532c24a6342`。claim `lh3srcw_v1-used_lh3sw1` 永久消耗。相机确认**全屏均匀白场**（LH2 MAP 矩阵完全擦除，3×3 块均值 70.3–84.1 与照明梯度一致）；close-review `close-review-v1.json`（文件 sha `5dd81034…`，integrity canonical `17dc2fed…`）。照明 0.567（0.85 门未达，用户明确放行记录在内）。
+- **剂量真包封印**：[`LH3_DOSE_20260921_R1`](../.test-output/offline/LH3_DOSE_20260921_R1/)（contract `3d620204…`，BIN `a4c4ef17…`/ELF `d62f5235…`，编译 PASS；pack 锚 pin close-review **文件 sha** `5dd81034…`）。真包 native 审计 R2 PASS（44 场景，`synthetic_source_white=false`，DOSE1/DOSE2 native 帧逐字节相等）。LH3 剂量 5 测试文件 52 passed、含回归 109 passed；`check_repo_contract.py` 干净。
+- **剂量主固件已刷**（`app-flash-dose.json`，J2-off，写+校验+单次启动）：新 boot `0fa218cf667109b7`，state ready、cursor1、busy=0（relay OFF）。NVS：lh2map_v1 终态、lh3srcw_v1 已消耗、lhist_v1/lh1reb_v2 保留。
+- **下一唯一入口（白天亮天后）**：fresh 证据链 → SOURCE(ordinal1, active 白)→拍照 → DOSE1(ordinal2, commented 8 码列)→拍照+10 同态帧 → DOSE2(ordinal3, 同帧再施加)→拍照+10 同态帧 → relay OFF → `mf1750_lh3_dose_analysis.py` A/B/C 判决。剩余刷新预算=3。注意：白恢复用的是 lh3-source-white-v1 路由，剂量链是 lightness-history-v1 路由。
+- 全量 host 套件（真包封印后）**已跑完**：1455 测试，唯一 error 仍为 8 月预存残骸 `tests/test_mf1750_pending_live_runner_transport.py`（与本次无关，不修），其余全过（83 skipped），`host-test-report.json` 留证。
+
+## 2026-09-21 23:20 +0800 LH3 剂量轴链离线全件建成（P3 判决实验，待白天现场）
+
+- **本轮新增刷新=0；qualified=0/256；无设备/相机/继电器/网络动作**（纯离线构建）。屏幕保留 MAP 帧，relay OFF。
+- **设计冻结**：[`MF1750_LH3_DOSE_CHAIN_DESIGN_2026-09-21.md`](MF1750_LH3_DOSE_CHAIN_DESIGN_2026-09-21.md)——科学问题"同码二次施加（dose2）相对 dose1 是饱和(A)/同色相加深(B)/色相漂移(C)"；最小 3-action 链 SOURCE(active 白)→DOSE1(commented，列=码 0..7，行=8 重复)→DOSE2(commented，帧与 DOSE1 逐字节相同)；码 7 列内建 commented 白参照；XOR-3"新鲜白标定条"在 3-action 架构下不可安放，以 SOURCE 白场照片+码 7 列替代（如实记录取舍）；DOSE2 用原码 c 不做 XOR-3 补偿（漂移以 Δh 显形即诊断）。
+- **离线全件**（子代理构建，主代理复核）：算法 `host/static_photo/lightness_history_lh3_dose.py`；pack `tools/mf1750_lh3_dose_pack.py`（ANCHOR_SHA=None 占位，真包封印等 LH3 白真屏 close-review）；合成锚编译工具 `tools/mf1750_lh3_dose_synthetic_build_v1.py`；native 审计 `tools/mf1750_lh3_dose_native_audit.py`（44 场景 PASS，含 5 个设备门拒绝场景）；runner `tools/mf1750_lh3_dose_once_v1.py`（NVS `lh3dose_v1`，claim 目录 `.mf1750_lh3_dose_action_claims`，scope `ONE_INDEPENDENT_LH3_DOSE_ACTION`；设备门=LH3 白已消耗+lh2map_v1 终态+lhist/lh1reb/lh2srcw 保留）；分析 `tools/mf1750_lh3_dose_analysis.py`（16 列判决表 A/B/C/INCONCLUSIVE + dose1 绝对端点表，配对 10 帧噪声带 max(5×MAD,CI95)，冻结门判决）。
+- **验证**：合成锚包 contract `223f373e…`，PlatformIO 编译 PASS（BIN `3f36d885…`）；native 审计 `.test-output/offline/LH3_DOSE_NATIVE_20260921_R1/` PASS（44 场景，DOSE1/DOSE2 native 帧逐字节相等且与 Python/包互证）；新增测试 51 全绿，LH2/LH3 族回归 97–100 passed 无回归；`check_repo_contract.py` passed。固件坑逐项处理：phLayoutValid 锚点改 kTargetCodes[0]!=0||[7]!=7、useCommentedGlobal 改 Mid||Target、transport dispatch AA/CC/CC、kHistoryLayoutJson 同步。
+- **全量 host 套件**（`run_host_tests.py --force`，`host-test-report.json`）：1455 测试，1347 ok、83 skipped，**唯一 error 为 8 月预存残骸** `tests/test_mf1750_pending_live_runner_transport.py`（untracked 遗留文件，import 时缺 `_private_origin` 属性；与本次工作无关，按既定方针不修不动）。LH3 剂量链全部新测试在套件内通过。
+- **下一唯一入口（白天亮天后，照明门 0.85 达标才动手）**：① LH3 白真屏（runner `tools/mf1750_lh3_source_white_once_v1.py` 已就绪，field 采集工具参照 LH2 白批次手写）；② 白 close-review sha 填入 dose pack ANCHOR_SHA → 真包封印+真包 native 审计；③ 刷剂量主固件 → SOURCE→DOSE1→DOSE2 三段（各段独立 field/release/claim，DOSE1/DOSE2 后各 1 整屏+10 同态帧）→ relay OFF；④ `mf1750_lh3_dose_analysis.py` 判决 → 本页记录。本轮刷新预算：白 1 + 链 3 = 4。
+
+## 2026-09-19 11:05 +0800 行业全彩调研落盘：E6 全彩路线与我们的位置（纯文档）
+
+- 新文档 [`MF1750_E6_FULL_COLOR_INDUSTRY_SURVEY_2026-09-19.md`](MF1750_E6_FULL_COLOR_INDUSTRY_SURVEY_2026-09-19.md)：① 行业对 E6 全彩的统一答案是空间抖动（厂商示例代码同证，"百万色"为营销话术）；② ACeP 多级停驻是厂商内部能力、从未下放，剂量轴与 ACeP 的机制差异表；③ 历史依赖是行业教科书级难题（我们的 XOR-3 是其在 Spectra 6 码轴上的定量化实证）；④ 本项目实测进展总表（红族 3 级、从白色谱 v0、XOR-3、中性灰证伪、LH3 白链就绪）；⑤ 路线判断：剂量轴为低成本判决实验，行业主干（实测调色板+抖动）无损失兜底。
+- 本条目为纯文档动作；现场状态不变：屏幕保留 MAP 帧、relay OFF、qualified=0/256。真屏动作仍只在白天亮天后做。
+
+## 2026-09-19 10:28 +0800 亮光重拍 V3 完成但对账发现：照明仍不达标；昨晚"中性 4 级"是暗光假象
+
+- **本轮新增刷新=0**（MAP 帧保留直拍）；qualified=0/256；relay 全程 OFF。两次机位/照明检查失败安全停（V1 机位被隔夜挪动、V2 照明 0.68），用户恢复机位并确认继续后 V3 采集 11 帧 + 重分析。
+- **照明对账**（[`.test-output/offline/LH2_MAP_SESSION_RECONCILE_20260919_V1/`](../.test-output/offline/LH2_MAP_SESSION_RECONCILE_20260919_V1/)，工具 `tools/mf1750_lh2_session_reconcile.py`，测试 2 passed）：今早屏面白锚 L* 44.2/43.4，比昨晚（36.4/35.5）亮 1.5×，但仍只有 9-17 白天亮场（65.8）的 **0.67**（0.85 门未达，与 light-check 0.68 一致）。128 格逐格 Y 增益恒定（P10–P90 1.42–1.73），无隔夜松弛迹象。
+- **重要修正（推翻昨晚一条结论）**：昨晚暗光分析的"NEUTRAL 中性轴 4 级"**不成立**——暗光色度饥饿（60/128 格 C*≤8）把带色相的深色误判为灰；今早同物理格解析为 C* 9.3–17.8 的带色相状态。那些明度步进物理存在但不是灰。昨晚报告其余结论不受影响。
+- **当前可信族级数（校正后，冻结门）**：R 2/2（CS1/CS2）、RO 2*/1（*色相门边界）、V 1/1、B 1/1、NEUTRAL 1/1。今早 RO-CS1 的第 2 级（MAP-M4-C7，C* 6.2→17.5 过彩度门）是真实测量改进但属门边界，不升级为稳健阶梯。
+- **结论**：MAP 中间态在现有照明下仍不能支撑"每色 4–6 级"。下一入口不变：① 真正日光重拍（达到亮场 0.85）；② LH3 链（白 successor 已离线齐备）按 XOR-3 报告建议设计（帧内码轴标定条 + 白参照列）；③ 剂量轴 P3。
+
+## 2026-09-19 00:10 +0800 晚间离线收尾：从白色谱 v0 封存、LH3 白链齐备、XOR-3 机制研究完成
+
+- **本轮新增刷新=0；qualified=0/256；无设备/网络/继电器动作**（仅一次相机 light-check 只读采集）。屏幕保留 MAP 帧，relay OFF。
+- **从白色谱 v0 封存**：[`.test-output/offline/FROM_WHITE_SPECTRUM_20260918_V1/`](../.test-output/offline/FROM_WHITE_SPECTRUM_20260918_V1/)（spectrum.json 自封 + spectrum.png 阶梯色卡）；工具 `tools/mf1750_from_white_spectrum_v1.py`，测试 2 passed。亮光 session 从白 8 端点：红族 3 级（M0 29.8→M2 39.8→M1 47.8）、蓝靛 1（M3→M5 断链 Δh=6.28°>5° 门，如实记录 chain_break）、棕/青/白各 1。从白码空间已穷尽。
+- **LH3 白 successor 全链离线建成**（任何下一现场链的前置，明日可直接用）：包 [`.test-output/offline/LH3_SOURCE_WHITE_20260918_R1/`](../.test-output/offline/LH3_SOURCE_WHITE_20260918_R1/)（contract `87668f2d…`，BIN `20610db0…`，编译 PASS）；设备门 `lh2DriveMapTerminalComplete()`（lh2map_v1 cur_lh2m=4/boot ac92bb9e25c374ef + lhist_v1/lh1reb_v2/lh2srcw_v1 三保留断言）；strict native 审计 [R1](../.test-output/offline/LH3_SOURCE_WHITE_STRICT_NATIVE_20260918_R1/) PASS（36 场景 85 文档）；runner `tools/mf1750_lh3_source_white_once_v1.py`（16 tests passed）。现场采集工具仍待补（runner schema 即契约）。
+- **XOR-3 机制研究**：[`.test-output/offline/LH2_XOR3_MECHANISM_20260918_V1/`](../.test-output/offline/LH2_XOR3_MECHANISM_20260918_V1/)（xor3-analysis.json + xor3-report.md），测试 3 passed。要点：逐帧 20/20 最优置换都是 XOR-3（ΔE00 中位 0.43，对照恒等置换差 ~32×）；几何/帧内容假设均证伪；**码轴漂移是 MAP 级全局现象**（14 个彩色历史行也拒绝恒等置换）；静态 LUT 证据显示 active/commented 表头电压+PLL 字节不同（两种"白"电气不等价，机制入口），但 c→c^3 不在上传字节里，控制器内部译码/面板记忆离线不可判。**LH3 设计建议已录**：每级帧内嵌"新鲜白历史+码 0..7"码轴标定条 + 白参照列 + 链位深度作自变量。
+- **明早计划**：08:47 一次性提醒（cron id `01M2TKPN3CBD4E1QHD87B8P8HT`，仅本会话存活时触发）跑亮光重拍一键脚本 `.test-output/hardware/LH2_DRIVE_MAP_20260918_V1/offline/bright_reshoot_morning.py`（照明检查→11 帧采集→重分析到 LH2_DRIVE_MAP_ANALYSIS_20260919_V1）。**用户规则：真屏动作只在白天亮天后做。**
+- 回归：LH2/LH3/XOR-3/谱系族全绿；`check_repo_contract.py` 干净；预存残骸测试（8 月）依旧与无关。
+
+## 2026-09-18 23:20 +0800 MAP 图谱分析完成：彩色族 1–2 级、中性轴 4 级；发现 XOR-3 码轴不稳定
+
+- 纯离线分析，无设备动作；屏幕保留 MAP 帧，relay OFF，qualified=0/256。
+- 分析目录 [`.test-output/offline/LH2_DRIVE_MAP_ANALYSIS_20260918_V1/`](../.test-output/offline/LH2_DRIVE_MAP_ANALYSIS_20260918_V1/)（extraction/map-analysis/analysis-review 自封 + `map-lstar-heatmap.png` 热力表）；新工具 `tools/mf1750_lh2_drive_map_photo_analyzer.py` + `tools/mf1750_lh2_drive_map_analysis.py`，测试 6 passed（LH2 族合计 63 passed 无回归）。
+- **执行完整性字节级确认**：设备报告 input_fnv1a == 封存 map.frame4bpp 离线值；CS1/CS2 流式字节 FNV 逐字节吻合；检测率每侧 63/64（唯一未检出为近白格，homography 补足，设计内）。
+- **控制列异常（重要）**：commented code7 列从 8 种彩色历史**全部收敛到暗态**（L*≈6.2/4.7，历史无关吸引子）而非复现 MIDDLE 白——commented tuple 从非 SOURCE 白出发的行为与设计预期不同；code3 列同样收敛暗红（L*≈2.6/1.6）。
+- **XOR-3 发现**：MAP(白历史 M7, 码 c) 在全 Lab 上精确复现 MIDDLE 端点 c^3（置换 (3,2,1,0,7,6,5,4)，16 对最大 ΔE00 2.38，40320 置换中最优）——active-C7 白与 commented-C7 白视觉相同但**不是等价驱动起点**，commented 码轴跨链位置不稳定；机制（控制器波形选择 vs 面板记忆）离线不可判。
+- **每色相族可分辨明度级数**（冻结门 ΔL*≥2/ΔE00≥3/Δh≤5°，噪声 max(5×MAD,CI95)）：红族 2、蓝靛 1、棕 1、青 1、**中性白/灰轴 4**（唯一达到用户 4 级下限）；新可分辨级 = 红族 +1 + 中性 +3 中间灰。左右一致性：中位 |ΔL*| 0.78 / ΔE00 1.02（CS2 系统性偏暗 ~1.5，照度梯度）。
+- **如实记录的限制**：本批为晚间暗光 session（屏白 L*≈36.6 vs 亮 session 65.8，跨 session 绝对值不可比；阶梯统计用同 session 的 s3-pre MIDDLE 态端点）；暗光下色相漂移（如 M1 349°→323°）使 5° 色相门拆开亮 session 可并链的红族历史——未放宽任何门；结论"彩色族不能 4–6 级"严格说是**本暗光 session 下**的结果，亮光复测可能并链更多级。
+- **下一唯一入口（需用户决策）**：① 亮光 session 重测 MAP（同合同不可重放——需新 fresh 封印链）；② 沿 XOR-3 线索研究码轴/波形选择机制（纯离线）；③ 转向剂量轴（P3）或新 LUT 研究。qualified 保持 0/256。
+- **用户现场规则（2026-09-18 起生效）：真屏动作只在每天早上天亮后做**（暗光会污染 camera-relative 色相/明度数据，已实测）。已设 09-19 08:47 一次性提醒做 MAP 帧亮光重拍（0 刷新，面板保留 MAP 帧可直接重拍）。
+
+## 2026-09-18 22:54 +0800 LH2 白恢复 + 三段驱动图谱链真屏全部 PASS；MAP 帧已采集待分析
+
+- **本轮新增刷新=4（白 1 + LH2 链 3）；刷写=2；qualified=0/256。** 用户放行："电气ok，已经打开，可以刷新，相机可以直接获取图像"。最终 relay=OFF、off_gate_passed=true，屏幕保留 MAP 帧。
+- **LH2 factory-OTP 白恢复 PASS**（批 [`LH2_SOURCE_WHITE_20260918_V1`](../.test-output/hardware/LH2_SOURCE_WHITE_20260918_V1/)）：fresh 枚举（COM8/`5C4C165475`、COM14/`Port_#0004.Hub_#0001` 不变）→ exact IP `192.168.1.4↔A4-CB-8F-D9-FC-D4` → relay rebind（历史 Hub#0002→现 Hub#0001）→ V2 终态门 fresh GET PASS（cursor4/campaign_complete/busy=0@OFF）→ J2-OFF 刷写白固件（`3244c7b5…`，写+校验+单次启动）→ j2-off 诊断 PASS → relay ON → 通电诊断（新 boot `fd0307778e1d5b6b`）→ **1 ARM/1 EXECUTE/1 driver/1 refresh**，终态 COMPLETE、cursor2，driver PON/DRF/POF=180/21691/141ms → 相机确认**全屏均匀白场**（TARGET 矩阵完全擦除）→ relay OFF。claim `lh2srcw_v1-used_lh2sw1` 永久消耗。注意点：relay ON 后面板 BUSY 需要数秒上电稳定，runner preflight 在 busy=0 时按设计拒绝、稳定后重放通过（无 mutation 发生）。
+- **真包封印**：白 close-review `99078ff9…` 填入 `mf1750_lh2_drive_map_pack.py` ANCHOR_SHA → 真包 [`.test-output/offline/LH2_DRIVE_MAP_20260917_R1/`](../.test-output/offline/LH2_DRIVE_MAP_20260917_R1/)（contract `be45e5a1…`，BIN `8929dfc0…`/ELF `f075a3f8…`，marker PASS）。真包 native 审计 R3 PASS（39 场景，`synthetic_source_white=false`，sha `eb7e63e7…`）；runner 默认真包，LH2 族 **57 tests 全绿**。
+- **LH2 三段链真屏 PASS**（批 [`LH2_DRIVE_MAP_20260918_V1`](../.test-output/hardware/LH2_DRIVE_MAP_20260918_V1/)，run_id 同名，boot `ac92bb9e25c374ef` 三段同一）：SOURCE ordinal1（45342ms，PON/DRF/POF=261/32671/151）→ MIDDLE ordinal2（40802ms，commented）→ **MAP ordinal3（40813ms，commented，Target 角色也选 commented——LH2-DM-D1 修复点经受住真机验证）**，终态 cursor4、campaign_complete=true。每段独立 field/release/永久 claim（先于 ARM），X-LH review 链正确回显。
+- MAP 帧整屏照片 [`post-map.jpg`](../.test-output/hardware/LH2_DRIVE_MAP_20260918_V1/post-map.jpg)：两侧 8×8 格呈清晰色相族明度梯度（红粉/蓝/棕/青多档可辨）+ 10 同态帧 `map-frames/` 供噪声估计。电源记录 3.31V/CV/0.000A（record-only）。
+- **下一唯一入口：** MAP 离线分析——128 ROI 提取（继承 MIDDLE 映射 CS1=左/identity）→ 每（历史，码）L* 表 → 回答"每色相族几级可分辨明度"（冻结门 ΔL*≥2/ΔE00≥3/Δh≤5°）。合同已无剩余 action，禁止重放 claim；任何后续实验另起 fresh 封印链。
+
+## 2026-09-18 18:20 +0800 LH2 三段链 runner 就绪：离线链全件齐备，待用户现场放行
+
+- **本轮新增刷新=0；qualified=0/256；无任何设备/相机/继电器/网络访问。** 纯离线构建。屏幕保留 TARGET 帧，relay OFF。
+- **LH2 主链 runner 完成**：[`tools/mf1750_lh2_drive_map_once_v1.py`](../tools/mf1750_lh2_drive_map_once_v1.py)（543 行，`validate` / `run --ordinal {1,2,3}`，每阶段独立放行、claim 先于 ARM、X-LH review 链 ordinal2/3 绑上阶段 terminal canonical sha256、driver fnv1a 三绑定、FAULT 即停不重发）；测试 `tests/test_mf1750_lh2_drive_map_once_v1.py` **27 passed**。runner 无硬编码 pin（合同自 hash 自证、锚/BIN/ELF 全从包绑定读出），真白锚包封印后零改动可用。
+- 合成锚主包 PlatformIO 编译 PASS 已证固件可构建：`.test-output/offline/LH2_DRIVE_MAP_SYNTHETIC_BUILD_20260917_R1/`（contract `c8be0014…`，BIN `eb02a48a…`、ELF `d83fb01a…`），同时作主链 runner 测试 fixture。
+- **LH2 离线链全件齐备**：白恢复包（编译+native 32 场景+runner 14 测试）→ 主包（pack 4 测试 + native 39 场景 + runner 27 测试），LH2 族合计 **56 passed**。
+- **CI 标准回归**（`tools/run_host_tests.py --force`）：1455 tests，**errors=1 为预存残骸**（`tests/test_mf1750_pending_live_runner_transport.py` 引用 `mf1750_raw_p16_endpoint_gallery_v1_white_containment_once._private_origin`，两文件均为 2026-08-28/30 未跟踪 WIP，与 LH2 无关、本 session 未触碰），skipped=83，其余全过；仓库合同检查 `check_repo_contract.py` 干净。
+- **下一唯一入口：等用户明确放行现场链**——放行内容 = **2 次刷写 + 4 次可见刷新**：① LH2 factory-OTP 白恢复（1 刷写 1 刷新，绑 V2 TARGET 终态 + 旧 fault 保留）；② 白完成后真包封印（`ANCHOR_SHA` 填入白 close-review）+ 重新编译 + native/回归复核；③ 刷写 LH2 主固件（1 刷写）+ 三段链 SOURCE→MIDDLE→MAP（3 刷新，每段独立 release）。fresh 链流程沿用 TARGET 批（相机→枚举→IP→relay rebind→ON→preflight→release→run→拍照→OFF→记录），900 秒 fresh 窗口。未获明确放行前不进现场。
+
+## 2026-09-18 17:07 +0800 LH2 主包 native 审计 PASS；探针抓出并修复阻断级缺陷 LH2-DM-D1；白 runner 就绪
+
+- **本轮新增刷新=0；qualified=0/256；无任何设备/相机/继电器/网络访问。** 纯离线构建。屏幕保留 TARGET 帧，relay OFF。
+- **LH2 白恢复 host runner 就绪**：[`tools/mf1750_lh2_source_white_once_v1.py`](../tools/mf1750_lh2_source_white_once_v1.py)（343 行，validate/diagnose-j2-off/run 三命令，claim `.mf1750_lh2_source_white_consumption/lh2srcw_v1-used_lh2sw1.json`，双命名空间诊断门 + R5 driver/帧逐字节绑定 + fnv1a 常量沿用并注明来源）；测试 `tests/test_mf1750_lh2_source_white_once_v1.py` **14 passed**（含 gate=false 拒、claim 重放拒、arm/execute 失败保 claim 负例）。
+- **LH2 主包 native 审计 PASS**：[`tools/mf1750_lh2_drive_map_native_audit.py`](../tools/mf1750_lh2_drive_map_native_audit.py) → [`.test-output/offline/LH2_DRIVE_MAP_NATIVE_20260917_R1/strict-native-audit.json`](../.test-output/offline/LH2_DRIVE_MAP_NATIVE_20260917_R1/strict-native-audit.json)（sha `d1cac774…`）：合成白锚全包 prepare + MSVC 编译真实 generated main，**39 场景 45 文档全过**（三段链、read_only、三帧逐字节、32 个拒绝/故障场景）；审计前后 generated 源不变；`synthetic_source_white=true`、`live_ready=false`。测试 `tests/test_mf1750_lh2_drive_map_native_audit.py` 3 passed。
+- **阻断级缺陷 LH2-DM-D1（已修复，记录追溯）**：审计的 driver 探针发现生成驱动的 `phLayoutValid()` 仍冻结 LH1 的 `kTargetCodes {3,7}` 检查，而 LH2 identity 已改为 `{0..7}`——布局门恒假，真机上 boot 自检即 fault，任何 action 都无法 ARM。修复：pack 渲染器同步把布局门钉到新数组端点（`kTargetCodes[0]!=0 || kTargetCodes[7]!=7`），修复后探针 `layout_valid=1`、三角色帧全构建；审计 JSON 以 `resolved_defects` 记录该缺陷全程。**这正是 native 探针的存在意义：MSVC 协议审计之外独立编译执行真实驱动门。**
+- LH2 族测试合计 **29 passed**（lh2 算法 6、pack 4、白审计 2、白 runner 14、主包审计 3），明度/rebound 族回归 102 passed 无回退。
+- 进行中：合成锚 LH2 主包 PlatformIO 编译（证明固件可构建 + 作主链 runner 测试 fixture）。
+- **下一唯一入口：** 主链 runner（3 段）编写测试 → 全量回归 → 向用户请求现场放行（**2 次刷写 + 4 次可见刷新**：LH2 白恢复 1 + LH2 三段链 3）。真包 `ANCHOR_SHA` 仍待白恢复真屏 close-review 填入，未放行不进现场。
+
+## 2026-09-17 21:34 +0800 LH2 链离线构建过半：白恢复包编译+native 审计 PASS，主 pack 生成器全链测试 PASS
+
+- **本轮新增刷新=0；qualified=0/256；无任何设备/相机/继电器/网络访问。** 纯离线构建。屏幕保留 TARGET 帧，relay OFF，V2 合同 cursor4/campaign_complete 不变。
+- **LH2 白恢复 successor 包离线就绪**：生成器 [`tools/mf1750_lh2_source_white_firmware_v1.py`](../tools/mf1750_lh2_source_white_firmware_v1.py)（R5 白派生，设备门换成 `reboundV2TerminalComplete()`：lh1reb_v2 cur_lh1r=4/boot=7274e005c8833ca1 + 旧 fault lhist_v1 cur_lh1=770/boot=30a9e5989873f4e0 双命名空间只读断言；successor NVS `lh2srcw_v1/used_lh2sw1`）。包 [`.test-output/offline/LH2_SOURCE_WHITE_20260917_R1/`](../.test-output/offline/LH2_SOURCE_WHITE_20260917_R1/)：contract `aa9cd737…`，PlatformIO 编译 PASS，BIN `3244c7b5…`、ELF `8aac99ad…`，compiled marker 校验 1/1。
+- **白 strict native 审计 PASS**：[`tools/mf1750_lh2_source_white_strict_native_v1.py`](../tools/mf1750_lh2_source_white_strict_native_v1.py) → [`.test-output/offline/LH2_SOURCE_WHITE_STRICT_NATIVE_20260917_R1/strict-native-audit.json`](../.test-output/offline/LH2_SOURCE_WHITE_STRICT_NATIVE_20260917_R1/strict-native-audit.json)（sha `7ad906de…`）：MSVC 编译真实 generated main，32 场景 77 文档全过（含 old fault 篡改、lh1reb_v2 源丢失/错 boot/错 cursor、重复 ARM/EXECUTE、写失败、BUSY 等负例）；审计前后 main.cpp 字节不变。测试 `tests/test_mf1750_lh2_source_white_native_audit.py` 2 passed。
+- **LH2 主包（drive-map）生成器完成**：[`tools/mf1750_lh2_drive_map_pack.py`](../tools/mf1750_lh2_drive_map_pack.py) + 算法 [`host/static_photo/lightness_history_lh2.py`](../host/static_photo/lightness_history_lh2.py)。**构建期设计修正**：驱动每动作只能按角色选一种 tuple，原"分侧双 profile"不可行——MAP 动作双侧统一 commented tuple（驱动分支 `Mid||Target`，单行锚点修改；等级发生机制本就在 commented tuple）。生成验证：合同 3 action（LH2_SOURCE/MIDDLE/MAP）、MAP 帧 histogram `[33280×7, 381440]`、C++ 帧规则与 Python `map_code` 逐字节一致、ordinal3 运输 CC、NVS `lh2map_v1/cur_lh2m/boot_lh2m`。合成白证据全链测试 `tests/test_mf1750_lh2_drive_map_pack.py` 4 passed。**真包封印关闭中：`ANCHOR_SHA=None`，prepare 拒绝，等白恢复真屏 close-review。**
+- 设计文档已同步修正（commented 单 profile、白恢复前置、用户口径"多级即可，10 级非硬指标"）：[`MF1750_LH2_DRIVE_MAP_CHAIN_DESIGN_2026-09-17.md`](MF1750_LH2_DRIVE_MAP_CHAIN_DESIGN_2026-09-17.md)。
+- 进行中：LH2 白 host runner、LH2 主包 native 审计（合成锚）。
+- **下一唯一入口：** 白 runner + 主包 native 完成并全量回归后，向用户请求现场放行——**2 次刷写 + 4 次可见刷新**（LH2 白恢复 1 次 + LH2 三段链 3 次），fresh 链流程沿用 TARGET 批模式。未获明确放行前不进现场。
+
+## 2026-09-17 14:50 +0800 LH2 多级链设计完成（离线文档，未构建未授权）
+
+- 纯离线设计，无设备/相机/继电器动作；屏幕保留 TARGET 帧，relay OFF，qualified=0/256。
+- 新设计文档 [`MF1750_LH2_DRIVE_MAP_CHAIN_DESIGN_2026-09-17.md`](MF1750_LH2_DRIVE_MAP_CHAIN_DESIGN_2026-09-17.md)：基于已测机制（commented 8 端点、active code3 全收敛暗吸引子 L*14.7、code7 白目标无驱动），现有 3-bit 配方空间只能到红族 3 级/蓝靛 2 级，每色 10 级必须靠中间态。
+- 下一链定为 3 action：SOURCE 白 → MIDDLE 8 历史（不变）→ **MAP：每侧 64 格 = 8 历史 × 8 目标码全映射**；分侧双 profile（CS1=commented 映射、CS2=active 映射，沿用 T3 A/C 交叉先例），一次刷新测两张 8×8 驱动图谱；code3/code7 列为已知控制。
+- 构建清单（算法/封装/编译/native/runner/测试）已列入文档；现场前需用户对新链刷写与三次刷新另行明确放行。
+
+## 2026-09-17 14:35 +0800 TARGET 合链分析完成：T3 全收敛、T7 白目标无驱动；合同三步走完
+
+- 纯离线分析，无设备动作：relay 保持 OFF，屏幕保留 TARGET 帧。新工具 `tools/mf1750_lh1_rebound_v2_target_photo_analyzer.py`（继承 MIDDLE 已封存映射 CS1=left/identity，不重解；几何门沿用 V2 豁免口径）+ `tests/test_mf1750_lh1_rebound_v2_target_photo_analyzer.py`（3 passed）；合计相关回归 51 passed，Ruff PASS。
+- TARGET 10 帧提取：每侧检测 60/64 格，逐帧 homography 正常，见 [`.test-output/offline/LH1_REBOUND_TARGET_20260917_ANALYSIS_V1/`](../.test-output/offline/LH1_REBOUND_TARGET_20260917_ANALYSIS_V1/)（extraction/chain-analysis/analysis-review）。
+- **T3 组（目标 code3）：8 种历史全收敛**——CS1 质心 L*=14.74、配方间最大偏差 1.40 ΔE76、L* 跨度 0.78；CS2 质心 L*=14.67、最大偏差 2.93（含右缘照明梯度）。code3 在 active profile 下是历史无关的暗端点吸引子；收敛破坏色相（色相差 11–81°）。
+- **T7 组（目标 code7=白）：对白目标无驱动**——各配方 TARGET≈MIDDLE（|ΔL*|≤1.5、色相差≤4.1°）；CS1 T7 目标 L* 中位 16.8/28.9/30.1/31.8/38.9/39.2/47.3/66.4，仅白历史配方（M7）到白（66.4，参照 65.0）。该固定波形下白目标不能把彩色格刷白。
+- **用户问题"每色 10+ 级明度"：本三步合同内不可达**——白目标无驱动、暗目标塌缩全部色相依；明度级只能由 MIDDLE 阶段配方产生（当前 8 级跨色相，红族同色相连 2 级）。qualified 保持 0/256。更多等级需要新配方/帧设计并另起 fresh 封印链。
+- **下一唯一入口：** 离线设计多级同色链（每色相族更多 MIDDLE 配方变体或有文档依据的驱动轴）；当前合同 cursor4/campaign_complete，无剩余 action，禁止重放任何已消费 claim。
+
+## 2026-09-17 14:05 +0800 TARGET ordinal3 真屏完成；三步合同走完，协议 PASS，停审待合链分析
+
+- **本轮新增刷新=1（TARGET ordinal3）；qualified=0/256。** 同 boot=`7274e005c8833ca1` 续链成功：严格 `1 ARM / 1 EXECUTE / 1 driver / 1 visible refresh`，终态 state=**complete**、cursor=4、next_ordinal=4、**campaign_complete=true**、累计 ARM/EXECUTE/driver 各3，driver 总耗时 `45363 ms`，PON/DRF/POF=`261/32691/151 ms`，failure_code=0，safe_finish 与 final GPIO 全通过。永久 claim（contract+ordinal3）在 ARM 之前创建，禁止重放；合同 3 个 action 全部耗尽，无第四动作。
+- 批 run_id=`LH1_REBOUND_TARGET_20260917_V1`，证据目录 [`.test-output/hardware/LH1_REBOUND_TARGET_20260917_V1/`](../.test-output/hardware/LH1_REBOUND_TARGET_20260917_V1/)（92 文件，`SHA256SUMS-v2.json`）；闭环 [`session-outcome.json`](../.test-output/hardware/LH1_REBOUND_TARGET_20260917_V1/session-outcome.json)，release v4 离线 validate PASS 后才进入现场。v1–v3 release 已封存但从未执行（v1 早于一次 host 依赖修正；v2/v3 绑定了不兼容的 relay 查询 schema/过期证据），无 claim/ARM/POST 以其发生。
+- fresh 身份：COM8/CH343 serial `5C4C165475`、COM14/CH340 `Port_#0004.Hub_#0001`；exact `192.168.1.4 ↔ A4-CB-8F-D9-FC-D4`（1 次 ICMP ×2 轮）。OFF 前置 4 GET：同 boot、READY、cursor3、driver 累计2；relay ON 后 preflight BUSY=1。电气维持 record-only，`electrical_state_proven=false`；电源表显示 3.29 V/CV/0.000 A 仅记录。
+- 光学：前置整屏照片确认 retained MIDDLE 矩阵完整四边可见（verdict=`PASS_MIDDLE_MATRIX_OBSERVATION_ONLY`）；TARGET 后整屏照片显示 **T3 组 64 格大多收敛为深藏青/暗紫，部分格残留可见色差；T7 组（code7=白目标）多数没入白底，少数格仍见淡残色**——历史收敛肉眼并不完美，待 128 ROI 合链定量，verdict=`PASS_TARGET_OBSERVATION_ONLY`。10 张同态帧已采集供噪声估计。
+- 本轮实际计数：相机采集 13（各 warmup10）、枚举 2、ICMP 2、HTTP GET=14/POST=2（含 runner 内 GET6/POST2）、relay 切换 2、relay 独立查询 4、ARM=1、EXECUTE=1、driver=1、visible refresh=1、flash=0、reset=0、retry=0、白恢复=0。最终 relay=OFF、off_gate_passed=true。
+- **下一唯一入口：** 对 SOURCE/MIDDLE/TARGET 三阶段做离线 128 ROI 合链分析（几何不变，复用分析器），回答同色相 3 级链与 TARGET 收敛一致性；合同已无剩余 action，任何新实验必须另起 fresh 封印链。当前屏幕保留 TARGET 帧，relay OFF。
+
+## 2026-09-17 13:20 +0800 TARGET ordinal3 执行器离线就绪；native R1 PASS，未触设备
+
+- **本轮新增刷新=0；qualified=0/256；无任何设备/网络/相机/继电器访问。** 纯离线构建。
+- 新增唯一 TARGET 宿主入口 [`tools/mf1750_lh1_rebound_v2_target_once.py`](../tools/mf1750_lh1_rebound_v2_target_once.py)：合同 ordinal3/action `31489f8f…5632`；永久 claim（contract+ordinal3）在 ARM 之前创建；freshness/依赖/native/MIDDLE 终态/在盘 MIDDLE claim/光学/分析 review 全部绑定校验；严格 `1 ARM / 1 EXECUTE / 1 driver / 1 visible refresh`；正常终态要求同 boot、state=complete、cursor4、累计各3、campaign_complete=true；无恢复/无白/无第四动作入口。
+- native 审计 R1 先行 PASS；修正 host 一处依赖校验后重跑，最终封印 R2 [`.test-output/offline/LH1_REBOUND_V2_TARGET_NATIVE_20260917_R2/native-audit.json`](../.test-output/offline/LH1_REBOUND_V2_TARGET_NATIVE_20260917_R2/native-audit.json) PASS：实际 generated main 的 8 份 wire 响应（queue1→queue2→4GET→ARM3→EXEC3→2GET）通过 TARGET host 全部校验；桌面合成驱动/GPIO/NVS，不等于真屏证据。
+- 宿主负例/一次性事务测试 `tests/test_mf1750_lh1_rebound_v2_target_once.py` **23 passed**；Ruff PASS。依赖文件自此冻结（runner/review/middle/http/rec/gates），改动即重跑 native 并重签 release。
+- ordinal3 白材料复审 [`.test-output/hardware/LH1_REBOUND_TARGET_20260917_V1/offline/white-applicability.json`](../.test-output/hardware/LH1_REBOUND_TARGET_20260917_V1/offline/white-applicability.json)：8 个历史 BIN/ELF 哈希实测复核 PASS，均不接纳 V2 TARGET 终态，`live_authorized=false`。
+- 阶段规则已冻结：[`MF1750_LH1_REBOUND_V2_TARGET_STAGE_2026-09-17.md`](MF1750_LH1_REBOUND_V2_TARGET_STAGE_2026-09-17.md)。
+- **下一唯一入口：** 按阶段文档执行一次现场链——fresh 相机拍当前 retained MIDDLE 矩阵（relay OFF）→ fresh 枚举/IP 绑定/relay rebind → relay ON+独立查询 → release 生成并离线 validate → 最多一次 TARGET ordinal3 → 拍照 → relay OFF → 记录。所有 fresh 证据须在 900 秒窗口内。禁止 SOURCE/MIDDLE 重放、禁止自动白恢复。
+
+## 2026-09-17 10:35 +0800 MIDDLE 矩阵离线 128 ROI 分析完成；CS1 得 2 级同色相链，qualified 仍 0
+
+- 纯离线分析，无设备动作：继电器保持 OFF，屏幕保留 MIDDLE 矩阵。新增 10 张同态整屏采集（camera 只读、无刷新，warmup10/帧），用于每 ROI 噪声估计。
+- 新工具 `tools/mf1750_lh1_rebound_v2_middle_photo_analyzer.py`：连通域检测 → 双矩阵聚类 → 格点指派（去旋转+整行剪切模型）→ 逐帧 homography（LMEDS）→ 128 ROI 中央 60% 采样 → camera-relative Lab（numpy 实现与 host 管线交叉一致 ≤1.2e-13）。合成图回归 `3 passed`，Ruff PASS。
+- 几何映射证据：配方表与 blank ROI 全量交叉一致；最佳映射 CS1=左/CS2=右、identity/identity，within-code 离散度 1.33–3.43 ΔE76，runner-up 11.29；code7 格确为全白（L* 65.0 vs 33.2）。CS2 表恰为 CS1 的 180° 旋转，因此"换侧+双 180°"等价假设在光学上不可区分，已如实记录；叠加图人工复核逐格正确。
+- 筛选结果（阈值 `MF1750_LIGHTNESS_TEST_V1_20260911`，requested_levels=3）：**CS1 位置一致性极好**（P95 |ΔL*| 0.12–0.95），两比较组各得 2 级同色相候选链 M0→M2（L*≈29.7→40.2，ΔL*≈10.5）；**CS2 多数 POSITION_DEPENDENT/质量未证**，集中在右下角指派抖动区，候选仅 1。缺 `controller_revision/temperature_c` 身份项，输入门不全；verdict=`HOLD_FOR_EVIDENCE`，**未达 stable-3，qualified=0/256**。
+- 证据：分析目录 [`.test-output/offline/LH1_REBOUND_MIDDLE_20260917_ANALYSIS_V1/`](../.test-output/offline/LH1_REBOUND_MIDDLE_20260917_ANALYSIS_V1/)（extraction/observations/screen-report/analysis-review/叠加图/帧清单），批目录更新 [`SHA256SUMS-v2.json`](../.test-output/hardware/LH1_REBOUND_MIDDLE_20260917_V3/SHA256SUMS-v2.json)（72 文件）。
+- **下一唯一入口：** TARGET ordinal3 仍须独立 release 绑定 MIDDLE 终态另行放行；CS2 侧证据质量可先用纯只读采集改善（更好的机位/照明，0 刷新）。两条路都不自动执行。
+
+## 2026-09-17 09:40 +0800 MIDDLE ordinal 2 真屏完成；协议 PASS，光学待判读，停审
+
+- **本轮新增刷新=1（MIDDLE ordinal2）；qualified=0/256。** 同 boot=`7274e005c8833ca1` 续链成功：严格 `1 ARM / 1 EXECUTE / 1 driver / 1 visible refresh`，终态 COMPLETE、cursor=3、next_ordinal=3、累计 driver=2，driver 总耗时 `40813 ms`，PON/DRF/POF=`261/28141/151 ms`，failure_code=0，safe_finish 与 final GPIO 全通过。永久 claim（contract+ordinal2）在 ARM 之前创建，禁止重放。
+- 批 run_id=`LH1_REBOUND_MIDDLE_20260917_V3`，证据目录 [`.test-output/hardware/LH1_REBOUND_MIDDLE_20260917_V3/`](../.test-output/hardware/LH1_REBOUND_MIDDLE_20260917_V3/)；闭环 [`session-outcome.json`](../.test-output/hardware/LH1_REBOUND_MIDDLE_20260917_V3/session-outcome.json)，release 离线 validate PASS 后才进入现场。
+- 开始前发现继电器被 07:31–08:29 的 V2 会话遗留在 ON（该会话未创建 claim、未发 mutation、未更新 STATUS）；本批先 exact-bound OFF 归位并独立查询，再按 OFF 前置 → fresh rebind → ON → 独立查询 → 收尾 OFF 执行，全程 3 次切换、5 次独立查询，最终 relay=OFF、off_gate_passed=true。
+- fresh 身份：COM8/CH343 serial `5C4C165475`、COM14/CH340 `Port_#0004.Hub_#0001`；exact `192.168.1.4 ↔ A4-CB-8F-D9-FC-D4`（1 次 ICMP）。OFF 前置 4 GET：同 boot、READY、cursor2、BUSY=0。电气维持 record-only，`electrical_state_proven=false`；电源表显示 3.31 V/CV/0.000 A 仅记录。
+- 光学：前置整屏照片四边（含完整底边）实际可见，光源/机位未变，verdict=`PASS_SOURCE_OBSERVATION_ONLY`（未使用豁免分支）。MIDDLE 后整屏照片显示两侧位置平衡 M0…M7 中间配方矩阵（红/粉、蓝、青、棕/褐等）已成形；这仅证明中间配方矩阵形成，不构成明度等级。未计算 Lab/ΔE。
+- 本轮实际计数：相机采集 3（各 warmup10）、枚举 1、ICMP 1、HTTP GET=10/POST=2（含 runner 内 GET6/POST2）、relay 切换 3、relay 独立查询 5、ARM=1、EXECUTE=1、driver=1、visible refresh=1、flash=0、reset=0、retry=0、白恢复=0、ordinal3=0。
+- 09:47 追加判读记录：用户确认“矩阵显示正常”。助手原图复核两侧 8×8 矩阵完整、色块锐利均匀、无缺格/残影/条纹，已封存 [`post-middle-optical-review.json`](../.test-output/hardware/LH1_REBOUND_MIDDLE_20260917_V3/post-middle-optical-review.json)（verdict=`PASS_MATRIX_FORMATION_OBSERVATION_ONLY`，仅证明矩阵形成）、批次结论 [`review.json`](../.test-output/hardware/LH1_REBOUND_MIDDLE_20260917_V3/review.json)（`PASS_PROTOCOL__HOLD_FOR_OFFLINE_ANALYSIS`）和全目录 51 文件 [`SHA256SUMS.json`](../.test-output/hardware/LH1_REBOUND_MIDDLE_20260917_V3/SHA256SUMS.json)。仍未计算 Lab/ΔE，qualified=0/256。
+- **下一唯一入口：** 对本次 MIDDLE 矩阵做离线 128 ROI 判读与人工 review；TARGET ordinal3 必须另起独立 release 绑定本批终态与有效证据，禁止自动链、禁止重放已消费 claim、禁止 SOURCE 重放。当前屏幕保留 MIDDLE 矩阵，relay OFF。
+
+## 2026-09-17 07:28 +0800 SOURCE证据纠正、MIDDLE执行器离线通过；当前因底边视野HOLD
+
+- **本轮新增刷新=0；qualified=0/256。** 实际只有一次exact IPv4↔MAC探测、4 GET/0 POST、继电器独立查询1次和指定相机2次采集；没有ON/OFF切换、刷写、复位、ARM、EXECUTE、driver、重试或白恢复。fresh枚举COM8/CH343 serial `5C4C165475`、COM14/CH340；本次绑定 `192.168.1.4 ↔ A4-CB-8F-D9-FC-D4`。端口/IP仍须在下一现场动作前按时效重建，不能抄为永久身份。
+- 当前只读仍为boot=`7274e005c8833ca1`、READY/phase0/cursor2、driver累计1；relay独立查询 **OFF**、raw BUSY0。电气仅记录，`electrical_state_proven=false`，沿用用户已授权的record-only政策。
+- **纠正09-16两条历史结论：** SOURCE1帧是614400个C7的全白基线，尚未执行MIDDLE/TARGET；用户看见白色不是明度失败，也不要求仅因此另起fresh-white链。原SOURCE宿主查询超时仍保留`FAIL_STOP_TRANSPORT`；本轮严格核验保存的终态、身份、双controller FNV、BUSY和safe_finish均PASS。原执行没有创建宿主永久claim；消耗证据是设备NVS/cursor，不能补造历史claim。原日志实际时刻为09-16 **07:44:55应用verify完成、07:54:17 ARM**，此前00:00/00:08为错误手工交接时刻。ARM前错误前置尝试为3次，原始证据不改写。
+- 主V2 BIN/ELF/源码/帧封印核对PASS；历史P2主与独立白、LH1 R5白、旧FAULT R4白共8个BIN/ELF实际哈希全部匹配，但这些白包**不接纳当前V2 MIDDLE**，不能复用恢复。当前无需重新刷写主固件；MCU重新启动将破坏同boot续链条件。
+- 旧 `mf1750_lh1_rebound_v2_live_once.py` 原文件已按SHA封存；两个mutation入口已禁用。新增严格SOURCE reviewer和MIDDLE一次性runner：contract+ordinal永久claim在ARM之前创建，原始请求/响应/异常O_EXCL保存，65秒后首次查询，不自动重试或TARGET。当前claim未创建，pending release=`live_release=false`。
+- 当前generated main的8份native响应通过新host校验；桌面驱动/GPIO/NVS是合成桩，不代表真屏。38项宿主/负例测试和Ruff PASS。native R1/R2失败及后续通过证据全部保留；当前封印使用R5。
+- 指定相机`VID_32E4:PID_4801`第一张模糊遮挡；用户调整后的第二张显示白色/浅中性主体和细蓝紫暗边，**底边中央仍被黑色支架挡住**，未冒称完整四边通过。未计算Lab/ΔE，温度和controller revision未知写null。已请求用户抬高屏幕露出底边；无需重复索取设备操作权限。
+- 完整结果：[session-outcome.json](../.test-output/hardware/LH1_REBOUND_CONTINUE_20260917_V1/session-outcome.json)；[固定本轮测试规则](MF1750_LH1_REBOUND_V2_MIDDLE_STAGE_2026-09-17.md)。原始目录 `.test-output/hardware/LH1_REBOUND_CONTINUE_20260917_V1/`，含source reconciliation、4GET原文、relay、IP、两张原图/sidecar、光学HOLD和pending release。
+- **下一唯一入口：** 用户露出完整底边后，用指定相机只读复拍；完整SOURCE观察通过，再重新fresh身份并核对同boot/cursor2，按既有真屏/继电器授权生成具体MIDDLE新阶段release，最多ordinal2一次并停审。禁止SOURCE重放、自动TARGET、复位/重刷以续链、旧白恢复包。新release必须绑定当次有效证据，不能把本次pending文件改名当放行。
+
+## 2026-09-16 00:08 +0800 人工观察确认刷新后仍为白色；禁止重刷同一 action
+
+- 用户观察反馈“目前是白色”。这与刷新前 retained clean-white 没有形成可判读的端点差异；相机照片同时被遮挡，不能建立明度证据。
+- V2 SOURCE ordinal 1 已永久消耗：同 boot=`7274e005c8833ca1`、COMPLETE/cursor=`2`、driver=`1`、visible refresh=`1`。当前判定保持 `COMPLETE_PROTOCOL_HOLD_OPTICAL`，qualified=`0/256`。
+- 不重发 ARM/EXECUTE、不重刷同一 BIN、不执行 ordinal 2。若继续探索，下一动作必须是独立 fresh-white successor/新 source chain，并重新封印合同、NVS、action/frame/boot 绑定。
+
+## 2026-09-16 00:00 +0800 R4 rebound V2 SOURCE ordinal 1 真屏完成；协议 PASS，光学 HOLD
+
+- V2 固件以 app-only `0x10000` 写入 COM8 并 verify PASS：BIN=`9fba6008358e5be1c766edf18fc362caae3bb33554550b2a03147d2d9efe7614`；未擦写 bootloader/partition/NVS。新合同=`021c35abd47f6caa52b11cec98b73a79f11c585bdbc1ed976c2dde868bc5259e`，NVS=`lh1reb_v2/cur_lh1r/boot_lh1r`，所有名字已加长度门。
+- fresh exact binding：COM8/CH343=`5C4C165475`；MAC=`A4-CB-8F-D9-FC-D4`；本次 active exact IPv4/MAC=`192.168.1.4 ↔ A4-CB-8F-D9-FC-D4`，1 次 ICMP，REACHABLE，HTTP 请求前完成。相机唯一匹配 `VID_32E4:PID_4801`。
+- 实际成功动作绑定 boot=`7274e005c8833ca1`：**1 ARM / 1 EXECUTE / 1 driver / 1 visible refresh**；终态 status/report 同 boot、cursor=`2`、next=`2`、driver=`1`、`result=true`、`COMPLETE`。driver `valid=true/sequence_ok=true/failure_code=0`，PON/DRF/POF=`260/32681/151 ms`，总耗时=`45354 ms`。
+- relay 实际收尾为 OFF；本轮实际计数：app flash=1、verify=1、application start=1、ARM=1、EXECUTE=1、driver=1、visible refresh=1、ordinal2=0、mutation retry=0、white recovery=0。中途两次错误前置尝试均在 ARM 前停止，未增加刷新。
+- 光学回拍 [`post-source.jpg`](../.test-output/hardware/LH1_REBOUND_20260916_V2/LIVE_RUN_R4/post-source.jpg) 被设备遮挡且非全屏；相机 sidecar 标记 full-panel validity=`UNKNOWN`。当前判定 `COMPLETE_PROTOCOL_HOLD_OPTICAL`，不计算 Lab/ΔE，不授予明度资格，qualified=`0/256`。
+- 完整现场结果：[`session-outcome.json`](../.test-output/hardware/LH1_REBOUND_20260916_V2/LIVE_RUN_R4/session-outcome.json)。**下一动作只能是当前 ordinal 1 的人工观察/合格整屏光学证据；禁止 ordinal 2、重试或白恢复。**
+
+## 2026-09-15 21:22 +0800 fresh 枚举完成；明度刷新仍因合同语义 HOLD
+
+- 用户确认当前 retained clean-white；随后只读枚举得到 ESP32 `COM8 / USB-SERIAL CH343 / 5C4C165475`，继电器 `COM14 / USB-SERIAL CH340 / Port_#0004.Hub_#0001`，相机唯一匹配 `48MP USB Camera / VID_32E4:PID_4801`。本次未开串口、未发 relay query、未切换继电器、未访问屏幕。
+- 被动邻居表仍看到 `192.168.1.4 ↔ A4-CB-8F-D9-FC-D4`，但这是 stale 条目，不能继承为本次 exact binding；尚未进行 active probe 或 HTTP。
+- native fixture 已增加旧 fault `lhist_v1/cur_lh1=770`、`boot_lh1=30a9e5989873f4e0` 的运行时不变断言；新的 native 报告 [`native-audit.json`](../.test-output/offline/LH1_REBOUND_NATIVE_20260915_R1/native-audit.json) 29 场景 PASS，仍是桌面 doubles 离线证据。
+- **当前仍不刷新：** R4 contract/generated identity 的 `FRESH_P2_FACTORY_WHITE` / `source_white_observed:false` 与真实 R4 retained clean-white source 尚未重新封印；旧 live runner 绑定旧 NVS，不能复用。需要先完成 source-state 语义重封印、重新编译并复审 BIN/ELF/manifest，才能进行 app-only 写入和同 boot J2-OFF diagnostic。qualified=`0/256`。
+
+## 2026-09-15 21:10 +0800 重新插拔后的代码复核；现场访问继续封锁
+
+- 用户说明设备已重新插拔且当前电源断开。本轮未访问 COM、网络、继电器、相机或设备。
+- R4 rebound 源码重新核对：新命名空间和 `lh1srcw_v1/used_lh1sw1` 正确，旧 `lhist_v1/cur_lh1/boot_lh1` 未进入生成固件；相关回归测试 `23 passed`。
+- 修正 host validator 的真实安全缺口：ordinal 1 的 `X-LH-Source-Review` 与 `X-LH-Prior-Review` 现在必须等于本次 `close-review-v5.json` SHA=`3bbf1bfffe29bf51eca3f1d876161c4fdd37ec792b9175b250549aa88ed72f84`，并强制校验绑定路径。修正后测试通过。
+- 仍保留三个现场前 HOLD：native harness 虽包含 generated main，但使用桌面 Arduino/WebServer/Preferences/GPIO doubles，未做完整生产链接和真实硬件证明；native fixture 尚未在运行时初始化并断言旧 `lhist_v1/cur_lh1=770` 全程不变，目前旧 fault 保留只由合同静态字段证明；R4 contract/generated identity 仍含 `FRESH_P2_FACTORY_WHITE` 与 `source_white_observed:false` 的历史语义，而本次真实 source 是 R4 白恢复后的 retained clean-white。不能把这组字段直接当作现场放行依据，需在重新封印或明确合同语义后再动设备。
+- **下一入口：** 先获得本次重新插拔后 retained clean-white 的明确确认；确认前不做任何设备访问。确认后才可继续 fresh COM/IP/MAC/boot/camera 只读绑定和代码/合同修订后的现场前置。qualified=`0/256`。
+
+## 2026-09-14 20:56 +0800 R4 rebound 明度链 native 与 host 离线门通过；仍未现场放行
+
+- R4 rebound 包 `LH1_REBOUND_20260914_R4` 的原生协议审计已 PASS：29 个协议负例/正例、7 个严格 JSON 解析场景通过；独立报告为 [`native-audit.json`](../.test-output/offline/LH1_REBOUND_NATIVE_20260914_R4/native-audit.json)，无硬件、网络、刷写或刷新，qualified=`0`。完整 frame/30 tuple 传输审计的封存报告为 [`native-audit.json`](../.test-output/offline/LH1_REBOUND_NATIVE_20260914_R2/native-audit.json)，三帧逐字节匹配、30 条 tuple upload 通过。
+- host 入口 [`mf1750_lh1_rebound_once_v1.py`](../tools/mf1750_lh1_rebound_once_v1.py) 已验证本次 R4 close-review-v5 白终态绑定、`lh1srcw_v1/used_lh1sw1=2` source gate、新 `lhist_lh1_rebound_v1/cur_lh1_rebound/boot_lh1_rebound` 命名空间及旧 `lhist_v1/cur_lh1/boot_lh1=30a9e5989873f4e0/cursor770` 保留；4 项测试 PASS。它只做离线身份/header 规划，不访问设备。
+- 当前门为 `HOLD_OFFLINE_READY_FOR_FRESH_DEVICE_BINDING`：R4 编译、native、host 三项离线证据齐全，但尚未重新枚举 COM、IPv4↔MAC、boot 或相机，也未刷写/ARM/EXECUTE。不能把离线 PASS 解释为明度候选或现场资格。
+- **下一唯一入口：** 重新枚举本次 fresh COM 与 exact IPv4↔MAC，核对指定 `VID_32E4:PID_4801` 相机和当前白屏；按实际 app-only 写入后重新取得同 boot J2-OFF diagnostic。若所有前置通过，最多执行 R4 rebound **ordinal 1：1 ARM / 1 EXECUTE / 1 driver / 1 visible refresh**，立即停住判读；不执行 ordinal 2、不重试、不刷白。当前 relay 状态以现场最新独立查询为准，离线阶段未改变 relay；qualified=`0/256`。
+
+## 2026-09-14 20:40 +0800 R4 重绑定 LH1 候选包离线编译通过；仍未现场放行
+
+- 已从本次 R4 白终态生成隔离的 `LH1_REBOUND_20260914_R4` 候选包：contract=`e708592a61a3b90a276cd2b8756bf4fd4ee7583dbc0fbcc729e79adf1fdfadf0`，BIN SHA=`292d66cc6f0b0979d2ef5f4b962c65215ca53de1d7120f5e66ec01a7dfade594`，ELF SHA=`f448d642bf9cd06963a3021e9d8d5fa388c94b659ff1a31c06ad9a16838d9912`。
+- 候选固件编译 PASS（PlatformIO，Flash 使用约24%）；源码检查确认新 `lhist_lh1_rebound_v1/cur_lh1_rebound/boot_lh1_rebound`，旧 `lhist_v1/cur_lh1/boot_lh1` 未编译进入；source gate 改为本次 `lh1srcw_v1/used_lh1sw1=2`。旧 R1/R2/R3 编译失败候选均保留，不覆盖。
+- native protocol audit 尚未完成，新的 host runner 尚未完成，故 `live_ready=false`；没有刷写、设备访问或刷新。qualified=`0/256`。
+- 审计入口：[`audit-v2.json`](../.test-output/offline/LH1_POSTWHITE_LIGHTNESS_CHAIN_AUDIT_20260914_V1/audit-v2.json)；候选包：`.test-output/offline/LH1_REBOUND_20260914_R4/`；准备脚本：[`mf1750_lh1_rebound_chain_v1_prepare.py`](../tools/mf1750_lh1_rebound_chain_v1_prepare.py)。
+- **下一唯一入口：** 对 R4 候选执行 native 协议审计并实现/审计对应 host runner；两者通过后才重新建立 COM/IP/MAC/boot，最多执行 source ordinal1 一次并停审。当前白终态保持不动。
+
+## 2026-09-14 20:26 +0800 白终态后离线明度链审计完成；旧链全部拒绝复用
+
+- 白恢复的人工+相机确认已绑定为当前 source anchor：R4 contract=`8746bf27…20eb7f3`、white action=`60e078ff…6a026fad966`、BIN=`ee59e69d…3afd61e2`、ELF=`0352e7f1…d9378402`，white COMPLETE/cursor=2，qualified=`0/256`。
+- 对旧 `LH1_LH4_20260912_R1`、fault-white/MIDDLE 及现有 HOLD function-chain 做了离线核对：旧 LH1 仍绑定历史 P2 white action；fault-white 只能 containment；HOLD function-chain 的算法/身份 dry validation PASS 但 source authority 是历史白源、`live_authorized` 不成立。它们都不能直接进入现场。
+- 新链要求已封存：保留旧 `lhist_v1/cur_lh1=770` 与 `boot_lh1=30a9e5989873f4e0`，不得清除/覆盖；使用全新 `lhist_lh1_rebound_v1/cur_lh1_rebound/boot_lh1_rebound`，初始 cursor=1；source gate 绑定本次 R4 white `lh1srcw_v1/used_lh1sw1=2` 和当前白场证据。
+- 离线审计证据：[`audit.json`](../.test-output/offline/LH1_POSTWHITE_LIGHTNESS_CHAIN_AUDIT_20260914_V1/audit.json)。硬件访问=0、mutation=0。当前门 `HOLD_OFFLINE_PREP`，下一唯一动作是生成并原生审计新 rebound LH1 source ordinal1 runner/package；完成前不访问设备。
+
+## 2026-09-14 20:19 +0800 用户与相机共同确认白场通过；白恢复收口，明度链未启动
+
+- 用户确认“我肉眼看干净净白，电气正常”；指定 `VID_32E4:PID_4801` 相机新拍全屏，整块面板均匀白场，未见色块、固定边框、网格或固定线。记录为 `PASS_WHITE_RESTORED_HUMAN_AND_CAMERA`。
+- 白恢复实际计数保持：1 ARM / 1 EXECUTE / 1 driver / 1 visible refresh；终态 COMPLETE、cursor=2；relay 最终 OFF；没有 ordinal2、没有 mutation retry、没有主流程 resume。qualified=`0/256`。
+- 电源照片同时记录 3.31 V、CV、0.000 A；这是现场记录，不把它当作厂商规格。相机仍是 camera-relative，未标定 Lab，未计算 ΔE76/ΔE00，白场通过不等于明度候选通过。
+- 收口证据：[`close-review-v5.json`](../.test-output/hardware/LH1_FAULT_REENTRY_20260914_V1/WHITE_ONCE_V1/close-review-v5.json)、[`postwhite-optical-review-v4.json`](../.test-output/hardware/LH1_FAULT_REENTRY_20260914_V1/WHITE_ONCE_V1/postwhite-optical-review-v4.json)。
+- **下一唯一入口：** 离线建立新的明度 source/target 链并重新绑定控制器、source state、profile、frame/action、温度与 ROI；现场执行前不得在已完成的 white successor 上继续发动作。明度资格仍为 0。
+
+## 2026-09-14 20:14 +0800 R4 白恢复完成；真屏白场 PASS，停在人工确认，未进入明度
+
+- 用户确认电源为 CV、3.3 V；重新建立 fresh IPv4↔MAC、指定相机和现场前置后，powered idle 读取 `BUSY=1`、`state=ready`、`phase=0`、`cursor=1`，同一 R4 boot=`1b3d3c465436fd75`，ARM/EXEC/driver 计数为0。
+- 实际完成独立故障白恢复：**1 ARM / 1 EXECUTE / 1 driver / 1 visible refresh**，终态 `COMPLETE`、cursor=`2`；随后 relay exact-bound OFF。没有 ordinal2、没有 mutation 重试、没有主流程恢复。white 一次性 claim 已按设计永久消耗。
+- 后恢复指定 `VID_32E4:PID_4801` 相机显示整块矩形屏幕均匀白场，未见色块、固定边框、网格或固定线；画面同时记录电源 `3.31 V / CV / 0.000 A`。这是 camera-relative 光学筛选，未标定 Lab、未计算 ΔE、未授予明度资格；等待现场人工确认。光学 `HOLD_FOR_HUMAN_CONFIRMATION`，qualified=`0/256`。
+- 完整结果：[`close-review-v4.json`](../.test-output/hardware/LH1_FAULT_REENTRY_20260914_V1/WHITE_ONCE_V1/close-review-v4.json)；原始执行目录 `live-reopen-v2/`，照片 `postwhite-v3.jpg` 与 sidecar，终态 relay OFF。当前屏幕应保持白恢复终态。
+- **下一唯一入口：** 用户确认白场干净后，重新建立 fresh source/target 状态并另起明度链；白恢复本身不能直接授予颜色或明度资格，不自动执行 ordinal2，不复用旧 MIDDLE 失败链。
+
+## 2026-09-14 07:40 +0800 用户确认 CV/3.3 V 后复查；BUSY 仍为 0，未发送白恢复
+
+- 用户确认当前电源为 CV、3.3 V。按规则重新建立 fresh IPv4↔MAC，并重新采集指定 VID_32E4:PID_4801 相机；旧绑定/旧相机证据未复用。
+- relay ON 后 fresh 4GET 仍返回 `state=ready, phase=0, cursor=1, busy=0, rst=0, cs=0, cs2=0`。因此 R4 固件的 idle-high 前置仍失败，**ARM=0、EXECUTE=0、driver=0、visible refresh=0**。已 relay OFF 并独立确认 OFF。
+- 这证明“CV/3.3 V”本身没有让控制器看到 BUSY 高电平；不能把电源模式当作 panel 已上电或 BUSY 链路正常的证明。物理原因未判定，不能绕过保护。
+- 当前判定仍为 **FAIL_STOP（BUSY 前置）**，光学 `HOLD_FOR_EVIDENCE`，qualified=`0/256`。本次只读停止证据：[`powered-idle-stop-v2.json`](../.test-output/hardware/LH1_FAULT_REENTRY_20260914_V1/WHITE_ONCE_V1/powered-idle-stop.json)。
+- 下一唯一动作：检查继电器 ON 后屏端实际供电路径/共地及 BUSY 线连续性，确认控制器确实能读到 idle-high，再重新 fresh 4GET；不清 NVS、不重刷、不发送 ARM/EXECUTE。
+
+## 2026-09-14 00:38 +0800 故障白恢复 R4 已刷入；ON 后 BUSY=0，在任何 mutation 前 FAIL_STOP
+
+- 用户在场并明确“我人在的，可以直接看屏幕，你直接刷入真屏即可”，结合已有刷白授权，本轮范围为一次独立故障白恢复后停审，无需重复索取许可。电气维持 `RECORD_ONLY_BY_EXPLICIT_USER_INSTRUCTION`、`electrical_state_proven=false`；本次实际 BUSY 异常仍是固件动作必要前提，不能绕过。
+- 更正历史恢复入口：SOURCE white R5 仅接纳原主 cursor2，**不适用于当前 FAULT770**。独立 `LH1_MIDDLE_FAULT_WHITE_20260913_R4` 才匹配原主 boot=`30a9e5989873f4e0`、FAULT770；其 factory 驱动与 R5 字节一致、原主 NVS 不清除、不续主链、共用 white 一次性额度。contract=`8746bf27c2317649096c353bebe69a762b09657e648241114e4c23c6a20eb7f3`；BIN=`ee59e69de0542176b166b981fa413c85d17fb1bbfd8d445d2e0f47c53afd61e2`；ELF=`0352e7f128e20c16a7845070769b4a59e7e10eb0ad69a33a73fd7ca0d9378402`。实际文件/哈希、native 31场景/75严格JSON、host/source-fault 23测试通过；native 驱动是合成桩，不代表真屏。
+- 已实际执行 app-only `0x10000` 写入/verify，单次启动，未擦写 NVS。fresh COM8/CH343 serial=`5C4C165475`；postflash exact IPv4↔MAC=`192.168.1.4 ↔ A4-CB-8F-D9-FC-D4`。运行 R4 新 boot=`1b3d3c465436fd75`，本 boot J2-OFF **4GET/0POST、BUSY0 PASS**；动态读得原主 source cursor770/boot30a9，white ready cursor1，计数全0。
+- exact-bound relay ON一次且反馈/独立查询ON；约11.425秒后 live 前置4GET仍显示 **BUSY0**，空闲高前提未满足，runner `white preflight busy differs` 后 STOP。**ARM0/EXECUTE0/driver0/visible refresh0/新white claim0**，没有 mutation 重试。随后relay OFF一次并独立查询OFF。不是一次刷白驱动失败，更不能判定明度算法或候选失败。
+- 最新指定相机 VID_32E4:PID_4801 实拍几乎全暗，不能判屏幕白/黑/边框；未伪造 RAW/ISO/硬触发或 ROI/Lab，人工当前白场判读待提供。屏幕本轮未刷新，光学 `HOLD_FOR_EVIDENCE`。已向用户查询电源输出开启状态、CV/LVP、显示电压，用于定位此次异常，不要求再次授权。
+- 原始证据与完整结果：[`WHITE_ONCE_V1/session-outcome.json`](../.test-output/hardware/LH1_FAULT_REENTRY_20260914_V1/WHITE_ONCE_V1/session-outcome.json)，同目录 `app-flash-raw.json`、`j2-off-diagnostic/`、`live/`、继电器回执、原图/sidecar、`observation-template.json`。本轮总判定 **FAIL_STOP（前置 BUSY）**；qualified=`0/256`。
+- **下一唯一入口：** 上述 outcome → 定位本次通电后 BUSY0，取得实际状态变化/解释后，对已刷入的 R4 重新做 fresh identity/同boot只读前置；仍仅允许独立 white 1ARM/1EXEC/1driver 后停审。既有授权持续有效，但没有外部状态证据/变化不得自动重复ON尝试。无需默认再刷写；不得清原主fault/claim/NVS，不得重发旧MIDDLE，不得用旧stage-review给重启后链放行。MIDDLE v2 仅离线修正，未来全新明度链仍需绑定实际新白终态。
+
+## 2026-09-13 09:58 MIDDLE ordinal 2 真屏尝试按协议 FAIL_STOP；未产生刷新
+
+- 用户明确授权真屏明度刷入。离线 MIDDLE runner `tools/mf1750_lh1_lh4_middle_once_v1.py` 已补齐真实 HTTP/80 私网 IPv4 单次通道；合同、同 boot 来源绑定及 11 项测试通过。
+- 继电器 exact-bound ON 一次并查询确认 ON；MIDDLE live 仅完成 4 GET 前置及 1 次 ARM POST。设备返回 HTTP 400 `prior_review_cannot_reuse_white`，响应明确 `fault_locked=true`；未发送 EXECUTE，未调用 driver，未产生 visible refresh。禁止重发 mutation。
+- 首要失败原因为固件 review gate：MIDDLE 要求 `X-LH-Prior-Review` 必须是不同于白源的“新阶段 review”，本次错误复用了 SOURCE review，设备明确返回 `prior_review_cannot_reuse_white` 并锁定。另发现 runner 初版从 manifest 读取不存在的 build_tag，导致 `X-EC5-Build-Tag` 为空；两项均已离线修正，均不追溯、不重试本次已停止的设备动作。
+- 继电器随后 exact-bound OFF 一次并独立查询确认 OFF；只读补取 fault 状态/报告：同 boot=`30a9e5989873f4e0`、phase=FAULT、state=fault_locked、cursor_raw=770、next_ordinal=2、driver total=1。相机 VID_32E4:PID_4801 只读拍摄 post-fault-off，屏幕仍为白场，无本次 MIDDLE 色块证据。
+- 本轮 MIDDLE 结果 [`session-outcome.json`](../.test-output/hardware/LH1_SOURCE_FIELD_20260913_V3/MIDDLE_ORD2_20260913_V1/session-outcome.json)；原始停止目录 [`live2`](../.test-output/hardware/LH1_SOURCE_FIELD_20260913_V3/MIDDLE_ORD2_20260913_V1/live2)。判定 **FAIL_STOP_PROTOCOL_GATE**；光学 **HOLD_FOR_EVIDENCE_NO_REFRESH**；qualified=`0/256`。
+- **下一唯一入口：** 离线修正后的 runner/合同头复核与已封印白 successor R5 的独立恢复方案；当前 boot 已 fault，禁止在此 boot 继续 mutation。白恢复必须另行核对条件并获得独立现场放行。
+- 已生成离线新阶段 review [`new-stage-review.json`](../.test-output/hardware/LH1_SOURCE_FIELD_20260913_V3/MIDDLE_ORD2_20260913_V1/new-stage-review.json)，其 prior review hash 与 SOURCE 白源 hash 不同；runner 现要求 `--stage-review`，为后续新 boot 链提供正确的 review gate 输入。该文件仅离线绑定，不构成现场授权。
+
+## 2026-09-13 09:36 SOURCE ordinal 1 已实际刷新一次；只读补取 COMPLETE，原轮询异常保留
+
+- 最新用户指令“电气信息正常，不用作为控制项，可以直接进入刷新”已落实为独立 `tools/mf1750_lh1_lh4_once_operator_v2.py` 的 `RECORD_ONLY_BY_EXPLICIT_USER_INSTRUCTION` 分支。电气项继续如实记录 `electrical_state_proven=false`，不再要求重复测量/电气放行；其余身份、相机、NVS/claim、同 boot、单次 ARM/EXECUTE 与停止条件保留。operator 38 tests、SOURCE terminal gate 33 tests 合计 **71 PASS**。
+- 主应用 `.test-output/offline/LH1_LH4_20260912_R1` app-only `0x10000` 写入/verify PASS、启动一次。fresh COM8/CH343 serial `5C4C165475`；继电器 COM14/CH1、Port_#0004.Hub_#0001；刷写前后分别建立 exact `192.168.1.4 ↔ A4-CB-8F-D9-FC-D4`。刷写后新 boot=`30a9e5989873f4e0` 的 J2-OFF diagnostic 为 **4 GET / 0 POST / BUSY=0 / PASS**。
+- relay 一次 ON 后执行 SOURCE ordinal 1，ARM=201、EXECUTE=202，各一次；第一条 status 在固定等待45秒后遇 `ConnectionResetError`，runner 保留永久 claim 与原 `source-once/STOP.json` 并停止。没有重发 mutation。之后独立只读 **2 GET** 取得同 boot `COMPLETE`、cursor_raw=2、driver=1；原严格 `validate_terminal` 全通过，写入 [`terminal-reconciliation.json`](../.test-output/hardware/LH1_SOURCE_FIELD_20260913_V3/terminal-reconciliation.json)，**未伪造或补写原 runner 的 result.json**。
+- 实测驱动总耗时 **45.354 s**，PON/DRF/POF BUSY=`261/32681/151 ms`。源码同步 driver 完成后重启 HTTP listener；第一 GET 在 EXEC ACK 后45.005秒发出，0.357秒后断连，最可能撞上 listener stop/start；同 boot 证据不支持 MCU 重启。见 [`transport-analysis.json`](../.test-output/hardware/LH1_SOURCE_FIELD_20260913_V3/transport-analysis.json)。该分析没有临场更改或重试刷新。
+- safe_finish 与最终 GPIO 严格通过后，relay 一次 OFF/独立查询 OFF；当前屏幕为 **近白主体、比刷新前更深的边框**，不是恢复得到的 fresh factory clean-white。指定 VID_32E4:PID_4801 相机共3次只读采集（前态/终态未决时/最终OFF后），原图、sidecar、8位置诊断 ROI 保存。CS1/CS2 DTM/FNV/upload 分别记录；相机左右半屏到实物 CS 的方向未证明，光学分析保持左右候选标签；不能用单帧当噪声/位置复现/明度等级证据。温度和controller revision 本次接口未读得，写 null；波形内部 `OPAQUE`。
+- 最终离线光学报告 [`source-optical-final.json`](../.test-output/hardware/LH1_SOURCE_FIELD_20260913_V3/optical/source-optical-final.json) 已保存；浮点 camera-relative L* 使用0–100标度，8个位置前后差值约+0.263…+0.810，单帧、无标定/噪声估计，不应用明度资格阈值；旧Lab8编码结果单列不混用。收尾闭环 [`close-review.json`](../.test-output/hardware/LH1_SOURCE_FIELD_20260913_V3/close-review.json) SHA=`c089f782269fbe24c25b124b7fba95b08933e25f442f579c0fa5a0a849de14d3`。
+- 实际累计：**1 app flash / 1 verify / 1 application start / 2 relay commands(ON/OFF) / 1 ARM / 1 EXECUTE / 1 driver / 1 visible refresh / 0 mutation retry / 0 ordinal2 / 0 white recovery**。HTTP GET尝试11（10成功、1reset）、POST2；qualified=`0/256`。刷新次数依据同 boot严格终态，不冒称有全过程视频。综合 **FAIL_STOP（原transport）**，终态核验PASS，光学/明度 `HOLD_FOR_EVIDENCE`。
+- 更正上一条：R4原始native报告实际为 **FAIL_SYNTAX**，旧PASS封印不可用，全部原证据保留。独立R5才实际通过：contract=`65185ca65cf28a01e2c420507e38f399cd716f2a314d0b6edd1524cbf06b36ca`，BIN=`caec094f9c79cac6b7e698c407580c63fb64a781fa1796f2e59fc164dd27c801`，ELF=`b9f009d5159cd16e9ec1f4882f407b2d9182f3f5fc58ef723ffba01a33da0c68`，30场景/73严格JSON/正常7响应均PASS。R5仅离线备用，当前原STOP没有标准source result，既有white host门不会直接接受；不自动恢复。
+- **下一唯一入口：** [`session-outcome.json`](../.test-output/hardware/LH1_SOURCE_FIELD_20260913_V3/session-outcome.json) → terminal reconciliation + transport分析，离线封印补取终态的接纳规则和下一阶段poll时序/runner；离线已授权。SOURCE白源永久claim=`c1655f44acc748fb2eb152aaa739eeda8344ed16e1ef10be5aca1a9d1ca4a039`，禁止重放。MIDDLE ordinal2及白恢复均未获本轮自动执行授权；MIDDLE还必须保留当前ESP32 boot和审查完整前态，boot改变不得续链。
+
+## 2026-09-13 08:47 离线白 successor 缺陷修复完成；继电器本轮重新枚举仍未形成电气证明
+
+- 针对 R1 原生审计发现的真实 schema 缺陷：`statusJson()` 与 COMPLETE 报告重复输出 `profile_id`，严格 JSON 解析拒绝。保留 R1 原包和审计 `LH1_SOURCE_WHITE_NATIVE_20260913_V2/native-audit-v2.json` 的 `FAIL_DUPLICATE_JSON_KEYS`，未覆盖历史证据。
+- 新建隔离白 successor R4：生成器 [`tools/mf1750_lh1_source_white_firmware_v3.py`](../tools/mf1750_lh1_source_white_firmware_v3.py)，contract=`a6883045e12f82bf0ee60dc967d08dcb16fcc0edd800caeb1dda529b5bb3e02b`，编译 PASS；BIN=`d2d7b39e6b3593c4d81b2d99d2614bf429dacd1f68dc0d51956349266691cbb4`，ELF=`1a7da5f3f0704404704cd4d8fce9809a29fb29d187817b9ff73231158ec17bca`。严格 MSVC C++17 原生协议审计 [`LH1_SOURCE_WHITE_NATIVE_20260913_R3/native-audit-v3.json`](../.test-output/offline/LH1_SOURCE_WHITE_NATIVE_20260913_R3/native-audit-v3.json) PASS：4 文档无重复键、启动/自动串联/驱动计数正确，13 个正负场景通过；驱动仍是桌面合成桩，不能替代真屏物理证据。R4 后测白封印和独立 review 已生成，但 `live_action_authorized=false`、`qualified=0`。
+- 独立适用性审查已纠正错误 WF23_25 阻断：SOURCE1 实际 profile=`LEGACY_ACTIVE_HEADER__CS1_ACTIVE535__CS2_ACTIVE535`，sha=`61a9284561616099cb854c607a3429353b92ab54299eb552b1da60a8a2382f8`，PWR/PLL/R20/R21 与历史 P1 一致；不声称厂商兼容。
+- 按当前授权只重新枚举继电器一次：COM14、CH340 VID_1A86:PID_7523、Port_#0004.Hub_#0001、CH1；一次独立查询为 `OFF`，并用允许的 VID_32E4:PID_4801 相机只读采集当前白场 1 张（`LH1_REENTRY_WHITE_20260913_V2/current-white.jpg`，未触发刷新），证据目录 [`LH1_REENTRY_RELAY_20260913_V2`](../.test-output/hardware/LH1_REENTRY_RELAY_20260913_V2/)。未切换 ON、未刷写、未复位、未 ARM/EXECUTE、未产生 visible refresh。用户报告 J2=3.3 V 已原样保留，但测点/参考地/仪器/时刻尚未绑定，因此 `electrical_state_proven=false`。
+- 本轮判定：`HOLD_FOR_EVIDENCE`，qualified=`0/256`。下一具体动作：在用户明确 J2 3.3 V 的测量点、相对 GND、仪器和时刻后，重新建立当次 ESP32 COM/IP↔MAC/boot；补齐电气记录和刷写后同 boot J2-OFF diagnostic，才可执行已授权 SOURCE ordinal 1（仅 1 ARM/1 EXECUTE/1 driver/1 visible refresh，随后停审）。
+
+## 2026-09-13 00:25 fresh 白场/身份前置完成；明度 mutation 仍待电气与适用性证据
+
+- 用户确认“都 ok，可以开始测试”。指定相机 fresh 采集 1 次（10 warmup、1 formal frame），照片 `.test-output/hardware/LH1_LH4_CURRENT_WHITE_20260913_V1/current-white.jpg`，SHA=`01c6d9f0a4b4e1db6975196d775e7679e7d8a3fd828c1432e04da0c4494d9169`（具体文件 SHA 以 sidecar 为准）；四边均入镜，current-white review=`PASS`，仍为 camera-relative、未标定 Lab。
+- fresh ESP32 枚举为 COM8/CH343/VID_1A86:PID_55D3/serial=`5C4C165475`；relay fresh query 为 COM14/CH340/VID_1A86:PID_7523、Port_#0004.Hub_#0001、channel 1 OFF。exact IPv4↔MAC 仅对单一候选 `192.168.1.4 ↔ A4-CB-8F-D9-FC-D4` 做 1 次 ICMP，`active_exact_mac_binding_pass`；HTTP/设备 API=0。
+- 已保存当前白场 review、COM/relay fresh 身份、IP/MAC binding。外部电气记录仍未提供负载侧/共地实际读数，`electrical_state_proven=false`；PWR/PLL/WF23_25 适用性 review 明确为 HOLD，不写入新参数。LH1 SOURCE1 尚未刷写或刷新。
+- 本阶段累计 mutation/visible refresh：0。qualified=`0/256`。离线 host gate 已新增并通过 8 项测试；本阶段合计 93 项测试、Ruff 通过。下一唯一动作：补齐实际电压/电流/测点/仪器/时刻及 PWR/PLL 适用性证据；随后生成真实 SOURCE1 终态并运行后测白 host gate。在此之前不得 relay ON、app-only flash 或 ARM。
+
+最后更新：`2026-09-12 23:28 +08:00`
+
+## 2026-09-12 23:28 LH1/LH4 离线绑定、相机工具与后测白候选完成；现场仍 HOLD
+
+- 已完成新的 LH4 白源绑定 LH1 主固件包 `.test-output/offline/LH1_LH4_20260912_R1`：contract=`8fae456f8e7695cec45a37c3e8c97626534e9d68ad9804bba94625ac26995416`，BIN=`f56a6c2b32b2dad4961e1e56fe001b59c203f88ffb068eaca269a15ddd94bdfb`，ELF=`1c0ea13227e74ba99758702f80f75e896c1185187b1b79fa3c061614caa54b7e`。编译 PASS、原生协议审计 PASS（29 场景/3 帧/30 tuple），host 复核 78 passed、Ruff PASS；设备访问、刷写、刷新均为 0。HTTP 设备若不提供 running ELF 字段，宿主只以 sealed BIN/ELF + app-only verify + 新 boot 绑定入场，不伪称设备自证 ELF。
+- 已完成 SOURCE ordinal 1 后独立白恢复候选 `.test-output/offline/LH1_SOURCE_WHITE_20260912_R1`：contract=`da72a58cafdbdfa379781e8942ed5839462064c923001cd7a0ceb5e797666de3`，BIN=`2cf5b11f9c0fcd6b706b3d6271bf3fe96f5871392f297f9db74521367feb8876`，ELF=`536365815cbf1cb3e2d8d7f364e203246fe03e447882228ca0d2e0ca51e4a8b3`。native audit=`PASS_WITH_HOST_GATE_GAP`：NVS `lhist_v1/cur_lh1=2/boot_lh1>0` guard、driver 保持通过，但 MIDDLE/TARGET/FAULT 与 exact SOURCE terminal 的排斥仍由独立 host 负责；因此 `live_ready=false`，不封印为可用恢复入口，也不复用 LH4 claim。
+- 已加入严格相机工具 `tools/mf1750_lh1_camera_capture.py` 与测试，指定 VID_32E4:PID_4801、前后身份一致、RAW/ISO/硬触发 false、camera-relative Lab、JPEG/sidecar O_EXCL；5 tests PASS。实际只读采集 `.test-output/hardware/LH1_LH4_CURRENT_WHITE_20260912_V1/` 1 张，照片 SHA=`cf94c0b2cf21e1d907bfd61ab8bfa430f68afdf1843747029898551531d9e452`，当前画面白场主体可见但右边界未入镜，review=`HOLD_FOR_EVIDENCE`，不能升格为 full-panel PASS。
+- 本轮实际动作：相机只读 1 次（warmup=10、formal frame=1）；HTTP/COM/relay/flash/reset/ARM/EXECUTE/driver/visible refresh=0。relay 仍以最后记录 OFF 记账，`electrical_state_proven=false`；用户观察“全白，ok”已记录为人工观察，不扩写为四边、固定线或电压证明；qualified=`0/256`。
+- 当前结论：**HOLD_FOR_EVIDENCE**。LH1 SOURCE1 尚未执行。下一唯一入口是（1）相机后移并复拍，使四边实际入镜；（2）提供仪器、测点/相对 GND、读数和时刻的外部 J2 电气证据；（3）完成后测白候选的独立 host gate（SOURCE exact COMPLETE 对 MIDDLE/TARGET/FAULT 的拒绝），再重新 fresh 枚举 COM、exact IPv4↔MAC、app-only 写入 LH1、同 boot J2-OFF 诊断；所有前置通过后才可用已授权 runner 执行且仅执行 SOURCE ordinal 1，随后停审。
+
+最后更新：`2026-09-12 21:30 +08:00`
+
+## 2026-09-12 21:30 W0 白恢复完成；明度动作被新白身份依赖阻断
+
+- 用户确认当前屏幕“全白，ok”。LH4 白恢复实际完成：应用区 `0x10000` 写入/verify PASS、一次 hard reset；刷写后 fresh exact `192.168.1.4 ↔ A4-CB-8F-D9-FC-D4`；同 boot=`2f4d25eff2a04b6d` J2-OFF diagnostic `GET=4/POST=0`、BUSY=0；随后 relay channel1 `COM1-NO1` 一次 ON、一次独立查询 ON，执行一次白 action，`1 ARM / 1 EXECUTE / 1 driver / 1 visible refresh`，BUSY/终态和 claim PASS。relay 已正常收尾 OFF。
+- 本轮实际计数：app flash=1、verify=1、hard reset=1、relay switch=2（ON/OFF）、HTTP GET=9、POST=2、ARM=1、EXECUTE=1、driver=1、visible refresh=1、retry=0、autochain=0。白 action 证据在 `.test-output/hardware/MF1750_P2_WHITE_LH4_20260912_V1/`，W0 审查 [`execution-review.json`](../.test-output/hardware/MF1750_WHITE_RECOVERY_20260912_W0_LH4_V1/execution-review.json)，canonical SHA=`2bef73c1340be23cbd9e06a971ecce88f7dd1a79569cb9cf4b6bb5ac5f519179`。
+- 用户现场观察与相机辅助照片均显示全白；照片有机位边缘遮挡，人工确认补齐全屏判读。W0 判决为 `PASS_PREREQUISITE_ONLY`：它只建立白源，不产生明度资格。relay 命令/query 仍不是负载侧电气测量，`electrical_state_proven=false`；这点保留在证据中。
+- 明度动作当前不能启动：离线 LH1 R3 source 固定旧 white BIN `acf27e…79277`/旧 ELF，和本轮 LH4 `dc93c95a…70d2de6`/`ff3793ef…aba067` 不兼容。不能拿旧 runner、改目录或清 NVS/claims 绕过；正在独立封印新 LH4 绑定的 LH1 source-runner。
+- `qualified=0/256`。下一唯一入口是新 LH1 source-runner 的离线 contract/BIN/ELF/claim/NVS 绑定与回归通过；之后重新 fresh 枚举 COM/IP/MAC/boot，J2-OFF diagnostic，再只获准执行 LH1 SOURCE ordinal 1，完成后停审。不得启动 MIDDLE/TARGET、ordinal 2 或自动链。
+
+最后更新：`2026-09-12 08:15 +08:00`
+
+## 2026-09-12 08:15 明度统一执行计划与 LH4 白宿主离线封印完成；真屏保持停止
+
+- 已建立唯一执行入口 [`MF1750_LIGHTNESS_EXECUTION_MASTER_PLAN_2026-09-12.md`](MF1750_LIGHTNESS_EXECUTION_MASTER_PLAN_2026-09-12.md) 和空白记录 [`MF1750_LIGHTNESS_BATCH_RECORD_TEMPLATE_2026-09-12.json`](MF1750_LIGHTNESS_BATCH_RECORD_TEMPLATE_2026-09-12.json)。计划冻结 256 槽目标、明度定义、3→5→10 等级语义、SOURCE→MIDDLE→TARGET 三步、每步 `1 ARM/1 EXECUTE/1 driver/1 visible refresh`、四位置/双 controller、camera-relative 与 calibrated Lab 分离、ΔE76/ΔE00 分离、HOLD/fresh/retention/匹配判据和每个失败分支。模板实测项均为 null，并明确不能直接喂 analyzer。
+- 原有 SPD1657B Rev 1.1 资料分析已纳入计划：3-bit Gray 是索引，不等于 L*；R20/R21、未知 phase 和 HOLD 仍 OPAQUE；PLL/PWR/电压/剂量未获现场参数授权。
+- LH4 修复白固件：BIN `dc93c95a956eecf7d9cb753e5fb82ea16e5f2142694a8fcd22157481570d2de6`，ELF `ff3793efde294bf981f3b1932799fdc574917fe33c0f1d15bf636367c5aba067`。独立 host review [`host-root-review.json`](../.test-output/offline/MF1750_WHITE_LH4_HOST_ROOT_REVIEW_20260912_V1/host-root-review.json)，SHA=`ae54b311d291c04c768a78839cba133737213d6f8b26335f87898bd1c7ac620b`：8 个定向测试、完整 delegate 身份、历史 P2 source 深校验和 4 类错误身份拒绝通过；绑定 59 个实际 workspace 依赖输入。LH2/LH3 JSON 候选仍 INVALID，保留不刷。
+- 本次现场只读证据目录 [`MF1750_LIVE_REENTRY_20260912_V1`](../.test-output/hardware/MF1750_LIVE_REENTRY_20260912_V1)：指定相机 VID_32E4:PID_4801 已命中，但照片只覆盖屏幕右侧，仍有彩色块；不能作为全屏白场。ESP32 当次枚举 COM8、relay COM14、当次探测 `192.168.1.4 ↔ A4-CB-8F-D9-FC-D4`，后续只能重新绑定。relay 最后查询 OFF，`electrical_state_proven=false`；无外部负载侧/共地测量。旧白固件只读 GET=4，READY/NOT_EXECUTED/cursor=1/boot=`362d4656500b6796`，不能充当刷写后诊断。
+- 本轮累计实际动作：relay switch=0、flash=0、reset=0、ARM=0、EXECUTE=0、driver=0、visible refresh=0、retry=0；`qualified=0/256`。用户已授权一次 W0 白恢复并可在现场观察，但授权不替代整屏光学和 Phase 0 电气证据；条件满足后只执行 W0，立即停止验白，不自动进入 LH1、ordinal 2 或重试。
+- 下一唯一入口：补齐本次整屏相机覆盖的实际视觉复核和 J2 负载侧/共地外部测量；重新枚举 COM、建立本次 exact IPv4↔MAC 与 fresh boot；然后按 master plan W0.3 app-only 写入 LH4 → 刷写后同 boot J2-OFF 四 GET → J2-ON 空闲高电平门 → 一次白 ARM/EXECUTE → 停止验白。任一身份、BUSY、claim、hash、线路或图像异常均 `FAIL_STOP`，不得重发 mutation。
+
+最后更新：`2026-09-11 08:24 +08:00`
+
+## 2026-09-11 08:24 相机只读状态核对；仍为彩色，资料分析与测试计划已完成
+
+- 按操作者“摄像头已经接入，可以直接判断”执行一次相机只读采集；严格使用 `48MP USB Camera / VID_32E4:PID_4801`、DSHOW、4000×3000 MJPG @ 15 fps，前后枚举一致，未访问继电器、SPI、HTTP 控制、复位或刷写。
+- 照片 `.test-output/hardware/MF1750_CAMERA_CURRENT_STATE_20260911_V1/current-frame.jpg`（SHA=`e5ee7650c6d5ae74de15f880e32839e1d5586cb43e6cadfdfb5c3f90fbd02578`）清楚显示 2×4×8 彩色色块，人工状态判定为“仍彩色”；sidecar SHA=`86bd77534b25818010420254b5b71bf629e8e2d95f4f06bf7721d969a53b7286`，capture binding=`locked_retained_retrospective`，自动 verdict=`INCONCLUSIVE/low`，不宣称历史 action 连续性。
+- 已完整核对 `参考资料/SPD1657B_1.1.pdf`（44 页，SHA=`7f867e165f4662aa525ba7f4e9d3413b0dc8f2ae3f3ae63d5c4a4023c5f0e41a`），新增综合分析与测试计划 [`MF1750_SPD1657B_V11_COMPLETE_ANALYSIS_AND_LIGHTNESS_TEST_PLAN_2026-09-11.md`](MF1750_SPD1657B_V11_COMPLETE_ANALYSIS_AND_LIGHTNESS_TEST_PLAN_2026-09-11.md)。结论：资料提供 3-bit/Gray 索引、LUT/OTP 选择、PLL 名义频率、PWR/VCOM/温度/PTLW/收尾语义，但没有 MF1750 LUT/phase/hold ABI 或明度规格；内部 phase 仍 `OPAQUE`，9 项 HOLD 证明义务仍缺失。
+- 本轮总计 `0 ARM / 0 EXECUTE / 0 driver / 0 visible refresh`；relay 最后 OFF，`electrical_state_proven=false`，`qualified=0/256`。现场仍 NO-GO。下一唯一入口：先离线解决 white successor 的 source-main lineage FAIL_STOP，再重新建立 fresh boot/IP/MAC/COM 绑定；在此之前不进入明度 action。
+
+## 2026-09-11 07:55 白恢复 FAIL_STOP；新固件已写入但未刷新
+
+- 重新插拔后重新枚举到 ESP32 `COM8`（CH343），继电器唯一绑定仍为 `COM14`，查询为 `OFF`。ESP32 串口只读报告本次实际地址 `192.168.1.4`；新建 exact binding=`192.168.1.4 ↔ A4-CB-8F-D9-FC-D4`，状态 `REACHABLE`。
+- 已按授权执行一次独立白 successor app-only 写入：仅应用区 `0x10000`，BIN SHA=`acf27e1358f869b4f5663e8a84ad4f38ab047557c90a9d64c4fa44c66c079277`，写入和 verify PASS，随后一次 hard reset。证据 `.test-output/hardware/MF1750_WHITE_RECOVERY_20260911_V3/app-only-single-boot-flash.json`，SHA=`bd25020cb8c471c6f671530ff5eec803349b9685f8402220371a3b8db1abcac4`。
+- 新 boot 的 J2-OFF 诊断只读 GET=4、POST=0，但在 source lineage 校验处 `FAIL_STOP`：`source_main_offline_build_file_sha256 differs`。没有 ARM、EXECUTE、driver 或 visible refresh；白恢复动作未执行，屏幕没有被本次固件刷新。诊断证据 `.test-output/hardware/MF1750_WHITE_RECOVERY_20260911_V3/white-successor-run/j2-off-diagnostic.json`，SHA=`a028bb0b8f772d6d8d6b5f97a02e8a8b6beaa635579d9eb698f23161049cd252`。
+- 当前状态：relay 最后 OFF，`electrical_state_proven=false`，屏幕仍按最后观察为 2×4×8 彩色；本轮实际 `1 app-only flash / 1 verify / 1 hard reset / 0 relay command / 0 white refresh`。不得重试该 successor 或强行跳过 lineage 校验；需先离线修复 source 主固件封印绑定并生成新的匹配 successor。
+
+## 2026-09-11 07:05 白恢复再次 FAIL_STOP；未访问设备
+
+- 按操作者要求尝试进入独立 P2-C white successor 前置，只执行一次新的 `192.168.1.11` ICMP 探测和 ARP 读取。ICMP 返回本机 `192.168.1.6: Destination host unreachable`，ARP 为 `No ARP Entries Found`，没有形成目标 MAC=`A4-CB-8F-D9-FC-D4` 的 exact IPv4↔MAC binding。
+- 因身份绑定失败，实际 `0 HTTP / 0 relay command / 0 flash / 0 reset / 0 ARM / 0 EXECUTE / 0 driver / 0 visible refresh`；relay 保持最后记录 OFF，屏幕保持最后记录 2×4×8 彩色，`electrical_state_proven=false`。证据：`.test-output/hardware/MF1750_WHITE_RECOVERY_20260911_V2/live-stop-no-exact-device-binding.json`，SHA-256=`6d3a2c992465b93d143c812d4db80885f33acd1798e6458ecb8d1c67c81020a1`。
+- 本次结果 `FAIL_STOP`，不重试同一探测。下一项唯一动作是恢复当前网络端点后重新建立 fresh exact IPv4↔MAC；绑定通过前不切继电器、不刷写、不复位、不刷新。
+
+## 2026-09-11 06:38 明度历史算法与固件离线封印完成；未访问真屏
+
+- 已完成离线算法与独立生成器。矩阵为 `SOURCE(active/C7) → MIDDLE(commented/M0…M7) → TARGET(active/T3/T7)`，16 配方、CS1/CS2 各四象限副本，共128个测量槽；3/5/10 是等级数量，不是刷新或重复次数。
+- 最终包 [`LH1_20260911_R3`](../.test-output/offline/LH1_20260911_R3) 合同 ID=`b63695f21ca56f3dbb45998ad3c88c790b5eed121513fa188c26b40a237990ac`。PlatformIO 编译 PASS；BIN SHA=`369c952a970fc1d9313602ffb4dd10ceac6534a486c399bf30bf40d2b0de00d1`，ELF SHA=`84f4191fcb212ef4de2c1e14571f7d6b96f91429e81d481640fc5f3e3eeceb4a`。
+- C++ 原生审计 PASS：29 个状态机场景、3帧逐字节一致、30条双控制器 tuple 写入一致；Python 回归 `49 passed`，Ruff PASS。设备访问=0、visible refresh=0。
+- 固件要求独立 white successor 的 NVS 完成游标和现场 clean-white/电气证据；`live_ready=false`、`qualified=0`。现场最后仍为 2×4×8 彩色、relay OFF、`electrical_state_proven=false`、NO-GO。
+- 下一唯一入口：完成 fresh white successor 恢复和证据，重新建立当次 IPv4↔MAC、COM、boot 身份；刷写后取得同 boot J2-OFF diagnostic。获明确放行后只执行 ordinal 1 的 1 ARM/1 EXECUTE/1 driver/1 visible refresh，随后停住判读。
+
+## 2026-09-11 02:49 white successor 现场前置 FAIL_STOP；未刷白、未刷新
+
+- 操作者明确说明当前仍为彩色测试并要求刷白；本次按独立 `EC5_P2_COMMENTED_ENDPOINT_ATLAS_4X8_V1_WHITE_SUCCESSOR_V1` 处理，只允许 factory-OTP white recovery，不进入明度动作。封印入口仍为 `WF23_25`，一次 visible refresh，禁止 runtime LUT、重试、自动恢复和 ordinal 2。
+- 已重新枚举继电器并完成新身份绑定：当前 `ZAVE-2CH-TYPE-C-CH340-JQC-3FF-S-Z / COM14 / USB\\VID_1A86&PID_7523\\5&230B5917&0&4 / Port_#0004.Hub_#0001`，与历史 `Hub_#0002` 分开记录；channel 1 只读状态为 `OFF`，`electrical_state_proven=false`。新 seal `.test-output/hardware/MF1750_WHITE_RECOVERY_20260911_V1/relay-rebind-seal.json` canonical SHA=`0ba9246267298359033b0a52bf0722d4d542bdaec07157d8099a18d7e5f74b41`。
+- 按 fresh identity 要求只对候选地址执行一次新的 ICMP 探测：`192.168.1.11` 超时，ARP 为 `00-00-00-00-00-00`，没有形成目标 MAC=`A4-CB-8F-D9-FC-D4` 的 exact IPv4↔MAC binding。不得把旧地址当作新绑定，也不能在身份不完整时调用 white runner 的 J2-OFF diagnostic。
+- **本轮结果：`FAIL_STOP`。** 实际 `0 relay command / 0 flash / 0 reset / 0 ARM / 0 EXECUTE / 0 driver / 0 visible refresh`；relay仍保持 OFF，屏幕仍为最后报告的彩色 atlas，white recovery 未完成，qualified=`0/256`。停止证据：`.test-output/hardware/MF1750_WHITE_RECOVERY_20260911_V1/live-stop-no-exact-device-binding.json`，file SHA=`5e2c584d61f150c1bf7f0894278035e65fca64c49b19c776cf4e1b37a93f10b6`，canonical SHA=`f7cfd60d109648439f16f0e2947ef6899bac43ad21b16cfc00fdc6a2fbe9d41c`。
+- 下一项唯一动作是恢复/确认当前 ESP32 网络端点后，重新建立 fresh exact IPv4↔MAC；此前不得切 relay、刷写或复用旧 IP/boot。绑定通过后仍须 relay OFF 下 app-only flash/verify、同新 boot J2-OFF diagnostic，再单独核对 relay ON/GND 正常，最多一次 white action，随后立即停住拍照判读。
+
+## 2026-09-11 02:36 明度测试 V1 已实现并封存 R3；离线 PASS，现场 HOLD_FOR_EVIDENCE
+
+- 已按“建立明度的测试”实际新增纯离线分析器 `host/static_photo/lightness_test.py`、CLI `tools/mf1750_lightness_test.py`、针对性测试和说明 [`MF1750_LIGHTNESS_TEST_V1_2026-09-11.md`](MF1750_LIGHTNESS_TEST_V1_2026-09-11.md)。可执行 `create / review-p2 / analyze`，没有设备访问或 live 子命令；新建输出独占，不覆盖旧证据、固件、合同或生产目录。
+- 最终测试包为 `.test-output/offline/MF1750_LIGHTNESS_TEST_20260911_V1_R3/`：测试计划、冻结判据、128格空白测量表、SOURCE/MIDDLE/TARGET三动作原始证据表、3/5/10生命周期空槽、空表判读和SHA manifest。128格为 `2 controllers × 16 recipes × 4 quadrants`，历史路线 `active C7 → commented M0…M7 → active T3/T7`；source/middle/target各为独立可见动作，逐步停审，白恢复另计。每target仅8个配方，因此先筛3/5阶；10阶需要另增不同配方，不能跨T3/T7或重复照片凑数。旧V3的white/boot绑定不可复用，未生成新现场runner。
+- 本工具冻结 `MF1750_LIGHTNESS_TEST_V1_20260911` 实验判据：同色相ΔL*≥2、ΔE00≥3、hue≤5°，四位置P95 |ΔL*|≤3、ΔE76≤5；每ROI至少10张同态照片建立L*/ΔE00各自噪声界。要求中位数和四象限逐对通过，整条等级链两两同色相；同时拒绝物理ROI重复或象限标签错误。属于新离线筛选版本，不是厂商规格或已实现的现场门禁；旧粗筛L*≥8口径保持独立。HOLD、三条fresh-white重建、保持和双controller匹配仅提供证据槽，未冒称已实现验收器。
+- 最终软件验证 `31 passed in 23.12s`，Ruff `All checks passed`。新模板所有测量/温度/动作结果均null；显式绑定实验阶段，保留每步原始action/status、BUSY、照片、人工观察及派生分析入口。相机仅 `VID_32E4:PID_4801`，RAW/ISO/硬触发未支持或未知时保留false/null；波形内部phase=`OPAQUE`。纯函数检查结构/数值，CLI核对证据文件哈希；人工声明PASS或匹配哈希本身不构成物理资格。
+- 已实际重判P2封存的64个ROI，核对原光学报告、action、20照片及20 sidecar，共42文件全部匹配。新报告 `.test-output/offline/MF1750_LIGHTNESS_TEST_P2_REVIEW_20260911_V1_R3/p2-screen-report.json`，SHA=`5b44b3a356a056b7ff530550b29b1eede8c379f19a71d3952aa9c2fff92bd123`。两侧均未形成通过的三阶链；`candidate_level_count=1`只表示一个孤立的合格筛选端点，不是一级资格。CS1的code1/7仍受位置依赖阻挡；CS2 code1↔7中位数ΔL*=12.575659，但TR色相差5.031439°略超实验5°门，保留为边界诊断候选，不能称完全无明度差异或证明物理上不可能。历史汇总候选与跨controller失败另存，旧报告不改；温度/照明身份仍缺失。
+- 已完成PWR/PLL来源的定点离线追溯：E28xx.c原样例确有PLL=08和OTP单参数PWR=3F，loader深审计记录固定PWR首字节0F。来源已查到，模式语义差异尚未闭合；不能把08解释成已证明的25 Hz或把0F直接改成3F。固定完整LUT的帧率单变量路线保留待审，未选新PLL/电压值或生成固件。主/白BIN/ELF及6个主generated source共10项再次匹配历史封印；不声称旧主host source seal整体PASS。
+- 封存闭环 [`execution-review.json`](../.test-output/offline/MF1750_LIGHTNESS_TEST_20260911_V1_R3/execution-review.json)：file SHA=`d3119d16f228492f85f3ef1bd3de85684fc06bc71f8bd3711b8da24591cddf5a`，canonical SHA=`87e140ef6d1e09ca77394e2e24c2ae96864621f94da6b0bc34d4e9f1c321f355`；包manifest SHA=`9dc40820023ac1411594821f42150d3e4747779328e3547b81db214f62d4fddc`。V1/R2开发输出、原始证据和全部用户改动保留；收尾前保存了git状态及两份交接原文备份，没有git清理/reset/add/commit/push。
+- **本轮实际 `0 ARM / 0 EXECUTE / 0 driver / 0 visible refresh`，retry/white recovery=0；离线PASS，资格和现场 `HOLD_FOR_EVIDENCE / NO-GO`，qualified=`0/256`。** 没有COM、设备网络、相机、relay、刷写或复位；当前屏幕/relay本轮未观察或查询，最后操作者报告2×4×8彩色atlas、relay最后OFF、`electrical_state_proven=false`。未执行ordinal2或恢复；不能把旧clean-white确认当当前状态。
+- **下一次唯一入口：本测试说明第6节及R3证据包。** 下一具体动作仍是已授权的离线参数模式适用性审查，并据当前彩色source封印独立white恢复入口；当前材料不授权现场恢复。现场前必须审查successor与当前条件、取得单次有界放行，fresh COM/IP↔MAC身份和app-only刷写后同新boot J2-OFF diagnostic均不可继承。恢复完成停住验白，再另建fresh历史链；异常/未知BUSY时不重发mutation、不盲目复位或刷白。
+
+## 2026-09-10 20:56 SPD1657B Rev 1.1 资料增量审查：帧率语义明确，LUT phase 仍 OPAQUE
+
+- 新资料 `参考资料/SPD1657B_1.1.pdf` 已逐页提取并视觉核对关键表格：44 页，SHA=`7f867e165f4662aa525ba7f4e9d3413b0dc8f2ae3f3ae63d5c4a4023c5f0e41a`，正文为 Sep 2024 / Rev 1.1，REV/R70=`01 01 04`。它提供同型号寄存器依据，不能据此重用历史 boot/芯片身份或认定面板参数已合格。
+- 增量报告：[`MF1750_SPD1657B_V11_DATASHEET_REVIEW_2026-09-10.md`](MF1750_SPD1657B_V11_DATASHEET_REVIEW_2026-09-10.md)。R30 语义明确：现有 active=`02` 对应名义43 Hz、commented/P2=`03` 对应名义50 Hz；P1/P2 还同时改变 source 电压请求与 LUT，所以历史差异不是单变量帧率试验。可把完整波形时间尺度升级为有文档依据的离线研究轴，尚未批准任何组合或新 live 参数。
+- Gray0…7 是输出/波形索引，不能证明八级明度；PTLW 在窗口内外均扫描 gate，不证明窗口外无驱动。R20/R21/E9 等扩展命令及 11-byte record 格式没有给出，phase=`OPAQUE`、HOLD code 未证明；芯片寄存器范围不是面板/FPL 工作包络。
+- 新增待解释差异：runtime PWR 首字节 `0F` 与第20页 A[5:4]=11 的写入要求不同；公共初始化 PLL=`08` 超出文档位域（P2 后覆盖为03）；OTP 初始化单参数 PWR 与文档六参数形式不同；第25/28页 DDX 默认标注矛盾。未改固件、profile、runner 或旧 seal。white successor 的公共初始化也须纳入此项复核，旧文件封印通过不等于新资料下语义一致。
+- 原材料/代码对照记录 `.test-output/offline/MF1750_SPD1657B_V11_DATASHEET_REVIEW_20260910_V1/datasheet-review-evidence.json`，file SHA=`8f02ca48aca01747f24ff4a481e4dbc80687eaa478e79f3b3ad9030abb098abc`，canonical SHA=`aef9c9afb1daf06541dadf61626e16382561ec2bee382455e8ea979dc1ab2874`。主/white BIN/ELF 与6个主generated sources共10项匹配原封印；不宣称旧主host source seal整体PASS。没有实现新软件门禁或新增光学阈值。
+- 本轮 `0 ARM / 0 EXECUTE / 0 driver / 0 visible refresh`；无COM、相机、relay、设备网络、刷写/复位。仅做型号关键词公开资料检索，未上传PDF。屏幕仍只依据最后操作者观察为2×4×8彩色，今天未观察；relay最后OFF、`electrical_state_proven=false`、`qualified=0`、现场`HOLD_FOR_EVIDENCE / NO-GO`。
+- **下一次唯一离线入口：定点核查 runtime PWR=0F、公共 PLL=08 与 OTP PWR 参数模式的来源和实际写入顺序。** 已在离线资料研究授权内；先闭合语义差异再审查全局帧率单变量实验。任何现场恢复仍需独立 successor 条件核对和有界放行，本资料请求没有授权刷新或白恢复。
+
+## 2026-09-07 00:40 离线继续核对完成；现场仍保持 NO-GO
+
+- 本次只做离线证据闭环：重新计算 retained-atlas observation、white-successor review、host-validator amendment 的文件哈希，并复核 P2 主 action 文件及主/白固件封印引用；未访问 COM、设备网络、相机或 relay，未刷写、复位或刷新。独立记录：`.test-output/offline/MF1750_P2_RETAINED_ATLAS_REENTRY_20260906_V1/offline-continuation-verification-20260907.json`，canonical SHA=`715ac4665a0046c88efaff77e391f761db853c4bc8dd5234dc1b33d555f5e66b`，file SHA=`f4c4e6af0fbd4bc8e83d005d8ae5549ed6df444926aaf2b9267154a568b2fa39`。
+- 主 P2 runner 与白 successor 的针对性回归 `30 passed`，Ruff `All checks passed`。修正后的 HTTP 合同边界保持 GET=200、ARM=201、EXECUTE=202；旧 source seal 不被冒充为当前 runner 通过，amendment 仍是唯一有效的主机校正证据。
+- 当前现场判定不变：操作者报告屏幕为 2×4×8 彩色 atlas；relay 最后记录 OFF、`electrical_state_proven=false`；本次 `0 ARM / 0 EXECUTE / 0 driver / 0 visible refresh`，`qualified=0`，`HOLD_FOR_EVIDENCE / NO-GO`。已有 code 1↔7 只能作为一次性同色相明度候选；code 5 仍是几何缺边缘输入，不是白色或明度证据。
+- **下一次唯一入口仍为：明确放行独立 P2 white successor 一次恢复。** 当前“继续”已完成离线核对，不能替代该有界放行；获放行后才 fresh 枚举身份、核对 relay/J2、取得刷写后同 boot J2-OFF diagnostic，最多 `1 ARM / 1 EXECUTE / 1 driver / 1 visible refresh`，拍照审查后停住，不自动进入明度实验。
+
+## 2026-09-06 08:36 操作者确认 2×4×8 彩色；白恢复前置离线深校验已闭合
+
+- 操作者原文：**“当前是2x4x8 彩色”**。这是两侧各 4×8 的布局观察，与上轮 P2-C atlas 相容，**不是 clean-white 确认**。未取得今天的照片、未刷新/复位/刷写的连续性确认或当前 boot/电气状态；不能据此授予过夜保持资格。停止重复询问“现在是否全白”：白锚尚需独立恢复动作建立。原文已单独封存于 `.test-output/offline/MF1750_P2_RETAINED_ATLAS_REENTRY_20260906_V1/operator-retained-atlas-observation.json`。
+- 恢复前离线深校验发现主机缺陷：`_validate_transcript_prefix` 错把所有 HTTP 返回码限定为 200。封印 P2 固件的 `handleArm/handleExecute` 实际规定 201/202，原始 action 完全一致。已修正为 exact GET/200、POST ARM/201、POST EXECUTE/202；仍拒绝其他状态码、错误 method/path/boot、观测错误。修改只涉及 host validator 与回归测试；原始 action/status、BIN/ELF、合同和波形未改。修正前代码、失败原因均另存；测试 `30 passed`，Ruff PASS。
+- P2 原始 COMPLETE、admission、同 boot diagnostic、绑定和永久 claim 的深校验现已通过。主/white BIN/ELF 实际文件仍匹配原封印；white BIN=`acf27e1358f869b4f5663e8a84ad4f38ab047557c90a9d64c4fa44c66c079277`。white successor 仅接受该 P2 ordinal 1 COMPLETE；其固定 output/diagnostic/action/claim 目录目前均未创建。恢复前置审查文件 `white-successor-offline-reentry-review.json` file/canonical SHA=`5fd6c7b0c26986fd7f6881b4e581e38593dbb85c29bd02a62bb612c701bf8509 / 4f0018574be3c2d4b08f1b72e0edda1c1852487604c3344fcb865fbe0d86a5e3`。
+- 原主线的完整 source audit 因已修正的 runner SHA 改变而报告 `P2-C sealed boundary differs`，未覆盖或放宽旧封印。单独补充审计 `host-http-status-validator-amendment.json` 验证仅该 authority source 变化、其余 8 项不变、所有固件产物和渲染内容不变、white 独立 audit PASS、原始 source 深校验 PASS。补充审计 file/canonical SHA=`e14403616703c12280bf77d8585fe8fdca1e7d92db9d5d9bca5abe38a92b9c9e / 45cd1f2c601ea1692a37d92c6c2bad533acf7f380574c8a7face72bfac51ed31`；结果为 `PASS_HOST_AMENDMENT_WITH_IMMUTABLE_FIRMWARE`，不是旧 source seal 通过。可审查脚本同目录 `audit-host-amendment.py`。
+- 本次实际 `0 ARM / 0 EXECUTE / 0 driver / 0 visible refresh`，未访问 COM、设备网络、相机或 relay。当前屏幕依据操作者为彩色 atlas；relay 仅最后记录 OFF（今天未查询），`electrical_state_proven=false`，`qualified=0`，现场 `HOLD_FOR_EVIDENCE / NO-GO`。
+- **下一次唯一入口：等待明确放行该独立 P2 white successor 的一次恢复**（action=`677c37c9962f507e2110f644735c1a1c4be87286073b70d1babe8d42856e3b19`），放行后 fresh 枚举/身份与 OFF 条件核对、app-only 写入保留 NVS、取得新 boot 的 exact IPv4↔MAC 及刷写后同 boot J2-OFF diagnostic，满足 GND/J2 条件后最多 `1 ARM / 1 EXECUTE / 1 driver / 1 visible refresh`，相机审查白屏后停住并保护性 OFF。不自动转入明度实验，不复用旧身份，不复用旧 V2/V3 白锚。清除彩色候选属于正常白恢复，不是瞬态判据。本次布局观察本身没有授权恢复。
+
+## 2026-09-05 15:50 明度探索离线合同复核完成；现场仍 NO-GO
+
+- 已执行并复核四条离线入口：position-balanced V2 runner、position-balanced V3 runner、V2 独立 factory-white successor runner、red/pink recipe-position permutation runner 的 `dry-validate` 均 `PASS`。输出均明确 `offline_only=true`、`hardware_accessed=false`、`serial_or_com_accessed=false`、`display_refreshed=false`、`firmware_flashed=false`；没有消费现场 claim，也没有生成新的 live action。
+- V2/V3 结构均确认为每 controller `16 recipes × 4 positions = 64 cells`，V2/V3 当前资格计数仍为 `0`；white successor 只接受 source ordinal `3/4` 的 COMPLETE，禁止 fallback/retry/recovery/autochain。red/pink permutation 的分析输入固定为 `128 observations / 64 unique recipes`，只允许输出 `RECIPE_LINKED_CANDIDATE_ONLY`，不能由一次置换授予资格。
+- 当前推荐的离线到现场入口已经收敛为：fresh white → `C7 source → M0…M7 middle → T3/T7 target` 的位置平衡历史配方筛选；同色相 `|ΔL*|≥8` 和位置/色相门通过后才进入 HOLD；HOLD 后才做独立 fresh-white reconstruction。原位 identical-target repeat 不再作为明度发生器。
+- 当前现场状态保持不变：屏幕为 P2-C atlas，relay/J2 最后 commanded/query=`OFF`，`electrical_state_proven=false`，live=`NO-GO`，`qualified=0`。本次“继续执行”只完成离线 dry-validation，没有访问设备。
+
+## 2026-09-05 15:26 明度优先；完成当前芯片 waveform 机制离线研究
+
+- 已把本地 MF1750/SPD1657B 证据、参考工程、相邻控制器 waveform 资料、公开论文和 E Ink 平台资料合并为两份离线研究入口：[`MF1750_LIGHTNESS_WAVEFORM_RESEARCH_2026-09-05.md`](MF1750_LIGHTNESS_WAVEFORM_RESEARCH_2026-09-05.md) 是来源/机制主报告；[`MF1750_LIGHTNESS_WAVEFORM_EXPLORATION_2026-09-05.md`](MF1750_LIGHTNESS_WAVEFORM_EXPLORATION_2026-09-05.md) 是当前芯片的机制排序、证据门和停止条件。没有访问设备、刷写、复位、继电器或改变现场状态。
+- 术语已固定：本反射式无背光面板的首要对象是同一色相/track 内的彩色 **明度**，当前用 camera-relative Lab `L*` 作相对筛选；灰度只是中性轴的特殊子集，不是当前主线；不把 `L*` 称为绝对亮度或厂商规格。
+- 资料综合后的可执行排序为：完整已知 profile 的同色相 endpoint → source/middle/target 历史配方 → 位置置换解混 → local HOLD → fresh-white reconstruction → 完整刷新剂量 `1/2/4/7/10`；只有 3 阶通过后才扩 5/10。runtime LUT、R20 phase、VCOM/电压、波形中断和邻芯片参数继续 `HARD BLOCKED`。
+- 已识别下一步真正有信息量的离线入口：复用 `tools/mf1750_redpink_permuted_grid_photo_analyzer.py` 与 `tools/mf1750_redpink_recipe_permutation_comparison.py`，对 source/middle recipe 做 Latin/四象限置换，分离“middle 历史效应”和物理 Y/照明行效应。已有 128 格报告的结构化行效应仍是 `POSITION_CONFOUNDED`，不能计为明度。
+- 研究相关的离线回归已运行：置换比较、position-balanced V3 photo analyzer 和统一 lightness screen 共 `25 passed`（40.33 s）。本次只读分析未生成新固件、未改变封印 profile，也未消费现场 claim/action。
+- 当前真屏结论不变：P2-C ordinal 1 已完成且停止，relay/J2 最后 commanded/query=`OFF`，`electrical_state_proven=false`，屏幕保留 atlas，live=`NO-GO`，`qualified=0`。本条仅增加离线研究和下一入口，不授权任何新现场 mutation。
+
+## 2026-09-05 12:45 P2-C ordinal 1 唯一执行完成；HOLD_FOR_EVIDENCE，qualified=0
+
+- 操作者先明确确认 retained screen 为干净全白并授权使用相机。本轮随后 fresh 枚举：relay=`COM14 / USB\\VID_1A86&PID_7523\\5&230B5917&0&4`，ESP32=`COM8 / USB\\VID_1A86&PID_55D3\\5C4C165475`；唯一允许相机为 `48MP USB Camera / VID_32E4:PID_4801 / USB\\VID_32E4&PID_4801&MI_00\\6&22675D4E&0&0000`，未枚举到双目相机。没有继承旧 COM/IP/boot 身份。
+- retained clean-white review、fresh relay OFF discovery/query、app-only `0x10000` 写入/verify/单次 hard reset、exact IPv4↔MAC=`192.168.1.11 ↔ A4-CB-8F-D9-FC-D4` 与刷写后的同 boot J2-OFF diagnostic 均通过。P2-C boot=`035c0421a9d81d40`；diagnostic=`4 GET / 0 POST / 0 driver / 0 visible refresh`；BIN/ELF/contract/action/frame 仍精确匹配封印身份。
+- 现场只执行 P2-C ordinal 1：action=`ec26e0f76f194f0e6c58a2879310dfccd9d110656bff62dc4f230086105777b9`，结果文件 SHA-256=`f9c90f64fc096f301a7b66dc44e2902c09bc536aa8f7e9dc228a06fbf58873de`，canonical integrity=`65b642ce6a17017c918f2fc04f4c25a112429a667f41c76796b47c503d288e41`。实际计数严格为 `1 ARM / 1 EXECUTE / 1 driver / 1 visible refresh`，ordinal 2=`0`、retry=`0`、recovery=`0`、autochain=`0`。driver `COMPLETE/result=true/valid=true`，1 MHz，总时长 `40854 ms`，PON/DRF/POF BUSY 分别 `260/28151/151 ms`，无 BUSY missing/timeout/failure。未知 waveform 内部 phase 只记 `OPAQUE`。
+- 相机证据先保留了 exposure=-4 的 10 帧高光裁切失败基线；随后改用固定 `4000×3000 MJPG / 15 fps / focus=79 / exposure=-6 / WB=4600 / manual modes`，取得 10 帧 retained clean-white 基线、1 帧 live-synchronized action 图和 9 帧 retained action 图。RAW、ISO、硬件触发和温度采集均不支持/缺失，如实为 null/false。相机工具增加了该历史 P1 white successor 的完整 frozen identity allowlist；近似身份继续 fail-closed，完整相机测试 `117 passed`，Ruff/py_compile PASS。
+- 当前照片的 56 个有色矩形唯一拟合完整 64-cell 逻辑 ROI，homography RMSE/P95/max=`1.432827/2.142986/3.052063 px`，叠加图已人工核对。几何上唯一缺边缘的输入为 code 5，含义只限“与本次背景无边缘分离”，不授予绝对白色资格。低曝光 ROI 最大高光裁切率=`0`，图像证据可用于 camera-relative 比较；Lab 是 JPEG RGB 推导的 camera-relative D65/2° Lab，不是色卡/光谱标定 Lab，ΔE76 与 ΔE00 分开记录。
+- white-baseline 空间归一化后：CS2 八个 code 的本次四位置初步门均通过；CS1 仅 code 2/3/5 通过，code 0/1/4/6/7 未通过，因此位置可重复性仍 `HOLD_FOR_EVIDENCE`。跨 controller P95 `|ΔL*|=6.138233`、`ΔE76=9.823282`、hue drift=`19.076824°`，未通过 `cross-controller-v1`。CS1、CS2 都出现 camera-relative code `1↔7` 同色相明度候选，但只来自一次 action，尚缺规定 HOLD、三条独立 fresh chain、独立 white 重建和两个 controller 各自资格，不能升级为稳定明度。
+- 保护性 relay OFF 已在相机重复采集后执行并独立查询 OFF：canonical integrity=`f94b37f43b8a68ba79b6951f5c76db4bc079474a47fe2b343833f4bcaf1dee68`；`electrical_state_proven=false` 保留。未执行 white successor。超过 2 小时后只补拍一张断电保持照片：图样仍完整可见，无明显新固定线或大面积色块丢失，但环境光显著变化，故不冒充 retention-v1 的定量 5/60/600 s 数据。
+- 本轮权威闭环入口为 `.test-output/hardware/MF1750_P2_COMMENTED_ENDPOINT_ATLAS_4X8_V1/p2c-ordinal1-session-outcome-v2.json`，文件 SHA-256=`26381ddf2b7deb8487af4e44c7384257a29d1fd1a636e341781f7c1d9808a7b0`，canonical integrity=`99002f74fc0b9dd9c6c3b497a97c68af2ec06be10bd33b248b8fdb2719669f98`；V2 只澄清离线下一步已授权、后续 live mutation 未在 ordinal-1 范围内，旧 outcome 保留且未覆盖。光学报告 V2 文件/canonical SHA-256=`f5bdc0baba86eb1ee6e144d84dd0ab3561979856f211b58549d051936b0f7e9e / 7b7216031dc809f495d2173e7c3a856bcc1f306a6f2ad69f683aa061d3a3a5fb`；人工/视觉观察文件/canonical SHA-256=`ab2a461076ad8e163bfe884d19c25daeba45fdf060ad179d95b94ed7fb38ba91 / 9efe42f800e8a757e2b1b5ff28268e8948c9b93bee73e7386e6eb45531cccc69`。
+- **本轮判定：`HOLD_FOR_EVIDENCE`；qualified colour/lightness slot=`0`。** 当前屏幕保留 P2-C 4×8 endpoint atlas；relay 最后 commanded/query=`OFF`，`electrical_state_proven=false`，live gate 回到 `NO-GO`。下一项已授权且可独立完成的是离线复核 CS1 位置依赖并封存 code `1↔7` 的 fresh-white reconstruction/HOLD 测试入口；任何下一次显示 mutation、white successor 或新 boot 访问均不在本次 ordinal-1 放行内，必须先重新审查 retained screen、fresh COM/IP/MAC/boot 身份和对应 sealed action，不能复用本轮身份或 claim。
+
+## 2026-09-05 10:00 P2-C 离线前置证据复核完成；现场仍 NO-GO
+
+- 已实际复核并运行 P2-C 主线与独立 white successor 的离线审计。主审计输出 `result=PASS`、`offline_only=true`、`hardware_accessed=false`、`serial_or_com_accessed=false`、`relay_accessed=false`、`camera_accessed=false`、`firmware_flashed=false`、`display_refreshed=false`；white successor 独立审计与 dry-validate 同样 PASS。定向 pytest 为 `26 passed`。
+- 主产物实际存在且与封印一致：`.pio/build-p2-commented-endpoint-atlas-4x8-v1/ec5_p2_commented_endpoint_atlas_4x8_v1/firmware.bin`=`798496` bytes / `61d7704f4dfbcfd3b2ec21aa1eb571b400bf5ee391ababe6e4da1dc54010935d`，ELF=`13286496` bytes / `451b7663aabd40a0771161c334c41f1f9be39ff0d47b2b7a7342b4edda9f7ac1`；独立 white successor BIN=`787440` bytes / `acf27e1358f869b4f5663e8a84ad4f38ab047557c90a9d64c4fa44c66c079277`，ELF=`13214848` bytes / `2b41cb8413d24b5f6c36083d5381d7d21fdd64679dd9d45dab68a1492c059ed3`。主/white 报告文件 SHA-256 分别为 `e2c1adce901971fa2472967c8f237507861ac697e3fc3ef9b8ed51a5301a2d06` / `770fdbab34c9b51476b646d5e0c5555f8c41859a5e3dbbcd0c510e23f3ed3b35`。
+- runner/合同复核确认只暴露 ordinal 1；要求显式同 boot J2-OFF diagnostic、显式 `--confirm-j2-on` 后才允许一次 action，固定 O_EXCL 输出/claim 路径，`1 ARM / 1 EXECUTE / 1 driver / 1 visible refresh`，`retry=0`、`recovery=0`、`autochain=0`。white successor 只接受该 ordinal 1 的 `COMPLETE`，拒绝 fault/early-stop，不自动执行。预期 live action 输出目录 `.test-output/hardware/MF1750_P2_COMMENTED_ENDPOINT_ATLAS_4X8_V1` 当前不存在，符合 `WAITING_FOR_FRESH_P2_C_ORDINAL1_COMPLETE`；没有伪造 terminal evidence。
+- 本轮实际硬件动作和可见刷新均为 `0`。相机工具链只允许后续使用项目指定 48MP `VID_32E4:PID_4801`；双目 `VID_1BCF:PID_0B15` 不在允许范围。RAW/ISO/硬件触发能力若现场不支持，必须记录为不支持，不得伪造。
+- 判定：`PASS_OFFLINE_READY_LIVE_GATED`；这不是现场 PASS。`qualified_new_colours=0`、`qualified_gray_levels=0`、`qualified_lightness_levels=0` 保持不变。当前 live 仍 `NO-GO`；relay/J2 最后记录仍为 commanded `OFF`，`electrical_state_proven=false`。本轮未取得新的 retained clean-white 人工确认，未访问设备。
+- 下一次唯一入口：先取得本轮操作者确认——“当前屏幕是否在未刷新、未复位、未刷写的情况下，全屏干净白，且无色块、边框、色斑和固定线？”在确认前不得枚举 COM、网络、相机或执行任何 diagnostic；确认后才重新枚举并建立 exact IPv4↔MAC binding，随后同 boot J2-OFF diagnostic，再另行等待 ordinal 1 明确放行。P2-C ordinal 1 后立即停住判读，不自动执行 ordinal 2、重试或白恢复。
+
+## 2026-09-04 01:03 P2-C 离线封印与现场门
+
+- 主 P2-C `EC5_P2_COMMENTED_ENDPOINT_ATLAS_4X8_V1` 已完成独立离线审计、dry-validate、Ruff、py_compile 与定向 pytest（26 passed）。固定两套已有完整 profile 的 4×8 position-balanced endpoint atlas；一项动作恰好 1 driver / 1 visible refresh，不含局部 HOLD、历史叠加、抖动或自动恢复。主 BIN/ELF=`798496/61d7704f4dfbcfd3b2ec21aa1eb571b400bf5ee391ababe6e4da1dc54010935d` / `13286496/451b7663aabd40a0771161c334c41f1f9be39ff0d47b2b7a7342b4edda9f7ac1`；contract=`6eb7be2835fac28df8922c86ab6236a7bd8cc81152ea72ad3be47bdc266ac216`；authority seal=`cf13d027890e3411a76b5dfa17be73797e295efe4df81c957991dd3a3ab2affa`；主报告 file SHA=`e2c1adce901971fa2472967c8f237507861ac697e3fc3ef9b8ed51a5301a2d06`。
+- 独立 factory-OTP white successor 已按该主报告同版重封并通过 audit/dry-validate：BIN/ELF=`787440/acf27e1358f869b4f5663e8a84ad4f38ab047557c90a9d64c4fa44c66c079277` / `13214848/2b41cb8413d24b5f6c36083d5381d7d21fdd64679dd9d45dab68a1492c059ed3`；contract=`bd58d575e4f56d7d77602716446d00cf1501c83021f209406d233071525234d3`；descriptor=`312b07fa5bac5ff93274bc342c0579640e8264f38b74e18e4904b3ddd6daef16`；action=`677c37c9962f507e2110f644735c1a1c4be87286073b70d1babe8d42856e3b19`；报告 file SHA=`770fdbab34c9b51476b646d5e0c5555f8c41859a5e3dbbcd0c510e23f3ed3b35`。
+- 全程离线准备未访问硬件、串口/COM、继电器、相机或设备网络，未刷写、复位或刷新。当前 live 仍 `NO-GO`：P1 白动作虽已机器 COMPLETE，但 `electrical_state_proven=false`，且本轮尚未建立 retained clean-white 人工证据。继续真屏前必须先由操作者在不刷新/不复位情况下明确确认“全屏干净白”，随后 fresh 枚举 COM、建立 exact IPv4↔MAC binding、完成同 boot J2-OFF diagnostic，并另行确认仅执行一项 P2-C ordinal 1；P2-C 后停住等判读，不自动白恢复或串联下一项。
+
+## 2026-09-02 09:56 seed + perturbation 离线审计 V2 封印；无安全轴，继续 NO-GO
+
+- 已新增并通过离线工具链：
+  `host/runtime_waveform/seed_perturbation.py`、
+  `tools/mf1750_seed_perturbation_audit.py`、
+  `tests/test_runtime_waveform_seed_perturbation.py`。工具只建立 CS1/CS2 各自的 C0/C1/C6
+  candidate seed inventory；不生成波形字节、固件 include、live runner 或任何设备 I/O。
+- sealed 报告 V2
+  `docs/MF1750_SEED_PERTURBATION_OFFLINE_AUDIT_2026-09-02_V2.json` 的文件 SHA-256=
+  `b2b4e9b6e318ed7c565c1d9b385ee751a3e58b87b4a7a987347c83af530dfe00`，canonical integrity=
+  `a2a29d7dc5f52133db3be355e87f9143476c32db7829fb52c2c1ddcdd81945b4`。此前同名无 `_V2` 的
+  报告保留为不可覆盖的旧 schema 快照，不作为当前验证入口。默认决定为
+  `OFFLINE_BLOCKED_NO_SAFE_PERTURBATION_ABI`，`candidate_count=0`；6 个 seed 全部
+  `candidate_only=true/qualified=false`。现有 HOLD 语义审计仍为
+  `BLOCKED_NO_ELECTRICALLY_PROVEN_HOLD_CODE`，9 项证明义务缺失，并由 evidence chain 精确绑定。
+- 为防止自报 hash 解锁候选，当前没有注册任何正向 safe-axis proof；即使未来审计允许 M=1，
+  也只会产生 18 条 metadata（两 controller×3 seed×3 values），仍不会生成 payload 或 live 固件。
+  报告明确记录 `device_io=false/network_io=false/serial_or_com_io=false/visible_refreshes=0`，
+  schema/audit 已生成，manifest 仅 metadata，runner/pack/NVS/identity/BIN/ELF/frame/DTM/
+  contract/descriptor/action/live firmware 均 `NOT_GENERATED_BLOCKED`。
+- 验证结果：seed 定向 `10 passed`；runtime-waveform + static-photo 相关 21 个测试文件
+  `197 passed`；Ruff、py_compile、import smoke、CLI smoke、repo-contract `30 passed`。本轮没有
+  访问设备网络、COM、继电器、相机或屏幕，也没有刷写、复位、刷新、commit/push。
+- **当前 live 仍为 NO-GO**：白 successor 后的 retained 全屏干净白人工/48MP 视觉门仍缺失，且
+  `electrical_state_proven=false`。下一项必须先做 Gate 0 不刷新白屏确认；之后若仍无安全轴，转
+  P2 两套已有完整 profile 的 8-code position-balanced endpoint atlas，不能直接生成 seed 固件。
+
+## 2026-09-02 09:14 P1 真屏与独立白恢复已落盘；下一路线转为 seed + perturbation 离线门（最高优先级）
+
+- `EC5_P1_ACTIVE_ENDPOINT_ATLAS_4X8_V1` 已于 2026-09-01 晚间完成：action
+  `7d14bc5f70da46f1eb3a86ab1c54734dffa1e9dcac62147a1d62bcedb25e9526`，terminal
+  `COMPLETE/result=true/valid=true`，恰好 `1 driver / 1 visible refresh`，无 retry、recovery、
+  autochain；1 MHz、总时长 `46631 ms`。原始 action 文件 SHA-256=
+  `dffb561044aa8103048fe535cdf10e1deebabd94e884740968f14083a3c80f72`，canonical integrity=
+  `d759ac0b16d4326015ec189f55adbcddd74177add302f3ac65bf60f254f9aa60`，firmware SHA-256=
+  `f5c83b357c1db3dd065669e36d0ac9a09edfe47c720fadecad98c196a81652ed`。完整 active/active
+  L535 profile 的两 controller payload byte-identical；这不是 partial refresh、HOLD 或跨 LUT 测试。
+- 人工观察已封存：C0=`浅橄榄绿`、C6=`绿色`、C1=`黑色`，各码四位置副本一致、左右同位一致；
+  但三者不构成同色相三明度阶，`qualified_new_colours=0`、`qualified_lightness_levels=0`。P1 只证明
+  这些 endpoint 的位置/controller 重复性；浅橄榄绿仍需 fresh reconstruction 与色卡/光学证据。
+- 独立 `WF23_25` factory-OTP white successor action
+  `b28442077b06e959a9cf8bf4e588a5f463e5cfd004a71735e445916d9dbb80bc` 也已
+  `COMPLETE/result=true/valid=true`：恰好一次可见刷新、总时长 `35013 ms`；action 文件 SHA-256=
+  `9e678853e4259a245c69194d99ca959c7af31169b3a9153bae858a6614c3a030`。随后 COM14/channel1/
+  `COM1-NO1` 已 commanded/query OFF；receipt canonical SHA-256=
+  `b2eb110ff7f87ba4c4d96e3f1e73c55e6c2644f741301e705756e8e39d0a46fd`，但
+  `electrical_state_proven=false`。
+- **当前 live 为 NO-GO**：white successor 后没有单独的人工或 48MP clean-white review。任何下一次
+  可见 action 前，先在不刷新、不复位、不刷写条件下确认 retained screen 全屏干净白且无色块、
+  边框、色斑或固定线。历史 IP/COM 不构成当前身份；相机只能用 48MP `VID_32E4:PID_4801`，不得
+  混用双目 `VID_1BCF:PID_0B15`。
+- 用户提出参考公开 E6 波形资料。公开证据只支持 seed-waveform + short-perturbation 的算法方向、
+  `lut[src][dst][frame]` 模型和蓝色需要中间阶段的物理线索；没有找到可直接用于 SPD1657 的完整
+  WBF/IWF/LUT 表，也没有可靠的 R20/R21 11-byte record 字段/电压语义。因此下一步先做纯离线
+  `seed + perturbation` 可行性门：若无法证明一个已知、安全、可解释的 time/frame perturbation
+  维度，必须输出 `OFFLINE_BLOCKED_NO_SAFE_PERTURBATION_ABI`，不得生成 live 固件；安全回退是
+  P2 两套已有完整 profile 的各自 8-code endpoint atlas，禁止邻芯片寄存器/LUT 移植、直接套用
+  论文 `-8 V`、未知命令扫描、任意 byte 插值、hybrid、VCOM sweep 或 BUSY 截断。
+- 完整证据、公开资料边界、Gate 0→2、停止条件及可直接复制到新会话的完整提示词见
+  `docs/MF1750_SEED_PERTURBATION_HANDOFF_2026-09-02.md`。本节更新仅为离线只读审计和文档整理；
+  没有访问设备网络、COM、相机或继电器，没有刷写、复位或刷新。工作区仍有大量用户脏改，本次
+  未 commit/push。
 
 ## 2026-09-01 13:38 256 色／10 阶口径冻结，明度路线改为完整 endpoint 优先（最高优先级）
 
@@ -2871,3 +3554,4 @@ N1 人工忠实度与电气结论由用户现场观察支持；本轮 evidence �
 | 2026-08-26 23:29 | Fullframe-vs-PTLW V2 5/5 真屏闭环，固定局刷底边首次干净 | 先前独立 PON/POF no-DRF V2 资格探针已 COMPLETE；本固件同一 boot=`22a0acda523dc334` 严格完成 factory白→A完整复合DTM/无PTLW→factory白→B单次inclusive PTLW+9600-byte crop→factory白。五项均恰好1 ARM/1 EXECUTE/1 driver/1 visible refresh、双控REV=`01 01 04`×4、PON/DRF/POF均完成，无timeout/retry/recovery/autochain。人工观察：A与B均为左右各一蓝色矩形、外围干净白、左右一致且底部没有黑线；中间与最终白均干净，最终无残留。由此否定“PTLW本身必然产生黑线”，并证明当前`完整code7预装→一次inclusive PTLW→只写crop code5→PON/DRF/POF，PON后不重复PTLW`对该固定窗口/码/profile可得到干净四边；旧黑线的具体差异仍未完全隔离，不外推到任意窗口、任意色或跨LUT叠加 | BIN=`815600/0433f678...863c4`；actions SHA=`ffd56224...9c8ee/e551ce03...04b15/4fffa5e3...e68b5/9e300279...1b93/db9527a7...ed3f`；manual observation=`16cade9d11e5c8ecaa8158e6cf109640c55fa52f724348cb5bd1b6a19375b4ac`。ESP32 DHCP从旧候选变为`192.168.1.11`，ARP MAC仍精确匹配`a4:cb:8f:d9:fc:d4`；未刷写、未复位。最终COM14/channel1 commanded OFF且独立query OFF，`electrical_state_proven=false`。下一真屏应把该干净传输移植到多窗口cross-LUT HOLD，复测蓝/绿/黑共存和全部四边；通过后才进入8×2色盘正式标定。 |
 | 2026-08-27 00:11 | clean cross-LUT HOLD V2 五步真屏闭环，固定跨盘共存与六格干净边通过 | app-only写入/verify与fresh J2-OFF诊断通过后，同boot=`9355f29a468dfc35`严格执行factory白→active/code5蓝A→commented/code6绿B保持A→active/code3黑C保持A/B→factory白。五项机器均`complete_pass`，每项恰好1 ARM/1 EXECUTE/1 driver/1 visible refresh，0 retry/recovery/autochain。操作者逐项确认：“全白干净”；“蓝色，左右正确，没有黑线”；“绿色ok，四个都没有黑线，原来的蓝色没有闪烁”；“黑色ok，六个都没有黑线，原来的蓝绿色没有闪烁”；“白色，干净”。因此固定A→B→A跨profile局部HOLD、蓝/绿/黑共存、旧区不闪及六格干净边均PASS；不外推到任意盘/码/窗口/长期保持或256色。随后COM14/channel1 commanded OFF且独立query OFF，操作者离场，转为严格离线 | BIN/ELF=`816656/9139c4d2...060a`、`13368436/683f4578...15ce`；contract=`d9059cd9...948b`；actions SHA=`bc3bdab0...b6e8/d88b1d4a...a562/25eb90ba...c993/1f647111...01c4/7f2d46c0...2261`；manual observation=`9cad3a42f6cd6d48093e749ccb0fd23d7c354df7510d3ab33aa11d76b12e7c77`。下一步仅离线冻结红/粉、黄/橄榄明度候选；操作者返回前0设备动作。 |
 | 2026-08-27 01:04 | 红/粉与黄/橄榄历史明度V1离线冻结，same-boot审计阻断闭合 | 两套均为每侧8×8=64个均匀单码历史recipe、无空间抖动/partial，六步为factory白锚→active source列→commented middle行→固定active target→显式候选后才允许repeat→factory白；并各有fresh独立白收容。独立审计发现初版same-boot仅由host实施、device重启后可direct POST续跑，故初版合同/IDs/产物全部作废；最终版以专属NVS持久first-boot nonce，在setup/ARM/EXECUTE/dispatch四处driver前fail-closed，重启或containment后不能回主。快速门固定为ordinal4无差异即封存并改刷containment，只有命中才ordinal5复核。两条独立审计最终PASS；主代理最终联合`163 passed`、Ruff/format/py_compile PASS、四describe离线、两份SHA清单逐项0失败。全程0设备网络/COM/relay/flash/reset/refresh，现场仍relay OFF、屏幕干净白 | 红/粉主BIN/ELF=`801888/70952827...c07d8`、`13297008/72011ccb...8f8f`，收容=`787216/277ee416...d513`、`13214292/a6ea106b...c9db`，contract=`df7ecdc4...0278`；黄/橄榄主=`802208/7e45f52d...8563`、`13299612/5a8fabd6...5ae5`，收容=`786544/80dfebbd...61ec1`、`13214132/4e846aca...e8e8`，contract=`47cff189...4899`；SHA清单=`c1668770...3eeb/1e660b9b...6271b`。 |
+

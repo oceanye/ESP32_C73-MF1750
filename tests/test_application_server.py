@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 from http import HTTPStatus
+import base64
+import hashlib
 import http.client
 import json
 import socket
 import threading
 import time
+from types import SimpleNamespace
 import unittest
 from unittest import mock
 
@@ -49,6 +52,7 @@ class ApplicationServerSecurityTests(unittest.TestCase):
         origin: str | None = None,
         fetch_site: str | None = None,
         content_type: str | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> tuple[int, dict[str, str], bytes]:
         headers = {"Host": host if host is not None else self.server.authority}
         if token is not None:
@@ -59,6 +63,8 @@ class ApplicationServerSecurityTests(unittest.TestCase):
             headers["Sec-Fetch-Site"] = fetch_site
         if content_type is not None:
             headers["Content-Type"] = content_type
+        if extra_headers is not None:
+            headers.update(extra_headers)
         connection = http.client.HTTPConnection(
             "127.0.0.1", self.server.server_port, timeout=2.0
         )
@@ -84,6 +90,50 @@ class ApplicationServerSecurityTests(unittest.TestCase):
             fetch_site="same-origin",
             content_type="application/json",
         )
+
+    def v2_metadata(
+        self, source: bytes, *, algorithm: str = "atkinson"
+    ) -> dict[str, object]:
+        profile = next(iter(self.runtime.gamut_profiles.values()))
+        supports_budget = algorithm in {"multicolor-dbs", "overlap-aware-dbs"}
+        return {
+            "schema": "mf1750-prepare-request",
+            "version": 2,
+            "source": {
+                "expected_sha256": hashlib.sha256(source).hexdigest(),
+                "media_type": "image/png",
+            },
+            "geometry": {"fit": "contain", "rotation_degrees": 0},
+            "mapping": {
+                "algorithm": "spectra6-xyz-convex-v1",
+                "profile_id": profile.profile_id,
+                "profile_sha256": profile.canonical_sha256,
+                "intent": "perceptual",
+                "strength": 1.0,
+            },
+            "halftone": {
+                "algorithm": algorithm,
+                "seed": 7,
+                "budget": (
+                    {
+                        "kind": "deterministic-work-v1",
+                        "max_evaluations": 8,
+                        "max_accepted_moves": 2,
+                        "stagnation_evaluations": 4,
+                    }
+                    if supports_budget
+                    else None
+                ),
+            },
+            "protections": {"white": True, "edge": True, "text": False},
+            "purpose": "offline_preview",
+        }
+
+    @staticmethod
+    def encode_v2_metadata(value: object) -> str:
+        return base64.urlsafe_b64encode(
+            json.dumps(value, separators=(",", ":")).encode("utf-8")
+        ).decode("ascii").rstrip("=")
 
     def test_token_is_required_and_is_not_exposed_by_get(self) -> None:
         status, _, _ = self.request("GET", "/application/config")
@@ -258,6 +308,182 @@ class ApplicationServerSecurityTests(unittest.TestCase):
             )
         self.assertEqual(result["state"], "ready")
         commit.assert_called_once_with(mock.sentinel.current_artifact)
+
+    def test_generation_work_is_visible_as_fail_closed_status(self) -> None:
+        runtime = ApplicationRuntime(reference_palette(), OfflineAdapter())
+        self.assertTrue(runtime.try_begin_generation_work())
+        try:
+            status = runtime.status()
+            self.assertTrue(status["operation_in_progress"])
+            self.assertTrue(status["refresh_locked"])
+            self.assertFalse(status["armed"])
+            self.assertFalse(runtime.try_begin_generation_work())
+        finally:
+            runtime.end_generation_work()
+        self.assertFalse(runtime.status()["operation_in_progress"])
+
+    def test_preview_publication_rejects_mismatch_and_stale_report_urls(self) -> None:
+        runtime = ApplicationRuntime(reference_palette(), OfflineAdapter())
+
+        def artifact(identity_character: str, prefix: bytes) -> SimpleNamespace:
+            return SimpleNamespace(
+                identity={"report_sha256": identity_character * 64},
+                source_preview_png=prefix + b"source",
+                mapped_preview_png=prefix + b"mapped",
+                preview_png=prefix + b"final",
+                model_preview_png=prefix + b"model",
+            )
+
+        first = artifact("1", b"one-")
+        second = artifact("2", b"two-")
+
+        def bind(value: object) -> dict[str, object]:
+            runtime.session.artifact = value  # type: ignore[assignment]
+            return {"state": "offline"}
+
+        with (
+            mock.patch.object(runtime.session, "invalidate_artifact", return_value={}),
+            mock.patch.object(runtime.session, "set_artifact", side_effect=bind),
+        ):
+            first_epoch = runtime.begin_generation()
+            with self.assertRaisesRegex(SessionError, "preview source differs"):
+                runtime.commit_generation(
+                    first_epoch,
+                    first,  # type: ignore[arg-type]
+                    {
+                        "source": b"wrong",
+                        "mapped": first.mapped_preview_png,
+                        "final": first.preview_png,
+                        "model": first.model_preview_png,
+                    },
+                )
+            runtime.commit_generation(
+                first_epoch,
+                first,  # type: ignore[arg-type]
+                {
+                    "source": first.source_preview_png,
+                    "mapped": first.mapped_preview_png,
+                    "final": first.preview_png,
+                    "model": first.model_preview_png,
+                },
+            )
+            self.assertEqual(runtime.preview("1" * 64, "source"), b"one-source")
+            second_epoch = runtime.begin_generation()
+            runtime.commit_generation(
+                second_epoch,
+                second,  # type: ignore[arg-type]
+                {
+                    "source": second.source_preview_png,
+                    "mapped": second.mapped_preview_png,
+                    "final": second.preview_png,
+                    "model": second.model_preview_png,
+                },
+            )
+            with self.assertRaisesRegex(SessionError, "stale"):
+                runtime.preview("1" * 64, "source")
+            self.assertEqual(runtime.preview("2" * 64, "source"), b"two-source")
+
+    def test_v2_original_byte_route_binds_four_hashed_preview_urls(self) -> None:
+        source = b"mocked-png-source"
+        preparation = self.v2_metadata(source)
+        preview_payloads = {
+            stage: f"{stage}-png".encode("ascii")
+            for stage in ("source", "mapped", "final", "model")
+        }
+        preview_metadata = {
+            stage: {
+                "sha256": hashlib.sha256(payload).hexdigest(),
+                "bytes": len(payload),
+                "width": 1024,
+                "height": 600,
+                "semantics": stage,
+            }
+            for stage, payload in preview_payloads.items()
+        }
+        identity = {
+            "frame_sha256": "1" * 64,
+            "frame_fnv1a": 1,
+            "frame_bytes": 307200,
+            "report_sha256": "2" * 64,
+        }
+        fake_artifact = SimpleNamespace(
+            identity=identity,
+            report={"previews": preview_metadata, "hardware_tested": False},
+            source_preview_png=preview_payloads["source"],
+            mapped_preview_png=preview_payloads["mapped"],
+            preview_png=preview_payloads["final"],
+            model_preview_png=preview_payloads["model"],
+        )
+        fake_simulation = SimpleNamespace()
+        fake_decoded = SimpleNamespace(
+            source_sha256=hashlib.sha256(source).hexdigest(),
+            raster=mock.sentinel.raster,
+            provenance={"hardware_tested": False},
+        )
+
+        def bind_fake(artifact: object) -> dict[str, object]:
+            self.runtime.session.artifact = artifact  # type: ignore[assignment]
+            return {"state": "offline"}
+
+        with (
+            mock.patch("app.server.decode_normalized_source", return_value=fake_decoded),
+            mock.patch("app.server.simulate_panel", return_value=fake_simulation),
+            mock.patch(
+                "app.server.prepare_simulation_artifact",
+                return_value=fake_artifact,
+            ),
+            mock.patch.object(
+                self.runtime.session, "set_artifact", side_effect=bind_fake
+            ),
+        ):
+            status, _, payload = self.request(
+                "POST",
+                "/application/convert-v2",
+                body=source,
+                token=self.valid_token,
+                origin=self.server.origin,
+                fetch_site="same-origin",
+                content_type="image/png",
+                extra_headers={
+                    "X-MF1750-Preparation": self.encode_v2_metadata(preparation)
+                },
+            )
+            self.assertEqual(status, HTTPStatus.OK, payload)
+            response = json.loads(payload)
+            self.assertEqual(response["schema"], "mf1750-prepare-response")
+            self.assertEqual(response["artifact_identity"], identity)
+            for stage, expected in preview_payloads.items():
+                metadata = response["previews"][stage]
+                self.assertEqual(metadata["sha256"], preview_metadata[stage]["sha256"])
+                preview_status, headers, preview = self.request(
+                    "GET", metadata["url"], token=self.valid_token
+                )
+                self.assertEqual(preview_status, HTTPStatus.OK)
+                self.assertEqual(headers["content-type"], "image/png")
+                self.assertEqual(preview, expected)
+
+    def test_v2_recomputes_source_hash_before_decode_or_state_mutation(self) -> None:
+        source = b"mocked-png-source"
+        preparation = self.v2_metadata(source)
+        preparation["source"]["expected_sha256"] = "0" * 64  # type: ignore[index]
+        epoch = self.runtime.generation_epoch
+        with mock.patch("app.server.decode_normalized_source") as decode:
+            status, _, payload = self.request(
+                "POST",
+                "/application/convert-v2",
+                body=source,
+                token=self.valid_token,
+                origin=self.server.origin,
+                fetch_site="same-origin",
+                content_type="image/png",
+                extra_headers={
+                    "X-MF1750-Preparation": self.encode_v2_metadata(preparation)
+                },
+            )
+        self.assertEqual(status, HTTPStatus.CONFLICT, payload)
+        self.assertIn(b"server-recomputed source SHA-256", payload)
+        decode.assert_not_called()
+        self.assertEqual(self.runtime.generation_epoch, epoch)
 
     def test_injected_server_token_must_remain_high_entropy_and_url_safe(self) -> None:
         runtime = ApplicationRuntime(reference_palette(), OfflineAdapter())

@@ -1,0 +1,59 @@
+{
+  "artifacts": {
+    "bom_reference.csv": {
+      "bytes": 5683,
+      "sha256": "d0af582ea0cf9b4f087bafecc84f704da2a98b84690353e27f8933378333b864"
+    },
+    "drc_final.rpt": {
+      "bytes": 448,
+      "sha256": "88bffd4cead82d65f38500479573ff40757731ae0c2569c6c1c954d352c47f54"
+    },
+    "erc_final.rpt": {
+      "bytes": 357,
+      "sha256": "7b36a9ca2298604975a677fb5925db729833744a0550c0f7457c559c5cb390bd"
+    },
+    "mf1750_devkitc_compact.kicad_pcb": {
+      "bytes": 683020,
+      "sha256": "f6ea5f64b9685cc706740b2115d1623a3557d7d66baa642c5d44d32bc71c6d14"
+    },
+    "mf1750_devkitc_compact.kicad_pro": {
+      "bytes": 1239,
+      "sha256": "da62761643ea209100df07216e7d91f8a17774135432b9c8913f546b51946e7f"
+    },
+    "mf1750_devkitc_compact.kicad_sch": {
+      "bytes": 160184,
+      "sha256": "2e2fd3035b74c51c2baa358ddb7cdc3779da36ad50379c79e443171c823d9abe"
+    },
+    "netlist_verified.xml": {
+      "bytes": 77898,
+      "sha256": "e75b965c8e8d4edb642f1943ad0f33f26962ad0f255f0552a6ee0efc85ac3932"
+    },
+    "preview/final_bottom.png": {
+      "bytes": 265286,
+      "sha256": "16bb65308b825ce9a33d0bacd85c4f7b2b363559930fdafc554ba11d29f615b3"
+    },
+    "preview/final_top.png": {
+      "bytes": 492854,
+      "sha256": "e93b06b1d268e821c4b83aaf327551dc4cf16de47287342aab29f24ebe2b43af"
+    }
+  },
+  "checks": {
+    "drc_violations": 0,
+    "erc_errors": 0,
+    "erc_warnings": 0,
+    "schematic_parity_errors": 0,
+    "unconnected_pads": 0
+  },
+  "generated_utc": "2026-08-13T11:56:12.001433+00:00",
+  "known_limits": [
+    "Two-layer supply distribution retains 0.20 mm necks on /3V3, /EPD_3V3, and /V_B.",
+    "The local /3V3 relief is partial/discontinuous, not a continuous J3-to-R4/R8 copper bus.",
+    "J2 socket MPN, finished-hole fit, and the actual N16R8 Z-envelope are not yet qualified.",
+    "Seven GPIOs cross the USB/panel power domains without Ioff isolation.",
+    "No Gerber/drill manufacturing package is released from this directory."
+  ],
+  "project": "mf1750_devkitc_compact",
+  "release_class": "ENGINEERING_PROTOTYPE_NOT_PRODUCTION_RELEASE",
+  "revision": "B0",
+  "schema": 1
+}

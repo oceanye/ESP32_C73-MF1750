@@ -1,0 +1,65 @@
+{
+  "artifacts": {
+    "README.md": {
+      "bytes": 528,
+      "sha256": "7136bf0f5805c4038ca385e4ca85e62246321abdd9d30db41cfc7979f6279f42"
+    },
+    "mf1750_wroom_b3_power_tf.kicad_pcb": {
+      "bytes": 1074458,
+      "sha256": "6da0e247e50ba4ce9ea984d6f0da72d98c1ac31544bf1aecbbb449bf3707e3a7"
+    },
+    "mf1750_wroom_b3_power_tf.kicad_pro": {
+      "bytes": 9918,
+      "sha256": "d8b3e089cd5bef11215d41e08d59e0661a638214f75f2e4147a04bcb59e7216c"
+    },
+    "mf1750_wroom_b3_power_tf.kicad_sch": {
+      "bytes": 160203,
+      "sha256": "96597c6b59dc210578de91f329abfee15dade0c79cda71fe6ef98d971e04e596"
+    }
+  },
+  "details": {
+    "board_mm": {
+      "height": 105.0,
+      "width": 72.0
+    },
+    "footprint_holds": [
+      "U4 TPS63070 RNM0015A project footprint",
+      "SW1/SW2/SW3 Alps SKSCLDE010 project footprint"
+    ],
+    "new_major_footprints": [
+      "U1 ESP32-S3-WROOM-1-N16R8",
+      "J4 Molex 1040310811 microSD",
+      "J5 TYPE-C-31-M-12",
+      "J6 3-wire battery connector candidate",
+      "U2 BQ24074RGTR",
+      "U3 STM6600CS25DM6F",
+      "U5 TPS22950CQDDCRQ1",
+      "U6/U7 SN74LVC125APWR"
+    ],
+    "preserved_b2_region_mm": {
+      "bottom": 60.5,
+      "left": 0.0,
+      "right": 65.0,
+      "top": 0.0
+    },
+    "state": "PLACED_CANDIDATE_NOT_ROUTED_NOT_SCHEMATIC_PARITY"
+  },
+  "r1_changes": {
+    "battery_connector": "moved clear of lower mounting hole and USB-C",
+    "silkscreen": "review labels deconflicted",
+    "wroom_antenna": "rotated toward right board edge"
+  },
+  "r2_changes": {
+    "board_width_mm": 72.0,
+    "reason": "move WROOM antenna keepout clear of preserved J2 copper",
+    "usb_c": "shifted inward so signal pads remain inside Edge.Cuts",
+    "visible_revision_label": "R2"
+  },
+  "revision": "B3-WROOM-POWER-TF-R2-PLACED",
+  "schema": 1,
+  "source_b2_sha256": {
+    "mf1750_devkitc_b2_pcba_margin.kicad_pcb": "462e127279bacc894eab5e8cc242cd6d26e1d3ee87708ad398f8064b5a5c4238",
+    "mf1750_devkitc_b2_pcba_margin.kicad_pro": "fcd393069f22846615113f8296d6553c5ffeee8ba507b7475f81baae9fe4aa27",
+    "mf1750_devkitc_b2_pcba_margin.kicad_sch": "bc3116580b1e055db15e383569ad60db626e65aac225917c62b3a72120e703eb"
+  }
+}

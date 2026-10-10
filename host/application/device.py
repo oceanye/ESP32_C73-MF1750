@@ -125,6 +125,38 @@ def _validated_artifact_identity(
     return snapshot, identity
 
 
+def _is_matching_terminal_failed_job(
+    data: Mapping[str, Any], job_id: int, frame_hash: int
+) -> bool:
+    """Return true only for a fully identified, ordered terminal failure.
+
+    ``frame_tool._validate_job`` intentionally raises for failed jobs because
+    they can never satisfy the success contract.  The adapter still needs to
+    distinguish a trustworthy terminal failure (remote activity has stopped)
+    from malformed or mismatched evidence (remote activity remains unknown).
+    """
+
+    try:
+        if frame_tool._require_int(data, "job_id", "job", minimum=1) != job_id:
+            return False
+        if frame_tool._require_string(data, "action", "job") != "uploaded_frame":
+            return False
+        if frame_tool._require_int(data, "frame_fnv1a", "job") != frame_hash:
+            return False
+        queued_at_ms = frame_tool._require_u32(data, "queued_at_ms", "job")
+        started_at_ms = frame_tool._require_u32(data, "started_at_ms", "job")
+        finished_at_ms = frame_tool._require_u32(data, "finished_at_ms", "job")
+        if frame_tool._require_string(data, "state", "job") != "failed":
+            return False
+        if data.get("result") is not False:
+            return False
+        return frame_tool._u32_is_forward_or_equal(
+            queued_at_ms, started_at_ms
+        ) and frame_tool._u32_is_forward_or_equal(started_at_ms, finished_at_ms)
+    except frame_tool.FrameToolError:
+        return False
+
+
 class DeviceAdapter(ABC):
     @abstractmethod
     def bind_artifact(
@@ -267,6 +299,9 @@ class OfflineAdapter(DeviceAdapter):
             "supported": True,
             "status": "local_only",
             "remote_cancelled": False,
+            "remote_job_may_continue": False,
+            "new_submission_locked": False,
+            "unlock_requirement": None,
             "artifact_identity": self._identity(),
             "hardware_tested": False,
         }
@@ -331,12 +366,26 @@ class HttpDeviceAdapter(DeviceAdapter):
         self._diagnostic: Optional[Mapping[str, Any]] = None
         self._enqueue_attempted = False
         self._job_deadline: Optional[float] = None
+        # Set immediately before the first /api/frame request and clear only
+        # after a matching terminal job has been validated.  A local abort may
+        # discard the polling context, but it must not erase this safety fact:
+        # the device has no remote cancel route and may still be refreshing.
+        self._remote_job_unresolved = False
+        # A local abort can intentionally discard the evidence needed to close
+        # a submitted job.  This separate latch keeps every new submission
+        # blocked even when a matching terminal state proved the device is no
+        # longer actively refreshing.
+        self._submission_quarantined = False
+        self._unresolved_job_context: Optional[dict[str, Any]] = None
         self._route_capability: Optional[tuple[str, str]] = None
 
     def _identity(self) -> Optional[dict[str, Any]]:
         return deepcopy(self._artifact_identity)
 
     def _clear_protocol_context(self) -> None:
+        # Deliberately preserve the remote/quarantine latches and their compact
+        # identity summary.  Callers may discard local protocol evidence, not
+        # turn an unknown or unverified job into permission for another refresh.
         self._preflight_identity = None
         self._preflight_mappings = None
         self._preflight_version = None
@@ -382,13 +431,16 @@ class HttpDeviceAdapter(DeviceAdapter):
 
     @property
     def refresh_in_flight(self) -> bool:
+        if self._remote_job_unresolved or self._submission_quarantined:
+            return True
         if self.state is AdapterState.NETWORK_ERROR:
+            return self._enqueue_attempted
+        if self.state is AdapterState.FAILED:
             return self._enqueue_attempted
         return self.state in {
             AdapterState.QUEUED,
             AdapterState.RUNNING,
             AdapterState.COMPLETED_PENDING_REPORT,
-            AdapterState.FAILED,
         }
 
     def allow_connection(self, allowed: bool) -> Mapping[str, Any]:
@@ -624,6 +676,15 @@ class HttpDeviceAdapter(DeviceAdapter):
                 )
             frame_hash = identity["frame_fnv1a"]
             self._enqueue_attempted = True
+            # The request may reach the ESP32 even if the client later sees a
+            # timeout or malformed response.  Latch before performing I/O.
+            self._remote_job_unresolved = True
+            self._unresolved_job_context = {
+                "artifact_identity": deepcopy(identity),
+                "frame_fnv1a": frame_hash,
+                "job_id": None,
+                "state": "enqueue_outcome_unknown",
+            }
             with self._route_scope("POST", "/api/frame"):
                 status, body = self._request(
                     self._base_url,
@@ -643,13 +704,20 @@ class HttpDeviceAdapter(DeviceAdapter):
         except AdapterNetworkError:
             raise
         except AdapterError:
-            self.state = AdapterState.FAILED
+            self.state = (
+                AdapterState.FAILED if self._enqueue_attempted else AdapterState.READY
+            )
             raise
         except frame_tool.FrameToolError as error:
-            self.state = AdapterState.FAILED
+            self.state = (
+                AdapterState.FAILED if self._enqueue_attempted else AdapterState.READY
+            )
             raise AdapterError(str(error)) from error
         self._version = deepcopy(version)
         self._job_id = job_id
+        assert self._unresolved_job_context is not None
+        self._unresolved_job_context["job_id"] = job_id
+        self._unresolved_job_context["state"] = "queued_or_running"
         self._enqueue_attempted = True
         self._job_deadline = self._clock() + self._job_timeout_s
         self.state = AdapterState.QUEUED
@@ -691,10 +759,19 @@ class HttpDeviceAdapter(DeviceAdapter):
                 )
             frame_tool._expect_status(status, 200, body, "job poll")
             job = frame_tool._json_object(body, "job poll")
-            job_state = frame_tool._validate_job(job, self._job_id, self._frame_hash)
         except AdapterNetworkError:
             raise
         except frame_tool.FrameToolError as error:
+            self.state = AdapterState.FAILED
+            raise AdapterError(str(error)) from error
+        try:
+            job_state = frame_tool._validate_job(job, self._job_id, self._frame_hash)
+        except frame_tool.FrameToolError as error:
+            if _is_matching_terminal_failed_job(job, self._job_id, self._frame_hash):
+                self._remote_job_unresolved = False
+                if self._unresolved_job_context is not None:
+                    self._unresolved_job_context["state"] = "terminal_failed"
+            self._job = deepcopy(job)
             self.state = AdapterState.FAILED
             raise AdapterError(str(error)) from error
         self._job = deepcopy(job)
@@ -703,6 +780,14 @@ class HttpDeviceAdapter(DeviceAdapter):
         elif job_state == "running":
             self.state = AdapterState.RUNNING
         else:
+            # _validate_job accepted the matching completed state, identity,
+            # result and timestamps.  Only this evidence closes the overlap
+            # risk; diagnostic retrieval remains a separate protocol gate.
+            self._remote_job_unresolved = False
+            if self._unresolved_job_context is not None:
+                self._unresolved_job_context["state"] = (
+                    "terminal_completed_pending_diagnostic"
+                )
             self.state = AdapterState.COMPLETED_PENDING_REPORT
         return {
             "state": self.state.value,
@@ -756,6 +841,7 @@ class HttpDeviceAdapter(DeviceAdapter):
             self.state = AdapterState.FAILED
             raise AdapterError(str(error)) from error
         self._diagnostic = deepcopy(raw_diagnostic)
+        self._unresolved_job_context = None
         self.state = AdapterState.PROTOCOL_VERIFIED
         return {
             "mode": "refresh",
@@ -781,16 +867,20 @@ class HttpDeviceAdapter(DeviceAdapter):
             "supported": False,
             "status": "unsupported",
             "reason": "RC2C/V3 exposes no remote cancel route",
-            "remote_job_may_continue": self.refresh_in_flight,
+            "remote_job_may_continue": self._remote_job_unresolved,
             "artifact_identity": self._identity(),
             "hardware_tested": False,
         }
 
     def local_abort(self) -> Mapping[str, Any]:
-        was_active = self.refresh_in_flight or self.state in {
-            AdapterState.FAILED,
-            AdapterState.COMPLETED_PENDING_REPORT,
-        }
+        remote_job_may_continue = self._remote_job_unresolved
+        new_submission_locked = self.refresh_in_flight
+        if new_submission_locked:
+            self._submission_quarantined = True
+        unresolved_context = deepcopy(self._unresolved_job_context)
+        if unresolved_context is not None:
+            unresolved_context["local_context_aborted"] = True
+            self._unresolved_job_context = deepcopy(unresolved_context)
         self._clear_protocol_context()
         self.state = AdapterState.LOCAL_ABORTED
         return {
@@ -798,7 +888,14 @@ class HttpDeviceAdapter(DeviceAdapter):
             "status": "local_only",
             "local_context_cleared": True,
             "remote_cancelled": False,
-            "remote_job_may_continue": was_active,
+            "remote_job_may_continue": remote_job_may_continue,
+            "new_submission_locked": self._submission_quarantined,
+            "unlock_requirement": (
+                "verify device idle and safe-finish state before restarting the application service"
+                if self._submission_quarantined
+                else None
+            ),
+            "unresolved_job": unresolved_context,
             "artifact_identity": self._identity(),
             "hardware_tested": False,
         }

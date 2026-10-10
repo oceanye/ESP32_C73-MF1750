@@ -27,6 +27,16 @@ PALETTE_CANONICAL_HASH_SCOPE = (
 )
 _SHA256_PATTERN = re.compile(r"[0-9a-fA-F]{64}\Z")
 
+# Render-path binding: which waveform/LUT path the measured Lab values belong
+# to. "otp" is the production stock path (codes follow the physical frame
+# contract below). "l535_r20" is the L535 runtime-LUT path whose measured
+# nibble-to-colour mapping differs (PAL1 evidence, 2026-09-25): white is at
+# code 7, blue at code 0, red at code 1, yellow at code 4, green at code 6,
+# black at code 3 on this panel.
+RENDER_PATH_OTP = "otp"
+RENDER_PATH_L535_R20 = "l535_r20"
+RENDER_PATHS = (RENDER_PATH_OTP, RENDER_PATH_L535_R20)
+
 
 # These names are part of the physical frame contract, not editable display
 # labels.  In particular, code 0 is black and code 1 is white; allowing a
@@ -123,6 +133,7 @@ class Palette:
     observer: str = "2deg"
     notes: str = ""
     calibration: Optional[CalibrationProvenance] = None
+    render_path: str = RENDER_PATH_OTP
 
     def __post_init__(self) -> None:
         if not isinstance(self.calibrated, bool):
@@ -139,6 +150,8 @@ class Palette:
             raise PaletteError("illuminant and observer must be strings")
         if not isinstance(self.notes, str):
             raise PaletteError("notes must be a string")
+        if not isinstance(self.render_path, str) or self.render_path not in RENDER_PATHS:
+            raise PaletteError(f"render_path must be one of {list(RENDER_PATHS)}")
         if self.calibrated:
             if type(self.calibration) is not CalibrationProvenance:
                 raise PaletteError(
@@ -152,24 +165,53 @@ class Palette:
             )
         if len(self.entries) != len(PHYSICAL_COLOR_CODES):
             raise PaletteError("palette must contain exactly six physical colours")
-        codes = [entry.code for entry in self.entries]
-        if set(codes) != set(PHYSICAL_COLOR_CODES) or len(codes) != len(set(codes)):
-            expected = sorted(PHYSICAL_COLOR_CODES)
-            raise PaletteError(f"palette codes must be exactly {expected}")
-        for entry in self.entries:
-            expected_name = _PHYSICAL_COLOR_NAMES[entry.code]
-            if entry.name != expected_name:
+        if self.render_path == RENDER_PATH_OTP:
+            codes = [entry.code for entry in self.entries]
+            if set(codes) != set(PHYSICAL_COLOR_CODES) or len(codes) != len(set(codes)):
+                expected = sorted(PHYSICAL_COLOR_CODES)
+                raise PaletteError(f"palette codes must be exactly {expected}")
+            for entry in self.entries:
+                expected_name = _PHYSICAL_COLOR_NAMES[entry.code]
+                if entry.name != expected_name:
+                    raise PaletteError(
+                        f"physical colour code {entry.code} must be named "
+                        f"'{expected_name}', not '{entry.name}'"
+                    )
+            entries_by_code = {entry.code: entry for entry in self.entries}
+            if entries_by_code[0x0].lab[0] >= entries_by_code[0x1].lab[0]:
+                raise PaletteError("black Lab L* must be lower than white Lab L*")
+            if entries_by_code[0x3].lab[1] <= entries_by_code[0x6].lab[1]:
+                raise PaletteError("red Lab a* must be greater than green Lab a*")
+            if entries_by_code[0x2].lab[2] <= entries_by_code[0x5].lab[2]:
+                raise PaletteError("yellow Lab b* must be greater than blue Lab b*")
+        else:
+            # L535 R20 path: entry codes are L535 drive nibbles (0..7), unique;
+            # names keep the six physical role names, but the role-to-code
+            # mapping is the measured one, not the stock frame contract.
+            names = sorted(entry.name for entry in self.entries)
+            if names != sorted(_PHYSICAL_COLOR_NAMES.values()):
                 raise PaletteError(
-                    f"physical colour code {entry.code} must be named "
-                    f"'{expected_name}', not '{entry.name}'"
+                    "l535_r20 palette must keep the six physical role names"
                 )
-        entries_by_code = {entry.code: entry for entry in self.entries}
-        if entries_by_code[0x0].lab[0] >= entries_by_code[0x1].lab[0]:
-            raise PaletteError("black Lab L* must be lower than white Lab L*")
-        if entries_by_code[0x3].lab[1] <= entries_by_code[0x6].lab[1]:
-            raise PaletteError("red Lab a* must be greater than green Lab a*")
-        if entries_by_code[0x2].lab[2] <= entries_by_code[0x5].lab[2]:
-            raise PaletteError("yellow Lab b* must be greater than blue Lab b*")
+            codes = [entry.code for entry in self.entries]
+            if any(type(c) is not int or not 0 <= c <= 7 for c in codes) or \
+                    len(set(codes)) != 6:
+                raise PaletteError("l535_r20 codes must be six unique drive nibbles 0..7")
+            by_name = {entry.name: entry for entry in self.entries}
+            white_l = by_name["white"].lab[0]
+            black_l = by_name["black"].lab[0]
+            others = [entry.lab[0] for entry in self.entries
+                      if entry.name not in ("white", "black")]
+            if not all(white_l > value for value in others + [black_l]):
+                raise PaletteError("l535_r20 white entry must be the brightest measured")
+            if not all(black_l < value for value in others + [white_l]):
+                raise PaletteError("l535_r20 black entry must be the darkest measured")
+            for name in ("yellow", "red", "blue", "green"):
+                lab = by_name[name].lab
+                if math.hypot(lab[1], lab[2]) <= 8.0:
+                    raise PaletteError(
+                        f"l535_r20 {name} entry must be a measured chromatic colour"
+                    )
         # Keep tie-breaking and reports stable even when JSON entries are reordered.
         object.__setattr__(self, "palette_id", self.palette_id.strip())
         object.__setattr__(self, "source", self.source.strip())
@@ -206,6 +248,8 @@ class Palette:
                     "artifact_sha256": self.calibration.artifact_sha256,
                 }
             ),
+            **({"render_path": self.render_path}
+               if self.render_path != RENDER_PATH_OTP else {}),
             "entries": [
                 {
                     "code": entry.code,
@@ -293,6 +337,7 @@ def palette_from_mapping(data: Mapping[str, Any]) -> Palette:
             else _rgb_triple(preview_value, f"entry {index} preview_rgb")
         )
         entries.append(PaletteEntry(code, name.strip(), lab, preview_rgb))
+    render_path = data.get("render_path", RENDER_PATH_OTP)
     notes = data.get("notes", "")
     if not isinstance(notes, str):
         raise PaletteError("notes must be a string")
@@ -305,6 +350,7 @@ def palette_from_mapping(data: Mapping[str, Any]) -> Palette:
         observer.strip(),
         notes,
         calibration,
+        render_path,
     )
 
 

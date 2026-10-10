@@ -839,8 +839,8 @@ def _rail(
     minimum_v = _nullable_number(rail["minimum_v"], label=f"{label}.minimum_v")
     maximum_v = _nullable_number(rail["maximum_v"], label=f"{label}.maximum_v")
     plateau_v = _nullable_number(rail["plateau_v"], label=f"{label}.plateau_v")
-    rise_ms = _nullable_number(rail["rise_ms"], label=f"{label}.rise_ms", minimum=0)
-    release_ms = _nullable_number(rail["release_ms"], label=f"{label}.release_ms", minimum=0)
+    _nullable_number(rail["rise_ms"], label=f"{label}.rise_ms", minimum=0)
+    _nullable_number(rail["release_ms"], label=f"{label}.release_ms", minimum=0)
     absolute_known = _boolean(rail["absolute_limit_known"], label=f"{label}.absolute_limit_known")
     reason = rail["absolute_limit_reason"]
     if absolute_known:

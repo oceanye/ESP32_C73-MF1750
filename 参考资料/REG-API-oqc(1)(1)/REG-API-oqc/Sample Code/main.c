@@ -1,0 +1,335 @@
+//=============================================================================
+//                   E6 13 inch Customer FW Reference Code 
+//
+// File Name : main.c
+// Author : Electronic Design Dept. II
+// Data : 2025.03.03
+// Version : 1.0
+// Copyright : E Ink Holdings Inc.
+//=============================================================================
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "main.h"
+#include "pindefine.h"
+#include "comm.h"
+#include "E28xx.h"
+#include "usbcdc.h"
+
+#if OTP_API_Mod
+#include "OTP.h" //Generate File From H File Conversion AP
+#elif REG_API_Mode_From_File
+#include "WF00_05.h" //Generate File From WF Tunning Tool AP
+#elif REG_API_Mode_From_Tool
+
+//============   USB Communication Global Variable  ===============
+unsigned int COUNTER=0;
+unsigned char App_Command;
+unsigned char checkSum;// For checksum USB Protocol
+unsigned char checkSumCal;// For checksum Calcurate
+uint32_t readCDCDataTotal = 0;
+uint32_t readCDCDataCnt   = 0;
+unsigned char checkData(unsigned int dataLen, unsigned char checkSumVal){
+  unsigned char checkSumCal = 0x00;
+  int i;
+  for (i = 0 ; i<dataLen ; i++){
+    checkSumCal = checkSumCal + dataBuff[i+6];
+  }
+  
+  if (checkSumCal==checkSumVal)
+    return 1;
+  else
+    return 0;
+}
+
+//fill feedback's content after data done
+void fillFeedback(unsigned char msgType, unsigned int dataLen){
+  int i;
+  unsigned char checkSumCal;
+  
+  //Header Bytes
+  dataBuff[0] = 0x55;
+  dataBuff[1] = 0xAA;
+  //Message
+  dataBuff[2] = msgType;
+  //Length
+  dataBuff[3] = dataLen/256;
+  dataBuff[4] = dataLen%256;
+  
+  //Check
+  checkSumCal = 0x00;
+  for (i = 0 ; i<(dataLen+5) ; i++){
+    checkSumCal = checkSumCal + dataBuff[i];
+  }  
+  dataBuff[5+dataLen] = checkSumCal;  
+}
+
+unsigned int getFeedbackSize(void){
+  return (unsigned int)((dataBuff[3]*256)+dataBuff[4]+6);
+}
+void receiveData(unsigned char *rxdataBuf, unsigned int dataSize){
+	//Please add the data communication of USB or UART.
+}
+
+void sendData(unsigned char *txdataBuf, unsigned int dataSize){
+	//Please add the data communication of USB or UART.
+	tinyusb_cdcacm_write_queue(itf, txdataBuf, dataSize);
+	tinyusb_cdcacm_write_flush(itf, 0);
+}
+
+#endif
+
+unsigned char epdStatus = 0;
+void app_main(void)
+{
+	unsigned char epdStatus = 0;
+//=============   GPIO/SPI/EPD Initial ========================
+ 	
+	vTaskDelay(1200/portTICK_PERIOD_MS);
+    printf("delayover. \r\n");
+	
+	initialGpio();
+	initialSpi();
+	setGpioLevel(LOAD_SW,GPIO_HIGH);
+	
+	epdHardwareReset();
+	setPinCsAll(GPIO_HIGH);
+	
+	//delayms(1000);
+	
+
+	
+	spiChipSelect=MAS_SLA;
+	initEPD();
+	
+#if OTP_API_Mod
+	printf("[OTP API Mode]\n\r");
+	otp2ndBurnFlag = 0;
+	unsigned char vcom = getVCOMDC();
+	printf("Get Vcom => 0x%02X\n\r",vcom);
+	epdStatus = programOTP(OTP_DATA,SIZE-1);
+	if (epdStatus == WRITE_OTP_OK)
+	{
+		if (otp2ndBurnFlag)
+		{
+			printf("programOTP =>2nd Burn OK\n\r");
+			
+		}else{
+			printf("programOTP =>1st Burn OK\n\r");
+			verifyLUT();
+			epdStatus = programVcomdc(vcom);
+			if (epdStatus == WRITE_OTP_OK)
+			{
+				printf("programVcomdc => OK\n\r");
+				epdDisplayColorBar();
+				printf("Display OK\n\r");
+			}else{
+				printf("programVcomdc => 0x%02X\n\r",epdStatus);
+			}
+		}
+	}else{
+		printf("programOTP => 0x%02X\n\r",epdStatus);
+	}
+
+#elif REG_API_Mode_From_File
+	printf("[REG API Mode]\n\r");
+	printf("WF From File...\n\r");
+
+	unsigned char vcom = getVCOMDC();
+	setVCOMDC(vcom);
+	printf("Get Vcom => 0x%02X, Set To EPD.\n\r",vcom);
+
+	unsigned char resOfLoadWF = 0xFF;  
+	spiChipSelect=MAS_SLA;
+	resOfLoadWF =  loadWF(WF00_05);  
+
+	if(resOfLoadWF== 0x00){
+	printf("loadWF OK, Go TO Display...\n\r");   
+	epdDisplayColorBar();
+	//epdDisplayColor(0x11);
+	printf("Display OK\n\r"); 
+	
+	}else{
+	printf("loadWF Not OK, resOfLoadWF=> 0x%02X\n\r",resOfLoadWF);
+	
+	}
+		
+
+#elif REG_API_Mode_From_Tool
+	usbcdc_init(); //User need to set-up USB CDC Initialization
+	printf("[REG API Mode]\n\r");
+	printf("Waiting For WF Tuning Tool Command...\n\r");
+	while (1)
+	{
+		if (USB_Rx_flag == 1)
+		{
+			printf("get cdc data(0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X ...)\r\n",dataBuff[0],dataBuff[1],dataBuff[2],dataBuff[3],dataBuff[4],dataBuff[5],dataBuff[6]);
+		
+//======   Please check if the USB connection is normal and ready to receive data.   ======
+			receiveData(dataBuff,6); // ReceiveData from USB CDC.
+
+			App_Command = dataBuff[0];
+			COUNTER = (unsigned int)(dataBuff[4]*256 + dataBuff[5]);
+	
+//======   Please check if the USB connection is normal and ready to receive data.   ====== 
+			// if(COUNTER != 0) receiveData(&dataBuff[6],COUNTER); // ReceiveData from USB CDC.
+			if(COUNTER != 0) receiveData(dataBuff,6+COUNTER+1); // ReceiveData from USB CDC.
+		
+//=============== EPD Driver IC action ===================================================================           
+			switch(App_Command)// Commnad Byte
+			{
+					case _loadWF :
+					printf("Action:_loadWF\n\r");
+					
+					checkSum = dataBuff[6 + COUNTER];              
+					if (checkData(COUNTER, checkSum)==0){//if checkSum error
+						printf("checkSum Error(0x%02X)\n\r",checkSum); 
+						printf("E1:checkSum error\n\r");   
+						fillFeedback(_msgCheckSumError, 0); //0xE1 
+
+								
+					}
+					else{ //if checkSum pass    
+						unsigned char resOfLoadWF = 0xFF;  
+
+						// setPinCsAll(GPIO_LOW); 
+						spiChipSelect=MAS_SLA;
+						delayms(1000);
+						printf("WF Before:0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02Xr\n",dataBuff[6],dataBuff[7],dataBuff[8],dataBuff[9],dataBuff[10],dataBuff[11],dataBuff[12]);
+		
+						resOfLoadWF =  loadWF(&dataBuff[6]);  
+	
+						if(resOfLoadWF== 0x00){
+						printf("00:loadWF OK\n\r");   
+						fillFeedback(_msgActionSucces, 0);  //OK
+						
+						}else{
+						printf("resOfLoadWF=> 0x%02X\n\r",resOfLoadWF);
+						printf("E0:loadWF Not OK\n\r");   
+						fillFeedback(_msgUnknownError, 0); // 0xE0
+						}
+						
+					}
+					
+					//======   Please check if the USB connection is normal and ready to send data data.   ======
+					sendData(dataBuff,getFeedbackSize());
+					
+					
+					break;      
+					
+					case _testPattern : 
+					printf("Action:_testPattern\n\r");
+					checkSum = dataBuff[6 + COUNTER];              
+					if (checkData(COUNTER, checkSum)==0){//if checkSum error
+						printf("checkSum Error(0x%02X)\n\r",checkSum); 
+						printf("E1:checkSum error\n\r"); 
+						fillFeedback(_msgCheckSumError, 0); //0xE1                
+					}
+					else{ //if checkSum pass 
+						printf("Action:_testPattern(%d)\n\r",dataBuff[6]);               
+						switch(dataBuff[6])
+						{
+						case 0 :
+							epdDisplayColor(0x00);
+							break;  
+						case 1 :
+							epdDisplayColor(0x11);
+							break;               
+						case 2 :
+							epdDisplayColor(0x22);
+							break;    
+						case 3 :
+							epdDisplayColor(0x33);
+							break;  
+						case 4 :
+							epdDisplayColor(0x55);
+							break;  
+						case 5 :
+							epdDisplayColor(0x66);
+							break;   
+						case 6 :
+							epdDisplayColorBar();
+							break;          
+						default :
+							break;
+						}
+						printf("00:Display OK\n\r"); 
+						fillFeedback(_msgActionSucces, 0);  //OK
+					}
+					
+					//======   Please check if the USB connection is normal and ready to send data data.   ======
+					sendData(dataBuff,getFeedbackSize());
+					
+					
+					break;
+					
+					
+					case _getVCOMDC :
+					
+					printf("Action:_getVCOMDC\n\r");
+					
+					dataBuff[5] = getVCOMDC();              
+
+					if (dataBuff[5] == 0x00 ) {  //if getVCOMDC fail 
+						printf("E0:Get Vcom Not OK\n\r"); 
+						fillFeedback(_msgUnknownError, 0);
+					}
+					else{//if getVCOMDC ok
+						// dataBuff[5] = dataBuff[0];
+						printf("01:Get Vcom OK(with Return dData(0x%02X))\n\r",dataBuff[5]); 
+						fillFeedback(_msgActionSuccesAndFreedbackData, 1);              
+					}
+					
+					//======   Please check if the USB connection is normal and ready to send data data.   ======
+					printf("Return dataBuff:0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X\r\n",dataBuff[0],dataBuff[1],dataBuff[2],dataBuff[3],dataBuff[4],dataBuff[5],dataBuff[6]);
+					
+					sendData(dataBuff,getFeedbackSize());
+			
+
+					break;
+					
+					case _setVCOMDC :
+					printf("Action:_setVCOMDC\n\r");
+					checkSum = dataBuff[6 + COUNTER];              
+					if (checkData(COUNTER, checkSum)==0){//if checkSum error
+						printf("checkSum Error(0x%02X)\n\r",checkSum); 
+						printf("E1:checkSum error\n\r"); 
+						fillFeedback(_msgCheckSumError, 0); //0xE1                
+					}
+					else{ //if checkSum pass                
+						setVCOMDC(dataBuff[6]);
+						printf("00:Set Vcom OK\n\r"); 
+						fillFeedback(_msgActionSucces, 0);  //OK
+					}
+					
+					//======   Please check if the USB connection is normal and ready to send data data.   ======
+					sendData(dataBuff,getFeedbackSize());
+
+
+					break;
+		
+
+					default :
+					printf("Action:default\n\r");
+					fillFeedback(_msgUnknownError, 0); //E0
+
+					//======   Please check if the USB connection is normal and ready to send data data.   ======
+					sendData(dataBuff,getFeedbackSize());
+					
+
+					break;
+					
+			} //switch(App_Command)
+			USB_Rx_flag = 0;
+		}
+
+	} //while(1)
+
+#endif
+}
+
+//==============================================================================
+
+
+

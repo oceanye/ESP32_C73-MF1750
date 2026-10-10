@@ -1,0 +1,9 @@
+{
+  "schema_version": 0,
+  "kind": "mf1750-ec5-u04-u05-compare-synthetic-result-fixture",
+  "synthetic": true,
+  "hardware_execution_performed": false,
+  "action_id": "70db952b1d708511e1fdcb166b43cd5828fe232562b14d341d848942787d1700",
+  "outcome": "synthetic_complete_pass_shape_only",
+  "warning": "TEST FIXTURE ONLY - NOT PHYSICAL EVIDENCE"
+}

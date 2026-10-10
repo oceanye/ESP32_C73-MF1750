@@ -1,0 +1,27 @@
+Drill report for mf1750_devkitc_b2_pcba_margin.kicad_pcb
+Created on 2026-08-14T11:24:47
+
+Copper Layer Stackup:
+    =============================================================
+    L1 :  F.Cu                      front
+    L2 :  In1.Cu                    in1
+    L3 :  In2.Cu                    in2
+    L4 :  B.Cu                      back
+
+
+Drill file 'mf1750_devkitc_b2_pcba_margin-PTH.drl' contains
+    plated through holes:
+    =============================================================
+    T1  0.300mm  0.0118"  (75 holes))
+    T2  0.750mm  0.0295"  (2 holes))
+    T3  0.800mm  0.0315"  (44 holes))
+
+    Total plated holes count 121
+
+
+Drill file 'mf1750_devkitc_b2_pcba_margin-NPTH.drl' contains
+    unplated through holes:
+    =============================================================
+    T1  2.500mm  0.0984"  (2 holes))
+
+    Total unplated holes count 2

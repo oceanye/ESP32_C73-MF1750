@@ -1,0 +1,95 @@
+{
+  "artifacts": {
+    "mf1750_devkitc_b2_pcba_margin.kicad_pcb": {
+      "bytes": 851631,
+      "sha256": "462e127279bacc894eab5e8cc242cd6d26e1d3ee87708ad398f8064b5a5c4238"
+    },
+    "mf1750_devkitc_b2_pcba_margin.kicad_pro": {
+      "bytes": 1248,
+      "sha256": "fcd393069f22846615113f8296d6553c5ffeee8ba507b7475f81baae9fe4aa27"
+    },
+    "mf1750_devkitc_b2_pcba_margin.kicad_sch": {
+      "bytes": 160203,
+      "sha256": "bc3116580b1e055db15e383569ad60db626e65aac225917c62b3a72120e703eb"
+    }
+  },
+  "derivation": "rigid_translation_plus_named_boundary_rewrite",
+  "finished_outline_mm": {
+    "height": 60.5,
+    "width": 65.0
+  },
+  "revision": "B2-4L-PCBA-EDGE",
+  "rewritten_zone_rectangles_mm": {
+    "DEVKITC_ANTENNA_KEEP_OUT": [
+      60.6,
+      34.1,
+      65.0,
+      59.85
+    ],
+    "EDGE_BOTTOM_KEEP_OUT": [
+      0.0,
+      59.85,
+      65.0,
+      60.5
+    ],
+    "EDGE_LEFT_KEEP_OUT": [
+      0.0,
+      0.0,
+      0.65,
+      60.5
+    ],
+    "EDGE_RIGHT_KEEP_OUT": [
+      64.35,
+      0.0,
+      65.0,
+      60.5
+    ],
+    "EDGE_TOP_KEEP_OUT": [
+      0.0,
+      0.0,
+      65.0,
+      0.65
+    ],
+    "GND_PLANE@B.Cu": [
+      0.65,
+      0.65,
+      64.35,
+      59.85
+    ],
+    "GND_PLANE@F.Cu": [
+      0.65,
+      0.65,
+      64.35,
+      59.85
+    ],
+    "IN1_SOLID_GND_PLANE@In1.Cu": [
+      0.65,
+      0.65,
+      64.35,
+      59.85
+    ]
+  },
+  "schema": 1,
+  "semantic_counts": {
+    "drawings": 20,
+    "footprints": 61,
+    "nets": 89,
+    "tracks": 629,
+    "vias": 75,
+    "zones": 8
+  },
+  "silkscreen_cleanup": {
+    "from_layer": "F.SilkS",
+    "position_changed": false,
+    "reason": "prevent fabricated silkscreen clipping at enlarged functional edge",
+    "reference": "J2",
+    "text": "ANTENNA",
+    "to_layer": "F.Fab"
+  },
+  "source_b1": "C:\\Users\\Ye\\PycharmProjects\\ESP32_C73\\hardware\\mf1750_devkitc_b1_single_power_layer\\mf1750_devkitc_b1_single_power_layer.kicad_pcb",
+  "source_b1_sha256": "d44afcd28056045aa19c875d424b6ad7d9e84712e238ee2340f6d087da62fde3",
+  "translation_mm": {
+    "x": 0.5,
+    "y": 2.5
+  }
+}

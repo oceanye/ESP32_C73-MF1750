@@ -1,0 +1,171 @@
+{
+  "schema_version": 2,
+  "kind": "mf1750-position-balanced-gray-fresh-reconstruction-v1-offline-build-record",
+  "date": "2026-09-01",
+  "result": "OFFLINE_IDENTITIES_AND_ARTIFACTS_SEALED_LIVE_EXECUTION_GATES_PENDING",
+  "offline_only": true,
+  "hardware_accessed": false,
+  "device_or_campaign_network_accessed": false,
+  "serial_or_com_accessed": false,
+  "relay_accessed": false,
+  "camera_accessed": false,
+  "firmware_flashed": false,
+  "display_refreshed": false,
+  "scope": {
+    "purpose": "second fresh-white position-balanced construction for a controller-local G3-to-G3 camera-relative repeat comparison",
+    "main_actions": [
+      "R1_ACTIVE_C7_SOURCE",
+      "R2_COMMENTED_C0_TO_C7_POSITION_BALANCED_MIDDLE",
+      "R3_ACTIVE_C3_C7_TARGET"
+    ],
+    "optical_payload_contract": "R1/R2/R3 frame and CS1/CS2 DTM bytes equal F1 V3 G1/G2/G3 respectively",
+    "g4_present_or_accepted": false,
+    "qualified_colors": 0,
+    "qualified_gray_levels": 0,
+    "qualified_brightness_levels": 0
+  },
+  "sealed_predecessor_package": {
+    "campaign_id": "EC5_POSITION_BALANCED_GRAY_HOLD_SUCCESSOR_V1_FACTORY_OTP_WHITE_SUCCESSOR_V1",
+    "contract_id": "79ac7bae08b912cdcbf3d959029d56c740407275ef70c91de738b8205dcaa433",
+    "descriptor_id": "c8492ebc83abd0a1721abfd4ae001f405bb21e0e1d87ae1ae20fb076f6be41c6",
+    "action_id": "934330c22eb1057c7595c5db6711bfcbc7647291e56f5bd8acd059aa6a65e21d",
+    "firmware_bin": {
+      "bytes": 787632,
+      "sha256": "7fe34992e9f0060d5b164d5c6f761ad38b755446854bd4bd22a65e52716a769b"
+    },
+    "firmware_elf": {
+      "bytes": 13214432,
+      "sha256": "1d16602e13fe29d9c025c6da78ea6ff3e10d0bc8a4d38139f1ab541ca3a0f33e"
+    },
+    "offline_report": {
+      "path": "docs/MF1750_POSITION_BALANCED_GRAY_HOLD_SUCCESSOR_V1_OFFLINE_BUILD_2026-09-01.json",
+      "bytes": 8582,
+      "file_sha256": "e3ea8836899f6ec993e1b7a461b48971d652af89b75c0352dc20a0a8adee3c2b",
+      "canonical_integrity_sha256": "15c4235749d754904c511e3523a8afb00add8890531f253a3260251b25e02e3f"
+    },
+    "sha256_manifest": {
+      "path": "docs/MF1750_POSITION_BALANCED_GRAY_HOLD_SUCCESSOR_V1_SHA256_2026-09-01.txt",
+      "bytes": 3391,
+      "sha256": "221d69a5b681d0016f54b3a67875cd941d90a814a531f0d0477a4e727c76c615",
+      "verified_entries": 24
+    },
+    "package_validation": "PASS"
+  },
+  "main_firmware": {
+    "campaign_id": "EC5_POSITION_BALANCED_GRAY_FRESH_RECONSTRUCTION_V1",
+    "contract_id": "5d76fda3bf199d29538ec0c6555db4a294b6b11ffb5805613805b4f759b7d132",
+    "actions": [
+      {
+        "ordinal": 1,
+        "role": "G1_ACTIVE_C7_SOURCE",
+        "descriptor_id": "db5e81a90583dba38c424c1c8747eef7439736e3def59ff70e16554f6a97d3bc",
+        "action_id": "3a0960cb14395ff7be9a98786552a549225a6d11b125ea90ae052a0fa816da87"
+      },
+      {
+        "ordinal": 2,
+        "role": "G2_COMMENTED_C0_TO_C7_POSITION_BALANCED_MIDDLE",
+        "descriptor_id": "de1c46483a35b681cde496fb60c95422e52cb0bc6d1df85097e749aa09c74e42",
+        "action_id": "aedc88a54ddbc59bed8f6e67af45557e1626c5901601656b6dc46cdb22cee57e"
+      },
+      {
+        "ordinal": 3,
+        "role": "G3_ACTIVE_C3_C7_TARGET",
+        "descriptor_id": "7bc2d4cd8f6afa5bd72f6ed4eb0fb96b6a5591aad2f5d9d152054daa284870d0",
+        "action_id": "2f7b6425bb6de07d370adbe1e8219e9264837b6da100fd7ad5dd6cc97880a2d4"
+      }
+    ],
+    "firmware_bin": {
+      "path": ".pio/b-position-balanced-gray-fresh-reconstruction-v1/ec5_position_balanced_gray_fresh_reconstruction_v1/firmware.bin",
+      "bytes": 801680,
+      "sha256": "9b8493903baa1c656cf387481a52f217293d2f2ccedb09afebd2cdeda400f2a3"
+    },
+    "firmware_elf": {
+      "path": ".pio/b-position-balanced-gray-fresh-reconstruction-v1/ec5_position_balanced_gray_fresh_reconstruction_v1/firmware.elf",
+      "bytes": 13297000,
+      "sha256": "11019eb525d00c37c6b26b805561016f14b60dbdbc136878196dd42f4a2689a0"
+    },
+    "clean_rebuild": "PASS_SEALED_AND_VERIFIED"
+  },
+  "factory_otp_white_successor": {
+    "campaign_id": "EC5_POSITION_BALANCED_GRAY_FRESH_RECONSTRUCTION_V1_FACTORY_OTP_WHITE_SUCCESSOR_V1",
+    "accepted_source_ordinals": [3],
+    "source_fault_or_early_stop_accepted": false,
+    "contract_id": "648be46177390b2640e619d23324b68ebb59c431b731c4c03e4e2973c5550318",
+    "descriptor_id": "e59910ef831d14404cabd416de28a82a578c3e4db10eb532647454fc33c98b0d",
+    "action_id": "9f235b87303ba55404e949d49e50e708ec2d89787a030d5c91e821422339fcb4",
+    "firmware_bin": {
+      "path": ".pio/b-position-balanced-gray-fresh-reconstruction-v1-white-v1/ec5_position_balanced_gray_fresh_reconstruction_v1_white_v1/firmware.bin",
+      "bytes": 787616,
+      "sha256": "e78cd7b18d8c020d09f1fc554cd4f0f2063cfcd8c3b590391ed637b0260bba45"
+    },
+    "firmware_elf": {
+      "path": ".pio/b-position-balanced-gray-fresh-reconstruction-v1-white-v1/ec5_position_balanced_gray_fresh_reconstruction_v1_white_v1/firmware.elf",
+      "bytes": 13214872,
+      "sha256": "24d8af57ed719de1cfffd6adcc9a355c74473179f653aadfaf41448ce102f8bb"
+    },
+    "clean_rebuild": "PASS_SEALED_AND_VERIFIED"
+  },
+  "generated_source_identities": {
+    "main_cpp": {
+      "bytes": 39578,
+      "sha256": "dec67d8187e1e9d0c6513dfab69c512eb32965b9dfbbd162261901fe62145adf"
+    },
+    "main_driver_cpp": {
+      "bytes": 178,
+      "sha256": "447030b10b85c5fb806b69e1e5c20c3e82152950b800f73f5bf955085a56cbfe"
+    },
+    "main_identity_inc": {
+      "bytes": 739,
+      "sha256": "8348e1202bd656557e8eb1fbd945dd0ac59d1b5b268fcf3f12efb945113f9567"
+    },
+    "main_config_inc": {
+      "bytes": 8802,
+      "sha256": "3af0a8d8a1353b3af1622e0a8ea7b88b7bc7d32047dd1bc04d5eee86b658291d"
+    },
+    "white_main_cpp": {
+      "bytes": 28207,
+      "sha256": "ace32060becd83114f09198225e8ca1f6825b4deace6521ea7d70f123f3b3fcf"
+    },
+    "white_driver_cpp": {
+      "bytes": 101,
+      "sha256": "0e34ed03c6655d906b0e23cef5f8c383db2f395d57665c7698ac44098d859f32"
+    },
+    "white_identity_inc": {
+      "bytes": 2150,
+      "sha256": "ce6cbd6a3426c8ca92a4c033251daa7d8fb284c79eeb6aeaaebbb5a51dc0b339"
+    }
+  },
+  "execution_policy": {
+    "j2_off_app_only_flash_required": true,
+    "boot_action": false,
+    "startup_refresh": false,
+    "retry": false,
+    "fallback": false,
+    "automatic_recovery": false,
+    "autochain": false
+  },
+  "live_execution_gates_pending": [
+    "post-HOLD white successor COMPLETE and permanent claim",
+    "relay protective-OFF record and 48MP clean-white capture/review",
+    "first F1 V3 G3 COMPLETE, permanent claim, exact camera capture, and camera-relative observation",
+    "reconstruction R3 COMPLETE before its independent factory-white successor",
+    "same-geometry and same-camera-settings first-vs-second construction comparison"
+  ],
+  "comparison_policy": {
+    "camera": "48MP USB Camera",
+    "scope": "CONTROLLER_LOCAL_RECIPE_AND_POSITION_MATCHED",
+    "same_geometry_required": true,
+    "same_requested_and_effective_settings_required": true,
+    "absolute_colour_claim": false,
+    "cs1_cs2_equivalence_claim": false,
+    "qualification_state": "ZERO_QUALIFIED_UNTIL_TWO_CONSTRUCTIONS_COMPARE"
+  },
+  "verification": {
+    "offline_audit": "PASS_OFFLINE_SEALED_LIVE_EXECUTION_GATED",
+    "pytest": "9 passed",
+    "ruff": "All checks passed",
+    "main_clean_build": "PASS",
+    "white_successor_clean_build": "PASS",
+    "sha256_manifest": "docs/MF1750_POSITION_BALANCED_GRAY_FRESH_RECONSTRUCTION_V1_SHA256_2026-09-01.txt"
+  }
+}

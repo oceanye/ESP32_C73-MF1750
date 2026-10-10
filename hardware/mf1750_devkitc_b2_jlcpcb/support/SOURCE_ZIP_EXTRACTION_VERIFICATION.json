@@ -1,0 +1,16 @@
+{
+  "body_to_functional_edge_minimum_mm": 3.55,
+  "bundled_board_audit": "PASS",
+  "canonical_pcb_sha256": "462e127279bacc894eab5e8cc242cd6d26e1d3ee87708ad398f8064b5a5c4238",
+  "canonical_schematic_sha256": "bc3116580b1e055db15e383569ad60db626e65aac225917c62b3a72120e703eb",
+  "drc_violations": 0,
+  "erc_errors": 0,
+  "erc_warnings": 0,
+  "members": 24,
+  "schema": 1,
+  "schematic_parity_errors": 0,
+  "source_zip": "MF1750_DEVKITC_B2_KICAD_SOURCE.zip",
+  "source_zip_sha256": "8ea86d987692f5b825e598c384ac9db62d656080dff9a11119862520e4d602cd",
+  "status": "PASS",
+  "unconnected_pads": 0
+}

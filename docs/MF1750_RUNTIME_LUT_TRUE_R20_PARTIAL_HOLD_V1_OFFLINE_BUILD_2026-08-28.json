@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "kind": "mf1750-runtime-lut-true-r20-partial-hold-v1-offline-build-record",
+  "created_date": "2026-08-28",
+  "status": "OFFLINE_BUILD_PASS_LIVE_BLOCKED_PENDING_BATCH1_AND_BATCH2_EVIDENCE",
+  "identity": {
+    "build_tag": "MF1750_EC5_RUNTIME_LUT_TRUE_R20_PARTIAL_HOLD_V1_2026-08-28",
+    "test_id": "EC5-RUNTIME-LUT-TRUE-R20-PARTIAL-HOLD-V1",
+    "campaign_id": "EC5_RUNTIME_LUT_TRUE_R20_PARTIAL_HOLD_V1",
+    "contract_id": "38698de14b6a2a7a96e072d4de025cb0708ae167b81c348f6c4337dc3654eb63",
+    "batch1_evidence_requirements_id": "51ded712517377821322a83eb1264afd7a69c08678c9a69a2c3b7f6d697ae547",
+    "nvs_namespace": "tr20ph_v1",
+    "nvs_key": "cursor_tr20ph1",
+    "base_route": "/api/ec5/runtime-lut-true-r20-partial-hold-v1"
+  },
+  "batch1_prerequisite": {
+    "campaign_id": "EC5_SAME_R20_PARITY_2X4_V1",
+    "contract_id": "718d6cf628cd14a869b73f77f6414fcdd8a5b364863849899403afde2f3463f8",
+    "action_ids": [
+      "7dd101c61553c9a10b97beeb7c3c8ce26e79c410d3b2ac3040db572065fd49f4",
+      "f4d447808e151be7860e3a59afe41e5030072fabdb51a566c83c83a642318816",
+      "e62b7b784ddd4108f18606d9b34b0341c41bc82225576fa4ae0849117de2b381",
+      "711ba3e2310347645f6734537041959eb6f6dd419d26882bdc4264ad66fdc717"
+    ],
+    "required_action_outcome": "complete_pass",
+    "factory_white_visual_ordinals": [2, 4],
+    "same_side_and_cross_side_automatic_analysis_required": true,
+    "candidate_codes": [0, 0, 2],
+    "candidate_codes_are_not_colour_names": true,
+    "fixed_capture_contract": {
+      "capture_count": 4,
+      "capture_binding": "live_synchronized",
+      "coverage_scope": "full_panel",
+      "full_panel_visible_and_uncropped_required": true,
+      "per_action_action_result_and_photo_sha_binding_required": true,
+      "camera_identity_tuple_fields_required": [
+        "camera_id",
+        "instance_id",
+        "index",
+        "backend"
+      ],
+      "camera_identity_tuple_all_fields_present_required": true,
+      "same_camera_identity_tuple_across_all_actions": true,
+      "same_camera_signature_across_all_actions": true,
+      "same_mount_id_across_all_actions": true,
+      "camera_or_mount_move_between_actions_forbidden": true,
+      "manual_exposure_white_balance_focus_with_readback_required": true,
+      "same_manual_control_readbacks_across_all_actions": true
+    },
+    "repeat_noise_report_contract": {
+      "sealed_report_required": true,
+      "top_level_evidence_bundle_binds_report_file_and_canonical_sha256": true,
+      "report_binds_camera_signature_and_mount_id": true,
+      "camera_signature_and_mount_id_exactly_match_all_four_captures": true,
+      "analysis_reports_requiring_exact_repeat_noise_p95_match": [
+        "aa_atlas",
+        "white_after_aa",
+        "cc_atlas",
+        "white_after_cc"
+      ],
+      "capture_sidecars_do_not_bind_repeat_noise_report": true
+    }
+  },
+  "batch2_prerequisite": {
+    "campaign_id": "EC5_REDPINK_RECIPE_POSITION_PERMUTATION_V1",
+    "contract_id": "5c628ccd1755718a6cc7aa0163523122f083bd51085f356ce75c23ea62d4dda2",
+    "evidence_kind": "mf1750-recipe-position-permutation-evidence-bundle-v1",
+    "g_minus_1_full_panel_manual_geometry_anchor_required": true,
+    "four_live_synchronized_full_panel_capture_sidecars_required": true,
+    "ordinal4_terminal_60_patch_factory_white_gate_required": true,
+    "same_camera_mount_manual_readback_noise_and_geometry_as_batch1_required": true,
+    "runner_requires_batch2_evidence_before_network_or_claim": true,
+    "runner_binds_validated_batch2_evidence_into_action_result": true
+  },
+  "aggregate_evidence_chain": {
+    "g_minus_1_anchor_tool": "tools/mf1750_g1_locked_full_panel_p0_geometry_anchor.py",
+    "batch1_bundle_tool": "tools/mf1750_same_r20_parity_evidence_bundle.py",
+    "batch2_bundle_tool": "tools/mf1750_recipe_position_permutation_evidence_bundle.py",
+    "batch2_prerequisite_validator": "tools/mf1750_recipe_position_permutation_batch3_prerequisite.py",
+    "video_capture_sidecar_tool": "tools/mf1750_camera_video_capture_evidence.py",
+    "batch3_bundle_tool": "tools/mf1750_true_r20_partial_hold_evidence_bundle.py",
+    "all_outputs_canonical_sealed_and_o_excl": true,
+    "absolute_colour_or_qualified_new_colour_claimed": false
+  },
+  "actions": [
+    {
+      "ordinal": 1,
+      "role": "PATCH_A_ACTIVE_TUPLE_CANDIDATE_CODE0",
+      "roi_per_controller": {"x": 48, "y": 64, "width": 160, "height": 120},
+      "tuple": "active",
+      "cs1_tuple_sha256": "5d8da091246acc0a19414fff463e1f1160053bd652adb386638c30b7ed442586",
+      "cs2_tuple_sha256": "5d8da091246acc0a19414fff463e1f1160053bd652adb386638c30b7ed442586",
+      "descriptor_id": "4d317d9f0a96a85c8ba30fb52c3661d47fa7b7de3dcc7ef35fccd7dbd869e8a5",
+      "action_id": "9dde1d9805c5c08880a7cce3be4844faacdafe3e250de1a8dc8b2bbda8a17a48"
+    },
+    {
+      "ordinal": 2,
+      "role": "PATCH_B_COMMENTED_TUPLE_CANDIDATE_CODE0_HOLD_A",
+      "roi_per_controller": {"x": 304, "y": 240, "width": 160, "height": 120},
+      "tuple": "commented",
+      "cs1_tuple_sha256": "626b2770b8b807992e5e1bd7751e0142f1a19e5069b864a83680b86b4466b4fd",
+      "cs2_tuple_sha256": "626b2770b8b807992e5e1bd7751e0142f1a19e5069b864a83680b86b4466b4fd",
+      "descriptor_id": "07e0cdff9718da18f7dbfa084ce41b7af7b0b7a0c9591ca57453b962984f055e",
+      "action_id": "cef8f2bb0ddd3ec96c2929a754b22a403fcb38e34ff7278ef2fb4c83ea1ea29f"
+    },
+    {
+      "ordinal": 3,
+      "role": "PATCH_C_ACTIVE_TUPLE_CANDIDATE_CODE2_HOLD_AB",
+      "roi_per_controller": {"x": 48, "y": 416, "width": 160, "height": 120},
+      "tuple": "active",
+      "cs1_tuple_sha256": "5d8da091246acc0a19414fff463e1f1160053bd652adb386638c30b7ed442586",
+      "cs2_tuple_sha256": "5d8da091246acc0a19414fff463e1f1160053bd652adb386638c30b7ed442586",
+      "descriptor_id": "000f0991160242f035fee116b37342597b79f38d41cd2011e50cab40ce94aa14",
+      "action_id": "ef7996a165effed3fff26dc1595b6a484f3abab06ed73ae4e9faeaeb72a56444"
+    },
+    {
+      "ordinal": 4,
+      "role": "FACTORY_OTP_WHITE_RECOVERY",
+      "descriptor_id": "b86d3418fe0edda32b960b67eb56439ee7a0c392c40349eb0a9d960ab4365c20",
+      "action_id": "fd50aee18578d0d91a542471728883b9c3a2df24f0ed35d2298dfda71bbcd6bf"
+    }
+  ],
+  "transport": {
+    "spi_hz": 1000000,
+    "same_local_coordinates_on_both_controllers": true,
+    "runtime_code7_full_sram_prestage_bytes_per_controller": 153600,
+    "runtime_code7_prestage_visible_refresh": false,
+    "ptlw_command": "0x83",
+    "ptlw_endpoint": "inclusive",
+    "ptlw_writes_per_controller_per_runtime_action": 1,
+    "cropped_dtm_bytes_per_controller": 9600,
+    "visible_refresh_sequence": ["PON", "DRF_00", "POF_00"],
+    "visible_refreshes_per_ordinal": 1,
+    "retry": false,
+    "automatic_recovery": false,
+    "automatic_chaining": false
+  },
+  "artifacts": {
+    "bin": {
+      "bytes": 816736,
+      "sha256": "458fff47291319e9ec4cf5ceec2ef855551a82792d765055400bceb2c9d6a89f"
+    },
+    "elf": {
+      "bytes": 13371716,
+      "sha256": "8aaefd61977fea24e17c3b716efbfbf7b93a546eed386887c713ceeb43085eb8"
+    }
+  },
+  "historical_source_restoration": {
+    "historical_true_r20_references_remaining": 0,
+    "old_v2_rebuilt_bin_sha256": "9139c4d243287caba125a87d57a83684bd10647a5107c476b45aab36f7ae060a",
+    "old_v2_rebuilt_elf_sha256": "683f4578a7e853bb72a704cb465a89546ae4f4f0118fbc59bde30ce74c7015ce",
+    "old_v2_frozen_hashes_reproduced": true
+  },
+  "verification": {
+    "platformio_clean_build": "PASS",
+    "pytest_dedicated_before_aggregate_extension": "22 passed",
+    "pytest_final_stage3_and_regression_aggregate": "317 passed",
+    "ruff_check": "PASS",
+    "ruff_format_check": "PASS",
+    "py_compile": "PASS",
+    "dry_validate": "PASS"
+  },
+  "safety": {
+    "offline_only": true,
+    "hardware_accessed": false,
+    "device_network_accessed": false,
+    "serial_or_com_accessed": false,
+    "relay_accessed": false,
+    "firmware_flashed": false,
+    "device_reset": false,
+    "visible_refreshes": 0
+  }
+}

@@ -1,12 +1,12 @@
-from __future__ import annotations
-
 """Create the Specctra seed used for the final MF-1750 rip-up/retry route."""
+
+from __future__ import annotations
 
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import route_mf1750_production_v1 as route
+import route_mf1750_production_v1 as route  # noqa: E402
 
 
 def configure_netclasses(board: route.pcbnew.BOARD) -> None:

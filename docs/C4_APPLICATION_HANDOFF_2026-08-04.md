@@ -29,8 +29,18 @@ Final commit SHA: 该字段所在文件提交后 SHA 才能确定，无法在同
 - preflight、mapping 和 firmware version 被移入 120 秒 one-shot arm；任何 enqueue 尝试都会消费它。job 与 diagnostic 使用内部深拷贝并重新核对私有 job ID/frame hash；最终报告保留完整 preflight、原始 BUSY/timing 诊断和正式 verified scope。
 - loopback Web 服务每次启动生成 URL-safe 高熵 token，并只在打印 URL 的 fragment 中交付；API 严格校验 numeric Host、token、same-origin Origin/Sec-Fetch-Site，禁止 query，副作用 job/report 已改为 POST，并拒绝 iframe 嵌入。
 - 请求体读取有短超时且不占设备操作锁；图像量化在锁外执行，generation epoch 防止失效后的旧转换覆盖新状态。status 在可用时持同一操作锁形成线性快照，慢设备占锁时则立即返回 fail-closed 状态；UI 自动等候操作完成。UI 在文件/fit/dither/palette/text/white 变化时撤销旧 artifact，页面重载会清除无可见预览的 inactive artifact，并只按服务端状态恢复 queued/running/completed_pending_report/network_error。
+- 2026-08-06 复审修复了本地中止后的重复刷新窗口：`POST /api/frame` 前先锁存远端
+  job 未决身份，matching terminal job 才能关闭“远端可能仍活动”标志；matching
+  diagnostic 和 safe-finish 证据闭环前仍保留提交锁。`local-abort` 只清本地跟踪，
+  对 active/ambiguous、terminal failed 或 completed-but-unverified 上下文均进入同进程
+  quarantine，不能再次 preflight/arm/enqueue。仅从未尝试提交 `/api/frame` 的 arm
+  可安全本地中止并重新预检。
 
 以上全部是 synthetic/mock/loopback 验证，不构成真实 ESP32、屏幕、电源或温度验收。
+
+上述 quarantine 当前仍是进程内内存状态；异常重启不会自动恢复 job 身份。重启前
+必须人工确认设备已空闲且完成安全收尾。彻底消除此边界仍需持久化本地 latch，或由
+设备协议提供 boot/request nonce 与可持久查询的 job identity。
 
 ## 最终复现结果
 
@@ -46,8 +56,9 @@ node --check web/app.js
 git diff --check
 ```
 
-结果：C4A 专项 `Ran 48 tests`、`OK`、exit 0；全仓机器报告
-`tests_run=200`、`tests_executed=200`、`failures=0`、`errors=0`、
+2026-08-06 本地中止隔离锁复审后的结果：C4A 专项 `Ran 53 tests in 12.572s`、
+`OK`、exit 0；全仓机器报告
+`tests_run=291`、`tests_executed=291`、`failures=0`、`errors=0`、
 `skipped=0`、`passed=true`、`hardware_tested=false`；其余命令均 exit 0。
 
 新增测试全部使用 synthetic raster 或内存 scripted requester。测试中的

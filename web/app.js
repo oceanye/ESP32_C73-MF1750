@@ -15,6 +15,8 @@ const state = {
   armed: false,
   generationActive: false,
   refreshLocked: false,
+  localAbortQuarantine: false,
+  previewUrls: [],
 };
 let invalidationTail = Promise.resolve();
 let operationWatchActive = false;
@@ -53,20 +55,32 @@ function updateButtons() {
     state.armed && state.artifactVisible && !busy
   );
   $("allowConnection").disabled = state.connectionAllowed || busy;
-  $("cancelButton").disabled = !state.refreshLocked;
-  $("abortButton").disabled = !state.refreshLocked;
+  $("cancelButton").disabled = !state.refreshLocked || state.localAbortQuarantine;
+  $("abortButton").disabled = !state.refreshLocked || state.localAbortQuarantine;
   for (const id of [
-    "imageInput", "fitPolicy", "ditherMode", "paletteMode", "textMode",
-    "whiteProtection", "cs1Mapping", "cs2Mapping",
+    "imageInput", "fitPolicy", "rotationDegrees", "gamutProfile", "ditherMode",
+    "paletteMode", "textMode", "whiteProtection", "algorithmSeed",
+    "cs1Mapping", "cs2Mapping",
   ]) {
     $(id).disabled = busy;
   }
+  const mappingOff = $("gamutProfile").value === "none";
+  $("renderingIntent").disabled = busy || mappingOff;
+  $("mappingStrength").disabled = busy || mappingOff;
+  const capability = state.config?.halftone_algorithms?.find(
+    (item) => item.id === $("ditherMode").value
+  );
+  $("optimizationBudget").disabled = busy || capability?.supports_budget !== true;
+}
+
+async function authorizedFetch(path, options = {}) {
+  if (!state.token) throw new Error("缺少本地应用会话 token；请使用服务启动时打印的完整 URL");
+  const headers = {...(options.headers || {}), "X-Application-Token": state.token};
+  return fetch(path, {...options, headers});
 }
 
 async function jsonRequest(path, options = {}) {
-  if (!state.token) throw new Error("缺少本地应用会话 token；请使用服务启动时打印的完整 URL");
-  const headers = {...(options.headers || {}), "X-Application-Token": state.token};
-  const response = await fetch(path, {...options, headers});
+  const response = await authorizedFetch(path, options);
   const data = await response.json();
   if (!response.ok || data.ok === false) {
     const error = new Error(data.detail || `HTTP ${response.status}`);
@@ -105,9 +119,19 @@ function clearArtifactUi() {
   state.armed = false;
   badge("offlineBadge", false);
   badge("protocolBadge", false);
-  $("previewImage").removeAttribute("src");
+  for (const url of state.previewUrls) URL.revokeObjectURL(url);
+  state.previewUrls = [];
+  for (const id of [
+    "sourcePreviewImage", "mappedPreviewImage", "previewImage", "modelPreviewImage",
+  ]) {
+    $(id).removeAttribute("src");
+  }
   $("inputHash").textContent = "—";
   $("frameHash").textContent = "—";
+  $("mappedHash").textContent = "—";
+  $("mappingSummary").textContent = "—";
+  $("algorithmSummary").textContent = "—";
+  $("modelScore").textContent = "—";
   $("usage").replaceChildren();
   updateButtons();
 }
@@ -144,42 +168,94 @@ async function sha256Hex(buffer) {
   return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
-async function normalizedRgba(file, fit) {
-  const bitmap = await createImageBitmap(file, {imageOrientation: "from-image"});
-  const canvas = $("workCanvas");
-  const context = canvas.getContext("2d", {willReadFrequently: true});
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  let sx = 0, sy = 0, sw = bitmap.width, sh = bitmap.height;
-  let dx = 0, dy = 0, dw = canvas.width, dh = canvas.height;
-  if (fit === "contain") {
-    const scale = Math.min(canvas.width / bitmap.width, canvas.height / bitmap.height);
-    dw = bitmap.width * scale;
-    dh = bitmap.height * scale;
-    dx = (canvas.width - dw) / 2;
-    dy = (canvas.height - dh) / 2;
-  } else if (fit === "cover") {
-    const sourceRatio = bitmap.width / bitmap.height;
-    const targetRatio = canvas.width / canvas.height;
-    if (sourceRatio > targetRatio) {
-      sw = bitmap.height * targetRatio;
-      sx = (bitmap.width - sw) / 2;
-    } else {
-      sh = bitmap.width / targetRatio;
-      sy = (bitmap.height - sh) / 2;
-    }
-  }
-  context.imageSmoothingEnabled = false;
-  context.drawImage(bitmap, sx, sy, sw, sh, dx, dy, dw, dh);
-  bitmap.close();
-  return context.getImageData(0, 0, canvas.width, canvas.height).data;
+function base64UrlJson(value) {
+  const bytes = new TextEncoder().encode(JSON.stringify(value));
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/, "");
 }
 
-function renderReport(report) {
+function preparationMetadata(sourceHash, mediaType) {
+  const profileId = $("gamutProfile").value;
+  const profile = state.config.gamut_profiles.find((item) => item.id === profileId);
+  const algorithm = $("ditherMode").value;
+  const capability = state.config.halftone_algorithms.find((item) => item.id === algorithm);
+  const requestedBudget = Number($("optimizationBudget").value);
+  return {
+    schema: "mf1750-prepare-request",
+    version: 2,
+    source: {expected_sha256: sourceHash, media_type: mediaType},
+    geometry: {
+      fit: $("fitPolicy").value,
+      rotation_degrees: Number($("rotationDegrees").value),
+    },
+    mapping: {
+      algorithm: profileId === "none" ? "none" : "spectra6-xyz-convex-v1",
+      profile_id: profile?.id || null,
+      profile_sha256: profile?.canonical_sha256 || null,
+      intent: $("renderingIntent").value,
+      strength: Number($("mappingStrength").value),
+    },
+    halftone: {
+      algorithm,
+      seed: Number($("algorithmSeed").value),
+      budget: capability?.supports_budget === true ? {
+        kind: "deterministic-work-v1",
+        max_evaluations: requestedBudget,
+        max_accepted_moves: Math.max(1, Math.floor(requestedBudget / 4)),
+        stagnation_evaluations: Math.max(1, Math.floor(requestedBudget / 2)),
+      } : null,
+    },
+    protections: {
+      white: $("whiteProtection").checked,
+      edge: true,
+      text: $("textMode").checked,
+    },
+    purpose: "offline_preview",
+  };
+}
+
+async function loadPreview(stage, metadata, imageId) {
+  if (!metadata || typeof metadata.url !== "string") {
+    throw new Error(`响应缺少 ${stage} 预览`);
+  }
+  const target = new URL(metadata.url, window.location.origin);
+  if (
+    target.origin !== window.location.origin || target.search || target.hash ||
+    !/^\/application\/artifact\/[0-9a-f]{64}\/preview\/(source|mapped|final|model)$/.test(target.pathname)
+  ) {
+    throw new Error(`${stage} 预览 URL 不属于当前本地工件`);
+  }
+  const response = await authorizedFetch(target.pathname);
+  if (!response.ok) throw new Error(`${stage} 预览 HTTP ${response.status}`);
+  const buffer = await response.arrayBuffer();
+  const actual = await sha256Hex(buffer);
+  if (actual !== metadata.sha256) throw new Error(`${stage} 预览 SHA-256 不匹配`);
+  const objectUrl = URL.createObjectURL(new Blob([buffer], {type: "image/png"}));
+  state.previewUrls.push(objectUrl);
+  $(imageId).src = objectUrl;
+}
+
+function renderReport(report, serverStatus = {}) {
   $("dimensions").textContent = `${report.output.width} × ${report.output.height}`;
   $("frameBytes").textContent = String(report.output.bytes);
   $("inputHash").textContent = report.input.sha256;
   $("frameHash").textContent = report.output.sha256;
-  $("paletteSummary").textContent = `${report.palette_provenance.id} · calibrated=${report.palette_provenance.calibrated}`;
+  const paletteId = report.palette_provenance.id || report.palette_provenance.palette_id;
+  $("paletteSummary").textContent = `${paletteId} · calibrated=${report.palette_provenance.calibrated}`;
+  const simulation = report.simulation_report || {};
+  const mapping = simulation.mapping || {};
+  const mappingReport = mapping.report || mapping;
+  const mappedRaster = mappingReport.mapped_raster || {};
+  const halftone = simulation.halftone || {};
+  $("mappedHash").textContent = mappedRaster.canonical_sha256 || mappedRaster.encoded_sha256 || "—";
+  $("mappingSummary").textContent = [
+    mappingReport.mapper?.algorithm || mapping.algorithm,
+    mappingReport.options?.intent,
+    mappingReport.options?.strength,
+  ].filter((value) => value !== undefined && value !== null).join(" · ") || "—";
+  $("algorithmSummary").textContent = halftone.algorithm || report.quantization_options?.dither || "—";
+  $("modelScore").textContent = halftone.report?.loss?.final?.total ?? "仅显示器近似";
   const colours = {black: "#111", white: "#b9b9b0", yellow: "#ba8b00", red: "#a62e2e", blue: "#315f7d", green: "#39713a"};
   $("usage").replaceChildren(...report.output.usage.map((item) => {
     const element = document.createElement("div");
@@ -189,7 +265,11 @@ function renderReport(report) {
   }));
   state.artifactReady = report.offline_verified === true;
   state.artifactVisible = true;
-  state.uploadAuthorized = report.formal_upload_authorized === true;
+  state.uploadAuthorized = report.formal_upload_authorized === true || (
+    (serverStatus.n6_formal_mode === true ||
+      serverStatus.n6_physical_production_mode === true) &&
+    serverStatus.formal_upload_authorized === true
+  );
   state.preflightVerified = false;
   state.armed = false;
   badge("offlineBadge", state.artifactReady);
@@ -207,26 +287,29 @@ async function generatePreview() {
     const generationRevision = state.artifactRevision;
     const sourceBuffer = await selectedFile.arrayBuffer();
     const sourceHash = await sha256Hex(sourceBuffer);
-    const fit = $("fitPolicy").value;
-    const rgba = await normalizedRgba(selectedFile, fit);
-    const data = await jsonRequest("/application/convert", {
+    const mediaType = selectedFile.type;
+    if (!["image/png", "image/jpeg", "image/webp"].includes(mediaType)) {
+      throw new Error("G1/S1 路径仅接受 PNG、JPEG 或 WebP 原始文件");
+    }
+    const preparation = preparationMetadata(sourceHash, mediaType);
+    const data = await jsonRequest("/application/convert-v2", {
       method: "POST",
       headers: {
-        "Content-Type": "application/octet-stream",
-        "X-Input-SHA256": sourceHash,
-        "X-Input-Media-Type": selectedFile.type || "application/octet-stream",
-        "X-Fit-Policy": fit,
-        "X-Dither-Mode": $("ditherMode").value,
-        "X-Text-Mode": String($("textMode").checked),
-        "X-White-Protection": String($("whiteProtection").checked),
+        "Content-Type": mediaType,
+        "X-MF1750-Preparation": base64UrlJson(preparation),
       },
-      body: rgba,
+      body: sourceBuffer,
     });
     if (generationRevision !== state.artifactRevision || selectedFile !== state.file) {
       throw new Error("图片或量化设置在生成期间发生变化，旧结果已丢弃");
     }
-    $("previewImage").src = `data:image/png;base64,${data.preview_png_base64}`;
-    renderReport(data.report);
+    await Promise.all([
+      loadPreview("source", data.previews.source, "sourcePreviewImage"),
+      loadPreview("mapped", data.previews.mapped, "mappedPreviewImage"),
+      loadPreview("final", data.previews.final, "previewImage"),
+      loadPreview("model", data.previews.model, "modelPreviewImage"),
+    ]);
+    renderReport(data.report, data.status);
   } catch (error) {
     try {
       await invalidateArtifact("generation_failed");
@@ -270,7 +353,11 @@ async function preflight() {
 async function arm() {
   clearError();
   try {
-    await postJson("/application/device/arm", {confirmation: $("armPhrase").value});
+    await postJson("/application/device/arm", {
+      confirmation: $("armPhrase").value,
+      panel_plan_confirmation: $("panelPlanPhrase").value,
+      profile_confirmation: $("profilePhrase").value,
+    });
     state.armed = true;
     $("jobState").textContent = "armed_one_shot";
   } catch (error) { setError(error); }
@@ -407,6 +494,13 @@ function resumeStatus(status) {
     state.refreshLocked = status.refresh_locked === true;
     setError(status.error || "设备通信中断，可尝试恢复", status.recovery_available === true);
     updateButtons();
+  } else if (current === "local_aborted" && status.local_abort_quarantine === true) {
+    state.refreshLocked = true;
+    state.localAbortQuarantine = true;
+    $("jobDetail").textContent = status.remote_job_may_continue === true
+      ? "本地监控已停止，但远端刷新结果未知；本进程禁止再次提交。请确认设备空闲和安全收尾后再重启本地服务。"
+      : "远端任务已知结束，但诊断/安全收尾证据被本地中止；本进程禁止再次提交。请人工复核后再重启本地服务。";
+    updateButtons();
   }
 }
 
@@ -417,6 +511,7 @@ function applyStatusFields(status) {
   state.preflightVerified = status.preflight_verified === true;
   state.armed = status.armed === true || status.state === "armed";
   state.refreshLocked = status.refresh_locked === true;
+  state.localAbortQuarantine = status.local_abort_quarantine === true;
   badge("offlineBadge", state.artifactReady);
   badge("protocolBadge", status.protocol_verified === true);
 }
@@ -454,11 +549,16 @@ async function queryCancel() {
 async function localAbort() {
   try {
     const data = await postJson("/application/device/local-abort", {});
-    state.refreshLocked = false;
+    state.refreshLocked = data.result.new_submission_locked === true;
+    state.localAbortQuarantine = state.refreshLocked;
     state.preflightVerified = false;
     state.armed = false;
     $("jobState").textContent = "local_aborted";
-    $("jobDetail").textContent = `仅清除本地状态；remote_cancelled=${data.result.remote_cancelled}`;
+    $("jobDetail").textContent = state.localAbortQuarantine
+      ? (data.result.remote_job_may_continue === true
+        ? "仅清除本地监控；远端刷新可能仍在运行，本进程保持提交锁。请确认设备空闲和安全收尾后再重启本地服务。"
+        : "远端任务已结束，但诊断/安全收尾证据未闭环，本进程保持提交锁。请人工复核后再重启本地服务。")
+      : `仅清除本地状态；remote_cancelled=${data.result.remote_cancelled}`;
     updateButtons();
   } catch (error) { setError(error); }
 }
@@ -473,22 +573,50 @@ async function initialize() {
     let status = initialStatus;
     status = await reconcileInvisibleArtifact(status);
     state.config = config;
-    $("ditherMode").replaceChildren(...state.config.dither_modes.map((mode) => {
-      const option = document.createElement("option"); option.value = mode; option.textContent = mode; return option;
+    $("ditherMode").replaceChildren(...state.config.halftone_algorithms.map((algorithm) => {
+      const option = document.createElement("option");
+      option.value = algorithm.id;
+      option.textContent = `${algorithm.label}${algorithm.simulation_only ? " · simulation" : ""}`;
+      return option;
     }));
+    $("ditherMode").value = state.config.defaults.halftone_algorithm;
+    const noProfile = document.createElement("option");
+    noProfile.value = "none";
+    noProfile.textContent = "none / legacy C2";
+    $("gamutProfile").replaceChildren(noProfile, ...state.config.gamut_profiles.map((profile) => {
+      const option = document.createElement("option");
+      option.value = profile.id;
+      option.textContent = `${profile.id} · ${profile.characterization_level} · simulation`;
+      return option;
+    }));
+    $("gamutProfile").value = state.config.defaults.gamut_profile_id;
+    $("renderingIntent").replaceChildren(...state.config.rendering_intents.map((intent) => {
+      const option = document.createElement("option");
+      option.value = intent.id;
+      option.textContent = intent.label;
+      return option;
+    }));
+    $("renderingIntent").value = state.config.defaults.rendering_intent;
+    $("mappingStrength").value = String(state.config.defaults.mapping_strength);
+    $("mappingStrengthValue").value = Number($("mappingStrength").value).toFixed(2);
+    $("algorithmSeed").value = String(state.config.defaults.seed);
     const paletteOption = document.createElement("option");
     paletteOption.value = state.config.palette.id;
     paletteOption.textContent = `${state.config.palette.id} · calibrated=${state.config.palette.calibrated}`;
     $("paletteMode").replaceChildren(paletteOption);
     $("paletteSummary").textContent = state.config.palette.id;
-    $("paletteWarning").textContent = state.config.palette.calibrated
-      ? `已加载 calibrated palette：${state.config.palette.source}`
-      : "REFERENCE PALETTE 未校准：只允许明确的离线预览，不能授权正式整屏上传。";
-    $("adapterNotice").textContent = state.config.device_adapter === "OfflineAdapter"
+    $("paletteWarning").textContent = state.config.n6_formal_execution_materialized === true
+      ? "N6 fixed formal envelope 已物化：工件仍保留 offline report；外部测量/评审/claim 是独立授权边界。"
+      : (state.config.palette.calibrated
+        ? `已加载 calibrated palette：${state.config.palette.source}`
+        : "REFERENCE PALETTE 与 synthetic gamut profile 未校准：本页面只生成显示器模拟，不能授权正式整屏上传。");
+    $("adapterNotice").textContent = state.config.n6_formal_execution_materialized === true
+      ? "N6 固定一次执行：preflight 仅本地；原子 claim 后才访问设备；最多一个 /api/frame POST，无 retry/recovery。"
+      : (state.config.device_adapter === "OfflineAdapter"
       ? "当前为 OfflineAdapter：不会产生网络请求。重启本地服务并显式提供设备参数后才可连接。"
       : (status.connection_allowed === true
         ? "HTTP adapter 已启用并保留本进程的显式连接许可。"
-        : "HTTP adapter 已由启动参数启用，但尚未获得 UI 连接许可，当前不会发送请求。");
+        : "HTTP adapter 已由启动参数启用，但尚未获得 UI 连接许可，当前不会发送请求。"));
     applyStatusFields(status);
     resumeStatus(status);
   } catch (error) { setError(error); }
@@ -500,11 +628,21 @@ $("imageInput").addEventListener("change", (event) => {
   $("fileSummary").textContent = state.file ? `${state.file.name} · ${state.file.size} bytes` : "尚未选择图片";
   void invalidateArtifact("input_file_changed").catch((error) => setError(error));
 });
-for (const id of ["fitPolicy", "ditherMode", "paletteMode", "textMode", "whiteProtection"]) {
+for (const id of [
+  "fitPolicy", "rotationDegrees", "gamutProfile", "renderingIntent", "ditherMode",
+  "algorithmSeed", "optimizationBudget", "paletteMode", "textMode", "whiteProtection",
+]) {
   $(id).addEventListener("change", () => {
+    updateButtons();
     void invalidateArtifact(`${id}_changed`).catch((error) => setError(error));
   });
 }
+$("mappingStrength").addEventListener("input", () => {
+  $("mappingStrengthValue").value = Number($("mappingStrength").value).toFixed(2);
+});
+$("mappingStrength").addEventListener("change", () => {
+  void invalidateArtifact("mappingStrength_changed").catch((error) => setError(error));
+});
 for (const id of ["cs1Mapping", "cs2Mapping"]) {
   $(id).addEventListener("change", () => {
     state.preflightVerified = false;

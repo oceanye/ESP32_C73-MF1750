@@ -172,7 +172,9 @@ def rail(measured: bool, *, negative: bool = False) -> dict[str, object]:
 
 
 def electrical_record(hardware: bool) -> dict[str, object]:
-    maybe = (lambda value: value if hardware else None)
+    def maybe(value: object) -> object | None:
+        return value if hardware else None
+
     return {
         "schema_version": 2,
         "kind": "mf1750-extended-color-electrical",

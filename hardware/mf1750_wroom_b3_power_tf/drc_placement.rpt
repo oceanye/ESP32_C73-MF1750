@@ -1,0 +1,190 @@
+** Drc report for mf1750_wroom_b3_power_tf.kicad_pcb **
+** Created on 2026-08-24T13:27:41 **
+** Report includes: Errors, Warnings, Exclusions **
+
+** Found 49 DRC violations **
+[items_not_allowed]: 不允许的项目 (U1 的 keepout 域)
+    Rule: U1 的 keepout 域; error
+    @(0.6500 mm, 0.6500 mm): Zone 'GND_PLANE' [/GND] on F.Cu, priority 0
+[items_not_allowed]: 不允许的项目 (U1 的 keepout 域)
+    Rule: U1 的 keepout 域; error
+    @(0.6500 mm, 0.6500 mm): Zone 'GND_PLANE' [/GND] on B.Cu, priority 0
+[items_not_allowed]: 不允许的项目 (U1 的 keepout 域)
+    Rule: U1 的 keepout 域; error
+    @(0.6500 mm, 0.6500 mm): Zone 'IN1_SOLID_GND_PLANE' [/GND] on In1.Cu, priority 0
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0000 mm)
+    Local override; error
+    @(1.1550 mm, 91.2500 mm): Pad A1 [<no net>] of J5 on F.Cu
+    @(1.1550 mm, 91.2500 mm): Pad B12 [<no net>] of J5 on F.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0000 mm)
+    Local override; error
+    @(1.1550 mm, 90.4500 mm): Pad A4 [<no net>] of J5 on F.Cu
+    @(1.1550 mm, 90.4500 mm): Pad B9 [<no net>] of J5 on F.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0000 mm)
+    Local override; error
+    @(1.1550 mm, 85.5500 mm): Pad A9 [<no net>] of J5 on F.Cu
+    @(1.1550 mm, 85.5500 mm): Pad B4 [<no net>] of J5 on F.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0000 mm)
+    Local override; error
+    @(1.1550 mm, 84.7500 mm): Pad A12 [<no net>] of J5 on F.Cu
+    @(1.1550 mm, 84.7500 mm): Pad B1 [<no net>] of J5 on F.Cu
+[copper_edge_clearance]: 电路板边缘间距违规 (<电路板配置> 中的 "板边" 约束 间距 0.5000 mm; 实际 0.4300 mm)
+    Rule: <电路板配置> 中的 "板边" 约束; error
+    @(0.0000 mm, 0.0000 mm): Rectangle on Edge.Cuts
+    @(1.1550 mm, 91.2500 mm): Pad A1 [<no net>] of J5 on F.Cu
+[copper_edge_clearance]: 电路板边缘间距违规 (<电路板配置> 中的 "板边" 约束 间距 0.5000 mm; 实际 0.4300 mm)
+    Rule: <电路板配置> 中的 "板边" 约束; error
+    @(0.0000 mm, 0.0000 mm): Rectangle on Edge.Cuts
+    @(1.1550 mm, 90.4500 mm): Pad A4 [<no net>] of J5 on F.Cu
+[copper_edge_clearance]: 电路板边缘间距违规 (<电路板配置> 中的 "板边" 约束 间距 0.5000 mm; 实际 0.4300 mm)
+    Rule: <电路板配置> 中的 "板边" 约束; error
+    @(0.0000 mm, 0.0000 mm): Rectangle on Edge.Cuts
+    @(1.1550 mm, 89.2500 mm): Pad A5 [<no net>] of J5 on F.Cu
+[copper_edge_clearance]: 电路板边缘间距违规 (<电路板配置> 中的 "板边" 约束 间距 0.5000 mm; 实际 0.4300 mm)
+    Rule: <电路板配置> 中的 "板边" 约束; error
+    @(0.0000 mm, 0.0000 mm): Rectangle on Edge.Cuts
+    @(1.1550 mm, 88.2500 mm): Pad A6 [<no net>] of J5 on F.Cu
+[copper_edge_clearance]: 电路板边缘间距违规 (<电路板配置> 中的 "板边" 约束 间距 0.5000 mm; 实际 0.4300 mm)
+    Rule: <电路板配置> 中的 "板边" 约束; error
+    @(0.0000 mm, 0.0000 mm): Rectangle on Edge.Cuts
+    @(1.1550 mm, 87.7500 mm): Pad A7 [<no net>] of J5 on F.Cu
+[copper_edge_clearance]: 电路板边缘间距违规 (<电路板配置> 中的 "板边" 约束 间距 0.5000 mm; 实际 0.4300 mm)
+    Rule: <电路板配置> 中的 "板边" 约束; error
+    @(0.0000 mm, 0.0000 mm): Rectangle on Edge.Cuts
+    @(1.1550 mm, 86.7500 mm): Pad A8 [<no net>] of J5 on F.Cu
+[copper_edge_clearance]: 电路板边缘间距违规 (<电路板配置> 中的 "板边" 约束 间距 0.5000 mm; 实际 0.4300 mm)
+    Rule: <电路板配置> 中的 "板边" 约束; error
+    @(0.0000 mm, 0.0000 mm): Rectangle on Edge.Cuts
+    @(1.1550 mm, 85.5500 mm): Pad A9 [<no net>] of J5 on F.Cu
+[copper_edge_clearance]: 电路板边缘间距违规 (<电路板配置> 中的 "板边" 约束 间距 0.5000 mm; 实际 0.4300 mm)
+    Rule: <电路板配置> 中的 "板边" 约束; error
+    @(0.0000 mm, 0.0000 mm): Rectangle on Edge.Cuts
+    @(1.1550 mm, 84.7500 mm): Pad A12 [<no net>] of J5 on F.Cu
+[copper_edge_clearance]: 电路板边缘间距违规 (<电路板配置> 中的 "板边" 约束 间距 0.5000 mm; 实际 0.4300 mm)
+    Rule: <电路板配置> 中的 "板边" 约束; error
+    @(0.0000 mm, 0.0000 mm): Rectangle on Edge.Cuts
+    @(1.1550 mm, 84.7500 mm): Pad B1 [<no net>] of J5 on F.Cu
+[copper_edge_clearance]: 电路板边缘间距违规 (<电路板配置> 中的 "板边" 约束 间距 0.5000 mm; 实际 0.4300 mm)
+    Rule: <电路板配置> 中的 "板边" 约束; error
+    @(0.0000 mm, 0.0000 mm): Rectangle on Edge.Cuts
+    @(1.1550 mm, 85.5500 mm): Pad B4 [<no net>] of J5 on F.Cu
+[copper_edge_clearance]: 电路板边缘间距违规 (<电路板配置> 中的 "板边" 约束 间距 0.5000 mm; 实际 0.4300 mm)
+    Rule: <电路板配置> 中的 "板边" 约束; error
+    @(0.0000 mm, 0.0000 mm): Rectangle on Edge.Cuts
+    @(1.1550 mm, 86.2500 mm): Pad B5 [<no net>] of J5 on F.Cu
+[copper_edge_clearance]: 电路板边缘间距违规 (<电路板配置> 中的 "板边" 约束 间距 0.5000 mm; 实际 0.4300 mm)
+    Rule: <电路板配置> 中的 "板边" 约束; error
+    @(0.0000 mm, 0.0000 mm): Rectangle on Edge.Cuts
+    @(1.1550 mm, 87.2500 mm): Pad B6 [<no net>] of J5 on F.Cu
+[copper_edge_clearance]: 电路板边缘间距违规 (<电路板配置> 中的 "板边" 约束 间距 0.5000 mm; 实际 0.4300 mm)
+    Rule: <电路板配置> 中的 "板边" 约束; error
+    @(0.0000 mm, 0.0000 mm): Rectangle on Edge.Cuts
+    @(1.1550 mm, 88.7500 mm): Pad B7 [<no net>] of J5 on F.Cu
+[copper_edge_clearance]: 电路板边缘间距违规 (<电路板配置> 中的 "板边" 约束 间距 0.5000 mm; 实际 0.4300 mm)
+    Rule: <电路板配置> 中的 "板边" 约束; error
+    @(0.0000 mm, 0.0000 mm): Rectangle on Edge.Cuts
+    @(1.1550 mm, 89.7500 mm): Pad B8 [<no net>] of J5 on F.Cu
+[copper_edge_clearance]: 电路板边缘间距违规 (<电路板配置> 中的 "板边" 约束 间距 0.5000 mm; 实际 0.4300 mm)
+    Rule: <电路板配置> 中的 "板边" 约束; error
+    @(0.0000 mm, 0.0000 mm): Rectangle on Edge.Cuts
+    @(1.1550 mm, 90.4500 mm): Pad B9 [<no net>] of J5 on F.Cu
+[copper_edge_clearance]: 电路板边缘间距违规 (<电路板配置> 中的 "板边" 约束 间距 0.5000 mm; 实际 0.4300 mm)
+    Rule: <电路板配置> 中的 "板边" 约束; error
+    @(0.0000 mm, 0.0000 mm): Rectangle on Edge.Cuts
+    @(1.1550 mm, 91.2500 mm): Pad B12 [<no net>] of J5 on F.Cu
+[drill_out_of_range]: 孔径超出范围 (电路板配置约束 最小孔径 0.3000 mm; 实际 0.2000 mm)
+    Rule: 电路板配置约束; error
+    @(56.2400 mm, 78.1000 mm): PTH pad 41 [<no net>] of U1
+[drill_out_of_range]: 孔径超出范围 (电路板配置约束 最小孔径 0.3000 mm; 实际 0.2000 mm)
+    Rule: 电路板配置约束; error
+    @(54.8400 mm, 78.1000 mm): PTH pad 41 [<no net>] of U1
+[drill_out_of_range]: 孔径超出范围 (电路板配置约束 最小孔径 0.3000 mm; 实际 0.2000 mm)
+    Rule: 电路板配置约束; error
+    @(56.9400 mm, 78.8000 mm): PTH pad 41 [<no net>] of U1
+[drill_out_of_range]: 孔径超出范围 (电路板配置约束 最小孔径 0.3000 mm; 实际 0.2000 mm)
+    Rule: 电路板配置约束; error
+    @(55.5400 mm, 78.8000 mm): PTH pad 41 [<no net>] of U1
+[drill_out_of_range]: 孔径超出范围 (电路板配置约束 最小孔径 0.3000 mm; 实际 0.2000 mm)
+    Rule: 电路板配置约束; error
+    @(54.1400 mm, 78.8000 mm): PTH pad 41 [<no net>] of U1
+[drill_out_of_range]: 孔径超出范围 (电路板配置约束 最小孔径 0.3000 mm; 实际 0.2000 mm)
+    Rule: 电路板配置约束; error
+    @(56.2400 mm, 79.5000 mm): PTH pad 41 [<no net>] of U1
+[drill_out_of_range]: 孔径超出范围 (电路板配置约束 最小孔径 0.3000 mm; 实际 0.2000 mm)
+    Rule: 电路板配置约束; error
+    @(54.8400 mm, 79.5000 mm): PTH pad 41 [<no net>] of U1
+[drill_out_of_range]: 孔径超出范围 (电路板配置约束 最小孔径 0.3000 mm; 实际 0.2000 mm)
+    Rule: 电路板配置约束; error
+    @(56.9400 mm, 80.2000 mm): PTH pad 41 [<no net>] of U1
+[drill_out_of_range]: 孔径超出范围 (电路板配置约束 最小孔径 0.3000 mm; 实际 0.2000 mm)
+    Rule: 电路板配置约束; error
+    @(55.5400 mm, 80.2000 mm): PTH pad 41 [<no net>] of U1
+[drill_out_of_range]: 孔径超出范围 (电路板配置约束 最小孔径 0.3000 mm; 实际 0.2000 mm)
+    Rule: 电路板配置约束; error
+    @(54.1400 mm, 80.2000 mm): PTH pad 41 [<no net>] of U1
+[drill_out_of_range]: 孔径超出范围 (电路板配置约束 最小孔径 0.3000 mm; 实际 0.2000 mm)
+    Rule: 电路板配置约束; error
+    @(56.2400 mm, 80.9000 mm): PTH pad 41 [<no net>] of U1
+[drill_out_of_range]: 孔径超出范围 (电路板配置约束 最小孔径 0.3000 mm; 实际 0.2000 mm)
+    Rule: 电路板配置约束; error
+    @(54.8400 mm, 80.9000 mm): PTH pad 41 [<no net>] of U1
+[solder_mask_bridge]: 顶层阻焊开窗区域与不同网络的项目相连
+    Rule: <电路板配置> 中的 "阻焊层最小宽度"; error
+    @(1.1550 mm, 91.2500 mm): Pad A1 [<no net>] of J5 on F.Cu
+    @(1.1550 mm, 91.2500 mm): Pad B12 [<no net>] of J5 on F.Cu
+[solder_mask_bridge]: 顶层阻焊开窗区域与不同网络的项目相连
+    Rule: <电路板配置> 中的 "阻焊层最小宽度"; error
+    @(1.1550 mm, 90.4500 mm): Pad A4 [<no net>] of J5 on F.Cu
+    @(1.1550 mm, 90.4500 mm): Pad B9 [<no net>] of J5 on F.Cu
+[solder_mask_bridge]: 顶层阻焊开窗区域与不同网络的项目相连
+    Rule: <电路板配置> 中的 "阻焊层最小宽度"; error
+    @(1.1550 mm, 85.5500 mm): Pad A9 [<no net>] of J5 on F.Cu
+    @(1.1550 mm, 85.5500 mm): Pad B4 [<no net>] of J5 on F.Cu
+[solder_mask_bridge]: 顶层阻焊开窗区域与不同网络的项目相连
+    Rule: <电路板配置> 中的 "阻焊层最小宽度"; error
+    @(1.1550 mm, 84.7500 mm): Pad A12 [<no net>] of J5 on F.Cu
+    @(1.1550 mm, 84.7500 mm): Pad B1 [<no net>] of J5 on F.Cu
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: <电路板配置> 中的 "丝印" 约束; warning
+    @(0.0000 mm, 0.0000 mm): Rectangle on Edge.Cuts
+    @(68.5000 mm, 95.0000 mm): PCB text 'WROOM ANTENNA -> RIGHT EDGE' on Top Silkscreen
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: <电路板配置> 中的 "丝印" 约束; warning
+    @(0.0000 mm, 0.0000 mm): Rectangle on Edge.Cuts
+    @(-0.4450 mm, 88.0000 mm): Reference field of J5
+[text_height]: 文字高度超出范围 (<电路板配置> 中的 "丝印文本高度" 约束 最小高度 0.8000 mm; 实际 0.5500 mm)
+    Rule: <电路板配置> 中的 "丝印文本高度" 约束; warning
+    @(30.0000 mm, 69.0000 mm): PCB text 'RNM FP HOLD' on Top Silkscreen
+[text_height]: 文字高度超出范围 (<电路板配置> 中的 "丝印文本高度" 约束 最小高度 0.8000 mm; 实际 0.6500 mm)
+    Rule: <电路板配置> 中的 "丝印文本高度" 约束; warning
+    @(7.8000 mm, 66.0000 mm): PCB text 'PWR' on Top Silkscreen
+[text_height]: 文字高度超出范围 (<电路板配置> 中的 "丝印文本高度" 约束 最小高度 0.8000 mm; 实际 0.6500 mm)
+    Rule: <电路板配置> 中的 "丝印文本高度" 约束; warning
+    @(7.8000 mm, 73.0000 mm): PCB text 'USER1' on Top Silkscreen
+[text_height]: 文字高度超出范围 (<电路板配置> 中的 "丝印文本高度" 约束 最小高度 0.8000 mm; 实际 0.6500 mm)
+    Rule: <电路板配置> 中的 "丝印文本高度" 约束; warning
+    @(7.8000 mm, 80.0000 mm): PCB text 'USER2' on Top Silkscreen
+[text_height]: 文字高度超出范围 (<电路板配置> 中的 "丝印文本高度" 约束 最小高度 0.8000 mm; 实际 0.6500 mm)
+    Rule: <电路板配置> 中的 "丝印文本高度" 约束; warning
+    @(30.0000 mm, 61.8000 mm): PCB text 'U4 TPS63070' on Top Silkscreen
+[text_height]: 文字高度超出范围 (<电路板配置> 中的 "丝印文本高度" 约束 最小高度 0.8000 mm; 实际 0.7000 mm)
+    Rule: <电路板配置> 中的 "丝印文本高度" 约束; warning
+    @(30.0000 mm, 90.5000 mm): PCB text 'TF INSERT FROM LOWER SIDE' on Top Silkscreen
+[text_height]: 文字高度超出范围 (<电路板配置> 中的 "丝印文本高度" 约束 最小高度 0.8000 mm; 实际 0.7000 mm)
+    Rule: <电路板配置> 中的 "丝印文本高度" 约束; warning
+    @(31.0000 mm, 87.8000 mm): PCB text 'MF1750 B3 WROOM 4L PLACEMENT R1' on Top Silkscreen
+[text_height]: 文字高度超出范围 (<电路板配置> 中的 "丝印文本高度" 约束 最小高度 0.8000 mm; 实际 0.7500 mm)
+    Rule: <电路板配置> 中的 "丝印文本高度" 约束; warning
+    @(22.5000 mm, 82.8000 mm): PCB text 'POWER / 3V3 / IO ISOLATION' on Top Silkscreen
+
+** Found 0 unconnected pads **
+
+** Found 0 Footprint errors **
+
+** Ignored checks **
+    - Tuning profile track geometries
+    - Silkscreen clearance
+    - Silkscreen clipped by solder mask
+    - Footprint doesn't match copy in library
+
+** End of Report **

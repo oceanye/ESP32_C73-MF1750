@@ -35,10 +35,12 @@ from host.epd_frame import (
 )
 
 from .images import FitPolicy, normalize_raster
+from .simulation import SimulationResult, validate_simulation_report
 
 
 APPLICATION_REPORT_SCHEMA = "mf1750-application-report"
 APPLICATION_REPORT_VERSION = 1
+APPLICATION_SIMULATION_REPORT_VERSION = 2
 MANUAL_CONFIRMATIONS = (
     "full_panel_visual_result",
     "power_supply_cv",
@@ -295,6 +297,9 @@ def _validate_c2_report(
 class ApplicationArtifact:
     frame: bytes
     preview_png: bytes
+    source_preview_png: bytes
+    mapped_preview_png: bytes
+    model_preview_png: bytes
     _report_json: bytes = field(repr=False)
     upload_authorized: bool
 
@@ -304,31 +309,64 @@ class ApplicationArtifact:
         preview_png: bytes | bytearray | memoryview,
         report: Mapping[str, Any],
         upload_authorized: bool,
+        *,
+        source_preview_png: bytes | bytearray | memoryview | None = None,
+        mapped_preview_png: bytes | bytearray | memoryview | None = None,
+        model_preview_png: bytes | bytearray | memoryview | None = None,
     ) -> None:
         canonical_frame = validate_application_frame(frame)
         canonical_preview = _bytes_snapshot(preview_png, "application preview")
+        canonical_source_preview = _bytes_snapshot(
+            canonical_preview if source_preview_png is None else source_preview_png,
+            "application source preview",
+        )
+        canonical_mapped_preview = _bytes_snapshot(
+            canonical_preview if mapped_preview_png is None else mapped_preview_png,
+            "application mapped preview",
+        )
+        canonical_model_preview = _bytes_snapshot(
+            canonical_preview if model_preview_png is None else model_preview_png,
+            "application model preview",
+        )
         if type(upload_authorized) is not bool:
             raise ApplicationError("upload_authorized must be boolean")
         if not isinstance(report, Mapping):
             raise ApplicationError("application artifact report must be an object")
         report_snapshot = _json_snapshot(report, "application artifact report")
         report_json = _canonical_json_bytes(report_snapshot, "application artifact report")
-        self._validate_report(report_snapshot, canonical_frame, upload_authorized)
+        self._validate_report(
+            report_snapshot,
+            canonical_frame,
+            upload_authorized,
+            {
+                "source": canonical_source_preview,
+                "mapped": canonical_mapped_preview,
+                "final": canonical_preview,
+                "model": canonical_model_preview,
+            },
+        )
         object.__setattr__(self, "frame", canonical_frame)
         object.__setattr__(self, "preview_png", canonical_preview)
+        object.__setattr__(self, "source_preview_png", canonical_source_preview)
+        object.__setattr__(self, "mapped_preview_png", canonical_mapped_preview)
+        object.__setattr__(self, "model_preview_png", canonical_model_preview)
         object.__setattr__(self, "_report_json", report_json)
         object.__setattr__(self, "upload_authorized", upload_authorized)
 
     @staticmethod
     def _validate_report(
-        report: Mapping[str, Any], frame: bytes, upload_authorized: bool
+        report: Mapping[str, Any],
+        frame: bytes,
+        upload_authorized: bool,
+        previews: Mapping[str, bytes],
     ) -> None:
         if report.get("schema") != APPLICATION_REPORT_SCHEMA:
             raise ApplicationError("application artifact report schema is invalid")
-        if (
-            type(report.get("version")) is not int
-            or report.get("version") != APPLICATION_REPORT_VERSION
-        ):
+        version = report.get("version")
+        if type(version) is not int or version not in {
+            APPLICATION_REPORT_VERSION,
+            APPLICATION_SIMULATION_REPORT_VERSION,
+        }:
             raise ApplicationError("application artifact report version is invalid")
         if report.get("offline_verified") is not True:
             raise ApplicationError("application artifact must be offline_verified")
@@ -347,6 +385,11 @@ class ApplicationArtifact:
             raise ApplicationError("application report output fnv1a does not match the frame")
         if report.get("formal_upload_authorized") is not upload_authorized:
             raise ApplicationError("artifact upload authorization differs from its report")
+        if version == APPLICATION_SIMULATION_REPORT_VERSION:
+            ApplicationArtifact._validate_simulation_application_report(
+                report, frame, upload_authorized, previews
+            )
+            return
         purpose = report.get("purpose")
         if purpose not in {item.value for item in PreparationPurpose}:
             raise ApplicationError("application report purpose is invalid")
@@ -389,6 +432,55 @@ class ApplicationArtifact:
                 raise ApplicationError("formal upload authorization reason is invalid")
             raise ApplicationError("offline preview authorization reason is invalid")
 
+    @staticmethod
+    def _validate_simulation_application_report(
+        report: Mapping[str, Any],
+        frame: bytes,
+        upload_authorized: bool,
+        previews: Mapping[str, bytes],
+    ) -> None:
+        if upload_authorized:
+            raise ApplicationError("G1/S1 monitor simulation can never authorize upload")
+        if report.get("purpose") != PreparationPurpose.OFFLINE_PREVIEW.value:
+            raise ApplicationError("G1/S1 simulation must use offline_preview purpose")
+        if report.get("authorization_reason") != "g1_s1_simulation_offline_preview_only":
+            raise ApplicationError("G1/S1 simulation authorization reason is invalid")
+        simulation = _require_mapping(
+            report.get("simulation_report"), "application simulation_report"
+        )
+        try:
+            validate_simulation_report(simulation, frame=frame, previews=previews)
+        except ValueError as error:
+            raise ApplicationError(f"simulation artifact is invalid: {error}") from error
+        output = _require_mapping(report.get("output"), "application report output")
+        simulation_output = _require_mapping(
+            simulation.get("output"), "simulation report output"
+        )
+        if output.get("sha256") != simulation_output.get("frame_sha256"):
+            raise ApplicationError("application output differs from simulation frame")
+        if output.get("fnv1a") != simulation_output.get("frame_fnv1a"):
+            raise ApplicationError("application output FNV differs from simulation frame")
+        if output.get("usage") != simulation_output.get("usage"):
+            raise ApplicationError("application usage differs from simulation report")
+        palette = _require_mapping(simulation.get("palette"), "simulation palette")
+        if report.get("palette_provenance") != {
+            **palette,
+            "canonical_sha256": simulation.get("palette_canonical_sha256"),
+        }:
+            raise ApplicationError("application palette differs from simulation provenance")
+        preview_metadata = _require_mapping(
+            report.get("previews"), "application preview metadata"
+        )
+        if preview_metadata != simulation.get("previews"):
+            raise ApplicationError("application previews differ from simulation evidence")
+        input_report = _require_mapping(report.get("input"), "application input")
+        if input_report.get("normalized_raster_sha256") != simulation.get(
+            "source_raster_sha256"
+        ):
+            raise ApplicationError("application normalized raster differs from simulation input")
+        if report.get("hardware_tested") is not False:
+            raise ApplicationError("simulation application report must keep hardware_tested=false")
+
     @property
     def report(self) -> dict[str, Any]:
         """Return a fresh JSON tree; callers cannot mutate stored evidence."""
@@ -427,6 +519,9 @@ class ApplicationArtifact:
                 self.preview_png,
                 self.report,
                 self.upload_authorized,
+                source_preview_png=self.source_preview_png,
+                mapped_preview_png=self.mapped_preview_png,
+                model_preview_png=self.model_preview_png,
             )
         except ApplicationError:
             raise
@@ -453,6 +548,109 @@ def _purpose(value: PreparationPurpose | str) -> PreparationPurpose:
         return value if isinstance(value, PreparationPurpose) else PreparationPurpose(value)
     except ValueError as error:
         raise ApplicationError("purpose must be offline_preview or formal_upload") from error
+
+
+def prepare_simulation_artifact(
+    simulation: SimulationResult,
+    source: InputSource,
+    *,
+    decode_provenance: Mapping[str, Any],
+) -> ApplicationArtifact:
+    """Wrap one G1/S1 monitor simulation in the application evidence contract.
+
+    The resulting artifact is deliberately offline-only.  In particular, this
+    helper cannot be used to turn synthetic gamut or optical models into a
+    formally upload-authorized frame.
+    """
+
+    if type(simulation) is not SimulationResult:
+        raise ApplicationError("simulation must be a SimulationResult")
+    if type(source) is not InputSource:
+        raise ApplicationError("source must be an InputSource")
+    if not isinstance(decode_provenance, Mapping):
+        raise ApplicationError("decode_provenance must be an object")
+    provenance = _json_snapshot(decode_provenance, "decode provenance")
+    if provenance.get("hardware_tested") is not False:
+        raise ApplicationError("decode provenance must keep hardware_tested=false")
+    if provenance.get("formal_colour_eligible") is not False:
+        raise ApplicationError("decode provenance must be formally ineligible")
+    if provenance.get("declared_media_type") != source.media_type:
+        raise ApplicationError("decode provenance media type differs from input source")
+
+    try:
+        result = simulation.validated_snapshot()
+    except ValueError as error:
+        raise ApplicationError(f"simulation result is invalid: {error}") from error
+    frame = validate_application_frame(result.frame)
+    simulation_report = _json_snapshot(result.report, "simulation report")
+    simulation_output = _require_mapping(
+        simulation_report.get("output"), "simulation report output"
+    )
+    palette = _require_mapping(
+        simulation_report.get("palette"), "simulation report palette"
+    )
+    preview_metadata = _require_mapping(
+        simulation_report.get("previews"), "simulation report previews"
+    )
+    report: dict[str, Any] = {
+        "schema": APPLICATION_REPORT_SCHEMA,
+        "version": APPLICATION_SIMULATION_REPORT_VERSION,
+        "input": {
+            "source": source.label,
+            "media_type": source.media_type,
+            "sha256": source.sha256,
+            "sha256_scope": source.hash_scope,
+            "normalized_mode": "RGB/RGBA8 sRGB",
+            "normalized_width": WIDTH,
+            "normalized_height": HEIGHT,
+            "normalized_raster_sha256": simulation_report[
+                "source_raster_sha256"
+            ],
+        },
+        "normalization": provenance,
+        "palette_provenance": {
+            **palette,
+            "canonical_sha256": simulation_report["palette_canonical_sha256"],
+        },
+        "quantization_options": simulation_report["halftone"],
+        "simulation_report": simulation_report,
+        "previews": preview_metadata,
+        "output": {
+            "width": WIDTH,
+            "height": HEIGHT,
+            "bits_per_pixel": 4,
+            "bytes": len(frame),
+            "sha256": simulation_output["frame_sha256"],
+            "fnv1a": simulation_output["frame_fnv1a"],
+            "physical_color_codes": sorted(PHYSICAL_COLOR_CODES),
+            "usage": simulation_output["usage"],
+        },
+        "purpose": PreparationPurpose.OFFLINE_PREVIEW.value,
+        "formal_upload_authorized": False,
+        "authorization_reason": "g1_s1_simulation_offline_preview_only",
+        "offline_verified": True,
+        "protocol_verified": False,
+        "hardware_tested": False,
+        "verified_scope": [
+            "server_source_byte_hash_and_decode_provenance",
+            "G1_continuous_gamut_mapping_simulation",
+            "S1_six_colour_halftone_or_DBS_simulation",
+            "canonical_frame_dimensions_length_colors_and_hash",
+            "four_monitor_preview_byte_hashes",
+        ],
+        "manual_confirmation_required": {
+            item: False for item in MANUAL_CONFIRMATIONS
+        },
+    }
+    return ApplicationArtifact(
+        frame,
+        result.final_png,
+        report,
+        False,
+        source_preview_png=result.source_png,
+        mapped_preview_png=result.mapped_png,
+        model_preview_png=result.model_png,
+    )
 
 
 def prepare_image(

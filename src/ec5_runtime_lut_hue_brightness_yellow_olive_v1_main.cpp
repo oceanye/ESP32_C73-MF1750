@@ -1,0 +1,2 @@
+#define MF1750_RUNTIME_LUT_HUE_BRIGHTNESS_YELLOW_OLIVE_V1_BUILD 1
+#include "ec5_runtime_lut_hue_brightness_yellow_olive_v1_program.inc"

@@ -2,7 +2,7 @@
 
 创建日期：2026-08-05
 
-状态：`SOFTWARE GROUNDWORK INTEGRATED / HARDWARE NOT STARTED`
+状态：`EC5 STAGE A/B OFFLINE IMPLEMENTED / HARDWARE NOT STARTED`
 
 硬件授权：无；等待用户逐阶段安排
 
@@ -13,9 +13,14 @@ Hardware tested in this review: `NO`
 
 离线成果与集成审查：`docs/EXTENDED_COLOR_INTEGRATION_REVIEW_2026-08-05.md`
 
-已完成的仅是官方证据矩阵、测量/安全门、固定图案及身份、空 6×6 profile、
-六码面积混色模拟和机器记录合同。它们不构成硬件授权，也不把下表任何硬件出口
-提升为已通过。
+已完成官方证据矩阵、测量/安全门、固定图案及身份、空 6×6 profile、六码面积混色
+模拟、机器记录合同，以及 EC5 Stage A 白初态五步执行链和 Stage B 六初态
+无抖动链的代码实现。新增 STM32/OQC runtime-LUT 参考也已完成只读审计。
+这些都不构成硬件授权，也不把下表任何硬件出口提升为已通过。
+
+2026-08-09 白天本轮只做本地代码、资产、预览、测试和编译：零设备、零网络、
+零串口、零刷写、零上电/断电控制、零真屏刷新。不推断当前 J2 状态；最近已知
+实测设备仍为 RC2G `9df89715385f98892549d24b57a6b139fb0844e9cea52ef4fd2c961d6b0cd772`。
 
 ## 1. 范围和执行原则
 
@@ -34,8 +39,9 @@ CCSET、PON/DRF/POF/PSR 和高压参数完全不变的条件下执行：
 ```
 
 `0x8～0xF` 只作为后续 bit3 alias/协议鲁棒性子阶段，不能预先作为八个新颜色。
-LUT、内部 phase、partial/window 和电压实验不属于本 TODO 的可安排范围，继续保持
-硬阻断。
+新增代码已经证明控制器存在 runtime-LUT 机制，但没有闭合当前双控 3-bit 载荷、
+loader、色码、电气参数和安全合同。LUT、内部 phase、partial/window 和电压真屏实验
+仍不属于本 TODO 的可安排范围，继续保持硬阻断。
 
 每个硬件步骤都必须满足：
 
@@ -46,6 +52,9 @@ LUT、内部 phase、partial/window 和电压实验不属于本 TODO 的可安�
 - 未经用户明确授权，不刷写 COM8、不推送会触发刷新的请求；
 - FPC 禁止带电插拔；结束后执行 POF、人工断 J2-1 并确认 TP1 接近 0V。
 
+这里的“结束后”指 session 结束、需要换固件/改接线或进入故障处置边界，并非要求每个
+正常 safe-finish action 后都断电；当前有人监督技术验证以晚间计划第 4 节的 J2 规则为准。
+
 ## 2. 工作包状态
 
 | ID | 工作包 | 状态 | 主要出口 |
@@ -55,10 +64,10 @@ LUT、内部 phase、partial/window 和电压实验不属于本 TODO 的可安�
 | EC2 | 原厂六色电气/光学基线 | TODO | 六色 Lab、功耗、轨包络、保持基线 |
 | EC3 | 原厂恢复流程资格 | TODO | B/W/B/W 可重复恢复且有最大尝试限制 |
 | EC4 | 6×6 转换矩阵 | OFFLINE FIXTURE READY / HARDWARE TODO | 36 转换的历史依赖、残影、能耗和统计 |
-| EC5 | `0x4/0x7` 小面积编码探针 | OFFLINE DESIGN READY / HARDWARE BLOCKED | 需隔离实验固件、硬件保护和 EC0–EC4 |
+| EC5 | `0x4/0x7` 小面积编码探针 | SOFTWARE EXECUTION PACKAGES FROZEN / HARDWARE 0 | Stage A 真屏 0/5；Stage B 每个获批候选 0/9。arm/持久锁/host gate、runner、release、binary、资产与预览已冻结；只剩晚间实物 preflight 和逐 action 授权 |
 | EC6 | bit3 alias `0x8～0xF` | BLOCKED | 需 EC5 通过及单独风险评审/厂家资料 |
 | EC7 | 第一轮报告 | TODO | 回答十个问题并形成下一阶段 go/no-go |
-| EC8 | 自定义 waveform/LUT/电压 | HARD BLOCKED | 需 SPD1657B/OTP 资料和新硬件联锁 |
+| EC8 | 自定义 waveform/LUT/电压 | RUNTIME MECHANISM CONFIRMED / HARDWARE HARD BLOCKED | 已知 `0x20`/535-byte 机制；仍缺匹配 3-bit 载荷、loader、字段合同、readback 与硬件联锁 |
 | EC9 | 温度、耐久、图像算法适配 | FUTURE | 仅对已通过筛选的候选执行 |
 
 ## 3. EC0：身份、资料和软件基线
@@ -74,6 +83,7 @@ LUT、内部 phase、partial/window 和电压实验不属于本 TODO 的可安�
 - [ ] 索取当前批次 OTP waveform ID、版本、温区和支持模式；
 - [ ] 索取 3-bit code 表、`0x4/0x7` 定义、`0x86` 和温度读取方法；
 - [ ] 索取最大连续刷新、冷却、恢复、寿命和保修限制；
+- [x] 归档并离线审计新增 STM32/OQC 参考；确认 runtime LUT 机制存在，但当前包不可直接移植；
 - [ ] 明确没有资料时 EC8 继续保持 HARD BLOCKED。
 
 出口：所有可获得资料归档；缺失项显式为 `missing`，禁止由 SPD1656 或专利补造。
@@ -179,31 +189,48 @@ Intersection:  old(row) → new(column)
 
 ## 8. EC5：`0x4/0x7` 小区域编码探针
 
-状态：BLOCKED。开始前必须完成 EC0–EC4，并另行实现和审查隔离实验入口。
+状态：`SOFTWARE EXECUTION PACKAGES FROZEN / HARDWARE NOT STARTED`。隔离入口、最终
+runner/release/binary 身份均已冻结；实物 preflight 和逐 action 授权仍是硬件前门。当前最小有人监督技术
+验证不等于 EC0--EC4 完整测量资格；任何产品结论仍必须补齐 EC0--EC4。
 
 ### 8.1 实验入口合同
 
-- [ ] 正式 `/api/frame` 和 `epdDisplayFrame*` 的六色 guard 保持不变；
-- [ ] 使用默认关闭、实验 build 专用的固定 action；
-- [ ] 设备内部生成固定布局，不接受任意网络 raw frame；
-- [ ] test ID、布局、unknown code、面积和预期 frame/DTM hash 进入 allowlist；
-- [ ] 一次性 arm、一次 job、冷启动、无自动重试；
-- [ ] 完成后必须检查 immutable report、BUSY、hash 和安全收尾；
-- [ ] 恢复并由人工确认后才允许重新 arm；
-- [ ] 生产/release build 默认不包含或禁用该 action。
+- [x] 正式 `/api/frame` 和 `epdDisplayFrame*` 的六色 guard 保持不变；
+- [x] 使用默认关闭、实验 build 专用的固定 action；
+- [x] 设备内部生成固定布局，不接受任意网络 raw frame；
+- [x] test ID、布局、unknown code、面积和预期 frame/DTM hash 进入 allowlist；
+- [x] 一次性 `arm→execute`、跨重启持久 consumed/fault、无自动重试；
+- [x] immutable report 合同包含 BUSY、hash、safe-finish 和 boot/reset 身份；
+- [x] host 层要求人工观察与白色恢复 PASS 后才允许下一 action；
+- [x] 生产/release build 默认不包含该 action；Stage A/B release 静态证据已冻结并深验。
 
 ### 8.2 图案和顺序
 
-- [ ] 其余区域使用已知白色；
-- [ ] CS1、CS2 各一个 `64×64` 镜像 unknown ROI；
-- [ ] 未知总面积 8192 px，即全屏 1.333%；
-- [ ] ROI 周围留 guard band，文字不进入测色区域；
+- [x] Stage A 其余区域使用已知白色；
+- [x] Stage A 在 CS1、CS2 各有一个 `64×64` 镜像 unknown ROI；
+- [x] Stage A 未知总面积 8192 px，即全屏 1.333%；
+- [x] ROI 周围留 guard band，文字不进入测色区域；
 - [ ] 先 `0x4`，恢复成功后再 `0x7`；
 - [ ] 分别从白、黑、红、黄、蓝、绿初始状态进入；
 - [ ] 首次只做一次，检查 BUSY、电流、温度、轨包络、画面和恢复；
 - [ ] 通过后逐步增加到 10 次重复；
 - [ ] 通过短期重复后才测 1h/24h 保持；
 - [ ] 分类为独立状态、已知色 alias、保持旧态、不稳定、异常，而不是默认“新色”。
+
+### 8.3 已实现的晚间分阶段路线
+
+- Stage A：固定 `RC2G 白→U04→RC2G 白→U07→RC2G 白`，真屏进度 `0/5`。
+  U04 target 后需 `0/5/30 min` 观察和白色恢复 PASS，才能刷入/执行 U07。
+- Stage B：白/黑/红/黄/蓝/绿六初态×CS1/CS2 镜像 `24×24` ROI，无抖动、无空间
+  混色；每个获批候选三轮 `primer→target→white`，真屏进度 `0/9`。每轮
+  target 后必须完成 `0/5/30 min` 观察，white PASS 才能进入下轮；U07 另受
+  Stage A 门禁。
+- 两阶段均只能逐 action 授权；无批量授权、无重试、无自动恢复或自动串播。
+
+冻结身份：Stage A release canonical=`adedbbdf...d7dd`，U04/U07 binary=
+`28a7b558...49e`/`60ccfd72...e24`；Stage B release canonical=`b500fee2...db04`，
+U04/U07 binary=`722b6932...f0fc`/`815ac96e...3c06`。联合聚焦回归
+`193 passed, 59 subtests passed`，真屏仍为零。
 
 立即停止：任何恢复失败、持续色斑、左右控制器不一致恶化、峰流/温度/轨门禁、
 BUSY 异常、日志或探头证据丢失。
@@ -239,7 +266,9 @@ BUSY 异常、日志或探头证据丢失。
 
 ## 11. EC8：自定义波形的硬门禁
 
-状态：HARD BLOCKED。以下全部完成前不建立执行任务：
+状态：`RUNTIME MECHANISM CONFIRMED / HARDWARE HARD BLOCKED`。新增 STM32 工程已证明
+MCU-LUT、CRC bypass 和 `0x20` 写入机制，但当前实际链接的明文路径是 2-bit、master-only，
+加密 `loadWF` 未链接且 ARM-only。以下全部完成前不建立真屏执行任务：
 
 - [ ] SPD1657B rev `0x04` command datasheet；
 - [ ] 当前 OTP ID、温区、模式和 LUT 兼容包；
@@ -251,6 +280,9 @@ BUSY 异常、日志或探头证据丢失。
 - [ ] 输入电流、关键温度、高压窗口和 PGOOD 硬联锁；
 - [ ] 专用牺牲屏和黄金参考屏；
 - [ ] 原厂 waveform 可重复复现并完成基线审查。
+
+参考审计：`docs/SPD1657_RUNTIME_WAVEFORM_REFERENCE_AUDIT_2026-08-09.md`。不得把机制
+证据、2-bit 调试表或 842-byte 加密封装当成当前屏可执行的 3-bit payload。
 
 若硬门禁满足，另建独立的 waveform safety review；不得直接从本 TODO 进入
 `80%～120%` 时间扫描或 `±2%～±6%` 电压扫描。
@@ -320,7 +352,7 @@ recovery_result, final_white_deltaE00, remarks
 - [ ] 是否有可编程电源、硬件急停和后续恒温箱；
 - [ ] 是否先安排 EC0 厂家资料索取；
 - [ ] 是否先执行 EC1/EC2，不涉及未知码；
-- [ ] 何时授权设计隔离的 EC5 实验固件；
+- [ ] 何时授权精确 EC5 binary/test ID 的刷写与单次硬件执行；
 - [ ] 每次硬件测试的上电、刷写、刷新和断电授权窗口。
 
 用户未安排前，本 TODO 不产生任何上电、刷写、刷新、LUT、高压或 PCB 动作。

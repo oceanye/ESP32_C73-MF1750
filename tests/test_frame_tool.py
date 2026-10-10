@@ -24,6 +24,7 @@ from tools import mf1750_frame_tool as tool
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 BUILD_TAG = "MF1750_DRIVER_RC2F_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_PHYSICAL_2026-08-05"
+BUSY_BUILD_TAG = "MF1750_DRIVER_RC2G_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_PHYSICAL_BUSYEDGE_2026-08-07"
 DEFAULT_MAPPINGS = (ControllerMapping(0), ControllerMapping(1))
 
 
@@ -41,13 +42,14 @@ def mapping_text(mapping: ControllerMapping) -> str:
 
 def version_body(
     *,
+    build_tag: str = BUILD_TAG,
     mappings: tuple[ControllerMapping, ControllerMapping] = DEFAULT_MAPPINGS,
     refresh_spi_hz: int = 1_000_000,
     psram_bytes: int = tool.NOMINAL_PSRAM_BYTES,
 ) -> str:
     return "\n".join(
         (
-            BUILD_TAG,
+            build_tag,
             "Panel: 1024x600",
             "Driver API: MF1750_R16_CASCADE_V3",
             "Frame bytes: 307200",
@@ -84,9 +86,12 @@ class ScriptedRequester:
         return response
 
 
-def valid_refresh_responses(frame: bytes) -> dict[str, list[tuple[int, str] | Exception]]:
+def valid_refresh_responses(
+    frame: bytes, *, build_tag: str = BUILD_TAG, allowed_colors=None
+) -> dict[str, list[tuple[int, str] | Exception]]:
     frame_hash = fnv1a(frame)
     mappings = DEFAULT_MAPPINGS
+    stream_kwargs = {} if allowed_colors is None else {"allowed_colors": allowed_colors}
     job = {
         "job_id": 7,
         "action": "uploaded_frame",
@@ -106,12 +111,13 @@ def valid_refresh_responses(frame: bytes) -> dict[str, list[tuple[int, str] | Ex
         "sequence_ok": True,
         "wait_timeout": False,
         "busy_assertion_missing": False,
+        "busy_assert_grace_ms": 250,
         "busy_missing_stage": "none",
         "mapping_applied": True,
         "spi_hz": 1_000_000,
         "input_fnv1a": frame_hash,
-        "cs1_dtm_fnv1a": fnv1a(controller_stream(frame, mappings[0])),
-        "cs2_dtm_fnv1a": fnv1a(controller_stream(frame, mappings[1])),
+        "cs1_dtm_fnv1a": fnv1a(controller_stream(frame, mappings[0], **stream_kwargs)),
+        "cs2_dtm_fnv1a": fnv1a(controller_stream(frame, mappings[1], **stream_kwargs)),
         "total_ms": 32000,
         "cs1_upload_ms": 1500,
         "cs2_upload_ms": 1500,
@@ -126,7 +132,7 @@ def valid_refresh_responses(frame: bytes) -> dict[str, list[tuple[int, str] | Ex
         "last_wait_ms": 20,
         "last_wait_stage": "post-display PSR",
         "timeout_stage": "none",
-        "firmware_build_tag": BUILD_TAG,
+        "firmware_build_tag": build_tag,
         "driver_api_version": "MF1750_R16_CASCADE_V3",
         "job_id": 7,
         "job_action": "uploaded_frame",
@@ -154,14 +160,82 @@ def valid_refresh_responses(frame: bytes) -> dict[str, list[tuple[int, str] | Ex
         "job_id": 7,
     }
     return {
-        "/api/version": [(200, version_body())],
+        "/api/version": [(200, version_body(build_tag=build_tag))],
         "/api/frame": [(202, json.dumps(enqueue))],
         "/api/job": [(200, json.dumps(job))],
         "/api/diagnostic/report": [(200, json.dumps(diagnostic))],
     }
 
 
+def add_valid_busy_trace(diagnostic: dict[str, object]) -> None:
+    def stage(
+        wait_ms: int,
+        *,
+        gate: int = 1,
+        before: int = 1,
+        entry: int = 0,
+        pre_idle: bool = True,
+        assertion: bool = True,
+    ) -> dict[str, object]:
+        return {
+            "gate_entry_level": gate,
+            "pre_command_level": before,
+            "wait_entry_level": entry,
+            "wait_exit_level": 1,
+            "pre_command_idle_ok": pre_idle,
+            "assertion_after_idle": assertion,
+            "pre_command_wait_ms": 0,
+            "wait_ms": wait_ms,
+            "assertion_latency_ms": 0,
+        }
+
+    diagnostic.update(
+        {
+            "pre_command_idle_failure": False,
+            "pre_command_busy_stage": "none",
+            "busy_trace_schema_version": 1,
+            "busy_trace": {
+                "idle_level": 1,
+                "pre_command_idle_timeout_ms": 3000,
+                "assert_grace_ms": 250,
+                "reset": stage(
+                    5,
+                    gate=255,
+                    before=255,
+                    entry=0,
+                    pre_idle=False,
+                    assertion=False,
+                ),
+                "pon": stage(int(diagnostic["pon_ms"])),
+                "drf": stage(int(diagnostic["drf_ms"])),
+                "pof": stage(int(diagnostic["pof_ms"])),
+                "post_psr": stage(
+                    int(diagnostic["post_psr_ms"]),
+                    entry=1,
+                    assertion=False,
+                ),
+                "safe_finish": {
+                    "busy_before_pins_low": 1,
+                    "busy_after_pins_low": 0,
+                    "busy_after_5ms": 0,
+                },
+                "final_gpio": {"busy": 0, "rst": 0, "cs": 0, "cs2": 0},
+            },
+        }
+    )
+
+
 class OfflineReportTests(unittest.TestCase):
+    def test_solid_white_fixture_is_frozen_and_contains_only_white(self) -> None:
+        frame = generate_fixture("solid-white")
+        report = tool.build_offline_report("solid-white", frame)
+
+        self.assertEqual(frame, bytes([0x11]) * FRAME_BYTES)
+        self.assertTrue(report["offline_verified"])
+        self.assertEqual(report["full_fnv1a"], 0x13340DC5)
+        self.assertEqual(report["logical_left_fnv1a"], 0xB7A855C5)
+        self.assertEqual(report["logical_right_fnv1a"], 0xB7A855C5)
+
     def test_report_uses_logical_hash_names_without_implied_physical_mapping(self) -> None:
         frame = generate_fixture("map-orient-v1")
         report = tool.build_offline_report("map-orient-v1", frame)
@@ -391,6 +465,125 @@ class NetworkContractTests(unittest.TestCase):
                 ("GET", "/api/diagnostic/report"),
             ],
         )
+
+    def test_refresh_accepts_l535_code_set_with_explicit_allowed_colors(self) -> None:
+        l535_frame = bytes([0x77]) * FRAME_BYTES  # L535 white (code 7) on every pixel
+        responses = valid_refresh_responses(
+            l535_frame,
+            build_tag="MF1750_L535_FRAME_V1_20260926",
+            allowed_colors=list(range(8)),
+        )
+        requester = ScriptedRequester(responses)
+        report = tool.perform_refresh(
+            "http://device",
+            l535_frame,
+            expected_mappings=DEFAULT_MAPPINGS,
+            allowed_colors=list(range(8)),
+            requester=requester,
+            sleeper=lambda _seconds: None,
+        )
+        self.assertTrue(report["protocol_verified"])
+        self.assertEqual(
+            requester.calls,
+            [
+                ("GET", "/api/version"),
+                ("POST", "/api/frame"),
+                ("GET", "/api/job"),
+                ("GET", "/api/diagnostic/report"),
+            ],
+        )
+        # Without the explicit code set the same frame must still fail closed
+        # before any network I/O (stock physical semantics remain default).
+        requester = ScriptedRequester({})
+        with self.assertRaisesRegex(tool.FrameToolError, "invalid canonical frame"):
+            tool.perform_refresh(
+                "http://device",
+                l535_frame,
+                expected_mappings=DEFAULT_MAPPINGS,
+                requester=requester,
+                sleeper=lambda _seconds: None,
+            )
+        self.assertEqual(requester.calls, [])
+
+    def test_busyedge_build_requires_and_returns_command_edge_trace(self) -> None:
+        responses = valid_refresh_responses(
+            self.frame, build_tag=BUSY_BUILD_TAG
+        )
+        diagnostic = json.loads(responses["/api/diagnostic/report"][0][1])
+        add_valid_busy_trace(diagnostic)
+        responses["/api/diagnostic/report"] = [(200, json.dumps(diagnostic))]
+
+        report = tool.perform_refresh(
+            "http://device",
+            self.frame,
+            expected_mappings=DEFAULT_MAPPINGS,
+            requester=ScriptedRequester(responses),
+            sleeper=lambda _seconds: None,
+        )
+
+        trace = report["diagnostic"]["busy_trace"]
+        self.assertTrue(trace["command_edge_contract_verified"])
+        self.assertTrue(trace["safe_finish_pin_levels_verified"])
+        self.assertTrue(trace["busy_after_rst_low_is_informational"])
+        self.assertEqual(trace["safe_finish"]["busy_after_5ms"], 0)
+        self.assertIn(
+            "diagnostic_idle_before_command_busy_edges_and_safe_finish_pin_snapshot",
+            report["verified_scope"],
+        )
+
+    def test_post_rst_busy_samples_are_independently_informational(self) -> None:
+        responses = valid_refresh_responses(
+            self.frame, build_tag=BUSY_BUILD_TAG
+        )
+        diagnostic = json.loads(responses["/api/diagnostic/report"][0][1])
+        add_valid_busy_trace(diagnostic)
+        diagnostic["busy_trace"]["safe_finish"]["busy_after_5ms"] = 0
+        diagnostic["busy_trace"]["final_gpio"]["busy"] = 1
+        responses["/api/diagnostic/report"] = [(200, json.dumps(diagnostic))]
+
+        report = tool.perform_refresh(
+            "http://device",
+            self.frame,
+            expected_mappings=DEFAULT_MAPPINGS,
+            requester=ScriptedRequester(responses),
+            sleeper=lambda _seconds: None,
+        )
+
+        trace = report["diagnostic"]["busy_trace"]
+        self.assertEqual(trace["safe_finish"]["busy_after_5ms"], 0)
+        self.assertEqual(trace["final_gpio"]["busy"], 1)
+        self.assertTrue(trace["post_rst_busy_samples_not_compared"])
+
+    def test_busyedge_build_rejects_missing_or_invalid_trace(self) -> None:
+        cases = (
+            ("missing", None, "busy_trace_schema_version"),
+            ("prebusy", ("pon", "pre_command_idle_ok", False), "idle-before-command"),
+            ("no-edge", ("drf", "assertion_after_idle", False), "new BUSY assertion"),
+            ("unsafe-pin", ("final_gpio", "rst", 1), "select/reset pins"),
+        )
+        for label, mutation, message in cases:
+            with self.subTest(case=label):
+                responses = valid_refresh_responses(
+                    self.frame, build_tag=BUSY_BUILD_TAG
+                )
+                diagnostic = json.loads(
+                    responses["/api/diagnostic/report"][0][1]
+                )
+                if mutation is not None:
+                    add_valid_busy_trace(diagnostic)
+                    section, key, value = mutation
+                    diagnostic["busy_trace"][section][key] = value
+                responses["/api/diagnostic/report"] = [
+                    (200, json.dumps(diagnostic))
+                ]
+                with self.assertRaisesRegex(tool.FrameToolError, message):
+                    tool.perform_refresh(
+                        "http://device",
+                        self.frame,
+                        expected_mappings=DEFAULT_MAPPINGS,
+                        requester=ScriptedRequester(responses),
+                        sleeper=lambda _seconds: None,
+                    )
 
     def test_failed_looking_202_is_never_success(self) -> None:
         responses = valid_refresh_responses(self.frame)

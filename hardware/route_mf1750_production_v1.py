@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Route, verify, and export the MF-1750 production prototype.
 
 The router is deliberately small and deterministic.  It is used here because
@@ -7,6 +5,8 @@ the checked-in KiCad source must be reproducible without a GUI-only autorouter.
 It routes a two-layer 0.25 mm grid, respects pad/track occupancy, and then lets
 KiCad perform the authoritative connectivity and clearance checks.
 """
+
+from __future__ import annotations
 
 import csv
 import hashlib

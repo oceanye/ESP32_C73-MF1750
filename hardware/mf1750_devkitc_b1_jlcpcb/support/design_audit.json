@@ -1,0 +1,82 @@
+{
+  "added_gnd_stitching_vias": [
+    {
+      "x_mm": 8.2,
+      "y_mm": 1.8
+    },
+    {
+      "x_mm": 26.0,
+      "y_mm": 10.0
+    },
+    {
+      "x_mm": 30.0,
+      "y_mm": 11.0
+    },
+    {
+      "x_mm": 39.0,
+      "y_mm": 11.0
+    },
+    {
+      "x_mm": 23.2,
+      "y_mm": 29.0
+    },
+    {
+      "x_mm": 58.2,
+      "y_mm": 27.525
+    },
+    {
+      "x_mm": 33.225,
+      "y_mm": 30.4
+    },
+    {
+      "x_mm": 15.4,
+      "y_mm": 44.0
+    }
+  ],
+  "antenna_keepout_all_four_copper_layers": true,
+  "blind_or_buried_vias": 0,
+  "board": "C:\\Users\\Ye\\PycharmProjects\\ESP32_C73\\hardware\\mf1750_devkitc_b1_single_power_layer\\mf1750_devkitc_b1_single_power_layer.kicad_pcb",
+  "board_sha256": "d44afcd28056045aa19c875d424b6ad7d9e84712e238ee2340f6d087da62fde3",
+  "copper_layers": 4,
+  "in1_gnd_filled_area_mm2": 3205.4825827753325,
+  "in1_gnd_filled_outlines": 1,
+  "in1_gnd_pad_connection": "solid",
+  "in1_track_count": 0,
+  "in1_zone": "IN1_SOLID_GND_PLANE",
+  "layer_contract": {
+    "B.Cu": "signal routing and local supply dog-bones",
+    "F.Cu": "components, signal routing, local supply dog-bones",
+    "In1.Cu": "full-outline /GND plane; zero tracks",
+    "In2.Cu": "all three supply buses"
+  },
+  "paste_layers_enabled": [
+    "F.Paste",
+    "B.Paste"
+  ],
+  "source_b0": "C:\\Users\\Ye\\PycharmProjects\\ESP32_C73\\hardware\\mf1750_devkitc_compact\\mf1750_devkitc_compact.kicad_pcb",
+  "source_b0_sha256": "f6ea5f64b9685cc706740b2115d1623a3557d7d66baa642c5d44d32bc71c6d14",
+  "supplies": {
+    "/3V3": {
+      "in2_tracks": 14,
+      "minimum_in2_width_mm": 0.5,
+      "ordinary_through_vias": 5,
+      "outer_dogbones": 5
+    },
+    "/EPD_3V3": {
+      "in2_tracks": 5,
+      "minimum_in2_width_mm": 0.6,
+      "ordinary_through_vias": 4,
+      "outer_dogbones": 4
+    },
+    "/V_B": {
+      "in2_tracks": 15,
+      "minimum_in2_width_mm": 0.8,
+      "ordinary_through_vias": 6,
+      "outer_dogbones": 6
+    }
+  },
+  "total_ordinary_through_vias": 75,
+  "via_diameter_mm": 0.6,
+  "via_drill_mm": 0.3,
+  "via_in_pad": false
+}

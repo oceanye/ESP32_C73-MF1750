@@ -1,0 +1,224 @@
+{
+  "blocking_summary": {
+    "all_ff_record_is_hold_proof": false,
+    "all_required_fields_present": false,
+    "cross_generation_structure_is_exact_spd1657b_abi_proof": false,
+    "missing_count": 9,
+    "optical_endpoint_color_is_electrical_hold_proof": false,
+    "same_transport_code_before_and_after_is_hold_proof": false
+  },
+  "classification": "INSUFFICIENT_SEMANTIC_EVIDENCE_FAIL_CLOSED",
+  "conditional_only_not_a_candidate": {
+    "all_ff_no_drive_semantics_proven": false,
+    "assumption": "category 0 is VCOM and categories 1..8 map in order to target codes 0..7",
+    "candidate_generation_permitted": false,
+    "codes_if_unproven_assumption_were_true": [
+      4,
+      7
+    ],
+    "direct_abi_or_loader_proof": false,
+    "permitted_use": "STRUCTURAL_CROSS_CONSISTENCY_ONLY"
+  },
+  "decision": "BLOCKED_NO_ELECTRICALLY_PROVEN_HOLD_CODE",
+  "evidence_chain": {
+    "phase_geometry": {
+      "canonical_sha256": "898a4e63edef212a36e8d4d8a2affdc9cc039412f9fb7244856ac6c4ac5fbb14",
+      "kind": "mf1750-spd1657-phase-geometry-audit"
+    },
+    "record_semantics": {
+      "canonical_sha256": "12954f599d9c76a8c0d87dbe3270e1b39e206aceb64dce740333fb3647350316",
+      "kind": "mf1750-spd1657-record-semantics-audit"
+    },
+    "waveform_invariants": {
+      "canonical_sha256": "eb2c391bcfcd1b5d5b6b0af39b84467353bfc1ce5a48abb2684e34c6df6e8978",
+      "kind": "mf1750-spd1657-waveform-invariant-stats"
+    }
+  },
+  "integrity": {
+    "canonical_encoding": "UTF-8 sorted-key compact JSON excluding integrity",
+    "canonical_sha256": "4753edff82b68b750c1f9d68b98a7e8765496269fc3b041f89ca12e67a69cb12"
+  },
+  "kind": "mf1750-spd1657-hold-code-feasibility-audit",
+  "output_contract": {
+    "candidate_generator_created": false,
+    "candidate_payload_bytes": 0,
+    "candidate_payload_generated": false,
+    "eligible_for_live_use": false,
+    "firmware_include_generated": false,
+    "hold_code": null,
+    "live_runner_created": false
+  },
+  "per_code_adjudication": [
+    {
+      "all_phase_zero_proven": false,
+      "balanced_drive_proven": false,
+      "code": 0,
+      "hold_code_qualified": false,
+      "lut_entry_mapping_proven": false
+    },
+    {
+      "all_phase_zero_proven": false,
+      "balanced_drive_proven": false,
+      "code": 1,
+      "hold_code_qualified": false,
+      "lut_entry_mapping_proven": false
+    },
+    {
+      "all_phase_zero_proven": false,
+      "balanced_drive_proven": false,
+      "code": 2,
+      "hold_code_qualified": false,
+      "lut_entry_mapping_proven": false
+    },
+    {
+      "all_phase_zero_proven": false,
+      "balanced_drive_proven": false,
+      "code": 3,
+      "hold_code_qualified": false,
+      "lut_entry_mapping_proven": false
+    },
+    {
+      "all_phase_zero_proven": false,
+      "balanced_drive_proven": false,
+      "code": 4,
+      "hold_code_qualified": false,
+      "lut_entry_mapping_proven": false
+    },
+    {
+      "all_phase_zero_proven": false,
+      "balanced_drive_proven": false,
+      "code": 5,
+      "hold_code_qualified": false,
+      "lut_entry_mapping_proven": false
+    },
+    {
+      "all_phase_zero_proven": false,
+      "balanced_drive_proven": false,
+      "code": 6,
+      "hold_code_qualified": false,
+      "lut_entry_mapping_proven": false
+    },
+    {
+      "all_phase_zero_proven": false,
+      "balanced_drive_proven": false,
+      "code": 7,
+      "hold_code_qualified": false,
+      "lut_entry_mapping_proven": false
+    }
+  ],
+  "proof_obligations": [
+    {
+      "id": "exact_spd1657b_rev04_r20_r21_abi",
+      "required": "authoritative field offsets, lengths, record ordering, R20/R21 composition, termination, padding, and mode selection",
+      "status": "MISSING"
+    },
+    {
+      "id": "three_bit_code_to_lut_entry_mapping",
+      "required": "code 0..7 mapping under the exact PSR/runtime mode for both controllers and both actually loaded tables",
+      "status": "MISSING"
+    },
+    {
+      "id": "record_chronology_and_duration_decoder",
+      "required": "ordered active phases, repeat counts, frame durations, loop rules, and inactive/terminator semantics",
+      "status": "MISSING"
+    },
+    {
+      "id": "drive_symbol_voltage_decoder",
+      "required": "every packed symbol to source and VCOM voltage, polarity, off, high-impedance, and level-selection semantics",
+      "status": "MISSING"
+    },
+    {
+      "id": "all_ff_and_zero_semantics",
+      "required": "direct proof whether 0xFF and 0x00 mean drive, no-op, padding, terminator, reserved, or another controller state",
+      "status": "MISSING"
+    },
+    {
+      "id": "differential_zero_definition",
+      "required": "vendor definition proving source-minus-VCOM equals zero for every active phase, including border and common-electrode behavior",
+      "status": "MISSING"
+    },
+    {
+      "id": "charge_balance_definition_and_tolerance",
+      "required": "signed voltage-time integration rule, amplitude and duration units, allowed residual, and repetition boundary",
+      "status": "MISSING"
+    },
+    {
+      "id": "dual_controller_exact_profile_binding",
+      "required": "identity-pinned proof of which R20/R21/header is active on CS1 and CS2 during the proposed HOLD operation",
+      "status": "MISSING"
+    },
+    {
+      "id": "panel_fpl_safety_authority",
+      "required": "panel/FPL-approved DC-balance, maximum dwell, recovery, temperature, and lifetime limits for the exact MF-17506 lot",
+      "status": "MISSING"
+    }
+  ],
+  "proof_target": {
+    "all_phase_zero": "for every active phase, differential source-minus-VCOM drive is authoritatively decoded and exactly zero",
+    "balanced_drive": "the vendor-defined signed differential voltage-time integral is within the exact FPL tolerance over the complete repetition period",
+    "either_target_sufficient_only_with_complete_exact_chip_proof": true,
+    "pixel_code_domain": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ]
+  },
+  "recovered_structure": {
+    "L535_active": {
+      "formula": "7_HEADER_PLUS_6_LABELED_CATEGORIES_X_8_GROUPS_X_11_BYTES",
+      "r20_sha256": "716cc229f8b954c4c66c387d69e80d2eb26c9a5a99b4bdd653f1282ace56e44b",
+      "r20_transmitted_bytes": 535,
+      "vendor_category_labels": [
+        "VCOM",
+        "Black",
+        "White",
+        "Yellow",
+        "Red",
+        "Power"
+      ]
+    },
+    "L535_commented": {
+      "compiled_or_authorized_role": false,
+      "r20_reference_bytes": 535,
+      "r20_sha256": "2cf66c2b5aa3533240e87190ef0abd7200a182f920494121bdaf2b5d30bbfd26"
+    },
+    "R21_704_evidence": {
+      "all_ff_means_zero_drive_proven": false,
+      "armcc_all_ff_sha256": "24acee297a3397869e18899db60585b90d94ffef3435330424f67e752df7863f",
+      "iar_nonidentical_sha256": "6dbd5a232419da637084683867933a7f60ce06d28a5034136d0f0efae3015e6a",
+      "two_704_constants_are_identical": false
+    },
+    "WF20_25": {
+      "all_ff_group_count": 34,
+      "formula": "7_HEADER_PLUS_9_CATEGORIES_X_8_GROUPS_X_11_BYTES",
+      "r20_bytes": 799,
+      "r20_sha256": "3cab2e2915205400bfdb0c2749a3e1e606cb6f190b8f3638849c532449a0ca26"
+    },
+    "WF23_25": {
+      "all_ff_group_count": 22,
+      "formula": "7_HEADER_PLUS_9_CATEGORIES_X_8_GROUPS_X_11_BYTES",
+      "r20_bytes": 799,
+      "r20_sha256": "2eeae0e8e6a936cfd55e0a215371c114c037dbb70e701d8b95a2f560387788fb"
+    }
+  },
+  "safety": {
+    "device_network_accessed": false,
+    "display_refresh_attempted": false,
+    "existing_firmware_modified": false,
+    "firmware_or_flash_written": false,
+    "hardware_accessed": false,
+    "offline_only": true,
+    "raw_waveform_bytes_emitted": false,
+    "relay_or_power_accessed": false,
+    "runtime_payload_generated": false,
+    "serial_or_com_accessed": false,
+    "vendor_evidence_modified": false
+  },
+  "schema_version": 1,
+  "scope": "offline_hold_code_feasibility_only"
+}

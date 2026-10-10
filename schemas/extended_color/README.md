@@ -49,6 +49,53 @@ The canonical optical v2 record is fixed to CIE Lab under D65/2deg and 45/0.
 Any D50, 10-degree or other secondary/raw-derived result needs a separately
 named contract and must not be inserted into this canonical record.
 
+## N5 external-table and aggregation contracts
+
+N5 adds canonical semantic contracts in
+`host.extended_color.spectral`, `host.extended_color.aggregation`, and
+`host.extended_color.execution`. These
+contracts deliberately do **not** bundle CIE D65 SPD or CIE 1931 2-degree CMF
+samples. A standard table is accepted only after caller-supplied raw CIE CSV
+bytes match reviewed primary-source SHA-256 identities. The compiler then
+requires the exact 360..830 nm, 1 nm or 5 nm grid and recomputes the D65 white,
+XYZ and CIE 1976 Lab without interpolation or extrapolation. The Python
+semantic validator, not a flag in a JSON file, is the authority for the
+cross-document source/table/reflectance/report bindings.
+
+The formal palette plan is 36 raw observations: six codes, two frozen fixture
+orientations and three independent formal runs. It is intentionally not 72.
+`global-v-bars` contains a given colour on only one controller; the horizontal
+fixture uses the opposite controller ROI, so each colour ends with three CS1
+and three CS2 observations. Attempting to label the other vertical half as the
+same colour is rejected. Both pilots are excluded, every run has six ordered
+readings in the POF+55..65 s window, and missing/outlier/weight/U95/R&R rules
+are preregistered.
+
+The descriptive 72-ROI transition atlas cannot emit a measured profile. The
+formal plan contains 360 raw observations (36 pairs x five repeats x two
+paired controllers). Primary statistics use five CS1/CS2 repeat aggregates,
+therefore n=5 and P95/P99 remain null; raw n=10 controller values are retained
+only as paired descriptive diagnostics, also without population percentiles.
+All 36 output cells require five repeat evidence identities.
+
+The JSON shapes are intentionally validated together with their referenced
+table, qualification, P0 action/result and raw evidence objects. A standalone
+JSON Schema cannot establish these cross-file identities or measurement
+authenticity. Use the sealing/validation APIs and the frozen N5 campaign
+compiler described in
+`docs/N5_MEASUREMENT_OFFLINE_HANDOFF_2026-08-08.md`; do not hand-edit
+`qualified`, `measured`, `calibrated` or `hardware_ready`.
+
+Formal aggregation additionally requires a deeply validated finalized execution
+bundle. That bundle separately binds the external authorization, atomic
+workspace-global claim, reviewed limit profile, protocol evidence, manual
+observation, action finalization, P0 result, and session finalization by
+whole-file SHA-256. Every formal measurement must match one frozen action slot;
+a standalone or hand-edited PASS result is not sufficient. The read-only N5
+CLI only lists/describes frozen actions. Live callers must explicitly invoke
+the one-action engine with a caller-supplied authorization and transport; the
+engine never auto-advances, retries, or recovers.
+
 Files:
 
 - `run.schema.json`: specimen, authorization, build, frame and run identity;

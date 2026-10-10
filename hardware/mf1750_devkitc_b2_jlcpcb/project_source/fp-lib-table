@@ -1,0 +1,4 @@
+(fp_lib_table
+	(lib (name "MF1750_Compact") (type "KiCad") (uri "${KIPRJMOD}/MF1750_Compact.pretty") (options "") (descr "Compact carrier local footprints"))
+	(lib (name "MF1750_Production") (type "KiCad") (uri "${KIPRJMOD}/MF1750_Production.pretty") (options "") (descr "Verified MF1750 FPC and inductor footprints"))
+)

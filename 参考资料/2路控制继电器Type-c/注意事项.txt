@@ -1,0 +1,13 @@
+
+使用之前电脑需要先安装CH340驱动！！！
+CH340官网版本：https://www.wch.cn/downloads/CH341SER_EXE.html
+CH340网盘下载：https://pan.baidu.com/s/1sGm-j9vqp8wNebXSMiybyg?pwd=8889 提取码: 8889
+
+
+注意：
+          NO NC COM接线时不可将L和N同时接入三个接口中的两个，   否则会短路造成危险！！！
+           如果使用其他串口助手无反应 请使用资料里的SScom串口助手
+
+
+COM可以作为L(或N)的接入点.    (或N)则作为L(或N)的输出点
+继电器只是开关作用，并不能输出电压，负载需要另外串联电源使用！

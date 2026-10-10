@@ -10,7 +10,7 @@ import json
 from pathlib import Path
 import re
 import sys
-from typing import Any, Dict, Iterable, List, Optional, Sequence
+from typing import Any, Dict, List, Optional, Sequence
 
 
 PRODUCTION_RELATIVE = Path("hardware/mf1750_production_v1/production")
@@ -59,6 +59,191 @@ MANIFEST_BASELINE_EXCEPTIONS = {
         "baseline_sha256": "86315f41ab9dd34f962cf108c1568b69f3db87a14d1c1e06497d251522d3e67f",
         "reason": "manifest predates the file in baseline commit 3033da0",
     }
+}
+N2P_EXECUTION_SUPPLEMENT_RELATIVE = Path(
+    "docs/N2P_RC2G_FIXED_EXECUTION_SUPPLEMENT_V2.json"
+)
+N2P_EXECUTION_SUPPLEMENT_FILE_SHA256 = (
+    "f1d22bc22a0487bb0cd31b6be7d0c80ccb8f3ae2a86b60c88a8a11ec312865af"
+)
+N2P_EXECUTION_SUPPLEMENT_CANONICAL_SHA256 = (
+    "29cdb6ccb75d320d3b1e1fa6ea544f88196b16ca38d1f34ec84343afdc787099"
+)
+N2P_FIXED_RUNNER_RELATIVE = Path("tools/g1_s1_rc2g_n2_photo_campaign_once.py")
+N2P_ANALYZER_RELATIVE = Path("tools/g1_s1_rc2g_n2_photo_campaign_analyzer.py")
+N2P_ANALYZER_CONTRACT_SHA256 = (
+    "3638e26f80c8e0a9da81760c3ca3d177d7a43591a813f030446100ec87fb7a86"
+)
+N4_V3_EXECUTION_CONTRACT_RELATIVE = Path(
+    "tools/g1_s1_n4_v3_execution_contract.py"
+)
+N4_V3_FIXED_RUNNER_RELATIVE = Path("tools/g1_s1_rc2g_n4_v3_once.py")
+N4_V3_ANALYZER_RELATIVE = Path("tools/g1_s1_n4_v3_analyzer.py")
+N4_V3_EXECUTION_CONTRACT_CANONICAL_SHA256 = (
+    "fc91f32ede1a9fbe073279e07e20fc7271bf715aae3c2ef953ed45e53874f2f0"
+)
+N4_V3_EXECUTION_CONTRACT_FILE_SHA256 = (
+    "d088f72159baa0b18e57bef9c0a2d052b285aa713a5dc4a966843417303f88e0"
+)
+N3_EXECUTION_CONTRACT_RELATIVE = Path("tools/g1_s1_n3_execution_contract.py")
+N3_PLAN_COMPILER_RELATIVE = Path("tools/g1_s1_n3_compile_exact_plan.py")
+N3_FIXED_RUNNER_RELATIVE = Path("tools/g1_s1_rc2g_n3_once.py")
+N3_ANALYZER_RELATIVE = Path("tools/g1_s1_n3_analyzer.py")
+
+PHYSICAL_PRODUCTION_ENTRYPOINT_MARKERS = {
+    Path("tools/g1_s1_n2_physical_campaign.py"): (
+        "def compile_physical_manifest(",
+        "def validate_physical_bundle(",
+    ),
+    Path("tools/g1_s1_rc2g_n2_physical_once.py"): (
+        "def run_physical_action_once(",
+        "def finalize_physical_observation(",
+        "def validate_physical_result(",
+        "legacy UNBOUND action identity is forbidden",
+    ),
+    Path("tools/g1_s1_rc2g_n2_physical_analyzer.py"): (
+        "def analyze_n2p_physical_campaign(",
+        "def validate_n2p_physical_analysis(",
+    ),
+    Path("tools/g1_s1_n3a_physical_plan.py"): (
+        "def compile_n3a_physical_plan(",
+        "def validate_n3a_physical_plan_bundle(",
+    ),
+    Path("tools/g1_s1_n3a_physical_execution.py"): (
+        "def validate_n3a_physical_execution_context(",
+        "def validate_n3a_physical_finalized_action_bundle(",
+    ),
+    Path("tools/g1_s1_rc2g_n3a_physical_once.py"): (
+        "def run_n3a_physical_action_once(",
+        "def finalize_n3a_physical_observation(",
+        "UNKNOWN_DO_NOT_RETRY",
+    ),
+    Path("tools/g1_s1_n3a_physical_analyzer.py"): (
+        "def analyze_n3a_physical_result_files(",
+        '"qualification_state": "NOT_QUALIFIED"',
+    ),
+    Path("tools/g1_s1_n3b_physical_execution.py"): (
+        "def compile_n3b_physical_execution_context(",
+        "def validate_n3b_physical_finalized_action_bundle(",
+    ),
+    Path("tools/g1_s1_rc2g_n3b_physical_once.py"): (
+        "def run_n3b_physical_action_once(",
+        "def finalize_n3b_physical_observation(",
+        "UNKNOWN_DO_NOT_RETRY",
+    ),
+    Path("tools/g1_s1_n3b_physical_analyzer.py"): (
+        "def analyze_n3b_physical_result_files(",
+        '"qualification_state": "NOT_QUALIFIED"',
+    ),
+    Path("tools/g1_s1_rc2g_n4_v3_physical_once.py"): (
+        "def run_n4_v3_physical_action_once(",
+        "def finalize_n4_v3_physical_observation(",
+        "def load_n4_v3_physical_finalized_action_bundle(",
+        "UNKNOWN_DO_NOT_RETRY",
+    ),
+    Path("tools/g1_s1_n4_v3_physical_analyzer.py"): (
+        "def analyze_n4_v3_physical_result_files(",
+        '"qualification_state": "NOT_QUALIFIED"',
+    ),
+    Path("tools/mf1750_n5_physical_execution.py"): (
+        "def validate_live_evaluation_age(",
+        "def run_n5_physical_action_once(",
+        "def finalize_n5_physical_action(",
+        "def validate_n5_physical_finalized_bundle(",
+    ),
+    Path("tools/mf1750_n7_physical_campaign.py"): (
+        "def compile_physical_manifest(",
+        "def validate_physical_manifest(",
+    ),
+    Path("tools/mf1750_n7_physical_once.py"): (
+        "def run_physical_action_once(",
+        "def finalize_physical_result(",
+        "def validate_physical_result(",
+        "UNKNOWN_DO_NOT_RETRY",
+    ),
+    Path("tools/mf1750_n7_physical_analyzer.py"): (
+        "def analyze_physical_sweep(",
+        '"qualification_state": "NOT_QUALIFIED"',
+    ),
+    Path("tools/g1_s1_n8_physical_execution.py"): (
+        "def compile_n8_physical_execution_context(",
+        "def validate_n8_physical_finalized_action_bundle(",
+    ),
+    Path("tools/g1_s1_rc2g_n8_physical_once.py"): (
+        "def run_n8_physical_action_once(",
+        "def finalize_n8_physical_observation(",
+        "CLAIM_COMMIT_UNCERTAIN_FILENAME",
+        "UNKNOWN_DO_NOT_RETRY",
+    ),
+    Path("tools/g1_s1_n8_physical_analyzer.py"): (
+        "def analyze_n8_physical_result_directories(",
+        '"qualification_state": "NOT_QUALIFIED"',
+    ),
+}
+
+LEGACY_LIVE_BLOCK_MARKERS = {
+    Path("tools/g1_s1_rc2g_n2_photo_campaign_once.py"): (
+        "def run_n2p_fixed_action_once(",
+        "_require_physical_panel_binding(snapshot)",
+        "legacy N2P live execution is disabled",
+    ),
+    Path("tools/g1_s1_rc2g_n3_once.py"): (
+        "def run_n3_fixed_action_once(",
+        "_require_deep_production_profile_path()",
+        "legacy N3 live execution is disabled",
+    ),
+    Path("tools/g1_s1_rc2g_n4_v3_once.py"): (
+        "def run_n4_v3_fixed_action_once(",
+        "_require_deep_production_profile_path()",
+        "legacy N4 V3 live execution is disabled",
+    ),
+    Path("tools/mf1750_n5_fixed_execution.py"): (
+        "def run_fixed_action(",
+        "legacy N5 live execution is disabled before claim/network",
+        "raise N5FixedExecutionToolError(",
+    ),
+    Path("tools/mf1750_n7_spi_sweep_once.py"): (
+        "def run_n7_sweep_once(",
+        "legacy N7 live execution is disabled before claim/network",
+        "raise N7SweepError(LEGACY_LIVE_BLOCK_MESSAGE)",
+    ),
+    Path("tools/g1_s1_rc2g_n8_once.py"): (
+        "def run_n8_fixed_action_once(",
+        "legacy N8 live execution is disabled",
+        "raise N8FixedActionError(LEGACY_LIVE_BLOCK_MESSAGE)",
+    ),
+    Path("tools/mf1750_n6_visible_once.py"): (
+        "def serve_command(",
+        "legacy N6 serve is disabled before claim/network",
+        "raise N6VisibleOnceToolError(LEGACY_LIVE_BLOCK_MESSAGE)",
+    ),
+}
+
+N6_PHYSICAL_OPERATOR_ENTRYPOINT_MARKERS = {
+    Path("host/application/n6_physical_execution.py"): (
+        "def compile_n6_physical_context(",
+        "class N6PhysicalReceiptStore:",
+        "class N6PhysicalBrowserController:",
+        "def validate_n6_physical_postclaim_incident(",
+        "def validate_n6_physical_finalized_bundle(",
+    ),
+    Path("tools/mf1750_n6_physical_once.py"): (
+        "def describe_command(",
+        "def materialize_command(",
+        "def serve_command(",
+        "def finalize_command(",
+        "def validate_command(",
+        "SERVE_ONE_N6_PHYSICAL_ACTION__CLAIM_BEFORE_NETWORK__NO_RETRY_NO_RECOVERY",
+    ),
+    Path("tests/test_mf1750_n6_physical_once.py"): (
+        "test_parser_has_no_operator_time_or_count_injection",
+        "test_serve_uses_repo_root_and_blocking_non_daemon_close_without_io",
+        "test_concrete_store_binds_receipt_sidecar_and_incident_paths",
+    ),
+    Path("tests/test_n6_physical_browser_e2e.py"): (
+        "class N6PhysicalRealBrowserE2ETests",
+        "test_physical_exact_tokens_four_previews_one_post_and_durable_lock",
+    ),
 }
 
 
@@ -368,7 +553,12 @@ def check_driver_frame_contract(driver_cpp: Path) -> CheckResult:
         errors.append("mapping must be marked applied only after both controller streams")
     evidence_markers = {
         "wait evidence recorder": "recordWaitEvidence(stage, elapsed, sawBusy)",
+        "BUSY edge evidence recorder": "epdRecordWaitTrace(stage, readBusyLevel()",
         "two-stage BUSY helper": "bool epdWaitBusyThenIdle(",
+        "pre-command BUSY idle gate": "bool epdRequireIdleBeforeCommand(",
+        "PON pre-command idle gate": 'epdRequireIdleBeforeCommand("PON")',
+        "DRF pre-command idle gate": 'epdRequireIdleBeforeCommand("DRF")',
+        "POF pre-command idle gate": 'epdRequireIdleBeforeCommand("POF")',
         "PON strict BUSY wait": 'epdWaitBusyThenIdle("PON")',
         "DRF strict BUSY wait": 'epdWaitBusyThenIdle("DRF")',
         "POF strict BUSY wait": 'epdWaitBusyThenIdle("POF")',
@@ -396,6 +586,12 @@ def check_driver_frame_contract(driver_cpp: Path) -> CheckResult:
         "POF BUSY evidence": '\\"pof_busy_seen\\":',
         "post-PSR BUSY evidence": '\\"post_psr_busy_seen\\":',
         "DRF duration evidence": '\\"drf_ms\\":',
+        "pre-command BUSY failure report": '\\"pre_command_idle_failure\\":',
+        "BUSY trace schema report": '\\"busy_trace_schema_version\\":1',
+        "safe-finish pre-pin BUSY sample": "safeFinishBusyBeforePinsLow = readBusyLevel()",
+        "safe-finish post-pin BUSY sample": "safeFinishBusyAfterPinsLow = readBusyLevel()",
+        "safe-finish delayed BUSY sample": "safeFinishBusyAfter5Ms = readBusyLevel()",
+        "final GPIO snapshot": "diagnosticReport.finalBusyLevel = readBusyLevel()",
     }
     for label, marker in evidence_markers.items():
         if marker not in content:
@@ -428,6 +624,330 @@ def check_driver_frame_contract(driver_cpp: Path) -> CheckResult:
     )
 
 
+def check_n2p_fixed_execution_contract(repo_root: Path) -> CheckResult:
+    """Check the sealed V2 supplement and its non-parameterized runner boundary."""
+
+    errors: List[str] = []
+    supplement_path = repo_root / N2P_EXECUTION_SUPPLEMENT_RELATIVE
+    runner_path = repo_root / N2P_FIXED_RUNNER_RELATIVE
+    analyzer_path = repo_root / N2P_ANALYZER_RELATIVE
+    try:
+        payload = supplement_path.read_bytes()
+    except OSError as error:
+        return CheckResult("n2p_fixed_execution_contract", False, 0, [str(error)])
+    if hashlib.sha256(payload).hexdigest() != N2P_EXECUTION_SUPPLEMENT_FILE_SHA256:
+        errors.append("N2P V2 execution supplement whole-file SHA-256 changed")
+    try:
+        supplement = json.loads(payload.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        errors.append(f"N2P V2 execution supplement is invalid JSON: {error}")
+        supplement = {}
+    if isinstance(supplement, dict):
+        unsigned = dict(supplement)
+        integrity = unsigned.pop("integrity", None)
+        canonical = json.dumps(
+            unsigned,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8")
+        if (
+            not isinstance(integrity, dict)
+            or integrity.get("canonical_sha256")
+            != N2P_EXECUTION_SUPPLEMENT_CANONICAL_SHA256
+            or hashlib.sha256(canonical).hexdigest()
+            != N2P_EXECUTION_SUPPLEMENT_CANONICAL_SHA256
+        ):
+            errors.append("N2P V2 execution supplement canonical integrity changed")
+        if (
+            supplement.get("readiness", {}).get("hardware_ready") is not False
+            or supplement.get("readiness", {}).get("supplement_contract_ready")
+            is not True
+            or supplement.get("execution_contract", {}).get(
+                "workspace_global_p0_claim_before_network"
+            )
+            is not True
+            or supplement.get("execution_contract", {}).get(
+                "maximum_post_requests_per_action"
+            )
+            != 1
+            or len(supplement.get("fixed_actions", {})) != 8
+        ):
+            errors.append("N2P V2 execution/readiness contract changed")
+    try:
+        runner_source = runner_path.read_text(encoding="utf-8")
+    except OSError as error:
+        errors.append(f"could not read N2P fixed runner: {error}")
+        runner_source = ""
+    for marker in (
+        "class FixedExecutionSpec:",
+        "FIXED_ACTION_SHA256S = {",
+        "def run_n2p_fixed_action_once(",
+        "def finalize_n2p_observation(",
+        "UNKNOWN_DO_NOT_RETRY",
+        "DEFAULT_CLAIM_REGISTRY = REPO_ROOT / Path(CLAIM_REGISTRY_RELATIVE_PATH)",
+    ):
+        if marker not in runner_source:
+            errors.append(f"N2P fixed runner missing contract marker: {marker}")
+    parse_source_match = re.search(
+        r"def parse_args\(.*?(?=\ndef main\()", runner_source, flags=re.DOTALL
+    )
+    parse_source = parse_source_match.group(0) if parse_source_match else ""
+    for forbidden_flag in (
+        "--candidate-dir",
+        "--frame",
+        "--frame-sha256",
+        "--manifest-sha256",
+        "--expected-target-job-id",
+        "--expected-prior-job-id",
+    ):
+        if forbidden_flag in parse_source:
+            errors.append(f"N2P fixed runner exposes forbidden CLI override {forbidden_flag}")
+    try:
+        analyzer_source = analyzer_path.read_text(encoding="utf-8")
+    except OSError as error:
+        errors.append(f"could not read N2P campaign analyzer: {error}")
+        analyzer_source = ""
+    for marker in (
+        f'"{N2P_ANALYZER_CONTRACT_SHA256}"',
+        "def analyze_n2p_campaign(",
+        "def validate_n2p_analysis(",
+        '"tie_policy": "equal_top_total_is_explicit_tie_no_selected_winner"',
+        '"selected_winner_use": "N3_branch_selection_only"',
+        '"algorithm_qualified": False',
+        '"population_inference": False',
+    ):
+        if marker not in analyzer_source:
+            errors.append(f"N2P analyzer missing contract marker: {marker}")
+    return CheckResult(
+        "n2p_fixed_execution_contract",
+        not errors,
+        9,
+        errors,
+    )
+
+
+def check_n4_v3_fixed_execution_contract(repo_root: Path) -> CheckResult:
+    """Check the shared N4 envelope, eight-choice runner, and deep analyzer edge."""
+
+    errors: List[str] = []
+    paths = {
+        "shared execution contract": repo_root / N4_V3_EXECUTION_CONTRACT_RELATIVE,
+        "fixed runner": repo_root / N4_V3_FIXED_RUNNER_RELATIVE,
+        "offline analyzer": repo_root / N4_V3_ANALYZER_RELATIVE,
+    }
+    sources: Dict[str, str] = {}
+    for label, path in paths.items():
+        try:
+            sources[label] = path.read_text(encoding="utf-8")
+        except OSError as error:
+            errors.append(f"could not read N4 V3 {label}: {error}")
+            sources[label] = ""
+    shared = sources["shared execution contract"]
+    for marker in (
+        f'"{N4_V3_EXECUTION_CONTRACT_CANONICAL_SHA256}"',
+        f'"{N4_V3_EXECUTION_CONTRACT_FILE_SHA256}"',
+        "def compile_n4_v3_execution_contract(",
+        "def validate_n4_v3_execution_contract(",
+        "def validate_n4_v3_finalized_action_bundle(",
+        "def validate_n4_v3_protocol_evidence(",
+        '"same_cell_j2_disconnect_forbidden": True',
+        '"j2_may_remain_on_between_cells": True',
+        '"power_off_required_before_firmware_or_configuration_change": True',
+        '"execution_session_final_power_off_required": False',
+    ):
+        if marker not in shared:
+            errors.append(f"N4 V3 shared contract missing marker: {marker}")
+    runner = sources["fixed runner"]
+    for marker in (
+        "def run_n4_v3_fixed_action_once(",
+        "def finalize_n4_v3_observation(",
+        "def load_n4_v3_finalized_action_bundle(",
+        "UNKNOWN_DO_NOT_RETRY",
+        "confirm_no_j2_disconnect_since_primer",
+        "build_n4_v3_cell_observation(",
+    ):
+        if marker not in runner:
+            errors.append(f"N4 V3 fixed runner missing marker: {marker}")
+    parse_source_match = re.search(
+        r"def parse_args\(.*?(?=\ndef main\()", runner, flags=re.DOTALL
+    )
+    parse_source = parse_source_match.group(0) if parse_source_match else ""
+    for forbidden_flag in (
+        "--frame",
+        "--frame-sha256",
+        "--manifest",
+        "--manifest-sha256",
+        "--proof-sha256",
+        "--expected-target-job-id",
+        "--expected-prior-job-id",
+    ):
+        if forbidden_flag in parse_source:
+            errors.append(f"N4 V3 fixed runner exposes forbidden override {forbidden_flag}")
+    analyzer = sources["offline analyzer"]
+    for marker in (
+        "def build_n4_v3_cell_observation(",
+        "map_finalized_action_bundle",
+        "target_finalized_action_bundle",
+        '"execution_evidence_verified": True',
+        "validate_n4_v3_finalized_action_bundle(",
+        '"causal_attribution_allowed": False',
+        '"hardware_qualification_allowed": False',
+    ):
+        if marker not in analyzer:
+            errors.append(f"N4 V3 analyzer missing marker: {marker}")
+    return CheckResult("n4_v3_fixed_execution_contract", not errors, 12, errors)
+
+
+def check_n3_fixed_execution_contract(repo_root: Path) -> CheckResult:
+    """Check N3 fail-closed selection, once runner, and deep-bundle analyzer."""
+
+    errors: List[str] = []
+    paths = {
+        "shared execution contract": repo_root / N3_EXECUTION_CONTRACT_RELATIVE,
+        "exact plan compiler": repo_root / N3_PLAN_COMPILER_RELATIVE,
+        "fixed runner": repo_root / N3_FIXED_RUNNER_RELATIVE,
+        "offline analyzer": repo_root / N3_ANALYZER_RELATIVE,
+    }
+    sources: Dict[str, str] = {}
+    for label, path in paths.items():
+        try:
+            sources[label] = path.read_text(encoding="utf-8")
+        except OSError as error:
+            errors.append(f"could not read N3 {label}: {error}")
+            sources[label] = ""
+    shared = sources["shared execution contract"]
+    for marker in (
+        "def compile_n3a_exact_plan(",
+        "def compile_n3b_exact_plan(",
+        "def validate_n3_exact_plan(",
+        "def validate_n3_finalized_action_bundle(",
+        "def validate_n3_protocol_evidence(",
+        "_n2_analyzer.analyze_n2p_campaign(",
+        '"1fdb1d32513383a34bfd589fe3ef3953619545b335a5078d8342755865f65de0"',
+        '"9bbcaddb27b1c4ddc22c898cc38872b3f07935b292710e95098f61c045fcdec8"',
+        '"tie_or_null_winner_allowed": False',
+        '"all_blocks_required": True',
+        '"target_requires_same_route_finalized_map_pass": True',
+        '"analyzer_input": "deep-finalized-map-target-bundles-only"',
+    ):
+        if marker not in shared:
+            errors.append(f"N3 shared contract missing marker: {marker}")
+    compiler = sources["exact plan compiler"]
+    for marker in (
+        "compile_n3a_exact_plan",
+        "all eight --n2-*-dir finalized bundles",
+        "compile_n3b_exact_plan",
+        "O_EXCL",
+    ):
+        if marker not in compiler:
+            errors.append(f"N3 exact plan compiler missing marker: {marker}")
+    runner = sources["fixed runner"]
+    for marker in (
+        "def describe_n3_fixed_action(",
+        "def run_n3_fixed_action_once(",
+        "def finalize_n3_observation(",
+        "UNKNOWN_DO_NOT_RETRY",
+        "confirm_no_j2_disconnect_since_primer",
+        "workspace-global claim",
+    ):
+        if marker not in runner:
+            errors.append(f"N3 fixed runner missing marker: {marker}")
+    parse_source_match = re.search(
+        r"def parse_args\(.*?(?=\ndef main\()", runner, flags=re.DOTALL
+    )
+    parse_source = parse_source_match.group(0) if parse_source_match else ""
+    for forbidden_flag in (
+        "--frame",
+        "--frame-sha256",
+        "--manifest",
+        "--manifest-sha256",
+        "--expected-target-job-id",
+        "--expected-prior-job-id",
+    ):
+        if forbidden_flag in parse_source:
+            errors.append(f"N3 fixed runner exposes forbidden override {forbidden_flag}")
+    analyzer = sources["offline analyzer"]
+    for marker in (
+        "def build_n3_session_observation(",
+        "def analyze_n3a(",
+        "def analyze_n3b(",
+        "session_bundles:",
+        "validate_n3_finalized_action_bundle(",
+        '"analyzer_accepts_deep_bundles_only": True',
+        '"execution_evidence_verified": True',
+    ):
+        if marker not in analyzer:
+            errors.append(f"N3 analyzer missing marker: {marker}")
+    return CheckResult("n3_fixed_execution_contract", not errors, 14, errors)
+
+
+def check_physical_production_entrypoints(repo_root: Path) -> CheckResult:
+    """Require completed physical entrypoints and fail-closed legacy live APIs."""
+
+    errors: List[str] = []
+    checked_items = 0
+    groups = (
+        ("physical production entrypoint", PHYSICAL_PRODUCTION_ENTRYPOINT_MARKERS),
+        ("legacy live block", LEGACY_LIVE_BLOCK_MARKERS),
+    )
+    for group, contracts in groups:
+        for relative, markers in contracts.items():
+            checked_items += 1
+            path = repo_root / relative
+            try:
+                source = path.read_text(encoding="utf-8")
+            except OSError as error:
+                errors.append(f"could not read {group} {relative.as_posix()}: {error}")
+                continue
+            for marker in markers:
+                if marker not in source:
+                    errors.append(
+                        f"{group} {relative.as_posix()} missing marker: {marker}"
+                    )
+    return CheckResult(
+        "physical_production_entrypoints_and_legacy_live_blocks",
+        not errors,
+        checked_items,
+        errors,
+    )
+
+
+def check_n6_physical_operator_closure(repo_root: Path) -> CheckResult:
+    """Require the completed N6 physical operator and its safety regressions."""
+
+    errors: List[str] = []
+    checked_items = 0
+    for relative, markers in N6_PHYSICAL_OPERATOR_ENTRYPOINT_MARKERS.items():
+        path = repo_root / relative
+        if not path.is_file():
+            errors.append(f"missing completed N6 physical operator file: {relative.as_posix()}")
+            continue
+        checked_items += 1
+        try:
+            source = path.read_text(encoding="utf-8")
+        except OSError as error:
+            errors.append(
+                f"could not read completed N6 physical operator file "
+                f"{relative.as_posix()}: {error}"
+            )
+            continue
+        for marker in markers:
+            if marker not in source:
+                errors.append(
+                    "completed N6 physical operator file "
+                    f"{relative.as_posix()} missing marker: {marker}"
+                )
+
+    return CheckResult(
+        "n6_physical_operator_closure",
+        not errors,
+        checked_items,
+        errors,
+    )
+
+
 def run_checks(repo_root: Path) -> Dict[str, Any]:
     repo_root = repo_root.resolve()
     production_dir = repo_root / PRODUCTION_RELATIVE
@@ -438,6 +958,11 @@ def run_checks(repo_root: Path) -> Dict[str, Any]:
         check_public_driver_header(repo_root / "src/epd_driver.h"),
         check_upload_contract(repo_root / "src/main.cpp"),
         check_driver_frame_contract(repo_root / "src/epd_driver.cpp"),
+        check_n2p_fixed_execution_contract(repo_root),
+        check_n3_fixed_execution_contract(repo_root),
+        check_n4_v3_fixed_execution_contract(repo_root),
+        check_physical_production_entrypoints(repo_root),
+        check_n6_physical_operator_closure(repo_root),
     ]
     return {
         "schema_version": 1,

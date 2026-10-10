@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "kind": "mf1750-gamut-profile",
+  "profile_id": "mf1750-l535-measured-xyz-v1",
+  "profile_version": "1.0.0",
+  "pipeline_compatibility": {
+    "color_pipeline_version": "2.0.0",
+    "gamut_mapper_version": "1.0.0"
+  },
+  "palette": {
+    "id": "mf1750-l535-measured-v1",
+    "canonical_sha256": "50bd8193b722224dc9560537c8d33269797575c566a5931fc87cff71ce1b5055"
+  },
+  "model": {
+    "kind": "linear_xyz_convex_v1",
+    "characterization_level": "measured_primaries",
+    "render_path": "l535_r20",
+    "approximation": true,
+    "pure_sample_refs": [
+      {
+        "code": 0,
+        "sample_id": "mf1750-l535-measured-v1-code-0",
+        "artifact_sha256": "300b2e05c43f02db65042ce94b9c57bf42e94902d3ca9dbfb7abdc162097424b"
+      },
+      {
+        "code": 1,
+        "sample_id": "mf1750-l535-measured-v1-code-1",
+        "artifact_sha256": "300b2e05c43f02db65042ce94b9c57bf42e94902d3ca9dbfb7abdc162097424b"
+      },
+      {
+        "code": 3,
+        "sample_id": "mf1750-l535-measured-v1-code-3",
+        "artifact_sha256": "300b2e05c43f02db65042ce94b9c57bf42e94902d3ca9dbfb7abdc162097424b"
+      },
+      {
+        "code": 4,
+        "sample_id": "mf1750-l535-measured-v1-code-4",
+        "artifact_sha256": "300b2e05c43f02db65042ce94b9c57bf42e94902d3ca9dbfb7abdc162097424b"
+      },
+      {
+        "code": 6,
+        "sample_id": "mf1750-l535-measured-v1-code-6",
+        "artifact_sha256": "300b2e05c43f02db65042ce94b9c57bf42e94902d3ca9dbfb7abdc162097424b"
+      },
+      {
+        "code": 7,
+        "sample_id": "mf1750-l535-measured-v1-code-7",
+        "artifact_sha256": "300b2e05c43f02db65042ce94b9c57bf42e94902d3ca9dbfb7abdc162097424b"
+      }
+    ],
+    "mixture_samples": []
+  },
+  "measurement": {
+    "measurement_id": "PAL1_CAL_BRIGHT_20260925_V1",
+    "raw_artifact_sha256": "300b2e05c43f02db65042ce94b9c57bf42e94902d3ca9dbfb7abdc162097424b",
+    "units": "relative_cie_xyz_y1",
+    "illuminant": "D65",
+    "observer": "2deg",
+    "geometry": "camera-relative full-panel 10-frame median",
+    "backing": "dark bench",
+    "instrument": "VID_32E4:PID_4801 camera-relative",
+    "instrument_calibration_date": "2026-09-17",
+    "measured_at": "2026-09-24T15:39:46.895+00:00"
+  },
+  "panel": {
+    "model": "MF-17506-M009F-T",
+    "panel_id": "MF1750-DEVKITC-B2-01",
+    "batch": "mf1750-devkitc-b2"
+  },
+  "firmware": {
+    "commit": "0386f578e8d412c2f8b20b1249873764e6290c3c",
+    "waveform_version": "L535_ACTIVE_RUNTIME_PAL1_V5"
+  },
+  "environment": {
+    "temperature_c": 37.0,
+    "temperature_tolerance_c": 3.0,
+    "relative_humidity_percent": 55.0
+  },
+  "rendering_presets": {
+    "relative-colorimetric": {
+      "version": "1.0.0",
+      "tone_gamma": 1.0,
+      "compression_knee": 1.0,
+      "saturation_boost": 0.0,
+      "lightness_weight": 1.0,
+      "chroma_weight": 1.0,
+      "hue_weight": 1.0
+    },
+    "perceptual": {
+      "version": "1.0.0",
+      "tone_gamma": 0.92,
+      "compression_knee": 0.72,
+      "saturation_boost": 0.0,
+      "lightness_weight": 1.25,
+      "chroma_weight": 0.85,
+      "hue_weight": 1.35
+    },
+    "saturation": {
+      "version": "1.0.0",
+      "tone_gamma": 1.0,
+      "compression_knee": 0.88,
+      "saturation_boost": 0.18,
+      "lightness_weight": 0.8,
+      "chroma_weight": 1.5,
+      "hue_weight": 0.75
+    }
+  },
+  "trust": {
+    "fingerprint_trust": "audit fingerprint only; not a digital signature or trust-store decision",
+    "source_statement": "Measured MF-1750 6-primary palette from the PAL1 calibration chain; camera-relative D65/2deg Lab bound to the extraction artifact",
+    "signature": null
+  },
+  "canonical_sha256": "5d970923fbe388e4343aececd8c1f4bff0c291f76a1f213630f9868484dc012b"
+}

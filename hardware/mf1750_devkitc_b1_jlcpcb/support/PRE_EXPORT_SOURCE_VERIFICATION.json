@@ -1,0 +1,131 @@
+{
+  "artifacts": {
+    "README.md": {
+      "bytes": 3181,
+      "sha256": "31f3027725dd30e983ba52dcb388ecd91c95bdd0e5622c1515e1a25683ac388d"
+    },
+    "design_audit.json": {
+      "bytes": 2132,
+      "sha256": "bd4cd83537b41d224a23a8907d1acc56d74896f82d90ad9a374150fbe7eb5cde"
+    },
+    "drc_final.rpt": {
+      "bytes": 462,
+      "sha256": "02a7b265c16982e8c3fccb5a300541e2461e0b4ea945cec5c6eb4c7e7bee2ba6"
+    },
+    "drc_refill_gate.rpt": {
+      "bytes": 462,
+      "sha256": "f06462c52085f183c9b2e6f804b4bac18547d2c63e4217dbe448afd5f21aa4c6"
+    },
+    "erc_final.rpt": {
+      "bytes": 357,
+      "sha256": "d5381c2a3a6f397f58c2ec4822801d2f5996f1f71afb3290a573012efaec6e4f"
+    },
+    "mf1750_devkitc_b1_single_power_layer.kicad_pcb": {
+      "bytes": 849643,
+      "sha256": "d44afcd28056045aa19c875d424b6ad7d9e84712e238ee2340f6d087da62fde3"
+    },
+    "mf1750_devkitc_b1_single_power_layer.kicad_pro": {
+      "bytes": 1255,
+      "sha256": "ba26af897f39a3eda18448233faf9f247d78da2c3c19595577e3e1df6f9e40f3"
+    },
+    "mf1750_devkitc_b1_single_power_layer.kicad_sch": {
+      "bytes": 160187,
+      "sha256": "ccb8ad72021231ce9768b86800a8536fc4d18ffc8e3edf8822c5b3040c757d95"
+    },
+    "netlist_verified.xml": {
+      "bytes": 78769,
+      "sha256": "8ad5fc7b627aaa2175c69e14d4651cbceb1e05f8d74df6874198d1ed3cec311f"
+    },
+    "preview/final_bottom.png": {
+      "bytes": 276848,
+      "sha256": "6531a592dbbe9753fe6cc35414fec0188dad4f6121d4dec223b1b2e31d3583be"
+    },
+    "preview/final_top.png": {
+      "bytes": 477357,
+      "sha256": "63018620edb1eb3ace53f872a1103d7da80cc81419e78edfc9883da54b8444ef"
+    }
+  },
+  "board_audit": {
+    "added_gnd_stitching_vias": [
+      {
+        "x_mm": 8.2,
+        "y_mm": 1.8
+      },
+      {
+        "x_mm": 26.0,
+        "y_mm": 10.0
+      },
+      {
+        "x_mm": 30.0,
+        "y_mm": 11.0
+      },
+      {
+        "x_mm": 39.0,
+        "y_mm": 11.0
+      },
+      {
+        "x_mm": 23.2,
+        "y_mm": 29.0
+      },
+      {
+        "x_mm": 58.2,
+        "y_mm": 27.525
+      },
+      {
+        "x_mm": 33.225,
+        "y_mm": 30.4
+      },
+      {
+        "x_mm": 15.4,
+        "y_mm": 44.0
+      }
+    ],
+    "all_rule_areas_cover_four_copper_layers": true,
+    "blind_buried_microvias": 0,
+    "copper_layers": 4,
+    "in1_gnd_filled_outlines": 1,
+    "in1_gnd_pad_connection": "solid",
+    "in1_main_gnd_area_mm2": 3205.4825827753325,
+    "in1_tracks": 0,
+    "in2_only_supply_routing": true,
+    "paste_layers_enabled": [
+      "F.Paste",
+      "B.Paste"
+    ],
+    "supplies": {
+      "/3V3": {
+        "minimum_in2_width_mm": 0.5,
+        "ordinary_through_vias": 5
+      },
+      "/EPD_3V3": {
+        "minimum_in2_width_mm": 0.6,
+        "ordinary_through_vias": 4
+      },
+      "/V_B": {
+        "minimum_in2_width_mm": 0.8,
+        "ordinary_through_vias": 6
+      }
+    },
+    "switch_nodes_f_cu_only": true,
+    "total_ordinary_through_vias": 75
+  },
+  "checks": {
+    "drc_violations": 0,
+    "erc_errors": 0,
+    "erc_warnings": 0,
+    "schematic_parity_errors": 0,
+    "unconnected_pads": 0
+  },
+  "generated_utc": "2026-08-13T23:51:21.495551+00:00",
+  "known_limits": [
+    "R4.1 uses a 0.50 mm short local In2 neck before the 0.60 mm /3V3 bus.",
+    "Four-layer stack-up, copper thickness, and impedance are not fabricator-qualified.",
+    "J2 socket MPN/drill fit, actual N16R8 Z-envelope, FPC and J3 mechanics remain open.",
+    "Seven GPIOs cross USB/panel power domains without Ioff isolation.",
+    "No Gerber/drill manufacturing package is released."
+  ],
+  "project": "mf1750_devkitc_b1_single_power_layer",
+  "release_class": "ENGINEERING_CANDIDATE_NOT_PRODUCTION_RELEASE",
+  "revision": "B1-4L-ENG",
+  "schema": 1
+}

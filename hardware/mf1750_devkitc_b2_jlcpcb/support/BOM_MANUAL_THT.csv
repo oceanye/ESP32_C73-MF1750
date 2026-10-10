@@ -1,0 +1,3 @@
+﻿Designator,Value,Manufacturer,MPN / suggested part,LCSC Part #,Assembly,Note
+J2,ESP32-S3-DevKitC-1-N16R8 socket,Espressif,2x XUNPU FH2.54-09-22PZD + ESP32-S3-DevKitC-1-N16R8,C7500786 (candidate only; verify 0.80 mm finished-hole fit),MANUAL / NOT IN SMT BOM OR CPL,"Exact N16R8; 22.86 mm rows; installed board spacing >=11 mm; manual/DNP from SMT; JLC wave-solder candidate uses 8.5 mm body and 3.2 mm pins, not yet Z-envelope qualified"
+J3,EPD 3V3 INPUT,JST,S2B-PH-K + PHR-2 housing + wire-gauge-matched PH crimp contacts,,MANUAL / NOT IN SMT BOM OR CPL,"Hand-fit keyed horizontal input; pin1=3V3, pin2=GND"

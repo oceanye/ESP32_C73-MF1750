@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "kind": "mf1750-same-r20-aa-abort-white-v1b-offline-and-live-manifest",
+  "generated_at": "2026-08-28T18:55:00+08:00",
+  "successor_id": "b4f6b4e137e324d3a2c02aa75a52a17c6c18ffce7f7b1994f167b36671c8d40e",
+  "scope": {
+    "host_only_successor": true,
+    "new_firmware_built": false,
+    "firmware_reflashed_by_successor": false,
+    "device_reset_by_successor": false,
+    "relay_control_implemented_by_successor": false,
+    "predecessor_failed_evidence_overwritten": false,
+    "automatic_retry": false,
+    "automatic_recovery": false,
+    "automatic_chaining": false
+  },
+  "bound_v1_identity": {
+    "contract_id": "08e2683209d66e5f4a4149733e0b446abc81be29b2ed6cec1637ddafd66f0399",
+    "action_id": "902629decf24660f7cbb7495336f8f15b250097398aa4965d1c3b1d4ec79b268",
+    "descriptor_id": "65e534e7632bab1320b2d40f531bb00c55bdfaaf56441e52b1920837ba12d66c",
+    "firmware_bin_sha256": "1d7e83fcbc978392d4935120297797ea83529373cb98d865e2a257667e3be1dd",
+    "firmware_elf_sha256": "e3fc134167afd571a0ce1e6a83afb224d0f6e7c888b14873c4bc0f6f7ac2b87f",
+    "action_output_and_claim_paths_reused": true
+  },
+  "narrow_transport_repair": {
+    "root_cause": "one_extra_quote_in_compiled_identity_json",
+    "malformed_marker_ascii": "\"relay_off_receipt_is_command_query_not_load_voltage_proof\":true\",\"profile_id\":\"",
+    "malformed_marker_bytes": 80,
+    "malformed_marker_sha256": "6ab04274a27c677e6cb0cbcd0ef3265f4ff0c070e59ec6e07b191f53f845d3fd",
+    "corrected_marker_ascii": "\"relay_off_receipt_is_command_query_not_load_voltage_proof\":true,\"profile_id\":\"",
+    "corrected_marker_bytes": 79,
+    "corrected_marker_sha256": "98b01308f1690a0031464ca90438f4e5cdbb9898107cd0b9c0f5a089116e52f0",
+    "bound_bin_malformed_count": 1,
+    "bound_bin_corrected_count": 0,
+    "per_response_required_malformed_count": 1,
+    "per_response_required_corrected_count_before_repair": 0,
+    "replacement_count": 1,
+    "raw_evidence_fields": [
+      "raw_body_bytes",
+      "raw_body_sha256",
+      "raw_body_base64",
+      "malformed_marker_offset",
+      "normalized_body_bytes",
+      "normalized_body_sha256",
+      "http_content_type",
+      "http_content_length"
+    ],
+    "all_original_v1_validators_still_required": true,
+    "zero_or_multiple_marker_or_other_json_damage": "fail_closed"
+  },
+  "immutable_predecessor_evidence": {
+    "app_only_flash": {
+      "path": ".test-output/hardware/MF1750_SAME_R20_AA_ABORT_WHITE_20260828_V1/app-only-single-boot-flash.json",
+      "bytes": 6750,
+      "sha256": "e16ce55791a55a06f951003dcda1cec750b71721ef991a589009b3bfbf2a0a4d",
+      "canonical_integrity_sha256": "f7186c3c5bc3db1bcc3d4fba38057efaa40ad034e2c6297f7349fe3ca6406c97",
+      "outcome": "app_only_write_verify_single_boot_pass"
+    },
+    "first_failed_diagnostic": {
+      "path": ".test-output/hardware/MF1750_SAME_R20_AA_ABORT_WHITE_20260828_V1/j2-off-diagnostic.json",
+      "bytes": 3905,
+      "sha256": "d7905bbe3099b2b9ffd755afc4f200a2c29ac213045c0ef5a8d511ac8337bb05",
+      "canonical_integrity_sha256": "78491c830a3386b8b15788191667b434e3b0763fd11124fd3efdad81bc838ec4",
+      "outcome": "j2_off_diagnostic_failed_no_claim",
+      "stage": "preflight_get_version",
+      "network": {"get": 1, "post": 0},
+      "claims": 0,
+      "visible_refreshes": 0,
+      "preserved": true
+    }
+  },
+  "live_successor_diagnostic": {
+    "path": ".test-output/hardware/MF1750_SAME_R20_AA_ABORT_WHITE_20260828_V1B_DIAGNOSTIC_SUCCESSOR/j2-off-diagnostic.json",
+    "bytes": 49160,
+    "sha256": "6ee4085ac0dff49804d98bdec956ad515fac2a50602053bff50756e4747676ef",
+    "canonical_integrity_sha256": "c384899c4af33badeff912747d3646b8f8aaa5ac25c634dd4dcb2b0ade0985cb",
+    "outcome": "j2_off_diagnostic_pass",
+    "boot_nonce": "93d389c6f5323145",
+    "network": {"get": 4, "post": 0},
+    "claims": 0,
+    "visible_refreshes": 0,
+    "raw_normalization_replay_validated_response_count": 4,
+    "output_write_contract": "O_EXCL"
+  },
+  "live_action": {
+    "path": ".test-output/hardware/MF1750_SAME_R20_AA_ABORT_WHITE_20260828_V1/action-01-factory-otp-white.json",
+    "bytes": 86349,
+    "sha256": "57785a566bccf35a1f404d4e01e5bf9f107df906c3a8f193009d21ee52c66cb7",
+    "canonical_integrity_sha256": "dda1b488e54e0eacc7f5d977c6365473a0a969da781e6992664631c3a19e2847",
+    "outcome": "complete_pass",
+    "boot_nonce": "93d389c6f5323145",
+    "same_boot_as_successor_diagnostic": true,
+    "network": {"get": 5, "post": 2},
+    "raw_normalization_replay_validated_response_count": 7,
+    "driver_called": true,
+    "driver_call_count_for_action": 1,
+    "total_driver_call_count": 1,
+    "visible_refreshes": 1,
+    "driver": {
+      "sequence_ok": true,
+      "wait_timeout": false,
+      "busy_assertion_missing": false,
+      "total_ms": 35013,
+      "pon_ms": 180,
+      "drf_ms": 22520,
+      "pof_ms": 140,
+      "cs1_upload_ms": 2444,
+      "cs2_upload_ms": 2444
+    }
+  },
+  "permanent_claim": {
+    "path": ".test-output/hardware/.mf1750_same_r20_aa_abort_white_v1_claims/902629decf24660f7cbb7495336f8f15b250097398aa4965d1c3b1d4ec79b268.json",
+    "bytes": 3110,
+    "sha256": "240a371a34186d7879605a9a892ef4f47b771187df4f5d234371b2201129d340",
+    "canonical_integrity_sha256": "82a4d39f23a1f5b2f9ae562c8f7a2275ef16b42087d8d308e1d483a8e6ab58be",
+    "state": "permanently_claimed_after_j2_on_preflight_before_first_arm",
+    "retry_forbidden": true
+  },
+  "relay_receipts": {
+    "pre_diagnostic_off_query": {
+      "path": ".test-output/hardware/MF1750_SAME_R20_AA_ABORT_WHITE_20260828_V1B_DIAGNOSTIC_SUCCESSOR/relay-channel1-off-pre-diagnostic.json",
+      "bytes": 1248,
+      "sha256": "3f24b11bf07c0e64e8ecf272d433fc93a0dbb900e347b9b036939f05999485e8",
+      "commanded_state": "OFF",
+      "off_gate_passed": true
+    },
+    "post_action_off_query": {
+      "path": ".test-output/hardware/MF1750_SAME_R20_AA_ABORT_WHITE_20260828_V1/relay-channel1-off-post-action.json",
+      "bytes": 1248,
+      "sha256": "bebe90b9831f201c11efc4e5d8acdcb32f7691286a9e60a3e8de3b605b829679",
+      "commanded_state": "OFF",
+      "off_gate_passed": true
+    },
+    "electrical_state_proven": false,
+    "boundary": "relay command/query evidence is not load-side voltage proof"
+  },
+  "final_source_files": [
+    {
+      "path": "tools/mf1750_same_r20_aa_abort_white_v1b_successor_pack.py",
+      "bytes": 16217,
+      "sha256": "19dd51d5d3e269b77e1a2058bb10273a10ab0f0aea47c057e1f1bae04266e2e1"
+    },
+    {
+      "path": "tools/mf1750_same_r20_aa_abort_white_v1b_successor_once.py",
+      "bytes": 20723,
+      "sha256": "6bcda75b97eadbed9df501d53cd5aae01b1e0ee43e330e959f7750b5d12dd173"
+    },
+    {
+      "path": "tests/test_mf1750_same_r20_aa_abort_white_v1b_successor.py",
+      "bytes": 11180,
+      "sha256": "89bbe943adecf31a00151f5f00d431edd3f0b2a1d1a7fe81255542ef5ac6eb1a"
+    }
+  ],
+  "validation": {
+    "focused_pytest": "14 passed",
+    "focused_plus_v1_plus_flash_regression": "38 passed",
+    "ruff_check": "PASS",
+    "ruff_format_check": "PASS",
+    "python_py_compile": "PASS",
+    "live_diagnostic_raw_replay": "4/4 PASS",
+    "live_action_raw_replay": "7/7 PASS",
+    "post_consumption_artifact_audit": "PASS",
+    "post_consumption_dry_validate": "EXPECTED_FAIL_CLOSED_BECAUSE_PERMANENT_CLAIM_EXISTS"
+  },
+  "evidence_boundaries": {
+    "final_source_hash_was_sealed_at_live_invocation": false,
+    "note": "The live CLI used the strict default exact-marker requester. The final source adds a fail-closed guard for injected Python requesters; this hardening does not rewrite or invalidate live evidence.",
+    "action_json_contains_successor_id_directly": false,
+    "lineage_basis": "fixed V1B diagnostic path, fixed original V1 action/claim paths, identical boot nonce, exact action/firmware/contract bindings, and replay-validated raw response transcripts",
+    "visible_white_confirmed_by_camera_or_human_in_this_manifest": false,
+    "absolute_electrical_state_proven": false
+  }
+}

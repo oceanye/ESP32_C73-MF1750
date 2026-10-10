@@ -1,0 +1,194 @@
+{
+  "schema_version": 1,
+  "kind": "mf1750-luma-gray-mechanism-position-balanced-v3-offline-build-record",
+  "created_on": "2026-09-01",
+  "result": "PASS_WITH_LIVE_SOURCE_TERMINAL_PENDING",
+  "scope": "fresh position-balanced luma/gray mechanism V3 plus independent factory-OTP white successor",
+  "offline_execution": {
+    "hardware_accessed": false,
+    "device_or_campaign_network_accessed": false,
+    "serial_or_com_accessed": false,
+    "relay_accessed": false,
+    "camera_accessed": false,
+    "firmware_flashed": false,
+    "display_refreshed": false
+  },
+  "main_campaign": {
+    "campaign_id": "EC5_LUMA_GRAY_MECHANISM_POSITION_BALANCED_V3",
+    "contract_id": "a114a46bec02b5de80c1f63757723e90cf8e101a81429a8f47eabadc471e3b88",
+    "environment": "ec5_luma_gray_mpb_v3",
+    "build_root": ".pio/b-luma-gray-mpb-v3",
+    "route": "/api/ec5/luma-gray-mechanism-position-balanced-v3",
+    "nvs": {
+      "namespace": "lgmpb_v3",
+      "cursor_key": "cur_lgmpb3",
+      "boot_key": "boot_lgmpb3"
+    },
+    "claims_root": ".test-output/hardware/.mf1750_luma_gray_mechanism_position_balanced_v3_claims",
+    "output_root": ".test-output/hardware/MF1750_LUMA_GRAY_MECHANISM_POSITION_BALANCED_20260901_V3",
+    "actions": [
+      {
+        "ordinal": 1,
+        "role": "G1_ACTIVE_C7_SOURCE",
+        "descriptor_id": "24b3f55d5026075fb21307bf4626e4a45e051ce5a5e23638ed8efb8ef5c6639f",
+        "action_id": "05aac5db9363a666f52144fe7c41eaacfc4f3860c41c7fa3af016baf1379b4b8",
+        "live_plan": "MANUAL_EXPLICIT"
+      },
+      {
+        "ordinal": 2,
+        "role": "G2_COMMENTED_C0_TO_C7_POSITION_BALANCED_MIDDLE",
+        "descriptor_id": "05d74bf882d2dcec84541ff528b1de2c6db43a8bec0931c758acf1f0963b9a22",
+        "action_id": "76d277a2d3833e6d208331b5eafea98eadb90ca90329fd4fca25864eb0de3866",
+        "live_plan": "MANUAL_EXPLICIT_AFTER_G1_COMPLETE_SAME_BOOT"
+      },
+      {
+        "ordinal": 3,
+        "role": "G3_ACTIVE_C3_C7_TARGET",
+        "descriptor_id": "094f11ac566bf1f2d4fd0105ad52f1b463cb85605a41c1969b560dcb1982d775",
+        "action_id": "f6c6bb92ae708ac325c4bca53ed12d82f19f41fa84adb1ddd8c68e35c40b86ee",
+        "live_plan": "MANUAL_EXPLICIT_AFTER_G2_COMPLETE_SAME_BOOT"
+      },
+      {
+        "ordinal": 4,
+        "role": "G4_ACTIVE_C3_C7_IDENTICAL_TARGET_REPEAT_MANUAL_ONLY",
+        "descriptor_id": "6e76dfed0d2dc2f5c4dfbb82db5f44a918fdaacdf099e03e66b3fcfe8276d9f1",
+        "action_id": "a7d2d3390c6c0803eb5f4098592022c344f49c06141ca798f97fcb40ef1c3947",
+        "optional": true,
+        "current_live_plan_executes": false,
+        "requires_separate_human_confirmation": true,
+        "autochain": false
+      }
+    ],
+    "mechanism": {
+      "recipes": 16,
+      "replicas_per_recipe_per_controller": 4,
+      "controllers": 2,
+      "g1": "active C7 source",
+      "g2": "commented C0..C7 position-balanced middle",
+      "g3": "active C3/C7 target",
+      "g4": "optional byte-identical target repeat",
+      "spatial_dither": false,
+      "spatial_mixing": false,
+      "uniform_code_per_cell": true
+    },
+    "artifacts": {
+      "firmware_bin": {
+        "path": ".pio/b-luma-gray-mpb-v3/ec5_luma_gray_mpb_v3/firmware.bin",
+        "bytes": 801168,
+        "sha256": "f19eca9e771dedb1c62c25ae017e602bf25ef31f0086aeb26f65bd4575353b22"
+      },
+      "firmware_elf": {
+        "path": ".pio/b-luma-gray-mpb-v3/ec5_luma_gray_mpb_v3/firmware.elf",
+        "bytes": 13297804,
+        "sha256": "6304c0fc2c08ed075bc3919a38a6c2bbedfd58961a1360ecee546b37321c230c"
+      }
+    }
+  },
+  "source_gate": {
+    "campaign_id": "EC5_STABLE_CODE0_LUMA_LATIN_V3_FACTORY_OTP_WHITE_SUCCESSOR_V1",
+    "contract_id": "787c2898a841913ac009e0284a1f3680403cc77a05ec700cb17f1a4a08152377",
+    "descriptor_id": "8e74da212546b89bfdeba9e6638b30a8d4aa75114d394387c3d2a3b73f8276e0",
+    "action_id": "7d68be7197e6af89e6a7d500010160b6c11343ae5f92d990e1b982275fb5245f",
+    "terminal_state": "COMPLETE",
+    "review_integrity_sha256": "7de626ce68c5dc2952a0c17cdc41cd59ced97191f14344713f71bcb6b4a5ab40",
+    "review_id": "b0a62b0c7dbf178fa6a2763d0bebf417b61dda6bd86bab701c84f658ae2ba96f",
+    "bindings": [
+      "completed action result",
+      "permanent claim",
+      "exact relay-OFF receipt",
+      "48MP capture sidecar",
+      "exact retained JPEG",
+      "camera-visible clean-white review"
+    ],
+    "camera_relative_only": true,
+    "absolute_white_point_or_uniformity_qualified": false,
+    "retained_action_to_capture_continuity_proven": false,
+    "qualified_level_count": 0
+  },
+  "white_successor": {
+    "campaign_id": "EC5_LUMA_GRAY_MECHANISM_POSITION_BALANCED_V3_FACTORY_OTP_WHITE_SUCCESSOR_V1",
+    "contract_id": "19990cdb72503ad98c282d6c5358ba5b0ddd7c9d354f1fc16d7079efd611070d",
+    "descriptor_id": "0e19ef777b8fa3c510e04dd176e79d09461d1b4f7bc27d7d528563b121aee88e",
+    "action_id": "87d2751ff18118474f9cc1a8629e384866dbc708de8f698eb1dac927a7fbc3be",
+    "environment": "ec5_luma_gray_mpb_v3_white_v1",
+    "build_root": ".pio/b-luma-gray-mpb-v3-white-v1",
+    "route": "/api/ec5/luma-gray-mechanism-position-balanced-v3/white-successor-v1",
+    "nvs": {
+      "namespace": "lgmpb3w_v1",
+      "used_key": "used_lgmpb3w1"
+    },
+    "claims_root": ".test-output/hardware/.mf1750_luma_gray_mechanism_position_balanced_v3_white_successor_v1_claims",
+    "output_root": ".test-output/hardware/MF1750_LUMA_GRAY_MECHANISM_POSITION_BALANCED_V3_WHITE_SUCCESSOR_20260901_V1",
+    "source_policy": {
+      "default_source_complete_ordinal": 3,
+      "g3_action_id": "f6c6bb92ae708ac325c4bca53ed12d82f19f41fa84adb1ddd8c68e35c40b86ee",
+      "optional_g4_action_id": "a7d2d3390c6c0803eb5f4098592022c344f49c06141ca798f97fcb40ef1c3947",
+      "g4_requires_explicit_human_confirmation": true,
+      "current_live_plan_executes_g4": false,
+      "g4_presence_invalidates_stale_g3_source": true,
+      "source_terminal_must_be_deeply_validated_before_any_live_request": true
+    },
+    "execution_policy": {
+      "automatic_execution": false,
+      "retry": false,
+      "fallback": false,
+      "automatic_recovery": false,
+      "autochain": false,
+      "one_visible_refresh_only": true
+    },
+    "artifacts": {
+      "firmware_bin": {
+        "path": ".pio/b-luma-gray-mpb-v3-white-v1/ec5_luma_gray_mpb_v3_white_v1/firmware.bin",
+        "bytes": 787440,
+        "sha256": "3acadd182c2579e0a45015750cdb73ccddea51358a4068a7dfa4fba333125b1a"
+      },
+      "firmware_elf": {
+        "path": ".pio/b-luma-gray-mpb-v3-white-v1/ec5_luma_gray_mpb_v3_white_v1/firmware.elf",
+        "bytes": 13214356,
+        "sha256": "bf209f64f052fdba4890077166639f22e1a5c84315e398588e3e22a2b44f7ab0"
+      }
+    },
+    "offline_readiness": "PASS",
+    "live_admission": "WAITING_FOR_FRESH_V3_G3_COMPLETE",
+    "future_source_terminal_evidence_deep_validation": "DEFERRED_UNTIL_G3_COMPLETE_EXISTS"
+  },
+  "qualification_boundary": {
+    "mechanism_candidates_only": true,
+    "qualified_gray_levels": 0,
+    "qualified_brightness_levels": 0,
+    "qualified_colour_count": 0,
+    "true_neutral_gray_claimed": false,
+    "reliable_luma_ladder_claimed": false
+  },
+  "validation_checklist": [
+    {"gate": "current V3 factory-white six-file source authority", "result": "PASS"},
+    {"gate": "main fresh campaign/contract/NVS/claim/route/build isolation", "result": "PASS"},
+    {"gate": "main 16 recipes and four replicas per recipe per controller", "result": "PASS"},
+    {"gate": "main no spatial dither or mixing", "result": "PASS"},
+    {"gate": "main compiled identity marker once in BIN and ELF", "result": "PASS"},
+    {"gate": "main artifact bytes and SHA-256", "result": "PASS"},
+    {"gate": "main independent audit", "result": "PASS"},
+    {"gate": "main targeted pytest", "result": "PASS", "tests": 8},
+    {"gate": "white successor fresh identity and isolation", "result": "PASS"},
+    {"gate": "white successor clean PlatformIO build", "result": "PASS"},
+    {"gate": "white successor compiled identity marker once in BIN and ELF", "result": "PASS"},
+    {"gate": "white successor source-main identity and artifacts deep validation", "result": "PASS"},
+    {"gate": "white successor G3 default and G4 explicit-only selection tests", "result": "PASS"},
+    {"gate": "white successor independent audit", "result": "PASS"},
+    {"gate": "white successor targeted pytest", "result": "PASS", "tests": 7},
+    {"gate": "targeted Ruff check and format", "result": "PASS"},
+    {"gate": "fresh live G3 terminal evidence", "result": "PENDING_LIVE_ACTION_NOT_YET_EXECUTED"}
+  ],
+  "validated_commands": [
+    "python tools/mf1750_runtime_lut_luma_gray_mechanism_position_balanced_v3_build.py build",
+    "python tools/mf1750_runtime_lut_luma_gray_mechanism_position_balanced_v3_audit.py",
+    "python -m pytest tests/test_mf1750_runtime_lut_luma_gray_mechanism_position_balanced_v3.py -q",
+    "pio run -c platformio.runtime_lut_luma_gray_mechanism_position_balanced_v3_white_successor_v1.ini -t clean",
+    "python tools/mf1750_runtime_lut_luma_gray_mechanism_position_balanced_v3_white_successor_v1_build.py build",
+    "python tools/mf1750_runtime_lut_luma_gray_mechanism_position_balanced_v3_white_successor_v1_audit.py",
+    "python -m pytest tests/test_mf1750_runtime_lut_luma_gray_mechanism_position_balanced_v3_white_successor_v1.py -q",
+    "python -m ruff check <targeted V3 main and white files>",
+    "python -m ruff format --check <targeted V3 main and white files>"
+  ],
+  "sha256_manifest": "docs/MF1750_LUMA_GRAY_MECHANISM_POSITION_BALANCED_V3_SHA256_2026-09-01.txt"
+}

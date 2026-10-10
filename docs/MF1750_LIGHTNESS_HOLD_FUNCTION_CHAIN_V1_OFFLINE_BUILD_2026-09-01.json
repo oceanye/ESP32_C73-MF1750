@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "kind": "mf1750-lightness-hold-function-chain-v1-offline-build-seal",
+  "created_on": "2026-09-01",
+  "result": "PASS",
+  "offline_only": true,
+  "hardware_accessed": false,
+  "device_network_accessed": false,
+  "serial_or_com_accessed": false,
+  "relay_accessed": false,
+  "camera_accessed": false,
+  "firmware_flashed": false,
+  "display_refreshed": false,
+  "variant_key": "LIGHTNESS_HOLD_FUNCTION_CHAIN_V1",
+  "contract_id": "ad14f5394a5c6e284885aa504ea0d99fec0ccb1dcf8053759dba025b8606f3e3",
+  "source_authority": {
+    "state": "SEALED",
+    "required_before_any_device_request": true,
+    "white_action": {
+      "file_sha256": "9ebc3ca4f32ceba8cbb356aece938d28e922e016f875ab10aa082338993b509b",
+      "canonical_sha256": "555b94739704096bde278ee3e0c3eb5ac901ccc7d390481f725093467a6c414b"
+    },
+    "retained_capture_exposure_m4": {
+      "file_sha256": "479c7451ca87c60cbef614895e3a3866a8415d0f3ccf3ad82668ae321bb459ae",
+      "canonical_sha256": "7e9f7b6b9edb1e246da06316153e24e846761bc1c02fdf3a02fa5d1384ac7362"
+    },
+    "retained_photo": {
+      "file_sha256": "f04bc44ad4e92007f7ffd2a730a28fe602acf18d34b98d2540c5959c7a46d92a"
+    },
+    "relay_off": {
+      "file_sha256": "1fa84d45b7374fce680bdadcde0edb2142adfa408b5511edfa75dd20f0b09626",
+      "canonical_sha256": "5ebe1472699eccfd53b4b7013f67de6e818734342d6a4f680b148f7a5ce19400"
+    },
+    "clean_white_review": {
+      "file_sha256": "50ce755e3ed04790819c326bbbb1e6a2fdc3c6b587899f02b00da588d5e2d625",
+      "canonical_sha256": "7de626ce68c5dc2952a0c17cdc41cd59ced97191f14344713f71bcb6b4a5ab40",
+      "review_id": "b0a62b0c7dbf178fa6a2763d0bebf417b61dda6bd86bab701c84f658ae2ba96f"
+    }
+  },
+  "main_firmware": {
+    "action_count": 5,
+    "action_order": [
+      "L1_FIXED_ACTIVE_SOURCE_CODE7",
+      "L2_COMMENTED_MIDDLE_LATIN_C0_C7",
+      "L3_FIXED_ACTIVE_TARGET_CODE0",
+      "H1_ACTIVE_CODE5_TOP_PROBE_HOLD_GRID",
+      "H2_COMMENTED_CODE6_BOTTOM_PROBE_HOLD_GRID_AND_H1"
+    ],
+    "global_header_sequence": [
+      "active",
+      "commented",
+      "active",
+      "active",
+      "commented"
+    ],
+    "action_ids": [
+      "d21f725a283b7f6cb33f8ee8b8e0351e8d1698addf90b7431ce205eff83caf60",
+      "221cd4c242a37fde29dfb7b98066973523be041dddff015f4094e87d8be887fa",
+      "af6aa5c8a62d212da2a53d440c1798aa82dbc0dae45a47767bb791a2ef49d32f",
+      "69f639ae9523cb0d656c56adea605b32ee1adf5634014b4f0b90d89e4d579156",
+      "3e9b5a096ee556caf8cb7c87df7a2c7fb94f9e53621d03c93fd013cc6fa41e7a"
+    ],
+    "candidate_grid": {
+      "cells_total": 128,
+      "local_x_half_open": [20, 492],
+      "y_half_open": [40, 560]
+    },
+    "hold_probes": [
+      {
+        "role": "H1",
+        "window": [64, 8, 384, 24],
+        "code": 5,
+        "ptlw_payload_hex": "004001bf0008001f01"
+      },
+      {
+        "role": "H2",
+        "window": [64, 568, 384, 24],
+        "code": 6,
+        "ptlw_payload_hex": "004001bf0238024f01"
+      }
+    ],
+    "hold_probe_nonoverlap_with_candidate_grid": true,
+    "hold_transport": "FULL_CODE7_PRESTAGE_THEN_ONE_INCLUSIVE_PTLW_PER_CONTROLLER_THEN_CROPPED_DTM_THEN_PON_DRF00_POF00",
+    "repeat_ptlw_after_pon_busy": false,
+    "action_stage_cdi": false,
+    "action_stage_btst2": false,
+    "command_0x86": false,
+    "factory_otp_white_successor_embedded": false
+  },
+  "artifacts": {
+    "firmware_bin": {
+      "bytes": 803712,
+      "sha256": "3f49ba07e497443813f4fb3f5281ed510953ffcfdb8db8a73c4d9466551e30ff"
+    },
+    "firmware_elf": {
+      "bytes": 13312748,
+      "sha256": "ded43d84b5897b5793e3f25c84bf96d2118ae775b71bf8a61d5cbe1c1502fd45"
+    }
+  },
+  "verification": {
+    "platformio_isolated_build": "PASS",
+    "pytest": {
+      "command": "python -m pytest -q tests/test_mf1750_lightness_hold_function_chain_v1.py tests/test_mf1750_lightness_hold_function_chain_v1_white_successor_v1.py",
+      "result": "16 passed"
+    },
+    "ruff": {
+      "command": "python -m ruff check tools/mf1750_lightness_hold_function_chain_v1_pack.py tools/mf1750_lightness_hold_function_chain_v1_build.py tools/mf1750_lightness_hold_function_chain_v1_once.py tests/test_mf1750_lightness_hold_function_chain_v1.py",
+      "result": "PASS"
+    },
+    "v3_frozen_source_non_regression": "PASS",
+    "l1_l3_exact_frame_and_controller_dtm_identity": "PASS",
+    "artifact_postflight": "PASS"
+  },
+  "claim_boundary": {
+    "local_hold_proven": false,
+    "qualified_colors": 0,
+    "qualified_gray_levels": 0,
+    "qualified_brightness_levels": 0,
+    "no_candidate_outcome": "REVIEW_ONLY",
+    "absolute_color_claimed": false,
+    "controller_color_equivalence_claimed": false
+  },
+  "independent_factory_otp_white_successor": {
+    "kind": "INDEPENDENT_FACTORY_OTP_WHITE_SUCCESSOR",
+    "included_in_this_build": false,
+    "status": "IMPLEMENTED_AND_OFFLINE_SEALED_AS_SEPARATE_BUILD",
+    "blocks_main_offline_audit": false,
+    "required_after_action_5_before_campaign_close": true,
+    "contract_id": "18ed20ebb2906bf6c8cec9c738c183c58c8512c0856083b79be141cb0562244d",
+    "action_id": "d731ca688e935d2fec1fa15f24e51126f9a7fd8b3d026f3e41653b11bdd5f972",
+    "accepted_source_ordinals": [5],
+    "source_fault_accepted": false,
+    "source_early_stop_accepted": false,
+    "automatic_source_selection": false,
+    "firmware_bin_sha256": "777afe562ac14541a57e31c6a5ea1b8faa7815247cd07495d53e5603d6772c6c",
+    "firmware_elf_sha256": "34488d49fe7e8e9ae79de25e2c0de00734ac69f10d06ce859a652cc7bb4cf5b7",
+    "offline_build_report": "docs/MF1750_LIGHTNESS_HOLD_FUNCTION_CHAIN_V1_WHITE_SUCCESSOR_V1_OFFLINE_BUILD_2026-09-01.json",
+    "live_gate_state": "WAITING_FOR_FRESH_ORDINAL5_H2_COMPLETE"
+  },
+  "package_readiness": {
+    "main_five_action_firmware_offline_sealed": true,
+    "independent_white_successor_offline_sealed": true,
+    "main_plus_successor_ready_for_controlled_live_sequence": true,
+    "hardware_execution_performed": false
+  }
+}

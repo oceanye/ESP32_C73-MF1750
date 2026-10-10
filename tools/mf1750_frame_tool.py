@@ -52,7 +52,17 @@ from host.epd_frame import (  # noqa: E402
 
 
 ALLOWED_BUILD_TAGS = frozenset(
-    {"MF1750_DRIVER_RC2F_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_PHYSICAL_2026-08-05"}
+    {
+        "MF1750_DRIVER_RC2F_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_PHYSICAL_2026-08-05",
+        "MF1750_DRIVER_RC2G_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_PHYSICAL_BUSYEDGE_2026-08-07",
+        "MF1750_L535_FRAME_V1_20260926",
+        "MF1750_L535_FRAME_V2_20261006",
+    }
+)
+BUSY_TRACE_BUILD_TAGS = frozenset(
+    {
+        "MF1750_DRIVER_RC2G_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_PHYSICAL_BUSYEDGE_2026-08-07"
+    }
 )
 REQUIRED_DRIVER_API = "MF1750_R16_CASCADE_V3"
 NOMINAL_PSRAM_BYTES = 8 * 1024 * 1024
@@ -122,11 +132,21 @@ def _require_refresh_mapping_pair(
     return mapping_pair
 
 
-def _validated_frame_bytes(frame: bytes | bytearray | memoryview) -> bytes:
-    """Apply the canonical frame contract and translate it to this tool's error type."""
+def _validated_frame_bytes(
+    frame: bytes | bytearray | memoryview,
+    allowed_colors: Optional[Sequence[int]] = None,
+) -> bytes:
+    """Apply the canonical frame contract and translate it to this tool's error type.
+
+    ``allowed_colors=None`` keeps the stock physical-code set; callers on the
+    L535 frame path (build tag MF1750_L535_FRAME_V1_20260926) pass the full
+    0..7 nibble set explicitly.
+    """
 
     try:
-        return bytes(validate_frame(frame))
+        if allowed_colors is None:
+            return bytes(validate_frame(frame))
+        return bytes(validate_frame(frame, allowed_colors=allowed_colors))
     except FrameContractError as error:
         raise FrameToolError(f"invalid canonical frame: {error}") from error
 
@@ -527,12 +547,161 @@ def _mapping_from_diagnostic(mapping: Mapping[str, Any], controller: int) -> Con
         raise FrameToolError(f"{label} is invalid: {error}") from error
 
 
+def _require_object(
+    value: Mapping[str, Any], key: str, label: str
+) -> Mapping[str, Any]:
+    result = value.get(key)
+    if not isinstance(result, dict):
+        raise FrameToolError(f"{label}.{key} must be an object")
+    return result
+
+
+def _busy_level(
+    value: Mapping[str, Any], key: str, label: str, *, allow_unsampled: bool = False
+) -> int:
+    level = _require_int(value, key, label)
+    allowed = {0, 1, 255} if allow_unsampled else {0, 1}
+    if level not in allowed:
+        suffix = "0, 1, or 255" if allow_unsampled else "0 or 1"
+        raise FrameToolError(f"{label}.{key} must be {suffix}")
+    return level
+
+
+def _validate_busy_trace(
+    data: Mapping[str, Any], wait_ms: Mapping[str, int]
+) -> dict[str, Any]:
+    label = "diagnostic.busy_trace"
+    if _require_int(data, "busy_trace_schema_version", "diagnostic") != 1:
+        raise FrameToolError("diagnostic.busy_trace_schema_version must be 1")
+    if _require_bool(data, "pre_command_idle_failure", "diagnostic") is not False:
+        raise FrameToolError("diagnostic reports a pre-command BUSY-idle failure")
+    if _require_string(data, "pre_command_busy_stage", "diagnostic") != "none":
+        raise FrameToolError("diagnostic.pre_command_busy_stage must be none")
+    trace = _require_object(data, "busy_trace", "diagnostic")
+    idle_level = _busy_level(trace, "idle_level", label)
+    if idle_level != 1:
+        raise FrameToolError("diagnostic.busy_trace.idle_level must be 1")
+    pre_idle_timeout = _require_int(
+        trace, "pre_command_idle_timeout_ms", label, minimum=1
+    )
+    assert_grace = _require_int(trace, "assert_grace_ms", label, minimum=1)
+    if assert_grace != _require_int(data, "busy_assert_grace_ms", "diagnostic"):
+        raise FrameToolError(
+            "diagnostic busy-trace assertion grace differs from the top-level report"
+        )
+
+    stages: dict[str, dict[str, Any]] = {}
+    for stage in ("reset", "pon", "drf", "pof", "post_psr"):
+        stage_label = f"{label}.{stage}"
+        raw = _require_object(trace, stage, label)
+        record = {
+            "gate_entry_level": _busy_level(
+                raw, "gate_entry_level", stage_label, allow_unsampled=stage == "reset"
+            ),
+            "pre_command_level": _busy_level(
+                raw, "pre_command_level", stage_label, allow_unsampled=stage == "reset"
+            ),
+            "wait_entry_level": _busy_level(raw, "wait_entry_level", stage_label),
+            "wait_exit_level": _busy_level(raw, "wait_exit_level", stage_label),
+            "pre_command_idle_ok": _require_bool(
+                raw, "pre_command_idle_ok", stage_label
+            ),
+            "assertion_after_idle": _require_bool(
+                raw, "assertion_after_idle", stage_label
+            ),
+            "pre_command_wait_ms": _require_int(
+                raw, "pre_command_wait_ms", stage_label
+            ),
+            "wait_ms": _require_int(raw, "wait_ms", stage_label),
+            "assertion_latency_ms": _require_int(
+                raw, "assertion_latency_ms", stage_label
+            ),
+        }
+        if record["wait_exit_level"] != idle_level:
+            raise FrameToolError(f"{stage_label} did not exit at the idle level")
+        if stage == "reset":
+            if (
+                record["gate_entry_level"] != 255
+                or record["pre_command_level"] != 255
+                or record["pre_command_idle_ok"] is not False
+                or record["assertion_after_idle"] is not False
+            ):
+                raise FrameToolError(
+                    "diagnostic reset BUSY trace contains command-only evidence"
+                )
+        elif stage in ("pon", "drf", "pof"):
+            if (
+                record["pre_command_level"] != idle_level
+                or record["pre_command_idle_ok"] is not True
+                or record["assertion_after_idle"] is not True
+                or record["pre_command_wait_ms"] > pre_idle_timeout + 1
+                or record["assertion_latency_ms"] > assert_grace
+                or record["wait_ms"] != wait_ms[stage]
+            ):
+                raise FrameToolError(
+                    f"{stage_label} does not prove idle-before-command and a new BUSY assertion"
+                )
+        else:
+            if (
+                record["pre_command_wait_ms"] != 0
+                or record["assertion_after_idle"] is not False
+                or record["assertion_latency_ms"] != 0
+                or record["wait_ms"] != wait_ms[stage]
+            ):
+                raise FrameToolError(
+                    "diagnostic post-PSR BUSY trace has invalid informational evidence"
+                )
+        stages[stage] = record
+
+    safe_finish = _require_object(trace, "safe_finish", label)
+    safe_before = _busy_level(
+        safe_finish, "busy_before_pins_low", f"{label}.safe_finish"
+    )
+    safe_after = _busy_level(
+        safe_finish, "busy_after_pins_low", f"{label}.safe_finish"
+    )
+    safe_after_5ms = _busy_level(
+        safe_finish, "busy_after_5ms", f"{label}.safe_finish"
+    )
+    if safe_before != idle_level:
+        raise FrameToolError(
+            "diagnostic safe finish did not begin with BUSY at the idle level"
+        )
+    final_gpio = _require_object(trace, "final_gpio", label)
+    final = {
+        "busy": _busy_level(final_gpio, "busy", f"{label}.final_gpio"),
+        "rst": _busy_level(final_gpio, "rst", f"{label}.final_gpio"),
+        "cs": _busy_level(final_gpio, "cs", f"{label}.final_gpio"),
+        "cs2": _busy_level(final_gpio, "cs2", f"{label}.final_gpio"),
+    }
+    if any(final[key] != 0 for key in ("rst", "cs", "cs2")):
+        raise FrameToolError("diagnostic final panel-facing select/reset pins are not low")
+    return {
+        "schema_version": 1,
+        "idle_level": idle_level,
+        "pre_command_idle_timeout_ms": pre_idle_timeout,
+        "assert_grace_ms": assert_grace,
+        "stages": stages,
+        "safe_finish": {
+            "busy_before_pins_low": safe_before,
+            "busy_after_pins_low": safe_after,
+            "busy_after_5ms": safe_after_5ms,
+        },
+        "final_gpio": final,
+        "command_edge_contract_verified": True,
+        "safe_finish_pin_levels_verified": True,
+        "busy_after_rst_low_is_informational": True,
+        "post_rst_busy_samples_not_compared": True,
+    }
+
+
 def _validate_diagnostic(
     data: Mapping[str, Any],
     frame: bytes,
     expected_mappings: tuple[ControllerMapping, ControllerMapping],
     version: Mapping[str, Any],
     job: Mapping[str, Any],
+    allowed_colors: Optional[Sequence[int]] = None,
 ) -> dict[str, Any]:
     label = "diagnostic"
     if _require_int(data, "schema_version", label, minimum=1) != 2:
@@ -611,6 +780,11 @@ def _validate_diagnostic(
         raise FrameToolError(
             "diagnostic total_ms is shorter than uploads plus recorded wait stages"
         )
+    busy_trace = (
+        _validate_busy_trace(data, wait_ms)
+        if version["build_tag"] in BUSY_TRACE_BUILD_TAGS
+        else None
+    )
 
     raw_mapping = data.get("mapping")
     if not isinstance(raw_mapping, dict):
@@ -626,7 +800,11 @@ def _validate_diagnostic(
 
     physical: list[dict[str, Any]] = []
     for controller, mapping in enumerate(mappings, start=1):
-        expected_hash = fnv1a(controller_stream(frame, mapping))
+        if allowed_colors is None:
+            stream = controller_stream(frame, mapping)
+        else:
+            stream = controller_stream(frame, mapping, allowed_colors=allowed_colors)
+        expected_hash = fnv1a(stream)
         reported_hash = _require_int(data, f"cs{controller}_dtm_fnv1a", label)
         if reported_hash != expected_hash:
             raise FrameToolError(f"diagnostic CS{controller} DTM hash mismatch")
@@ -647,6 +825,7 @@ def _validate_diagnostic(
         "post_psr_busy_seen": post_psr_busy_seen,
         "busy_timeout": False,
         "safe_finish_verified": True,
+        "busy_trace": busy_trace,
         "physical_controllers": physical,
     }
 
@@ -656,6 +835,7 @@ def perform_refresh(
     frame: bytes | bytearray | memoryview,
     *,
     expected_mappings: Optional[Sequence[ControllerMapping]] = None,
+    allowed_colors: Optional[Sequence[int]] = None,
     job_timeout_s: float = DEFAULT_JOB_TIMEOUT_S,
     poll_interval_s: float = DEFAULT_POLL_INTERVAL_S,
     requester: Optional[HttpRequester] = None,
@@ -664,7 +844,7 @@ def perform_refresh(
 ) -> dict[str, Any]:
     # This must remain the first operation: malformed frames must never cause
     # mapping/URL handling or any device request.
-    frame_bytes = _validated_frame_bytes(frame)
+    frame_bytes = _validated_frame_bytes(frame, allowed_colors)
     mapping_pair = _require_refresh_mapping_pair(expected_mappings)
     request = requester or http_request
     base_url = _normalize_base_url(base_url)
@@ -692,21 +872,27 @@ def perform_refresh(
     )
     _expect_status(status, 200, body, "diagnostic report")
     diagnostic = _validate_diagnostic(
-        _json_object(body, "diagnostic report"), frame_bytes, mapping_pair, version, job
+        _json_object(body, "diagnostic report"), frame_bytes, mapping_pair, version, job,
+        allowed_colors=allowed_colors,
     )
+    verified_scope = [
+        "canonical_frame_dimensions_and_physical_color_codes",
+        "firmware_build_api_spi_psram_and_mapping_preflight",
+        "frame_upload_bytes_and_fnv1a",
+        "job_identity_state_result_and_frame_hash",
+        "diagnostic_immutable_driver_operation_identity",
+        "diagnostic_build_api_job_mapping_and_dtm_hashes",
+        "diagnostic_sequence_busy_timing_and_safe_finish_evidence",
+    ]
+    if diagnostic["busy_trace"] is not None:
+        verified_scope.append(
+            "diagnostic_idle_before_command_busy_edges_and_safe_finish_pin_snapshot"
+        )
     return {
         "mode": "refresh",
         "protocol_verified": True,
         "hardware_tested": False,
-        "verified_scope": [
-            "canonical_frame_dimensions_and_physical_color_codes",
-            "firmware_build_api_spi_psram_and_mapping_preflight",
-            "frame_upload_bytes_and_fnv1a",
-            "job_identity_state_result_and_frame_hash",
-            "diagnostic_immutable_driver_operation_identity",
-            "diagnostic_build_api_job_mapping_and_dtm_hashes",
-            "diagnostic_sequence_busy_timing_and_safe_finish_evidence",
-        ],
+        "verified_scope": verified_scope,
         "manual_observation_required": [
             "full_panel_visual_result",
             "power_supply_cv_and_current",

@@ -1,17 +1,44 @@
 # ESP32-S3 + E2802 Cascade eInk 调试工程
 
+## 当前现场与开发状态（2026-08-08）
+
+> 本节只作快速入口；任何后续变化、数量、测试批次和文件哈希均以
+> [`docs/STATUS_HANDOFF.md`](docs/STATUS_HANDOFF.md) 为唯一事实源。
+
+- 驱动板/J2 电源已关闭，ESP32 单独保持供电；当前未消费的可见刷新授权为 `0`，没有
+  设备访问、刷写或面板动作在进行。
+- RC2G 的 N0/N1 已放行真屏 action 为 `4/4`，均已闭环；对应 fixed claims 已永久消费，
+  不得重跑。
+- N2--N8 的 physical production-live 软件入口、深绑定、单次执行/finalizer/analyzer 均已落地，
+  软件闭环为 `7/7`；对应旧 UNBOUND/self-sealed/legacy public live 入口在 claim/联网前
+  fail closed。真屏阶段仍只有 N0/N1 完成；最终状态必须读取 STATUS。
+- 各阶段的实际 process-policy/供应商限额、每 action 最新 usage/profile review、测量资产和授权
+  尚未形成。软件入口
+  就绪不等于硬件放行；reviewed limit/runtime、仪器、供应商数据、panel/build/
+  prior 绑定和逐 action 授权等外部门禁仍阻断对应真屏任务；晚间顺序见
+  [`docs/MF1750_N2_N8_EVENING_TASK_BOARD_2026-08-08.md`](docs/MF1750_N2_N8_EVENING_TASK_BOARD_2026-08-08.md)。
+
 ## 当前交接入口
 
+- **唯一当前状态页（完成数、剩余数、目的、下一步）：[`docs/STATUS_HANDOFF.md`](docs/STATUS_HANDOFF.md)**
+- **N2--N8 晚间逐项真屏任务板：[`docs/MF1750_N2_N8_EVENING_TASK_BOARD_2026-08-08.md`](docs/MF1750_N2_N8_EVENING_TASK_BOARD_2026-08-08.md)**
 - 阶段一制造与固件交接：[`docs/STAGE1_REV_A1_HANDOFF_2026-07-13.md`](docs/STAGE1_REV_A1_HANDOFF_2026-07-13.md)
 - 阶段二 ESP32/电池整合设计输入：[`docs/STAGE2_ESP32_BATTERY_INTEGRATION_BRIEF.md`](docs/STAGE2_ESP32_BATTERY_INTEGRATION_BRIEF.md)
 - Rev B-mini ESP32/TF/电源与器件初评：[`docs/H1_REV_B_MINI_COMPONENT_ASSESSMENT_2026-08-05.md`](docs/H1_REV_B_MINI_COMPONENT_ASSESSMENT_2026-08-05.md)
 - Rev B-mini L1/L2 小型化详细评估：[`docs/REV_B_MINI_L1_L2_DOWNSIZING_ASSESSMENT_2026-08-05.md`](docs/REV_B_MINI_L1_L2_DOWNSIZING_ASSESSMENT_2026-08-05.md)
 - Rev A1 R16 级联整屏实测：[`docs/REV_A1_R16_CASCADE_FULLFRAME_TEST_2026-08-04.md`](docs/REV_A1_R16_CASCADE_FULLFRAME_TEST_2026-08-04.md)
 - 基础驱动与 API 参考：[`docs/MF1750_DRIVER_API.md`](docs/MF1750_DRIVER_API.md)
+- H0 Rev A1/RC2C 归档状态：[`docs/H0_REV_A1_RC2C_ARCHIVE_STATUS_2026-08-06.md`](docs/H0_REV_A1_RC2C_ARCHIVE_STATUS_2026-08-06.md)
+- RC2F/C4/C2 分阶段上机任务包：[`docs/RC2F_C4_C2_HARDWARE_VALIDATION_TASKS_2026-08-06.md`](docs/RC2F_C4_C2_HARDWARE_VALIDATION_TASKS_2026-08-06.md)
 - Spectra 6 色域映射高级 AI Handoff：[`docs/G1_SPECTRA6_GAMUT_MAPPING_HANDOFF_2026-08-05.md`](docs/G1_SPECTRA6_GAMUT_MAPPING_HANDOFF_2026-08-05.md)
+- 重叠感知空间半色调研究：[`docs/S1_OVERLAP_AWARE_HALFTONE_RESEARCH_2026-08-06.md`](docs/S1_OVERLAP_AWARE_HALFTONE_RESEARCH_2026-08-06.md)
+- G1/S1 混色与显示器模拟交接：[`docs/G1_S1_MONITOR_SIMULATION_HANDOFF_2026-08-06.md`](docs/G1_S1_MONITOR_SIMULATION_HANDOFF_2026-08-06.md)
+- G1/S1 晚些真屏验证任务：[`docs/G1_S1_REAL_PANEL_VALIDATION_TASKS_2026-08-06.md`](docs/G1_S1_REAL_PANEL_VALIDATION_TASKS_2026-08-06.md)
+- RC2G 白天开发与晚间逐项真屏 Campaign：[`docs/MF1750_RC2G_EVENING_HARDWARE_CAMPAIGN_2026-08-07.md`](docs/MF1750_RC2G_EVENING_HARDWARE_CAMPAIGN_2026-08-07.md)
 - 网络照片与随机刷新 TODO：[`docs/TODO_NETWORK_RANDOM_PHOTO_PIPELINE.md`](docs/TODO_NETWORK_RANDOM_PHOTO_PIPELINE.md)
 - 扩展颜色/亮度技术可行性结论：[`docs/EPD_EXTENDED_COLOR_FEASIBILITY_2026-08-05.md`](docs/EPD_EXTENDED_COLOR_FEASIBILITY_2026-08-05.md)
 - 扩展颜色/亮度后续测试 TODO：[`docs/TODO_EPD_EXTENDED_COLOR_TESTS_2026-08-05.md`](docs/TODO_EPD_EXTENDED_COLOR_TESTS_2026-08-05.md)
+- C3 转移感知优化器离线交接：[`docs/C3_TRANSITION_OPTIMIZER_OFFLINE_HANDOFF_2026-08-08.md`](docs/C3_TRANSITION_OPTIMIZER_OFFLINE_HANDOFF_2026-08-08.md)
 - 扩展颜色远端成果集成审查：[`docs/EXTENDED_COLOR_INTEGRATION_REVIEW_2026-08-05.md`](docs/EXTENDED_COLOR_INTEGRATION_REVIEW_2026-08-05.md)
 - 主机快速刷新、CI 与六色流水线总集成：[`docs/HOST_REFRESH_COLOR_INTEGRATION_2026-08-04.md`](docs/HOST_REFRESH_COLOR_INTEGRATION_2026-08-04.md)
 - 多 AI TODO 与 Git 集成计划：[`docs/TODO_MULTI_AI_HANDOFF_PLAN_2026-08-04.md`](docs/TODO_MULTI_AI_HANDOFF_PLAN_2026-08-04.md)
@@ -21,8 +48,13 @@
 
 当前状态：`MF1750 REV A1` 已完成加工与基础驱动 D0 实机验收。生产冻结文件
 仍为带 `revA1_Q1FIX` 名称的 Gerber、BOM、CPL，禁止重新生成或覆盖。
+H0 已生成基于 Git 对象的源码/证据归档和 SHA-256 清单，但精确验收二进制仍缺失，
+且尚未完成异机持久副本；硬件验收 tag 未获明确授权，不能宣称 H0 已最终封版。
 
-## 2026-08-04 首板最新结论
+## 历史累计结论（起于 2026-08-04；不作为当前状态入口）
+
+> 本节保留已经发生的硬件与软件证据，段内的“当前”“下一步”和回归计数只代表各自记录
+> 时点；与顶部摘要或 STATUS 冲突时，一律以 STATUS 为准。
 
 - 当前硬件为 R15 拆除、R16 0 Ω 安装、GPIO10 独立控制 `SL_CSB`。
 - 两颗 SPD1657B 的 revision 均稳定读为 `0x04`。
@@ -33,9 +65,11 @@
 - ESP32-S3 已由 esptool 与运行时共同确认约 8 MB OPI PSRAM；307200 字节
   规范帧的主机、设备生成器和非刷新 ingress 哈希均已通过。
 - 当前源码候选固件为
-  `MF1750_DRIVER_RC2F_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_PHYSICAL_2026-08-05`
-  / driver API V3；它在 RC2E 交互构图上增加 MF-1750 物理有效区和非正方形像素
-  模拟，clean build 为 811056 字节、SHA-256 `AE5261…3A4A20`，尚待刷写和实屏复验。
+  `MF1750_DRIVER_RC2G_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_PHYSICAL_BUSYEDGE_2026-08-07`
+  / driver API V3；它在 RC2F 上增加 PON/DRF/POF 命令前 idle、新 BUSY 边沿和
+  safe-finish/final GPIO 证据。build 为 815664 字节、SHA-256 `9DF897…0CD772`，已于
+  2026-08-07 精确刷入；MAP job1 与 macro4 job2 的协议、nominal timing、电气和
+  frame fidelity 均通过。该 exact-action 范围不自动继承为其他算法资格。
   HTTP ingress 与公开驱动 API 都会在任何面板 I/O 前拒绝
   `0x4/0x7..0xF` 非法像素码；PON/DRF/POF 未观察到 BUSY 会 fail closed，
   POF 后的 PSR 寄存器写入保留等待证据但不要求额外 BUSY assertion；诊断报告
@@ -53,10 +87,66 @@
 - 基础驱动 D0 已定版；普通图片与 Web UI 的软件合同已合入，但 calibrated palette
   真屏色彩、设备端认证、更高 SPI 扫频、快速波形和局刷仍是独立后续工作，不能
   由本次硬件通过自动提升状态。
-- G1 已建立可交给高级 AI 的 host/server 色域映射工作包：先完成 profile、
-  抖动前 tone/gamut mapping、三种 rendering intent、单一 canonical UI、消融测试
-  和离线标定图；没有 D65/2° 六色及混色色块实测 artifact 时只允许
-  synthetic/offline preview，不得解锁正式上传或声称真屏改善。
+- G1/S1 主机端显示器模拟基线已实现：严格 profile/hash、抖动前 tone/gamut
+  mapping、三种 rendering intent、2×2/4×4 六色面积配方、真正的 void-and-cluster
+  蓝噪声、六码面积 Bayer/蓝噪声、多色 DBS 和重叠感知多尺度 DBS，统一进入 10 算法、
+  四阶段软预览页面。v2 artifact 固定为 `offline/formal=false`；没有 D65/2° 六色与
+  混色色块实测、独立光学核及硬件 qualification 时，不得上传或声称真屏改善。
+  独立受监督实验中，首个高负载 `area-weighted-ordered-8x8` 候选的精确帧与双 DTM
+  hash 虽匹配，但 job2/op2 在 DRF 60010 ms 超时，POF cleanup 30005 ms 仍未闭环；
+  用户实体断电，算法评价保持 `inconclusive`，授权永久消费。固定 MAP job3/op3
+  随后以正常约 21.7 s DRF 恢复通过并再次断电。
+- 低空间诊断 bundle 位于
+  `.test-output/hardware/G1S1_LOW_SPATIAL_TRANSITION_MATCHED_20260806_231430/`；manifest
+  原始文件 SHA-256 为 `07146b9254414e1454d9143f4af5706a8c5f69eb9125dce341206bbc441afb4d`，
+  frame SHA-256/FNV-1a 为
+  `ba373d138c525fd7e59cc6c4ae6037191fa41388507b347da9f6f8bdece9fc65` / `0xA9641618`，
+  CS1/CS2 DTM FNV-1a 为
+  `0xCB085C03` / `0x9ABD749A`。当时 J2-P1 已在持续监督会话中接通；non-displaying
+  ingress 返回 `epd_action=none`、未刷新且 job 不变；随后
+  attempt `38352ce6bc564530917c43099fe8d20a` 的 job4/op4 以
+  PON/DRF/POF/post-PSR `181/21690/140/5 ms`、总时长 34169 ms 完成。用户确认真屏与
+  `strict-final.png` 一致，3.3 V CV、电流、温度和 GPIO idle 正常；J2-P1 在继续受监督
+  会话中保持接通。裁定仅为 `NOMINAL_DIAGNOSTIC_PASS`：全局终态直方图和全局 6×6
+  转移计数各自都不是单独充分原因，空间频率与半屏负载仍未分离。row-major MAP-mask
+  分配本来就不保留源图语义，画面难看不计画质；job2 仍为 `inconclusive`，根因未关闭，
+  不产生任何算法 qualification。
+- 后续 macro4 job5/op5 的 frame/双 DTM hash 与完整 sequence 精确匹配，但
+  PON/DRF/total 为 `37110/39621/89049 ms`，明显偏离已知 nominal；用户确认画面与
+  strict preview 一致，所以 `frame fidelity=PASS`，但主观画质差、4×4 块感明显。
+  该次只能裁定 exact operation 成立、timing 异常、算法资格不成立；旧 claim 永久消费。
+  证据裁决与 SHA 清单保存在
+  `.test-output/hardware/G1S1_MACRO4_QUALITY_RUN1_20260807_004650/`。
+- RC2G 已完成四次受控真屏 action：N0 的冷启动 MAP job1/op1 与 macro4 job2/op2，以及
+  N1 的独立 MAP primer job1/op1 与 low-balanced job2/op2。四次的协议、frame/DTM hash、
+  BUSY edge、安全 GPIO、电气和用户报告的 strict-preview 忠实度均通过；每个 fixed claim
+  均已永久消费，禁止重跑。通用 runner 完成仍只代表单次协议和取证路径就绪；Q1--Q4
+  自然图候选、四个独立 session 和八个 P0 action/claim declaration 已完成离线风险审计、
+  深验证与冻结；physical-bound materializer、逐 action usage/profile 深绑定、one-shot/
+  finalizer 与 tie-safe 四格总评器也已完成，但实际 policy 值、现场 panel/binding 文件、
+  每 action approval 和授权均未形成，仍不能执行。旧 UNBOUND runner/claim 永久禁用。2×2 V2
+  仍 `strict_metric_orthogonality_proven=false/upload_authorized=false`；N4 V3 已把五项预注册
+  指标做到跨因素 exact 正交，固定 runner/finalizer/analyzer 也已完成，但 hardware/limit
+  仍 blocked。N1 只提升 exact
+  `low-balanced` action 为探索性 safety/fidelity PASS，不提升 bundle 或其他三格。
+  RC2G MAP 为 `35006/180/22511/141/5 ms`，macro4 为
+  `35017/181/22521/141/5 ms`（total/PON/DRF/POF/post-PSR）；macro4 忠实显示但
+  主观画质差。旧时序异常未复现、根因未关闭。当前 J2-P1 已断开。
+- N1 low-balanced 探索性 pilot 已闭环：primer result SHA-256 为
+  `93d57feed9565344e20d10016977be8fc4754fbec09619316e96a8efed71f26a`；target result
+  SHA-256 为 `0297015a4e6ad04a85435e7fe10cc3c75678be9811c76f82695da3d11ed37e0e`。
+  用户确认目标真屏与 `low-balanced.strict-final.png` 一模一样、电气正常、ESP32 全程
+  未重启，随后已物理断开 J2-P1。该图不评价自然图画质，也不放行 Q1--Q4。N2 四个
+  自然图离线候选及 `MAP→候选` campaign 已于 2026-08-08 冻结。N2--N8 离线算法/计划
+  包为 7/7；后来真实 preflight 重新打开 production live 深绑定修复。N2--N8 的
+  physical production-live 软件链现均已闭环（`7/7`）。不能把软件完成写成硬件放行。
+  真屏完成状态以 STATUS 为准。N6 已完成新的 physical operator CLI、N5 raw observation
+  全量重算门、耐久 receipt/incident 边界和真实 Chromium physical E2E；这些软件完成项均不绕过 measured
+  inputs、reviewed limits/runtime、仪器和逐 action 授权等外部门禁。C3 参数化转移感知
+  优化器也已实现，但等待 N5 实测 profile 才能正式运行；仍没有新的可见刷新授权。
+- N0/N1 阶段曾分别留下多批回归、repository contract、compileall、JavaScript syntax、
+  diff check 与 PlatformIO build 通过记录。这些数字是历史快照，不是当前全仓最终计数；
+  最新验证批次与哈希只看 STATUS。
 
 ## 2026-08-05 扩展颜色与亮度可行性结论
 
@@ -122,9 +212,12 @@ platformio run
 排版、图像缩放、抖动和颜色量化属于后期渲染/应用层；不得耦合进
 `epd_driver`。诊断层可以保留少量固定测试图元，但不承担通用字体渲染。
 
-当前实验固件的 HTTP 控制接口没有应用层认证，只能放在可信、隔离的调试网络；
-无人看管时保持 J2-1 断电。正式应用版必须增加 token/一次性 arm，或在 release
-构建中关闭 legacy/危险诊断路由，不能把主机 CLI 的确认参数当成设备端权限控制。
+当前实验固件的 HTTP 控制接口没有应用层认证，只能放在可信、隔离的调试网络。纯软件、
+离线生成和本地验证不要求切断 J2-1，但也不得因此访问设备；受监督硬件 run 成功到达
+POF/safe-finish 且 GPIO idle 后，可在同一持续监督会话中保持上电，异常状态或监督会话
+结束时必须实体断电，无人看管时同样保持 J2-1 断电。正式应用版必须增加 token/一次性
+arm，或在 release 构建中关闭 legacy/危险诊断路由，不能把主机 CLI 的确认参数当成
+设备端权限控制。
 
 ## 2026-07-13 可生产 PCB 状态
 
@@ -248,10 +341,15 @@ D2 修正为 `K=GND、A=NEG_PUMP_H`；下单时只使用带 `revA1_Q1FIX`
 
 固件优先接入 `wifi_secrets.h` 配置的现有 Wi-Fi，实际 URL 以串口打印的
 `WiFi STA IP` 为准；`192.168.4.1` 仅是 STA 失败后的 AP 回退地址，不是固定
-调试地址。RC2C/V3 已完成实机验收；默认驱动板断电，未经用户明确确认，不刷写
-COM8、不访问任何会触发刷新的 HTTP 路由。
+调试地址。RC2C/V3 已完成 D0 正式验收；RC2F/V3 已完成受监督固定 MAP 基准、高负载
+事故、固定 MAP 恢复、低空间诊断和 macro4 job5。RC2G/V3 已完成精确 MAP job1 与
+macro4 job2 受监督验证；macro4 忠实度通过但画质差，旧时序异常根因未关闭。
+当前现场为驱动板/J2 断电、ESP32 单独供电，且没有常驻可见刷新授权；晚间每个 exact action 都必须由用户当次授权并由独立 claim
+永久消费。纯软件测试不要求改变 J2-P1 状态，但未经用户重新明确确认，不刷写 COM8、
+不访问设备或任何会触发刷新的 HTTP 路由。晚间执行见
+[`N2--N8 晚间逐项真屏任务板`](docs/MF1750_N2_N8_EVENING_TASK_BOARD_2026-08-08.md)。
 
-RC2F 候选固件的设备首页提供照片工具模式：选择一次原图后，可在 Atkinson、
+RC2F 当前固件的设备首页提供照片工具模式：选择一次原图后，可在 Atkinson、
 Floyd–Steinberg、无抖动和 8x8 有序抖动间切换，同时对比原图构图与实际六色
 上传预览；可在原图画布拖动、滚轮/滑杆缩放、按 90° 旋转并重置构图。照片优化、
 裁剪、构图和处理方式的变化只在浏览器本地重算，点击“上传并刷新”

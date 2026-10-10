@@ -8,15 +8,23 @@ import tempfile
 import unittest
 
 from tools.check_repo_contract import (
-    CheckResult,
+    LEGACY_LIVE_BLOCK_MARKERS,
+    N6_PHYSICAL_OPERATOR_ENTRYPOINT_MARKERS,
+    PHYSICAL_PRODUCTION_ENTRYPOINT_MARKERS,
     check_driver_frame_contract,
+    check_n6_physical_operator_closure,
     check_manifest,
+    check_n3_fixed_execution_contract,
+    check_n2p_fixed_execution_contract,
+    check_n4_v3_fixed_execution_contract,
+    check_physical_production_entrypoints,
     check_public_driver_header,
     check_upload_contract,
     run_checks,
 )
 from tools.mf1750_frame_tool import (
     ALLOWED_BUILD_TAGS,
+    BUSY_TRACE_BUILD_TAGS,
     REQUIRED_DRIVER_API,
     REQUIRED_REFRESH_SPI_HZ,
 )
@@ -30,7 +38,70 @@ class CurrentRepositoryTests(unittest.TestCase):
         report = run_checks(REPO_ROOT)
         self.assertTrue(report["passed"], report)
         self.assertFalse(report["hardware_tested"])
-        self.assertEqual(len(report["checks"]), 6)
+        self.assertEqual(len(report["checks"]), 11)
+
+
+class PhysicalProductionEntrypointTests(unittest.TestCase):
+    def test_completed_physical_entrypoints_and_legacy_blocks_pass(self) -> None:
+        result = check_physical_production_entrypoints(REPO_ROOT)
+        self.assertTrue(result.passed, result)
+        self.assertEqual(
+            result.checked_items,
+            len(PHYSICAL_PRODUCTION_ENTRYPOINT_MARKERS)
+            + len(LEGACY_LIVE_BLOCK_MARKERS),
+        )
+
+    def test_missing_legacy_public_hard_block_fails_contract(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            contracts = {
+                **PHYSICAL_PRODUCTION_ENTRYPOINT_MARKERS,
+                **LEGACY_LIVE_BLOCK_MARKERS,
+            }
+            for relative in contracts:
+                destination = root / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_text(
+                    (REPO_ROOT / relative).read_text(encoding="utf-8"),
+                    encoding="utf-8",
+                )
+            victim = root / "tools/g1_s1_rc2g_n8_once.py"
+            victim.write_text(
+                victim.read_text(encoding="utf-8").replace(
+                    "raise N8FixedActionError(LEGACY_LIVE_BLOCK_MESSAGE)",
+                    "# removed legacy public hard block",
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            result = check_physical_production_entrypoints(root)
+        self.assertFalse(result.passed)
+        self.assertTrue(
+            any(
+                "legacy live block tools/g1_s1_rc2g_n8_once.py missing marker"
+                in error
+                for error in result.errors
+            )
+        )
+
+    def test_completed_n6_physical_operator_contract_passes(self) -> None:
+        result = check_n6_physical_operator_closure(REPO_ROOT)
+        self.assertTrue(result.passed, result)
+        self.assertEqual(result.name, "n6_physical_operator_closure")
+        self.assertEqual(
+            result.checked_items, len(N6_PHYSICAL_OPERATOR_ENTRYPOINT_MARKERS)
+        )
+        self.assertFalse(result.warnings)
+
+    def test_absent_completed_n6_files_fail_contract(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            result = check_n6_physical_operator_closure(Path(temporary))
+        self.assertFalse(result.passed, result)
+        for relative in N6_PHYSICAL_OPERATOR_ENTRYPOINT_MARKERS:
+            self.assertTrue(
+                any(relative.as_posix() in error for error in result.errors),
+                relative,
+            )
 
 
 class ManifestTests(unittest.TestCase):
@@ -110,11 +181,46 @@ class ManifestTests(unittest.TestCase):
 
 
 class StaticContractTests(unittest.TestCase):
+    def test_n3_shared_plan_runner_and_analyzer_contract_passes(self) -> None:
+        result = check_n3_fixed_execution_contract(REPO_ROOT)
+        self.assertTrue(result.passed, result.errors)
+
+    def test_n4_v3_shared_runner_and_analyzer_contract_passes(self) -> None:
+        result = check_n4_v3_fixed_execution_contract(REPO_ROOT)
+        self.assertTrue(result.passed, result.errors)
+
+    def test_n2p_execution_supplement_rejects_byte_tamper(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "docs").mkdir()
+            (root / "tools").mkdir()
+            source_supplement = (
+                REPO_ROOT / "docs" / "N2P_RC2G_FIXED_EXECUTION_SUPPLEMENT_V2.json"
+            )
+            source_runner = (
+                REPO_ROOT / "tools" / "g1_s1_rc2g_n2_photo_campaign_once.py"
+            )
+            payload = source_supplement.read_bytes().replace(
+                b'"maximum_post_requests_per_action":1',
+                b'"maximum_post_requests_per_action":2',
+                1,
+            )
+            (root / "docs" / source_supplement.name).write_bytes(payload)
+            (root / "tools" / source_runner.name).write_bytes(
+                source_runner.read_bytes()
+            )
+            result = check_n2p_fixed_execution_contract(root)
+        self.assertFalse(result.passed)
+        self.assertTrue(any("SHA-256 changed" in error for error in result.errors))
+
     def test_driver_api_reference_matches_registered_routes_and_identity(self) -> None:
         api_reference = (REPO_ROOT / "docs" / "MF1750_DRIVER_API.md").read_text(
             encoding="utf-8"
         )
-        main_cpp = (REPO_ROOT / "src" / "main.cpp").read_text(encoding="utf-8")
+        main_cpp = "\n".join(
+            (REPO_ROOT / "src" / name).read_text(encoding="utf-8")
+            for name in ("main.cpp", "n7_main.cpp")
+        )
         registered_routes = {
             (method, route)
             for route, method in re.findall(
@@ -133,7 +239,8 @@ class StaticContractTests(unittest.TestCase):
         )
 
         self.assertEqual(documented_routes, registered_routes)
-        self.assertIn(next(iter(ALLOWED_BUILD_TAGS)), api_reference)
+        for build_tag in ALLOWED_BUILD_TAGS:
+            self.assertIn(build_tag, api_reference)
         self.assertIn(REQUIRED_DRIVER_API, api_reference)
         self.assertIn("精确 `307200`", api_reference)
         self.assertIn("`0x0` | 黑", api_reference)
@@ -173,7 +280,9 @@ class StaticContractTests(unittest.TestCase):
         self.assertIsNotNone(build_match)
         self.assertIsNotNone(api_match)
         self.assertIsNotNone(spi_match)
-        self.assertEqual(ALLOWED_BUILD_TAGS, frozenset({build_match.group(1)}))
+        current_build_tag = build_match.group(1)
+        self.assertIn(current_build_tag, ALLOWED_BUILD_TAGS)
+        self.assertEqual(BUSY_TRACE_BUILD_TAGS, frozenset({current_build_tag}))
         self.assertEqual(REQUIRED_DRIVER_API, api_match.group(1))
         self.assertEqual(REQUIRED_REFRESH_SPI_HZ, int(spi_match.group(1)))
 
@@ -278,6 +387,34 @@ class StaticContractTests(unittest.TestCase):
             result = check_driver_frame_contract(driver_cpp)
         self.assertFalse(result.passed)
         self.assertTrue(any("wait evidence recorder" in error for error in result.errors))
+
+    def test_driver_contract_requires_pre_command_idle_gate(self) -> None:
+        source = (REPO_ROOT / "src" / "epd_driver.cpp").read_text(encoding="utf-8")
+        source = source.replace(
+            'epdRequireIdleBeforeCommand("DRF")',
+            'true /* removed DRF pre-command idle gate */',
+            1,
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            driver_cpp = Path(temporary) / "epd_driver.cpp"
+            driver_cpp.write_text(source, encoding="utf-8")
+            result = check_driver_frame_contract(driver_cpp)
+        self.assertFalse(result.passed)
+        self.assertTrue(any("DRF pre-command idle gate" in error for error in result.errors))
+
+    def test_driver_contract_requires_busy_trace_schema(self) -> None:
+        source = (REPO_ROOT / "src" / "epd_driver.cpp").read_text(encoding="utf-8")
+        source = source.replace(
+            '\\"busy_trace_schema_version\\":1',
+            '\\"removed_busy_trace_schema_version\\":1',
+            1,
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            driver_cpp = Path(temporary) / "epd_driver.cpp"
+            driver_cpp.write_text(source, encoding="utf-8")
+            result = check_driver_frame_contract(driver_cpp)
+        self.assertFalse(result.passed)
+        self.assertTrue(any("BUSY trace schema report" in error for error in result.errors))
 
     def test_driver_contract_rejects_non_strict_drf_wait(self) -> None:
         source = (REPO_ROOT / "src" / "epd_driver.cpp").read_text(encoding="utf-8")

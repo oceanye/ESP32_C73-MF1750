@@ -23,7 +23,7 @@ from .core import (
 )
 
 
-FIXTURE_NAMES = ("global-v-bars", "global-h-bars", "map-orient-v1")
+FIXTURE_NAMES = ("global-v-bars", "global-h-bars", "map-orient-v1", "solid-white")
 BAR_COLORS = (WHITE, BLACK, RED, YELLOW, BLUE, GREEN)
 # Tuple order is always ``(full frame, logical left half, logical right half)``.
 # Physical CS1/CS2 hashes require an explicit ControllerMapping and do not
@@ -32,6 +32,7 @@ EXPECTED_FIXTURE_HASHES: Dict[str, Tuple[int, int, int]] = {
     "global-v-bars": (0x908478A5, 0x61BCF1C5, 0xA3446735),
     "global-h-bars": (0x7DD055C5, 0x855679C5, 0x855679C5),
     "map-orient-v1": (0x9D04142D, 0xF26832DD, 0xFE199FF5),
+    "solid-white": (0x13340DC5, 0xB7A855C5, 0xB7A855C5),
 }
 MAP_ORIENT_V1_PIXEL_COUNTS = (
     39536,
@@ -69,6 +70,10 @@ def _generate_global_v_bars() -> bytes:
 
 def _generate_global_h_bars() -> bytes:
     return _pack_function(lambda _x, y: BAR_COLORS[y * len(BAR_COLORS) // HEIGHT])
+
+
+def _generate_solid_white() -> bytes:
+    return bytes([0x11]) * FRAME_BYTES
 
 
 def _generate_map_orient_v1() -> bytes:
@@ -140,6 +145,7 @@ def generate_fixture(name: str) -> bytes:
         "global-v-bars": _generate_global_v_bars,
         "global-h-bars": _generate_global_h_bars,
         "map-orient-v1": _generate_map_orient_v1,
+        "solid-white": _generate_solid_white,
     }
     try:
         generator = generators[name]
@@ -159,7 +165,10 @@ def verify_fixture(name: str, frame: bytes | None = None) -> FixtureReport:
     logical_right = controller_stream(frame, ControllerMapping(1))
     actual_hashes = (fnv1a(frame), fnv1a(logical_left), fnv1a(logical_right))
     counts = pixel_counts(frame)
-    counts_ok = name != "map-orient-v1" or counts == MAP_ORIENT_V1_PIXEL_COUNTS
+    counts_ok = (
+        (name != "map-orient-v1" or counts == MAP_ORIENT_V1_PIXEL_COUNTS)
+        and (name != "solid-white" or counts == (0, WIDTH * HEIGHT) + (0,) * 14)
+    )
     return FixtureReport(
         name=name,
         byte_count=len(frame),

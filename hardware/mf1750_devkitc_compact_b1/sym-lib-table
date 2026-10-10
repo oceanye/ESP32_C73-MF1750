@@ -1,0 +1,3 @@
+(sym_lib_table
+	(lib (name "Local") (type "KiCad") (uri "${KIPRJMOD}/mf1750_local.kicad_sym") (options "") (descr "Local symbols for MF-1750 reference schematic"))
+)

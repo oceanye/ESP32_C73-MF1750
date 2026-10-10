@@ -1,0 +1,31 @@
+{
+  "canonical_board_sha256_after_variant": "462e127279bacc894eab5e8cc242cd6d26e1d3ee87708ad398f8064b5a5c4238",
+  "dnp_refs": [
+    "R15"
+  ],
+  "export_variant_sha256": "f5d4bbf567d0785c8ff673d6274233e4df7ddd114dd6a28f2d381c2d90d3784d",
+  "output": "C:\\Users\\Ye\\AppData\\Local\\Temp\\mf1750_b2_jlcpcb_wi7f5pqk\\mf1750_devkitc_b2_pcba_margin.kicad_pcb",
+  "output_sha256": "046b20fd5e1a4dd8e0cae452a2e5e60bd76a8b868df6dd47abf6bd15ccf74516",
+  "plot_options": {
+    "gerber_job_file": false,
+    "gerber_x2": true,
+    "precision": 6,
+    "protel_extensions": true
+  },
+  "removed_paste_apertures": [
+    {
+      "layers": "F.Paste",
+      "pad": "1",
+      "reference": "R15"
+    },
+    {
+      "layers": "F.Paste",
+      "pad": "2",
+      "reference": "R15"
+    }
+  ],
+  "schema": 1,
+  "source": "C:\\Users\\Ye\\PycharmProjects\\ESP32_C73\\hardware\\mf1750_devkitc_b2_pcba_margin\\mf1750_devkitc_b2_pcba_margin.kicad_pcb",
+  "source_sha256": "462e127279bacc894eab5e8cc242cd6d26e1d3ee87708ad398f8064b5a5c4238",
+  "status": "PASS"
+}

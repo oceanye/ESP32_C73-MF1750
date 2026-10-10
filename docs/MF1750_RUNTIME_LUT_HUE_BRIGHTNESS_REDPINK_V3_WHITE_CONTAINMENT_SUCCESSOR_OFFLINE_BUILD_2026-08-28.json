@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "kind": "mf1750-target-hue-redpink-brightness-v3-white-containment-successor-offline-build",
+  "generated_at": "2026-08-28T08:32:20.5156832+08:00",
+  "result": "PASS_OFFLINE_ONLY",
+  "scope": {
+    "hardware_accessed": false,
+    "device_network_accessed": false,
+    "serial_or_com_accessed": false,
+    "relay_accessed": false,
+    "firmware_flashed": false,
+    "device_reset": false,
+    "display_refreshed": false,
+    "claim_created": false
+  },
+  "identity": {
+    "build_tag": "MF1750_EC5_TARGET_HUE_REDPINK_BRIGHTNESS_V3_WHITE_CONTAINMENT_SUCCESSOR_SINGLE_APP_BOOT_V1_2026-08-28",
+    "test_id": "EC5-TARGET-HUE-REDPINK-BRIGHTNESS-V3-WHITE-CONTAINMENT-SUCCESSOR",
+    "campaign_id": "EC5_TARGET_HUE_REDPINK_BRIGHTNESS_V3_WHITE_CONTAINMENT_SUCCESSOR",
+    "environment": "ec5_runtime_lut_hue_brightness_redpink_v3_white_containment_successor",
+    "platformio_environment": "ec5_rp_v3_white_successor",
+    "device_api_version": "MF1750_EC5_TARGET_HUE_REDPINK_BRIGHTNESS_V3_WHITE_CONTAINMENT_SUCCESSOR_DEVICE_V1",
+    "identity_revision": "target-hue-redpink-brightness-v3-white-containment-successor-v1",
+    "base_route": "/api/ec5/target-hue-redpink-brightness-v3/white-containment-successor",
+    "nvs_namespace": "rlhrpcw_v3s",
+    "nvs_key": "used_rp3s",
+    "classification": "FACTORY_OTP_WHITE_REDPINK_BRIGHTNESS_V3_SUCCESSOR_ONE_ACTION_NO_RUNTIME_PAYLOAD",
+    "descriptor_id": "8e91f5692722cc75e7ceaf32f89a330083ec39116d0e690f09387f389bd4694d",
+    "action_id": "76517f9d6ba090cef2f4f3fd32bcda6a5466b41aeeef5ce31a5520ac1dbbceed",
+    "contract_id": "1618436e99a0ee1afd9ce16e534f3cf7e34151ddb5f0d6a757aee860aff1a227"
+  },
+  "predecessor_v2": {
+    "campaign_id": "EC5_TARGET_HUE_REDPINK_BRIGHTNESS_V2_WHITE_CONTAINMENT",
+    "contract_id": "73f6bb1db45aa5ec570e854067cb2ad29d6994206a8816e1eadfa7fc763c2c92",
+    "action_id": "4c0c5e414242832925d864cd89b64f5592b516c70bb6669683645022b265f87b",
+    "flash_evidence_file_sha256": "bfbd6799ca0bc16d81f67ee55addc137244452fb2d732364465b80e804572023",
+    "flash_evidence_canonical_integrity_sha256": "9d16ea4d96bc122aaa333b58b95ab5b5f88a87dcbcebb718ed8c716357de15eb",
+    "diagnostic_evidence_file_sha256": "67f906ce5821b3227ee5b03f74cb4ea81e96138e7eb3a333654972b768c916a7",
+    "diagnostic_evidence_canonical_integrity_sha256": "0cd81471308b9ca6dd543d451394d453622cfbe582343eef271f5b0b14ac0406",
+    "diagnostic_network": {
+      "get": 4,
+      "post": 0
+    },
+    "visible_refreshes": 0,
+    "claims": 0,
+    "action_never_executed": true,
+    "terminal_blocked": true,
+    "not_retry_of_predecessor": true,
+    "does_not_reauthorize_v2": true
+  },
+  "artifacts": {
+    "firmware_bin": {
+      "path": ".pio/build-rp-v3-white-successor/ec5_rp_v3_white_successor/firmware.bin",
+      "bytes": 789200,
+      "sha256": "3721b60c23662fb34fa467fc6873bf858fb579c7c01ab2a486f9456ca1da1cfb"
+    },
+    "firmware_elf": {
+      "path": ".pio/build-rp-v3-white-successor/ec5_rp_v3_white_successor/firmware.elf",
+      "bytes": 13215844,
+      "sha256": "2baf26d20280d316063f6bd26bc7f39e7526d47e5af09a46c4f34346464c7797"
+    }
+  },
+  "source_files": [
+    {
+      "path": "platformio.runtime_lut_hue_brightness_redpink_v3_white_containment_successor.ini",
+      "bytes": 859,
+      "sha256": "a61cf8392cdcec0a1a76c2b8ab5bba9ef36381b963c7b25d5d8a1e86720650f7"
+    },
+    {
+      "path": "src/ec5_rp_v3_white_successor.cpp",
+      "bytes": 237,
+      "sha256": "909e0b9566fcd06787153570de37eea18aae637cb7f8cbbdf4eb04705a98114d"
+    },
+    {
+      "path": "src/ec5_runtime_lut_hue_brightness_redpink_v3_white_containment_successor_identity.inc",
+      "bytes": 3108,
+      "sha256": "87165ce0f09769f4b5f3998af2476b5df633575528c1bd6b6d2cef9688f2beab"
+    },
+    {
+      "path": "src/ec5_runtime_lut_hue_brightness_redpink_v3_white_containment_successor_main.cpp",
+      "bytes": 29433,
+      "sha256": "6ab6e5be9f2aa0bd7e6bf776887fb299c2bf98a9ac25e6e3e7d364ef2adbc2ad"
+    },
+    {
+      "path": "tools/mf1750_runtime_lut_hue_brightness_redpink_v3_white_containment_successor_pack.py",
+      "bytes": 18289,
+      "sha256": "ee557252350488406d1ffa29c4cc0d6a4b81e9993358f58b036a156824f19b29"
+    },
+    {
+      "path": "tools/mf1750_runtime_lut_hue_brightness_redpink_v3_white_containment_successor_once.py",
+      "bytes": 40387,
+      "sha256": "522639cf4dd7a1110ffb2998dd48472493c2af4363d38795ed95ba372d162eb1"
+    },
+    {
+      "path": "tests/test_mf1750_runtime_lut_hue_brightness_redpink_v3_white_containment_successor.py",
+      "bytes": 25164,
+      "sha256": "da734bddf2dbbea375411f81f135f2797e8ff5d0fc9e1d5c370db3899c4f9b9a"
+    }
+  ],
+  "reviewed_dependencies": [
+    {
+      "path": "tools/mf1750_runtime_lut_cross_palette_partial_hold_v1_white_containment_once.py",
+      "bytes": 19019,
+      "sha256": "b54e4a40ec1b4be4a01b4e4be80d367336cba7cdf859e0366fcf94534545ff0d"
+    },
+    {
+      "path": "tools/mf1750_runtime_lut_cross_palette_partial_hold_v1_white_containment_pack.py",
+      "bytes": 5908,
+      "sha256": "01bff4c455d459bc6ae5c44dda239ef252309b6500126f024bb2cb771de86d01"
+    },
+    {
+      "path": "tools/mf1750_app_only_single_boot_flash.py",
+      "bytes": 12170,
+      "sha256": "529fbe5bf5a70254aaef5a042923d4699e1c27f1b478ef09c79c8f5fd1a1e451"
+    }
+  ],
+  "fixed_future_live_paths": {
+    "root": ".test-output/hardware/MF1750_TARGET_HUE_REDPINK_BRIGHTNESS_WHITE_CONTAINMENT_SUCCESSOR_20260828_V3",
+    "app_only_flash": ".test-output/hardware/MF1750_TARGET_HUE_REDPINK_BRIGHTNESS_WHITE_CONTAINMENT_SUCCESSOR_20260828_V3/app-only-single-boot-flash.json",
+    "j2_off_diagnostic": ".test-output/hardware/MF1750_TARGET_HUE_REDPINK_BRIGHTNESS_WHITE_CONTAINMENT_SUCCESSOR_20260828_V3/j2-off-diagnostic.json",
+    "action": ".test-output/hardware/MF1750_TARGET_HUE_REDPINK_BRIGHTNESS_WHITE_CONTAINMENT_SUCCESSOR_20260828_V3/action-01-factory-otp-white.json",
+    "claims_root": ".test-output/hardware/.mf1750_target_hue_redpink_brightness_white_containment_v3_successor_claims",
+    "preflight_state_at_record_time": "all_paths_absent_no_conflict"
+  },
+  "future_live_cli_not_executed": {
+    "precondition": "Fresh operator confirmation of J2 OFF is required before flash and diagnose; fresh J2 ON confirmation is required only before run. Do not retry, fall back, recover, or autochain after any failure.",
+    "app_only_flash_single_boot": "& 'C:\\Users\\Ye\\.platformio\\penv\\Scripts\\python.exe' 'tools\\mf1750_app_only_single_boot_flash.py' --port COM8 --bin '.pio\\build-rp-v3-white-successor\\ec5_rp_v3_white_successor\\firmware.bin' --expected-sha256 3721b60c23662fb34fa467fc6873bf858fb579c7c01ab2a486f9456ca1da1cfb --output '.test-output\\hardware\\MF1750_TARGET_HUE_REDPINK_BRIGHTNESS_WHITE_CONTAINMENT_SUCCESSOR_20260828_V3\\app-only-single-boot-flash.json' --python-exe 'C:\\Users\\Ye\\.platformio\\penv\\Scripts\\python.exe' --esptool-script 'C:\\Users\\Ye\\.platformio\\packages\\tool-esptoolpy\\esptool.py' --baud 460800 --timeout-seconds 240 --confirm-j2-off",
+    "j2_off_diagnose": "& 'C:\\Users\\Ye\\.platformio\\penv\\Scripts\\python.exe' 'tools\\mf1750_runtime_lut_hue_brightness_redpink_v3_white_containment_successor_once.py' diagnose-j2-off --base-url http://192.168.1.11 --confirm-j2-off",
+    "single_action": "& 'C:\\Users\\Ye\\.platformio\\penv\\Scripts\\python.exe' 'tools\\mf1750_runtime_lut_hue_brightness_redpink_v3_white_containment_successor_once.py' run --base-url http://192.168.1.11 --confirm-j2-on"
+  },
+  "validation": {
+    "clean_platformio_build": "PASS",
+    "ram_used_bytes": 45912,
+    "ram_total_bytes": 327680,
+    "flash_used_bytes": 788829,
+    "flash_total_bytes": 3342336,
+    "focused_v3_pytest": "18 passed",
+    "combined_v3_v2_flash_regression": "45 passed",
+    "ruff_check": "PASS",
+    "ruff_format_check": "PASS",
+    "python_py_compile": "PASS",
+    "dry_validate": "PASS",
+    "dry_validate_network_requests": 0,
+    "dry_validate_visible_refreshes": 0
+  },
+  "frozen_v2_files_unchanged": {
+    "tools/mf1750_runtime_lut_hue_brightness_redpink_v2_white_containment_pack.py": "461a1fd3635070ed52791f5f606ed6801c7fda5f1ea5956a2971e2dd1d29ec8c",
+    "tools/mf1750_runtime_lut_hue_brightness_redpink_v2_white_containment_once.py": "21c7ee00d653fd6bd39e63173f7c05588182c4ba0962deb1f21b54a7beda2879",
+    "src/ec5_runtime_lut_hue_brightness_redpink_v2_white_containment_main.cpp": "3baf9df399d7c339e9bf9a4d41464c2cd54c0b2267873933521bf59b51fcdab8",
+    "src/ec5_runtime_lut_hue_brightness_redpink_v2_white_containment_identity.inc": "5940f7de96677e0bf694d21c4526cb511486e7b400fe4b1e65ee58a4213ea517"
+  }
+}

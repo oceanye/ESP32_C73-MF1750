@@ -1,0 +1,161 @@
+** Drc report for mf1750_devkitc_b1_ground_return_probe.kicad_pcb **
+** Created on 2026-08-13T20:54:15 **
+** Report includes: Errors, Warnings, Exclusions **
+
+** Found 37 DRC violations **
+[track_not_centered_on_via]: Track endpoint not centered on via
+    Local override; error
+    @(3.5764 mm, 30.5537 mm): Track [/CSB] on B.Cu, length 0.2724 mm
+    @(3.5000 mm, 30.5000 mm): Via [/GND] on F.Cu - B.Cu
+[track_not_centered_on_via]: Track endpoint not centered on via
+    Local override; error
+    @(3.5764 mm, 29.8967 mm): Track [/CSB] on B.Cu, length 0.6570 mm
+    @(3.5000 mm, 30.5000 mm): Via [/GND] on F.Cu - B.Cu
+[track_not_centered_on_via]: Track endpoint not centered on via
+    Local override; error
+    @(3.3838 mm, 30.7463 mm): Track [/CSB] on B.Cu, length 0.0826 mm
+    @(3.5000 mm, 30.5000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /VPH)
+    Local override; error
+    @(24.2500 mm, 8.1500 mm): Via [/GND] on F.Cu - B.Cu
+    @(24.9692 mm, 7.5267 mm): Track [/VPH] on F.Cu, length 1.4432 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0197 mm)
+    Local override; error
+    @(29.5769 mm, 7.7303 mm): Track [/VPC] on B.Cu, length 5.6701 mm
+    @(24.2500 mm, 8.1500 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /VPC)
+    Local override; error
+    @(24.2500 mm, 8.1500 mm): Via [/GND] on F.Cu - B.Cu
+    @(23.9068 mm, 7.7303 mm): Via [/VPC] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /VPH)
+    Local override; error
+    @(24.2500 mm, 8.1500 mm): Via [/GND] on F.Cu - B.Cu
+    @(23.9487 mm, 8.5472 mm): Via [/VPH] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1000 mm)
+    Local override; error
+    @(37.7500 mm, 8.1500 mm): Via [/GND] on F.Cu - B.Cu
+    @(38.2500 mm, 7.7351 mm): Track [/VDDIO] on B.Cu, length 7.4000 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0231 mm)
+    Local override; error
+    @(23.9750 mm, 31.1000 mm): Via [/VDD] on F.Cu - B.Cu
+    @(25.3310 mm, 30.6769 mm): Track [/VPH] on F.Cu, length 2.6291 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1422 mm)
+    Local override; error
+    @(23.7500 mm, 7.5735 mm): Track [/VPC] on F.Cu, length 0.2217 mm
+    @(24.2500 mm, 8.1500 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0909 mm)
+    Local override; error
+    @(3.5438 mm, 30.9889 mm): Track [/CSB] on B.Cu, length 2.3486 mm
+    @(3.5000 mm, 30.5000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /VSL_LV)
+    Local override; error
+    @(28.7500 mm, 8.1500 mm): Via [/GND] on F.Cu - B.Cu
+    @(27.7500 mm, 7.6627 mm): Track [/VSL_LV] on F.Cu, length 7.5834 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0000 mm)
+    Local override; error
+    @(23.9750 mm, 31.1000 mm): Via [/VDD] on F.Cu - B.Cu
+    @(0.6500 mm, 0.6500 mm): Zone 'GND_PLANE' [/GND] on B.Cu, priority 0
+[hole_clearance]: 孔间距违规 (<电路板配置> 中的 "孔" 约束 间距 0.2500 mm; 实际 0.0000 mm)
+    Rule: <电路板配置> 中的 "孔" 约束; error
+    @(23.9750 mm, 31.1000 mm): Via [/VDD] on F.Cu - B.Cu
+    @(0.6500 mm, 0.6500 mm): Zone 'GND_PLANE' [/GND] on B.Cu, priority 0
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0000 mm)
+    Local override; error
+    @(23.9750 mm, 31.1000 mm): Via [/VDD] on F.Cu - B.Cu
+    @(0.6500 mm, 0.6500 mm): Zone 'IN1_SOLID_GND_PLANE' [/GND] on In1.Cu, priority 0
+[hole_clearance]: 孔间距违规 (<电路板配置> 中的 "孔" 约束 间距 0.2500 mm; 实际 0.0000 mm)
+    Rule: <电路板配置> 中的 "孔" 约束; error
+    @(23.9750 mm, 31.1000 mm): Via [/VDD] on F.Cu - B.Cu
+    @(0.6500 mm, 0.6500 mm): Zone 'IN1_SOLID_GND_PLANE' [/GND] on In1.Cu, priority 0
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0448 mm)
+    Local override; error
+    @(37.7500 mm, 8.1500 mm): Via [/GND] on F.Cu - B.Cu
+    @(37.2500 mm, 7.7429 mm): Via [/VDD] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /CSB 和 /GND)
+    Local override; error
+    @(3.3838 mm, 30.8289 mm): Track [/CSB] on B.Cu, length 0.2263 mm
+    @(3.5000 mm, 30.5000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1000 mm)
+    Local override; error
+    @(37.7500 mm, 8.1500 mm): Via [/GND] on F.Cu - B.Cu
+    @(37.2500 mm, 7.7429 mm): Track [/VDD] on B.Cu, length 7.6240 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0197 mm)
+    Local override; error
+    @(29.5769 mm, 7.7303 mm): Track [/VPC] on B.Cu, length 5.6701 mm
+    @(28.7500 mm, 8.1500 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /VSL_LV2 和 /GND)
+    Local override; error
+    @(28.2500 mm, 7.5267 mm): Track [/VSL_LV2] on F.Cu, length 3.1390 mm
+    @(28.7500 mm, 8.1500 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1722 mm)
+    Local override; error
+    @(2.9408 mm, 30.6213 mm): Track [/DC] on B.Cu, length 0.3326 mm
+    @(3.5000 mm, 30.5000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1661 mm)
+    Local override; error
+    @(28.7500 mm, 8.1500 mm): Via [/GND] on F.Cu - B.Cu
+    @(29.2500 mm, 6.6250 mm): Track [/REFN] on F.Cu, length 1.2596 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1661 mm)
+    Local override; error
+    @(28.7500 mm, 8.1500 mm): Via [/GND] on F.Cu - B.Cu
+    @(29.2500 mm, 7.8846 mm): Track [/REFN] on F.Cu, length 2.0648 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0497 mm)
+    Local override; error
+    @(37.7500 mm, 8.1500 mm): Via [/GND] on F.Cu - B.Cu
+    @(38.2500 mm, 7.7351 mm): Via [/VDDIO] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /DC 和 /GND)
+    Local override; error
+    @(3.1423 mm, 30.4198 mm): Track [/DC] on B.Cu, length 0.2850 mm
+    @(3.5000 mm, 30.5000 mm): Via [/GND] on F.Cu - B.Cu
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0985 mm)
+    Local override; error
+    @(24.2500 mm, 8.1500 mm): Via [/GND] on F.Cu - B.Cu
+    @(24.5000 mm, 9.0985 mm): Track [/VPH] on B.Cu, length 0.7797 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /CSB 和 /GND)
+    Local override; error
+    @(3.5764 mm, 30.5537 mm): Track [/CSB] on B.Cu, length 0.2724 mm
+    @(3.5000 mm, 30.5000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /CSB 和 /GND)
+    Local override; error
+    @(3.5764 mm, 29.8967 mm): Track [/CSB] on B.Cu, length 0.6570 mm
+    @(3.5000 mm, 30.5000 mm): Via [/GND] on F.Cu - B.Cu
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /CSB)
+    Local override; error
+    @(3.5000 mm, 30.5000 mm): Via [/GND] on F.Cu - B.Cu
+    @(3.3838 mm, 30.7463 mm): Track [/CSB] on B.Cu, length 0.0826 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /GND 和 /DC)
+    Local override; error
+    @(3.5000 mm, 30.5000 mm): Via [/GND] on F.Cu - B.Cu
+    @(3.1423 mm, 29.7858 mm): Track [/DC] on B.Cu, length 0.6340 mm
+[hole_to_hole]: 钻孔太靠近其他孔 (电路板配置约束 最小 0.2495 mm; 实际 0.2422 mm)
+    Rule: 电路板配置约束; warning
+    @(24.2500 mm, 8.1500 mm): Via [/GND] on F.Cu - B.Cu
+    @(23.9068 mm, 7.7303 mm): Via [/VPC] on F.Cu - B.Cu
+[hole_to_hole]: 钻孔太靠近其他孔 (电路板配置约束 最小 0.2495 mm; 实际 0.1985 mm)
+    Rule: 电路板配置约束; warning
+    @(24.2500 mm, 8.1500 mm): Via [/GND] on F.Cu - B.Cu
+    @(23.9487 mm, 8.5472 mm): Via [/VPH] on F.Cu - B.Cu
+[lib_footprint_issues]: 当前配置中不包含封装库 'MF1750_Production'
+    Local override; warning
+    @(31.0000 mm, 5.0000 mm): Footprint J1
+[lib_footprint_issues]: 当前配置中不包含封装库 'MF1750_Production'
+    Local override; warning
+    @(9.5000 mm, 27.5000 mm): Footprint L1
+[lib_footprint_issues]: 当前配置中不包含封装库 'MF1750_Production'
+    Local override; warning
+    @(46.0000 mm, 27.5000 mm): Footprint L2
+[lib_footprint_issues]: 当前配置中不包含封装库 'MF1750_Compact'
+    Local override; warning
+    @(5.5000 mm, 56.0000 mm): Footprint J2
+
+** Found 0 unconnected pads **
+
+** Found 0 Footprint errors **
+
+** Ignored checks **
+    - Tuning profile track geometries
+    - Silkscreen clearance
+    - Silkscreen clipped by solder mask
+    - Footprint doesn't match copy in library
+
+** End of Report **

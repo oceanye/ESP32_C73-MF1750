@@ -1,0 +1,186 @@
+{
+  "checks": [
+    {
+      "details": {
+        "resolved": {
+          "bom_csv": "upload/JLCPCB_BOM_MF1750_DEVKITC_B2_SMT.csv",
+          "cpl_csv": "upload/JLCPCB_CPL_MF1750_DEVKITC_B2_SMT.csv",
+          "gerber_zip": "upload/JLCPCB_PCB_MF1750_DEVKITC_B2_4L.zip",
+          "manifest": "MANIFEST.json",
+          "package_hashes": "PACKAGE_HASHES.txt",
+          "sha256sums": "SHA256SUMS.txt",
+          "upload_dir": "upload"
+        }
+      },
+      "id": "inputs",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "archive_count": 3,
+        "archives": [
+          {
+            "entries": 71,
+            "path": "JLCPCB_SUPPORT_MF1750_DEVKITC_B2.zip",
+            "uncompressed_bytes": 3440102
+          },
+          {
+            "entries": 24,
+            "path": "MF1750_DEVKITC_B2_KICAD_SOURCE.zip",
+            "uncompressed_bytes": 1260076
+          },
+          {
+            "entries": 12,
+            "path": "upload/JLCPCB_PCB_MF1750_DEVKITC_B2_4L.zip",
+            "uncompressed_bytes": 673337
+          }
+        ]
+      },
+      "id": "zip_integrity",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "bottom_paste_layers": [],
+        "entry_count": 12,
+        "path": "upload/JLCPCB_PCB_MF1750_DEVKITC_B2_4L.zip",
+        "required_pattern_matches": [
+          {
+            "matches": [
+              "mf1750_devkitc_b2_pcba_margin-F_Cu.gtl"
+            ],
+            "pattern": "^mf1750_devkitc_b2_pcba_margin-F_Cu[.]gtl$"
+          },
+          {
+            "matches": [
+              "mf1750_devkitc_b2_pcba_margin-In1_Cu.g1"
+            ],
+            "pattern": "^mf1750_devkitc_b2_pcba_margin-In1_Cu[.]g1$"
+          },
+          {
+            "matches": [
+              "mf1750_devkitc_b2_pcba_margin-In2_Cu.g2"
+            ],
+            "pattern": "^mf1750_devkitc_b2_pcba_margin-In2_Cu[.]g2$"
+          },
+          {
+            "matches": [
+              "mf1750_devkitc_b2_pcba_margin-B_Cu.gbl"
+            ],
+            "pattern": "^mf1750_devkitc_b2_pcba_margin-B_Cu[.]gbl$"
+          },
+          {
+            "matches": [
+              "mf1750_devkitc_b2_pcba_margin-F_Mask.gts"
+            ],
+            "pattern": "^mf1750_devkitc_b2_pcba_margin-F_Mask[.]gts$"
+          },
+          {
+            "matches": [
+              "mf1750_devkitc_b2_pcba_margin-B_Mask.gbs"
+            ],
+            "pattern": "^mf1750_devkitc_b2_pcba_margin-B_Mask[.]gbs$"
+          },
+          {
+            "matches": [
+              "mf1750_devkitc_b2_pcba_margin-F_Paste.gtp"
+            ],
+            "pattern": "^mf1750_devkitc_b2_pcba_margin-F_Paste[.]gtp$"
+          },
+          {
+            "matches": [
+              "mf1750_devkitc_b2_pcba_margin-Top Silkscreen.gto"
+            ],
+            "pattern": "^mf1750_devkitc_b2_pcba_margin-Top Silkscreen[.]gto$"
+          },
+          {
+            "matches": [
+              "mf1750_devkitc_b2_pcba_margin-Bottom Silkscreen.gbo"
+            ],
+            "pattern": "^mf1750_devkitc_b2_pcba_margin-Bottom Silkscreen[.]gbo$"
+          },
+          {
+            "matches": [
+              "mf1750_devkitc_b2_pcba_margin-Edge_Cuts.gm1"
+            ],
+            "pattern": "^mf1750_devkitc_b2_pcba_margin-Edge_Cuts[.]gm1$"
+          },
+          {
+            "matches": [
+              "mf1750_devkitc_b2_pcba_margin-PTH.drl"
+            ],
+            "pattern": "^mf1750_devkitc_b2_pcba_margin-PTH[.]drl$"
+          },
+          {
+            "matches": [
+              "mf1750_devkitc_b2_pcba_margin-NPTH.drl"
+            ],
+            "pattern": "^mf1750_devkitc_b2_pcba_margin-NPTH[.]drl$"
+          }
+        ]
+      },
+      "id": "gerber_archive",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "bom_path": "upload/JLCPCB_BOM_MF1750_DEVKITC_B2_SMT.csv",
+        "bom_rows": 16,
+        "cpl_path": "upload/JLCPCB_CPL_MF1750_DEVKITC_B2_SMT.csv",
+        "cpl_rows": 46,
+        "designator_set_sha256": "a311aa9ddaf11867d427c52349eec0d61baf8e37cb444df13b9b866c5e4ee496",
+        "designators": 46,
+        "unique_lcsc_parts": 16
+      },
+      "id": "bom_cpl",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "entries": 72,
+        "path": "MANIFEST.json"
+      },
+      "id": "manifest",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "entries": 73,
+        "path": "SHA256SUMS.txt"
+      },
+      "id": "sha256sums",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "entries": 5,
+        "path": "PACKAGE_HASHES.txt",
+        "required_entries": 5
+      },
+      "id": "package_hashes",
+      "status": "PASS"
+    }
+  ],
+  "config": "C:\\Users\\Ye\\PycharmProjects\\ESP32_C73\\hardware\\mf1750_devkitc_b2_jlcpcb\\package_audit_config.json",
+  "errors": [],
+  "inputs": {
+    "bom_csv": "upload/JLCPCB_BOM_MF1750_DEVKITC_B2_SMT.csv",
+    "cpl_csv": "upload/JLCPCB_CPL_MF1750_DEVKITC_B2_SMT.csv",
+    "gerber_zip": "upload/JLCPCB_PCB_MF1750_DEVKITC_B2_4L.zip",
+    "manifest": "MANIFEST.json",
+    "package_hashes": "PACKAGE_HASHES.txt",
+    "sha256sums": "SHA256SUMS.txt",
+    "upload_dir": "upload"
+  },
+  "root": "C:\\Users\\Ye\\PycharmProjects\\ESP32_C73\\hardware\\mf1750_devkitc_b2_jlcpcb",
+  "schema": 1,
+  "status": "PASS",
+  "summary": {
+    "checks": 7,
+    "error": 0,
+    "errors": 0,
+    "fail": 0,
+    "pass": 7,
+    "skip": 0
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "kind": "mf1750-lightness-hold-function-chain-v1-white-successor-v1-offline-build-seal",
+  "created_on": "2026-09-01",
+  "result": "PASS",
+  "offline_only": true,
+  "hardware_accessed": false,
+  "device_network_accessed": false,
+  "serial_or_com_accessed": false,
+  "relay_accessed": false,
+  "camera_accessed": false,
+  "firmware_flashed": false,
+  "display_refreshed": false,
+  "campaign_id": "EC5_LIGHTNESS_HOLD_FUNCTION_CHAIN_V1_FACTORY_OTP_WHITE_SUCCESSOR_V1",
+  "contract_id": "18ed20ebb2906bf6c8cec9c738c183c58c8512c0856083b79be141cb0562244d",
+  "descriptor_id": "d62abfb200d94b9cebc163d4e82e89ccc80fa483cae85e9ab7561f9257e9cf04",
+  "action_id": "d731ca688e935d2fec1fa15f24e51126f9a7fd8b3d026f3e41653b11bdd5f972",
+  "source_gate": {
+    "source_campaign_id": "EC5_LIGHTNESS_HOLD_FUNCTION_CHAIN_V1",
+    "source_main_contract_id": "ad14f5394a5c6e284885aa504ea0d99fec0ccb1dcf8053759dba025b8606f3e3",
+    "accepted_source_ordinals": [5],
+    "accepted_source_role": "H2_COMMENTED_CODE6_BOTTOM_PROBE_HOLD_GRID_AND_H1",
+    "accepted_source_descriptor_id": "4a55af059f6abad6f55bd7647068cd55e5962dac60cc9f9ef8246b4fdeff6407",
+    "accepted_source_action_id": "3e9b5a096ee556caf8cb7c87df7a2c7fb94f9e53621d03c93fd013cc6fa41e7a",
+    "accepted_source_complete_actions_sha256": "34ce89a89cba4063123b54dc110b37f50a639f639b095738d66712ff98b8a76e",
+    "fixed_terminal_path": ".test-output/hardware/MF1750_LIGHTNESS_HOLD_FUNCTION_CHAIN_20260901_V1/action-05.json",
+    "terminal_state_required": "COMPLETE",
+    "total_driver_call_count_required": 5,
+    "source_fault_accepted": false,
+    "source_early_stop_accepted": false,
+    "automatic_source_selection": false,
+    "source_terminal_evidence_available_at_offline_seal": false,
+    "live_gate_state": "WAITING_FOR_FRESH_ORDINAL5_H2_COMPLETE"
+  },
+  "successor_action": {
+    "profile_id": "WF23_25",
+    "factory_otp": true,
+    "runtime_lut_write": false,
+    "custom_waveform_write": false,
+    "one_visible_refresh": true,
+    "startup_refresh": false,
+    "retry": false,
+    "fallback": false,
+    "automatic_recovery": false,
+    "autochain": false,
+    "main_campaign_resume_after_containment": false,
+    "nvs_namespace": "lhfcw_v1",
+    "nvs_key": "used_lhfcw1",
+    "route": "/api/ec5/lightness-hold-function-chain-v1/white-successor-v1"
+  },
+  "artifacts": {
+    "firmware_bin": {
+      "bytes": 787392,
+      "sha256": "777afe562ac14541a57e31c6a5ea1b8faa7815247cd07495d53e5603d6772c6c"
+    },
+    "firmware_elf": {
+      "bytes": 13214400,
+      "sha256": "34488d49fe7e8e9ae79de25e2c0de00734ac69f10d06ce859a652cc7bb4cf5b7"
+    },
+    "compiled_descriptor_marker_counts": {
+      "firmware_bin": 1,
+      "firmware_elf": 1
+    }
+  },
+  "verification": {
+    "platformio_isolated_build": "PASS",
+    "build_command": "python tools/mf1750_lightness_hold_function_chain_v1_white_successor_v1_build.py build",
+    "pytest": {
+      "command": "python -m pytest -q tests/test_mf1750_lightness_hold_function_chain_v1.py tests/test_mf1750_lightness_hold_function_chain_v1_white_successor_v1.py",
+      "result": "16 passed"
+    },
+    "ruff": "PASS",
+    "py_compile": "PASS",
+    "independent_audit": "PASS",
+    "artifact_postflight": "PASS"
+  },
+  "package_readiness": {
+    "main_plus_white_successor_offline_sealed": true,
+    "hardware_execution_performed": false,
+    "live_source_gate_deferred_until_h2_complete_exists": true,
+    "white_successor_may_not_follow_fault_or_early_stop": true,
+    "white_successor_may_not_run_automatically": true
+  },
+  "claim_boundary": {
+    "local_hold_proven": false,
+    "qualified_colors": 0,
+    "qualified_gray_levels": 0,
+    "qualified_brightness_levels": 0,
+    "absolute_color_claimed": false,
+    "controller_color_equivalence_claimed": false
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "meta": {
+    "version": 1,
+    "filename": "mf1750_devkitc_b1_single_power_layer.kicad_pro"
+  },
+  "board": {
+    "design_settings": {
+      "defaults": {
+        "board_outline_line_width": 0.1,
+        "copper_line_width": 0.2,
+        "copper_text_size_h": 1.0,
+        "copper_text_size_v": 1.0,
+        "copper_text_thickness": 0.15,
+        "silk_line_width": 0.12,
+        "silk_text_size_h": 1.0,
+        "silk_text_size_v": 1.0,
+        "silk_text_thickness": 0.15
+      },
+      "meta": {
+        "version": 2
+      },
+      "rule_severities": {
+        "lib_footprint_mismatch": "ignore",
+        "silk_over_copper": "ignore",
+        "silk_overlap": "ignore",
+        "missing_courtyard": "warning",
+        "track_not_centered_on_via": "error",
+        "footprint_filters_mismatch": "warning",
+        "footprint_type_mismatch": "warning",
+        "silk_edge_clearance": "warning"
+      }
+    }
+  },
+  "schematic": {
+    "drawing": {
+      "default_line_thickness": 6,
+      "default_text_size": 50
+    },
+    "legacy_lib_dir": "",
+    "legacy_lib_list": [],
+    "meta": {
+      "version": 1
+    }
+  },
+  "libraries": {
+    "pinned_footprint_libs": [],
+    "pinned_symbol_libs": []
+  }
+}

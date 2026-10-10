@@ -1,0 +1,101 @@
+{
+  "metadata": {
+    "date": "2026-08-14T07:51:22",
+    "generator": "KiCad 10.0.3",
+    "project": "mf1750_devkitc_b1_single_power_layer",
+    "board_name": "mf1750_devkitc_b1_single_power_layer"
+  },
+  "board": {
+    "has_outline": true,
+    "width": "62.0000 mm",
+    "height": "58.0000 mm",
+    "area": "3596.00 mm²",
+    "front_component_density": "30.30",
+    "back_component_density": "5.29",
+    "front_copper_area": "2861.832 mm²",
+    "back_copper_area": "2759.853 mm²",
+    "min_track_clearance": "0.2016 mm",
+    "min_track_width": "0.2000 mm",
+    "min_drill_diameter": "0.3000 mm",
+    "board_thickness": "1.6000 mm",
+    "front_footprint_area": "1089.749 mm²",
+    "back_footprint_area": "190.158 mm²",
+    "front_footprint_density": "30.30",
+    "back_footprint_density": "5.29"
+  },
+  "pads": {
+    "通孔": 46,
+    "贴片": 156,
+    "连接器": 0,
+    "非电镀孔_(npth)": 2,
+    "半孔": 0,
+    "压接": 0
+  },
+  "vias": {
+    "": 0
+  },
+  "components": {
+    "直插_(tht)": {
+      "front": 2,
+      "back": 0,
+      "total": 2
+    },
+    "贴片": {
+      "front": 47,
+      "back": 0,
+      "total": 47
+    },
+    "未指定": {
+      "front": 2,
+      "back": 10,
+      "total": 12
+    },
+    "total": {
+      "front": 51,
+      "back": 10,
+      "total": 61
+    }
+  },
+  "drill_holes": [
+    {
+      "count": 75,
+      "shape": "圆形",
+      "x_size": "0.3000 mm",
+      "y_size": "0.3000 mm",
+      "plated": true,
+      "source": "过孔",
+      "start_layer": "F.Cu",
+      "stop_layer": "B.Cu"
+    },
+    {
+      "count": 44,
+      "shape": "圆形",
+      "x_size": "0.8000 mm",
+      "y_size": "0.8000 mm",
+      "plated": true,
+      "source": "焊盘",
+      "start_layer": "F.Cu",
+      "stop_layer": "B.Cu"
+    },
+    {
+      "count": 2,
+      "shape": "圆形",
+      "x_size": "2.5000 mm",
+      "y_size": "2.5000 mm",
+      "plated": false,
+      "source": "焊盘",
+      "start_layer": "F.Cu",
+      "stop_layer": "B.Cu"
+    },
+    {
+      "count": 2,
+      "shape": "圆形",
+      "x_size": "0.7500 mm",
+      "y_size": "0.7500 mm",
+      "plated": true,
+      "source": "焊盘",
+      "start_layer": "F.Cu",
+      "stop_layer": "B.Cu"
+    }
+  ]
+}

@@ -1,0 +1,222 @@
+{
+  "schema_version": 2,
+  "palette_id": "mf1750-l535-measured-v1",
+  "calibrated": true,
+  "source": "MF-1750 panel measurement, PAL1 single active action (production render path), camera-relative D65/2deg Lab",
+  "illuminant": "D65",
+  "observer": "2deg",
+  "notes": "Measured on the MF-1750 panel through the PAL1 calibration chain; camera-relative Lab. Codes 4/7 retained in extras outside the schema.",
+  "calibration": {
+    "measurement_id": "PAL1_CAL_BRIGHT_20260925_V1",
+    "artifact_sha256": "300b2e05c43f02db65042ce94b9c57bf42e94902d3ca9dbfb7abdc162097424b"
+  },
+  "entries": [
+    {
+      "code": 3,
+      "name": "black",
+      "lab": [
+        15.7619,
+        11.6881,
+        -26.8236
+      ]
+    },
+    {
+      "code": 0,
+      "name": "blue",
+      "lab": [
+        30.2903,
+        -6.4042,
+        -21.9662
+      ]
+    },
+    {
+      "code": 6,
+      "name": "green",
+      "lab": [
+        53.4052,
+        -12.3262,
+        13.4684
+      ]
+    },
+    {
+      "code": 1,
+      "name": "red",
+      "lab": [
+        28.9367,
+        30.8001,
+        -63.2265
+      ]
+    },
+    {
+      "code": 7,
+      "name": "white",
+      "lab": [
+        65.5217,
+        -0.0512,
+        -20.4749
+      ]
+    },
+    {
+      "code": 4,
+      "name": "yellow",
+      "lab": [
+        58.5594,
+        -18.3363,
+        25.1208
+      ]
+    }
+  ],
+  "extras": {
+    "outside_schema_retention": true,
+    "note": "NOT part of palette schema v2 and NOT covered by its canonical hash; record-only retention for later intermediate-state work",
+    "record_only_endpoints": {
+      "4": {
+        "cs1_lab_median": [
+          59.004,
+          -18.7591,
+          25.8972
+        ],
+        "cs2_lab_median": [
+          58.1148,
+          -17.9135,
+          24.3445
+        ],
+        "cross_side": {
+          "delta_lstar": -0.8892,
+          "delta_e00": 1.0931
+        }
+      },
+      "7": {
+        "cs1_lab_median": [
+          66.9292,
+          -0.098,
+          -20.6263
+        ],
+        "cs2_lab_median": [
+          64.1143,
+          -0.0044,
+          -20.3235
+        ],
+        "cross_side": {
+          "delta_lstar": -2.8149,
+          "delta_e00": 2.3102
+        }
+      }
+    },
+    "per_code_noise_lstar": {
+      "0": 9.1394,
+      "1": 7.0062,
+      "2": 9.9877,
+      "3": 8.8853,
+      "4": 10.024,
+      "5": 3.7132,
+      "6": 8.9396,
+      "7": 11.171
+    },
+    "measurement": {
+      "measurement_id": "PAL1_CAL_BRIGHT_20260925_V1",
+      "extraction_artifact_sha256": "300b2e05c43f02db65042ce94b9c57bf42e94902d3ca9dbfb7abdc162097424b",
+      "contract_sha256": "97087d969844d3bb3d13a70e647f4ea81d5950c2236cbdf093a4a6350945d730",
+      "campaign_id": "EC5_PALETTE_CAL_PAL1_V5_20260925",
+      "action_sha256": "8689ac23b4908ddd1c174bb602e3a1892fa5d7eeffea5404b928cf0348de8575",
+      "frame_sha256": "ee1704b2c1d09257720bc95b86d87841df4d7488cb0b9c408e33954d7aef1c9a",
+      "white_calibration_coefficient": {
+        "white_code": 7,
+        "bright_reference": "2026-09-17 bright session white column L*",
+        "bright_reference_lstar": 65.8,
+        "measured_white_lstar_per_side": {
+          "CS1": 66.9292,
+          "CS2": 64.1143
+        },
+        "measured_white_lstar_mean": 65.5217,
+        "ratio_bright_over_measured": 1.004247,
+        "delta_lstar_bright_minus_measured": 0.2783,
+        "note": "session calibration coefficient; camera-relative sessions are compared through their own white column, never pooled raw"
+      }
+    },
+    "l535_role_codes": {
+      "black": 3,
+      "white": 7,
+      "yellow": 4,
+      "red": 1,
+      "green": 6,
+      "blue": 0
+    },
+    "unused_measured_columns": {
+      "2": {
+        "cs1_lab_median": [
+          50.2434,
+          -10.7198,
+          8.6505
+        ],
+        "cs2_lab_median": [
+          50.0954,
+          -9.7912,
+          9.6113
+        ]
+      },
+      "5": {
+        "cs1_lab_median": [
+          17.4264,
+          11.5914,
+          -29.0008
+        ],
+        "cs2_lab_median": [
+          17.4312,
+          11.496,
+          -29.0127
+        ]
+      }
+    },
+    "render_path_note": "entry codes are L535 drive nibbles; the measured nibble-to-colour mapping is documented in extras.l535_role_codes",
+    "uniformity_tolerated_cells": {
+      "rule": {
+        "max_failed_cells_per_column": 2,
+        "cell_lab_max_delta_e76_from_column_median": 4.0,
+        "scope": "single_pixel_uniform failures only; quality_pass (clip/scatter) failures remain hard-fail",
+        "evidence": "PAL1_CAL_ANALYSIS_20260925_V1/inset-probe/inset-probe.json: uniform_p95 of the edge-contaminated cells drops below the 4.0 gate at central_fraction 0.30 with column-median Lab stable (<=0.5 L*)"
+      },
+      "columns": {
+        "CS1/C0": [
+          {
+            "row": 1,
+            "delta_e76_from_column_median": 2.8146
+          }
+        ],
+        "CS2/C0": [
+          {
+            "row": 3,
+            "delta_e76_from_column_median": 1.3506
+          }
+        ],
+        "CS1/C3": [
+          {
+            "row": 0,
+            "delta_e76_from_column_median": 2.1615
+          },
+          {
+            "row": 1,
+            "delta_e76_from_column_median": 1.7518
+          }
+        ],
+        "CS2/C3": [
+          {
+            "row": 0,
+            "delta_e76_from_column_median": 1.855
+          },
+          {
+            "row": 1,
+            "delta_e76_from_column_median": 1.583
+          }
+        ],
+        "CS1/C5": [
+          {
+            "row": 6,
+            "delta_e76_from_column_median": 3.0278
+          }
+        ]
+      }
+    }
+  },
+  "render_path": "l535_r20"
+}

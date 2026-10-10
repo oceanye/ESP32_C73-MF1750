@@ -1,0 +1,4 @@
+(sym_lib_table
+	(lib (name "Local") (type "KiCad") (uri "${KIPRJMOD}/mf1750_local.kicad_sym") (options "") (descr "Local symbols for MF-1750 reference schematic"))
+	(lib (name "B3_WROOM") (type "KiCad") (uri "${KIPRJMOD}/b3_wroom_symbols.kicad_sym") (options "") (descr "B3 WROOM power, isolation and control symbols bound to official package evidence"))
+)

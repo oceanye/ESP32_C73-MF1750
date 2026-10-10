@@ -1,0 +1,31 @@
+//=================================================================================================
+//                   E6 13 inch Customer FW Reference Code 
+//
+// File Name : pindefine.h
+// Author : Electronic Design Dept. II
+// Data : 2024.08.08
+// Version : 1.0
+// Copyright : E Ink Holdings Inc.
+//=================================================================================================
+
+#ifndef __PINDEFINE_H__
+#define __PINDEFINE_H__
+
+//==============  Standard SPI Setting   ==============//
+//Please modify the pin number
+#define SPI_CS0		0 // Please set it as output pin
+#define SPI_CS1		1 // Please set it as output pin
+#define SPI_CLK		2 // Please set it as SPI clock pin
+#define SPI_Data0	3 // Please set it as SPI MOSI pin
+#define SPI_Data1	4 // Please set it as SPI MISO pin
+#define SPI_Data2	5 // Reserved for quad-SPI SI2 pin
+#define SPI_Data3	6 // Reserved for quad-SPI SI3 pin
+
+//==============   GPIO Setting   ==============//
+//Please modify the pin number
+#define EPD_BUSY	7   // Please set it as input pin
+#define EPD_RST		8   // Please set it as output pin
+
+//===============================================
+
+#endif //#ifndef __PINDEFINE_H__

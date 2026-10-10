@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "kind": "mf1750-same-r20-parity-4x8-v2-offline-build-manifest",
+  "created_date": "2026-08-28",
+  "offline_only": true,
+  "hardware_accessed": false,
+  "device_network_accessed": false,
+  "serial_or_com_accessed": false,
+  "relay_accessed": false,
+  "firmware_flashed": false,
+  "display_refreshed": false,
+  "campaign_id": "EC5_SAME_R20_PARITY_4X8_V2",
+  "contract_id": "9e70a54e0ed1c3756357b2f3026e5651a7d1246294da6915397573b9b897a1ff",
+  "descriptor_id": "7f668842d3d4fca179049b309c298d0ff2d359c6bdd26550704e6929f1108cda",
+  "action_id": "2eef95155b78ee27b13e5971c40618106779495c80e0e3ef833eb2484f420476",
+  "nvs": {
+    "namespace": "sr20p4v2",
+    "cursor_key": "cursor_s4v2",
+    "boot_key": "boot_s4v2",
+    "v1_reused": false
+  },
+  "route_prefix": "/api/ec5/same-r20-parity-4x8-v2",
+  "action_contract": {
+    "count": 1,
+    "visible_refreshes": 1,
+    "runtime_profile": "active/active same complete tuple",
+    "controller_dtm_byte_identical": true,
+    "factory_white_actions_in_campaign": 0,
+    "external_factory_white_before_required": true,
+    "external_factory_white_after_required": true,
+    "retry": false,
+    "recovery": false,
+    "autochain": false
+  },
+  "atlas": {
+    "rows": 4,
+    "columns_per_controller": 8,
+    "row_codes": [
+      [0, 1, 2, 3, 4, 5, 6, 7],
+      [6, 7, 0, 1, 2, 3, 4, 5],
+      [5, 4, 7, 6, 1, 0, 3, 2],
+      [3, 2, 5, 4, 7, 6, 1, 0]
+    ],
+    "x0": 20,
+    "y_by_row": [44, 180, 316, 452],
+    "cell_width": 52,
+    "cell_height": 100,
+    "gap_x": 8,
+    "gap_y": 36,
+    "background_code": 7,
+    "border": false,
+    "positions_per_code_per_controller": 4,
+    "retained_frames": 3,
+    "samples_per_code_per_controller": 12,
+    "frame_sha256": "1ff9588f4f7d00d7e9dd0a89d2c4fb08c25db7e6e044ee467af6187b3270ad23",
+    "controller_dtm_sha256": "2edcd090619b3a690b1d23db70df9b7648bad40b0512887df8a380a6f53fd1cb"
+  },
+  "analysis": {
+    "white_off_photos": 3,
+    "retained_atlas_off_photos": 3,
+    "g1_homography_required": true,
+    "local_background": true,
+    "same_position_off_white_residual": true,
+    "prior_noise_p95_de76": 2.2010622719387043,
+    "fixed_threshold_de76": 6.603186815816113,
+    "automatic_threshold_relaxation": false,
+    "absolute_colour_proven": false,
+    "electrical_controller_equivalence_proven": false
+  },
+  "artifacts": {
+    "firmware.bin": {
+      "bytes": 798560,
+      "sha256": "f6472a407bea4fa2abc6547f329959b0795e86b932118892634f8f48dca38dd8"
+    },
+    "firmware.elf": {
+      "bytes": 13285392,
+      "sha256": "834f89b7cc854508622d74940e8c9266e774a4919980151ed2ff0dbd4f073ed6"
+    }
+  },
+  "validation": {
+    "platformio_clean_build": "PASS",
+    "runner_dry_validate": "PASS",
+    "focused_pytest": "14 passed",
+    "ruff_check": "PASS",
+    "ruff_format_check": "PASS",
+    "py_compile": "PASS"
+  }
+}

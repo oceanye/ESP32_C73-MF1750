@@ -18,14 +18,25 @@ class WebUiContractTests(unittest.TestCase):
             "imageInput",
             "fitPolicy",
             "ditherMode",
+            "rotationDegrees",
+            "gamutProfile",
+            "renderingIntent",
+            "mappingStrength",
+            "algorithmSeed",
+            "optimizationBudget",
             "paletteMode",
+            "sourcePreviewImage",
+            "mappedPreviewImage",
             "previewImage",
+            "modelPreviewImage",
             "frameBytes",
             "inputHash",
             "frameHash",
             "paletteWarning",
             "allowConnection",
             "armPhrase",
+            "panelPlanPhrase",
+            "profilePhrase",
             "refreshButton",
             "jobState",
             "errorDetail",
@@ -36,6 +47,9 @@ class WebUiContractTests(unittest.TestCase):
             self.assertIn(scoped_status, self.html)
         self.assertIn("Hardware tested", self.html)
         self.assertIn("NO", self.html)
+        self.assertIn("四阶段软预览", self.html)
+        self.assertIn("SOFT PROOF / SIMULATION ONLY", self.html)
+        self.assertIn("n6_physical_production_mode", self.javascript)
 
     def test_ui_locks_refresh_and_has_network_recovery(self) -> None:
         self.assertIn("state.refreshLocked = true", self.javascript)
@@ -44,6 +58,12 @@ class WebUiContractTests(unittest.TestCase):
         self.assertIn("HTTP 202", self.javascript)
         self.assertIn("completed_pending_report", self.javascript)
         self.assertIn("protocol_verified", self.javascript)
+        self.assertIn(
+            "state.refreshLocked = data.result.new_submission_locked === true",
+            self.javascript,
+        )
+        self.assertIn("localAbortQuarantine", self.javascript)
+        self.assertIn("本进程保持提交锁", self.javascript)
 
     def test_ui_uses_fragment_session_token_for_every_application_request(self) -> None:
         self.assertIn('fragment.get("token")', self.javascript)
@@ -82,6 +102,16 @@ class WebUiContractTests(unittest.TestCase):
         self.assertNotIn('hardware_tested = true', combined)
         self.assertNotIn('hardware_tested: true', combined)
         self.assertNotIn('Hardware tested: YES', combined)
+
+    def test_v2_uploads_original_bytes_and_verifies_bound_binary_previews(self) -> None:
+        self.assertIn('jsonRequest("/application/convert-v2"', self.javascript)
+        self.assertIn('"X-MF1750-Preparation"', self.javascript)
+        self.assertIn("selectedFile.arrayBuffer()", self.javascript)
+        self.assertIn("crypto.subtle.digest", self.javascript)
+        self.assertIn("metadata.sha256", self.javascript)
+        self.assertIn("URL.revokeObjectURL", self.javascript)
+        self.assertNotIn("getImageData(", self.javascript)
+        self.assertNotIn("preview_png_base64", self.javascript)
 
 
 if __name__ == "__main__":

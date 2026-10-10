@@ -1,0 +1,10 @@
+{
+  "schema_version": 0,
+  "kind": "mf1750-ec5-compare-white-synthetic-manual-observation-fixture",
+  "synthetic": true,
+  "operator_observation_performed": false,
+  "hardware_execution_performed": false,
+  "action_id": "f9d41bfcd55558391cf189da2ffbe4606f4c81fa1edd896c0b59e227e9ec1f36",
+  "decision": "SYNTHETIC_SHAPE_ONLY_NOT_A_PASS",
+  "warning": "TEST FIXTURE ONLY - NOT PHYSICAL EVIDENCE"
+}

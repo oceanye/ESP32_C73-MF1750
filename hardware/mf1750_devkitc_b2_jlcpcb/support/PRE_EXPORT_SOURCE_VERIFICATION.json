@@ -1,0 +1,186 @@
+{
+  "artifacts": {
+    "MF1750_Compact.pretty/ESP32-S3-DevKitC-1_Socket.kicad_mod": {
+      "bytes": 6289,
+      "sha256": "849a5067df38cf7498aa901303927dfde5471dcf0db394bbab7152e411073e97"
+    },
+    "MF1750_Production.pretty/Omron_XF2M-5015-1A_1x50_P0.5mm_DualContact.kicad_mod": {
+      "bytes": 6312,
+      "sha256": "ad83f5c7ccd1b8c857ed0cfe739a9074eba5876a18c7a34fe1800e598d5afbae"
+    },
+    "MF1750_Production.pretty/SXN_SMMS0650_7.1x6.6mm.kicad_mod": {
+      "bytes": 1521,
+      "sha256": "14f7e512c20e4739485cd9938b44198189830828dd24e1abcfc920a286a349a0"
+    },
+    "MF1750_Production.pretty/XUNPU_FPC-05FB-50PH20_1x50_P0.5mm_DualContact.kicad_mod": {
+      "bytes": 6787,
+      "sha256": "d4a3741b4db6bab83659def1724ba440b76f823a8dc56414fefa7121a54e62d9"
+    },
+    "README.md": {
+      "bytes": 1629,
+      "sha256": "fa91f31e34459f34fc8087d13e3e82221d96a8bd401d985bd8a6fa3db0308f55"
+    },
+    "board_audit.json": {
+      "bytes": 71295,
+      "sha256": "89b725f71c6f2589a395a41c4be581005f07edcc0ccfe58927e04cd01582a5d0"
+    },
+    "board_audit_config.json": {
+      "bytes": 1562,
+      "sha256": "f46d8f388ccaa82c7c15426feb9dc8aadb47ea87e57095c695b1fcf39084d664"
+    },
+    "derivation_audit.json": {
+      "bytes": 2174,
+      "sha256": "28deaa154ac43d82ecfe9f5537e1bc73664028960afa936c9240366c7b326c2d"
+    },
+    "drc_final.rpt": {
+      "bytes": 455,
+      "sha256": "5516a7d7e487cafb18a82b3c3e5ecb8c60de7ae2f82fade766a7509c6e90186a"
+    },
+    "drc_refill_gate.rpt": {
+      "bytes": 455,
+      "sha256": "27bf188fb8c52f6ce92afddf61b137e9ebc8144a092ac919f0f9579758ff6e5a"
+    },
+    "erc_final.rpt": {
+      "bytes": 357,
+      "sha256": "f46058c81404f3a5aa14d8c9acb92a64cba14eb96b01324d2a9db37408135530"
+    },
+    "fp-lib-table": {
+      "bytes": 325,
+      "sha256": "2a6e3baa8a6963949ad761c38cdb0483ba4d87fc9594784799316c77e93d4003"
+    },
+    "mf1750_devkitc_b2_pcba_margin.kicad_pcb": {
+      "bytes": 851631,
+      "sha256": "462e127279bacc894eab5e8cc242cd6d26e1d3ee87708ad398f8064b5a5c4238"
+    },
+    "mf1750_devkitc_b2_pcba_margin.kicad_pro": {
+      "bytes": 1248,
+      "sha256": "fcd393069f22846615113f8296d6553c5ffeee8ba507b7475f81baae9fe4aa27"
+    },
+    "mf1750_devkitc_b2_pcba_margin.kicad_sch": {
+      "bytes": 160203,
+      "sha256": "bc3116580b1e055db15e383569ad60db626e65aac225917c62b3a72120e703eb"
+    },
+    "mf1750_local.kicad_sym": {
+      "bytes": 25712,
+      "sha256": "e4c9cad8724cf196c6a47f5306234d015d74e27da5e452ef57acc2b4111ac9d0"
+    },
+    "netlist_verified.xml": {
+      "bytes": 78351,
+      "sha256": "d600d1274ae637e2d7303c46fd2257257aa96f67001b51802e404b1c2cf3cc28"
+    },
+    "preview/final_bottom.png": {
+      "bytes": 264913,
+      "sha256": "33845a50c443e6c252224d45330324d7c271dcc52c4e190f1de0e2810a7077a3"
+    },
+    "preview/final_top.png": {
+      "bytes": 451423,
+      "sha256": "9afc948af0583ab1b762c887a7126ae12d1036e2a8b87c1f0736b551d0a93b95"
+    },
+    "sym-lib-table": {
+      "bytes": 169,
+      "sha256": "51eb3ecd2794733938c0ef2f90918b8935863bb8707cd125ba9b1797065bcb7c"
+    }
+  },
+  "checks": {
+    "drc_violations": 0,
+    "erc_errors": 0,
+    "erc_warnings": 0,
+    "generic_jlcpcb_board_audit": "PASS",
+    "rigid_geometry_and_connectivity_preserved": true,
+    "schematic_parity_errors": 0,
+    "unconnected_pads": 0
+  },
+  "gates": {
+    "external_engineering": "NOT_APPLICABLE",
+    "external_engineering_rationale": "No known JLCPCB fabrication or assembly policy deviation remains: every fitted-SMT Fab body and Courtyard clears 2.5 mm. Reopen this gate if portal/CAM review identifies a new deviation.",
+    "local_evidence": "PASS",
+    "online_recheck": "PENDING"
+  },
+  "generated_utc": "2026-08-14T03:24:46.659242+00:00",
+  "margins_mm": {
+    "body_minimum_location": {
+      "reference": "C0",
+      "side": "left"
+    },
+    "body_to_functional_edge_minimum": 3.55,
+    "conservative_0_4mm_inward_process_allowance": {
+      "body": 3.15,
+      "courtyard": 2.595,
+      "note": "analysis allowance only; finished functional Edge.Cuts remains the contractual datum"
+    },
+    "courtyard_minimum_location": {
+      "reference": "R4",
+      "side": "left"
+    },
+    "courtyard_to_functional_edge_minimum": 2.995,
+    "local_body_gate": 2.5,
+    "local_courtyard_gate": 2.5
+  },
+  "mechanical_holds": [
+    "J1/FPC cable exit and connector-edge/depanelization mechanics",
+    "J3 side-entry connector and cable clearance",
+    "DevKitC antenna performance with the enlarged FR4/keepout geometry",
+    "J2 socket MPN, finished-hole fit, and full Z-envelope",
+    "enclosure, mounting, and physical first-article review"
+  ],
+  "project": "mf1750_devkitc_b2_pcba_margin",
+  "project_specific_audit": {
+    "blind_buried_microvias": 0,
+    "in1_tracks": 0,
+    "j2_private_nc_pads": [
+      "1",
+      "2"
+    ],
+    "ordinary_through_vias": 75,
+    "population": {
+      "R15": "DNP",
+      "R16": "FIT"
+    },
+    "rule_areas_all_four_copper_layers": true,
+    "semantic_counts": {
+      "drawings": 20,
+      "footprints": 61,
+      "nets": 89,
+      "tracks": 629,
+      "vias": 75,
+      "zones": 8
+    },
+    "supplies": {
+      "/3V3": {
+        "minimum_in2_width_mm": 0.5,
+        "ordinary_through_vias": 5
+      },
+      "/EPD_3V3": {
+        "minimum_in2_width_mm": 0.6,
+        "ordinary_through_vias": 4
+      },
+      "/V_B": {
+        "minimum_in2_width_mm": 0.8,
+        "ordinary_through_vias": 6
+      }
+    }
+  },
+  "release_class": "ENGINEERING_CANDIDATE_NOT_PRODUCTION_RELEASE",
+  "revision": "B2-4L-PCBA-EDGE",
+  "schema": 1,
+  "skill_gate_effect": "The jlcpcb-kicad-handoff skill made fitted-SMT Fab body and Courtyard distance to functional Edge.Cuts explicit fail-closed local gates. The former margin exception is now not applicable; online portal review remains pending and any newly identified deviation reopens external engineering.",
+  "source_b1_sha256": {
+    "mf1750_devkitc_b1_single_power_layer.kicad_pcb": "d44afcd28056045aa19c875d424b6ad7d9e84712e238ee2340f6d087da62fde3",
+    "mf1750_devkitc_b1_single_power_layer.kicad_pro": "ba26af897f39a3eda18448233faf9f247d78da2c3c19595577e3e1df6f9e40f3",
+    "mf1750_devkitc_b1_single_power_layer.kicad_sch": "ccb8ad72021231ce9768b86800a8536fc4d18ffc8e3edf8822c5b3040c757d95"
+  },
+  "tooling": {
+    ".codex/skills/jlcpcb-kicad-handoff/scripts/audit_kicad_jlcpcb.py": {
+      "bytes": 37558,
+      "sha256": "479471d7f85333c46a984af030e8a82d1855c39cceba044a4c0ba0150b5e65f7"
+    },
+    "hardware/build_mf1750_devkitc_b2_pcba_margin.py": {
+      "bytes": 12504,
+      "sha256": "99836422cae4b32555f281e65ecd5ee50e3f720c246ab1d2c92113c7c09d5a7b"
+    },
+    "hardware/verify_mf1750_devkitc_b2_pcba_margin.py": {
+      "bytes": 18983,
+      "sha256": "de25da2b9ad79ac82d9b5d66ee7184865c60a69b8e1e2c43348ad93820227de7"
+    }
+  }
+}

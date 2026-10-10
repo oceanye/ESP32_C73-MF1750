@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 from host.epd_frame import (
-    FRAME_BYTES,
+    FRAME_BYTES as FRAME_BYTES,
     HEIGHT,
     PHYSICAL_COLOR_CODES,
     WIDTH,

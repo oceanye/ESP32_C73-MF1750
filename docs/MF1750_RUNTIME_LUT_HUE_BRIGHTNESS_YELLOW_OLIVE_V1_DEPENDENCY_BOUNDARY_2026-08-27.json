@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "kind": "mf1750-runtime-lut-hue-brightness-yellow-olive-v1-dependency-boundary",
+  "observed_from_clean_build": true,
+  "offline_only": true,
+  "platformio_config": "platformio.runtime_lut_hue_brightness_yellow_olive_v1.ini",
+  "environment": "ec5_runtime_lut_hue_brightness_yellow_olive_v1",
+  "build_host": {
+    "platformio_core": "6.1.19",
+    "python": "3.11.7-final.0",
+    "system_type": "windows_amd64",
+    "platform": "Windows-10",
+    "file_system_encoding": "utf-8",
+    "locale_encoding": "cp936"
+  },
+  "resolved_packages_reported_by_clean_build": [
+    {
+      "name": "espressif32",
+      "version": "7.0.1",
+      "role": "platform",
+      "metadata_sha256": "cf91a737e86cc22d670e56f19139a2db56f461ba5b952670c3f38bfe84dce7c3"
+    },
+    {
+      "name": "framework-arduinoespressif32",
+      "version": "3.20017.241212+sha.dcc1105b",
+      "role": "framework",
+      "metadata_sha256": "f35415c75f6f43755df92bbbf7ef10c9e65c2edb2569d512636a0477be64d5bf"
+    },
+    {
+      "name": "tool-esptoolpy",
+      "version": "2.41100.0",
+      "upstream_tool_version": "4.11.0",
+      "role": "image-builder",
+      "metadata_sha256": "650d928dd0eb9b160785b1242badaf5fde82f008311d4199d1878275b3065e3d"
+    },
+    {
+      "name": "toolchain-riscv32-esp",
+      "version": "8.4.0+2021r2-patch5",
+      "role": "platform-resolved-toolchain",
+      "metadata_sha256": "f356f12bea1fb690f256b88d20521aaeefdf353a8666d48156ae8134f1de9424"
+    },
+    {
+      "name": "toolchain-xtensa-esp32s3",
+      "version": "8.4.0+2021r2-patch5",
+      "role": "target-toolchain",
+      "metadata_sha256": "aefd359be46bdef28033e02d02baf69cdf427d64f149c4cecb9212d02b151267"
+    }
+  ],
+  "arduino_library_dependency_graph_roots_reported_by_clean_build": [
+    {"name": "SPI", "version": "2.0.0"},
+    {"name": "Preferences", "version": "2.0.0"},
+    {"name": "WebServer", "version": "2.0.0"},
+    {"name": "WiFi", "version": "2.0.0"}
+  ],
+  "link_input_inventory": {
+    "artifact": ".pio/build-runtime-lut-hue-brightness-yellow-olive-v1/ec5_runtime_lut_hue_brightness_yellow_olive_v1/firmware.map",
+    "bytes": 12038615,
+    "sha256": "2263e918a5b53789737bbae7ae418da692534b797b793da2f974db3b5e9b01e2",
+    "scope": "authoritative linker map for every object/archive/section in this exact clean ELF"
+  },
+  "running_elf_identity": {
+    "device_source": "esp_ota_get_app_description().app_elf_sha256",
+    "firmware_bin_app_descriptor_offset": 32,
+    "embedded_sha256": "5a8fabd61f3230d640323873f29b055acb0eef5197769efded3ce114f0615ae5",
+    "local_firmware_elf_sha256": "5a8fabd61f3230d640323873f29b055acb0eef5197769efded3ce114f0615ae5",
+    "exact_match": true,
+    "host_preflight_requires_exact_match": true
+  },
+  "explicit_boundary": {
+    "device_reports_complete_dependency_manifest": false,
+    "device_reports_running_elf_identity_only": true,
+    "complete_link_input_inventory_is_external_map_artifact": true,
+    "complete_transitive_source_and_build_host_sbom_claimed": false,
+    "reason": "Package metadata, top-level Arduino dependency roots, and the exact linker map are recorded; no wider SBOM or unobserved transitive dependency list is invented."
+  },
+  "hardware_accessed": false,
+  "device_network_accessed": false,
+  "serial_or_com_accessed": false,
+  "relay_accessed": false,
+  "firmware_flashed": false,
+  "display_refreshed": false
+}

@@ -1,0 +1,129 @@
+** Drc report for mf1750_devkitc_compact.kicad_pcb **
+** Created on 2026-08-13T18:22:39 **
+** Report includes: Errors, Warnings, Exclusions **
+
+** Found 0 DRC violations **
+
+** Found 0 unconnected pads **
+
+** Found 36 Footprint errors **
+[footprint_symbol_mismatch]: 值 (J1) 与符号的值 (FPC-05FB-50PH20) 不匹配
+    Local override; warning
+    @(31.0000 mm, 5.0000 mm): Footprint J1
+[footprint_symbol_mismatch]: 值 (J2) 与符号的值 (ESP32-S3-DevKitC-1-N16R8_SOCKET) 不匹配
+    Local override; warning
+    @(5.5000 mm, 56.0000 mm): Footprint J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J1-1_3V3_(isolated)-Pad1)) 指定的网络
+    Local override; warning
+    @(5.5000 mm, 56.0000 mm): PTH pad 1 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J1-2_3V3_(isolated)-Pad2)) 指定的网络
+    Local override; warning
+    @(8.0400 mm, 56.0000 mm): PTH pad 2 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J1-3_RST{slash}EN-Pad3)) 指定的网络
+    Local override; warning
+    @(10.5800 mm, 56.0000 mm): PTH pad 3 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J1-8_GPIO15-Pad8)) 指定的网络
+    Local override; warning
+    @(23.2800 mm, 56.0000 mm): PTH pad 8 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J1-9_GPIO16-Pad9)) 指定的网络
+    Local override; warning
+    @(25.8200 mm, 56.0000 mm): PTH pad 9 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J1-10_GPIO17-Pad10)) 指定的网络
+    Local override; warning
+    @(28.3600 mm, 56.0000 mm): PTH pad 10 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J1-11_GPIO18-Pad11)) 指定的网络
+    Local override; warning
+    @(30.9000 mm, 56.0000 mm): PTH pad 11 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J1-12_GPIO8-Pad12)) 指定的网络
+    Local override; warning
+    @(33.4400 mm, 56.0000 mm): PTH pad 12 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J1-13_GPIO3-Pad13)) 指定的网络
+    Local override; warning
+    @(35.9800 mm, 56.0000 mm): PTH pad 13 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J1-14_GPIO46-Pad14)) 指定的网络
+    Local override; warning
+    @(38.5200 mm, 56.0000 mm): PTH pad 14 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J1-15_GPIO9-Pad15)) 指定的网络
+    Local override; warning
+    @(41.0600 mm, 56.0000 mm): PTH pad 15 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J1-19_GPIO13-Pad19)) 指定的网络
+    Local override; warning
+    @(51.2200 mm, 56.0000 mm): PTH pad 19 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J1-20_GPIO14-Pad20)) 指定的网络
+    Local override; warning
+    @(53.7600 mm, 56.0000 mm): PTH pad 20 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J1-21_5V-Pad21)) 指定的网络
+    Local override; warning
+    @(56.3000 mm, 56.0000 mm): PTH pad 21 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J3-20_GPIO19{slash}USB_D--Pad25)) 指定的网络
+    Local override; warning
+    @(53.7600 mm, 33.1400 mm): PTH pad 25 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J3-19_GPIO20{slash}USB_D+-Pad26)) 指定的网络
+    Local override; warning
+    @(51.2200 mm, 33.1400 mm): PTH pad 26 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J3-18_GPIO21-Pad27)) 指定的网络
+    Local override; warning
+    @(48.6800 mm, 33.1400 mm): PTH pad 27 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J3-17_GPIO47-Pad28)) 指定的网络
+    Local override; warning
+    @(46.1400 mm, 33.1400 mm): PTH pad 28 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J3-16_GPIO48-Pad29)) 指定的网络
+    Local override; warning
+    @(43.6000 mm, 33.1400 mm): PTH pad 29 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J3-15_GPIO45-Pad30)) 指定的网络
+    Local override; warning
+    @(41.0600 mm, 33.1400 mm): PTH pad 30 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J3-14_GPIO0-Pad31)) 指定的网络
+    Local override; warning
+    @(38.5200 mm, 33.1400 mm): PTH pad 31 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J3-13_GPIO35-Pad32)) 指定的网络
+    Local override; warning
+    @(35.9800 mm, 33.1400 mm): PTH pad 32 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J3-12_GPIO36-Pad33)) 指定的网络
+    Local override; warning
+    @(33.4400 mm, 33.1400 mm): PTH pad 33 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J3-11_GPIO37-Pad34)) 指定的网络
+    Local override; warning
+    @(30.9000 mm, 33.1400 mm): PTH pad 34 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J3-10_GPIO38-Pad35)) 指定的网络
+    Local override; warning
+    @(28.3600 mm, 33.1400 mm): PTH pad 35 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J3-9_GPIO39-Pad36)) 指定的网络
+    Local override; warning
+    @(25.8200 mm, 33.1400 mm): PTH pad 36 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J3-8_GPIO40-Pad37)) 指定的网络
+    Local override; warning
+    @(23.2800 mm, 33.1400 mm): PTH pad 37 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J3-7_GPIO41-Pad38)) 指定的网络
+    Local override; warning
+    @(20.7400 mm, 33.1400 mm): PTH pad 38 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J3-6_GPIO42-Pad39)) 指定的网络
+    Local override; warning
+    @(18.2000 mm, 33.1400 mm): PTH pad 39 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J3-5_GPIO2-Pad40)) 指定的网络
+    Local override; warning
+    @(15.6600 mm, 33.1400 mm): PTH pad 40 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J3-4_GPIO1-Pad41)) 指定的网络
+    Local override; warning
+    @(13.1200 mm, 33.1400 mm): PTH pad 41 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J3-3_GPIO44{slash}RX-Pad42)) 指定的网络
+    Local override; warning
+    @(10.5800 mm, 33.1400 mm): PTH pad 42 [<no net>] of J2
+[net_conflict]: 焊盘缺少原理图 (unconnected-(J2-J3-2_GPIO43{slash}TX-Pad43)) 指定的网络
+    Local override; warning
+    @(8.0400 mm, 33.1400 mm): PTH pad 43 [<no net>] of J2
+[footprint_symbol_mismatch]: 值 (J3) 与符号的值 (EPD_3V3_IN_JST_PH) 不匹配
+    Local override; warning
+    @(52.0000 mm, 1.8000 mm): Footprint J3
+
+** Ignored checks **
+    - Footprint has no courtyard defined
+    - Track endpoint not centered on via
+    - Tuning profile track geometries
+    - Footprint doesn't match symbol's footprint filters
+    - Silkscreen clearance
+    - Silkscreen clipped by solder mask
+    - Footprint component type doesn't match footprint pads
+    - Footprint doesn't match copy in library
+
+** End of Report **

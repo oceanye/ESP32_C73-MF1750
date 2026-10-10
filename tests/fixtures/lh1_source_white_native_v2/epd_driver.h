@@ -1,0 +1,4 @@
+#pragma once
+#include <Arduino.h>
+struct EpdOperationReport { unsigned operationId=0; bool valid=false,running=false,sequenceOk=false,waitTimedOut=false,busyAssertionMissing=false,mappingApplied=false,ponBusySeen=false,drfBusySeen=false,pofBusySeen=false,postPsrBusySeen=false,preCommandIdleFailure=false; int failureCode=0; unsigned spiHz=0,freePsramBefore=0,largestPsramBlockBefore=0,inputFrameFnv1a=0,cs1DtmFnv1a=0,cs2DtmFnv1a=0,totalMs=0,cs1UploadMs=0,cs2UploadMs=0,ponWaitMs=0,drfWaitMs=0,pofWaitMs=0,postPsrWaitMs=0,lastWaitMs=0,safeFinishBusyBeforePinsLow=1,safeFinishBusyAfterPinsLow=1,safeFinishBusyAfter5Ms=1,finalBusyLevel=1,finalRstLevel=1,finalCs1Level=1,finalCs2Level=1,finalSckLevel=1,finalDcLevel=1,finalMosiLevel=1; };
+void epdBegin(); int epdReadBusy(); const EpdOperationReport &epdGetLastOperationReport(); bool epdValidateCompiledFactoryOtpWhiteRecoveryFixture(); bool epdDisplayCompiledFactoryOtpWhiteRecovery();

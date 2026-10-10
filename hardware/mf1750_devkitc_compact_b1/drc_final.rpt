@@ -1,0 +1,17 @@
+** Drc report for mf1750_devkitc_compact_b1.kicad_pcb **
+** Created on 2026-08-13T20:33:43 **
+** Report includes: Errors, Warnings, Exclusions **
+
+** Found 0 DRC violations **
+
+** Found 0 unconnected pads **
+
+** Found 0 Footprint errors **
+
+** Ignored checks **
+    - Tuning profile track geometries
+    - Silkscreen clearance
+    - Silkscreen clipped by solder mask
+    - Footprint doesn't match copy in library
+
+** End of Report **

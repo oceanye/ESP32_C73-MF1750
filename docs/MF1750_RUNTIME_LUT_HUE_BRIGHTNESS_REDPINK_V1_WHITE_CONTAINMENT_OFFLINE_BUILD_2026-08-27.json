@@ -1,0 +1,114 @@
+{
+  "schema": "mf1750-runtime-lut-hue-brightness-redpink-v1-white-containment-offline-build-record-v1",
+  "date": "2026-08-27",
+  "status": "OFFLINE_BUILD_READY_NOT_FLASHED_NOT_RUN",
+  "safety": {
+    "network_requests": 0,
+    "visible_refreshes": 0,
+    "device_network_accessed": false,
+    "serial_or_com_accessed": false,
+    "relay_accessed": false,
+    "firmware_flashed": false,
+    "device_reset": false,
+    "display_refreshed": false
+  },
+  "identity": {
+    "build_tag": "MF1750_EC5_TARGET_HUE_REDPINK_BRIGHTNESS_V1_WHITE_CONTAINMENT_SOURCE_SAME_BOOT_V1_2026-08-27",
+    "test_id": "EC5-TARGET-HUE-REDPINK-BRIGHTNESS-V1-WHITE-CONTAINMENT",
+    "campaign_id": "EC5_TARGET_HUE_REDPINK_BRIGHTNESS_V1_WHITE_CONTAINMENT",
+    "contract_id": "10867bcecf8da5a4e716bd34547d437c7a426a3b4318a64a1bce3c1963c79020",
+    "descriptor_id": "bfa5851856cec82f5dae397208d38591aea941ba339f10a1b9d1d86a93026b49",
+    "action_id": "3f51f507d3d7f739cf66100177223d34aca3b6cfea1d027ca84cf5eb82d94f54",
+    "environment": "ec5_runtime_lut_hue_brightness_redpink_v1_white_containment",
+    "profile_id": "WF23_25",
+    "nvs_namespace": "rlhrpcw_v1",
+    "nvs_key": "used_rpcw1",
+    "claims_path": ".test-output/hardware/.mf1750_target_hue_redpink_brightness_white_containment_v1_claims",
+    "output_path": ".test-output/hardware/MF1750_TARGET_HUE_REDPINK_BRIGHTNESS_WHITE_CONTAINMENT_20260827_V1"
+  },
+  "source_main_binding": {
+    "source_campaign_id": "EC5_TARGET_HUE_REDPINK_BRIGHTNESS_8X8_ABA_V1",
+    "expected_contract_id": "df7ecdc4ef3d443766045e7c242cbb9109cb3f3f6415ad926c70babf7f000278",
+    "observed_contract_id": "df7ecdc4ef3d443766045e7c242cbb9109cb3f3f6415ad926c70babf7f000278",
+    "exact": true,
+    "device_enforced_same_boot": true,
+    "direct_exact_post_resume_after_reboot": false,
+    "source_nvs_boot_key": "boot_rpb1",
+    "main_campaign_resume_after_containment": false,
+    "containment_terminal_for_source_campaign": true,
+    "ordinal4_no_visible_difference_branch": true,
+    "source_main_ordinals_5_and_6_forbidden_after_branch": true,
+    "relay_off_required_before_containment": true,
+    "binding_direction": "containment_to_main_only_to_avoid_circular_contract_identity"
+  },
+  "action": {
+    "ordinal": 1,
+    "role": "FACTORY_OTP_WHITE_RECOVERY",
+    "factory_otp_white_only": true,
+    "runtime_payload": false,
+    "frame_sha256": "91f1ed45bf609a23fbdcfd037027c2e271484f58321a4707e889d11859d8453d",
+    "cs1_dtm_sha256": "8b8fe04d4d48ab9d1abb4a858f68544164d1a091998664eef06869c098a78158",
+    "cs2_dtm_sha256": "8b8fe04d4d48ab9d1abb4a858f68544164d1a091998664eef06869c098a78158",
+    "startup_refresh": false,
+    "retry": false,
+    "automatic_recovery": false,
+    "autochain": false,
+    "ordinal_skip": false
+  },
+  "routes": {
+    "base": "/api/ec5/target-hue-redpink-brightness-v1/white-containment",
+    "read_only": ["version", "manifest", "status", "report"],
+    "mutations": ["arm", "execute"],
+    "arm_intent": "ARM_ONE_FIXED_REDPINK_BRIGHTNESS_FACTORY_OTP_WHITE_CONTAINMENT_NOT_HARDWARE_AUTHORIZATION",
+    "execute_intent": "EXECUTE_ONE_FIXED_REDPINK_BRIGHTNESS_FACTORY_OTP_WHITE_CONTAINMENT_ONCE"
+  },
+  "host": {
+    "artifact_preflight_before_any_device_request": true,
+    "diagnose_j2_off": {
+      "get_requests": 4,
+      "post_requests": 0,
+      "permanent_claims_created": 0
+    },
+    "run": {
+      "fresh_nvs_required": true,
+      "raw_busy_required": 1,
+      "claim_created_after_four_gets_before_first_arm": true,
+      "arm_post_max": 1,
+      "execute_post_max": 1,
+      "firmware_busy_gates": ["ARM", "EXECUTE", "DISPATCH"]
+    },
+    "mature_host_binding": {
+      "path": "tools/mf1750_runtime_lut_cross_palette_partial_hold_v1_white_containment_once.py",
+      "bytes": 19019,
+      "sha256": "b54e4a40ec1b4be4a01b4e4be80d367336cba7cdf859e0366fcf94534545ff0d",
+      "verified_before_import": true
+    }
+  },
+  "artifacts": {
+    "bin": {
+      "path": ".pio/build-runtime-lut-hue-brightness-redpink-v1-white-containment/ec5_runtime_lut_hue_brightness_redpink_v1_white_containment/firmware.bin",
+      "bytes": 787216,
+      "sha256": "277ee4168dbc0034889dd620d1dbe1931bac32b3260abe98a695df09d1c3d513"
+    },
+    "elf": {
+      "path": ".pio/build-runtime-lut-hue-brightness-redpink-v1-white-containment/ec5_runtime_lut_hue_brightness_redpink_v1_white_containment/firmware.elf",
+      "bytes": 13214292,
+      "sha256": "a6ea106b99c3a91e0e3362ea6110b05070e45869ef6d3d8cf76de3a3dec0c9db"
+    }
+  },
+  "verification": {
+    "platformio_clean_build": "PASS",
+    "focused_pytest": "17 passed",
+    "combined_redpink_containment_catalog_blue_regression": "112 passed",
+    "ruff_check": "PASS",
+    "ruff_format_check": "PASS",
+    "py_compile": "PASS",
+    "describe_network_requests": 0,
+    "describe_visible_refreshes": 0,
+    "dry_validate": "PASS",
+    "dry_validate_network_requests": 0,
+    "dry_validate_visible_refreshes": 0,
+    "artifact_bindings_verified": true,
+    "source_main_binding_verified": true
+  }
+}

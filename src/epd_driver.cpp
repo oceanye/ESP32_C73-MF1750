@@ -1,7 +1,17 @@
 #include "epd_driver.h"
 
 #include <SPI.h>
+#if MF1750_ENABLE_UNKNOWN_PROBE || MF1750_ENABLE_SIXSTATE_PROBE || \
+    MF1750_ENABLE_U04_U05_COMPARE || MF1750_ENABLE_EIGHTCODE_ATLAS || \
+    MF1750_ENABLE_COLOR_LAB || MF1750_ENABLE_OTP_TRANSITION_MATRIX || \
+    MF1750_ENABLE_DITHER_COLOR_ATLAS || \
+    MF1750_ENABLE_RUNTIME_LUT_EMPIRICAL_H3 || \
+    MF1750_ENABLE_FACTORY_OTP_WHITE_RECOVERY
+#include <esp_heap_caps.h>
+#include <mbedtls/sha256.h>
+#endif
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 
 #include "epd_config.h"
@@ -41,6 +51,7 @@ static uint32_t operationIdCounter = 0;
 static constexpr uint32_t FNV1A_OFFSET_BASIS = 2166136261UL;
 static constexpr uint32_t FNV1A_PRIME = 16777619UL;
 static constexpr uint32_t EPD_BUSY_ASSERT_GRACE_MS = 250;
+static constexpr uint32_t EPD_PRE_COMMAND_IDLE_TIMEOUT_MS = 3000;
 
 struct ControllerMapping {
   uint8_t sourceHalf;
@@ -76,6 +87,102 @@ void copyStage(char *destination, size_t destinationSize, const char *stage) {
   destination[destinationSize - 1] = '\0';
 }
 
+uint8_t readBusyLevel() {
+  return digitalRead(EPD_PIN_BUSY) ? 1U : 0U;
+}
+
+EpdBusyStageEvidence *busyStageEvidence(const char *stage) {
+  if (!diagnosticReport.running) return nullptr;
+  if (std::strcmp(stage, "reset") == 0) return &diagnosticReport.resetBusy;
+  if (std::strcmp(stage, "PON") == 0) return &diagnosticReport.ponBusy;
+  if (std::strcmp(stage, "DRF") == 0) return &diagnosticReport.drfBusy;
+  if (std::strcmp(stage, "POF") == 0) return &diagnosticReport.pofBusy;
+  if (std::strcmp(stage, "post-display PSR") == 0) {
+    return &diagnosticReport.postPsrBusy;
+  }
+  return nullptr;
+}
+
+bool epdRequireIdleBeforeCommand(const char *stage) {
+  EpdBusyStageEvidence *evidence = busyStageEvidence(stage);
+  const uint32_t started = millis();
+  const uint8_t entryLevel = readBusyLevel();
+  if (evidence) evidence->gateEntryLevel = entryLevel;
+  while (readBusyLevel() != EPD_BUSY_IDLE_LEVEL) {
+    if (millis() - started > EPD_PRE_COMMAND_IDLE_TIMEOUT_MS) {
+      const uint32_t elapsed = millis() - started;
+      const uint8_t level = readBusyLevel();
+      if (evidence) {
+        evidence->preCommandLevel = level;
+        evidence->preCommandWaitMs = elapsed;
+        evidence->preCommandIdleOk = false;
+      }
+      if (diagnosticReport.running) {
+        diagnosticReport.preCommandIdleFailure = true;
+        copyStage(diagnosticReport.preCommandBusyStage,
+                  sizeof(diagnosticReport.preCommandBusyStage), stage);
+      }
+      Serial.printf(
+          "EPD pre-command idle timeout: %s after %lu ms, entry=%u, BUSY=%u\n",
+          stage, static_cast<unsigned long>(elapsed), entryLevel, level);
+      return false;
+    }
+    delay(1);
+  }
+  const uint32_t elapsed = millis() - started;
+  const uint8_t level = readBusyLevel();
+  if (evidence) {
+    evidence->preCommandLevel = level;
+    evidence->preCommandWaitMs = elapsed;
+    evidence->preCommandIdleOk = true;
+  }
+  Serial.printf(
+      "EPD pre-command idle: %s after %lu ms, entry=%u, before_command=%u\n",
+      stage, static_cast<unsigned long>(elapsed), entryLevel, level);
+  return true;
+}
+
+void epdRecordInformationalCommandEntry(const char *stage) {
+  EpdBusyStageEvidence *evidence = busyStageEvidence(stage);
+  if (!evidence) return;
+  const uint8_t level = readBusyLevel();
+  evidence->gateEntryLevel = level;
+  evidence->preCommandLevel = level;
+  evidence->preCommandIdleOk = level == EPD_BUSY_IDLE_LEVEL;
+}
+
+void epdRecordWaitTrace(const char *stage,
+                        uint8_t exitLevel,
+                        bool assertionAfterIdle,
+                        uint32_t assertionLatencyMs,
+                        uint32_t waitMs) {
+  EpdBusyStageEvidence *evidence = busyStageEvidence(stage);
+  if (!evidence) return;
+  evidence->waitExitLevel = exitLevel;
+  evidence->assertionAfterIdle = assertionAfterIdle;
+  evidence->assertionLatencyMs = assertionLatencyMs;
+  evidence->waitMs = waitMs;
+}
+
+String epdBusyStageEvidenceJson(const EpdBusyStageEvidence &evidence) {
+  return String("{\"gate_entry_level\":") +
+         String(static_cast<unsigned>(evidence.gateEntryLevel)) +
+         ",\"pre_command_level\":" +
+         String(static_cast<unsigned>(evidence.preCommandLevel)) +
+         ",\"wait_entry_level\":" +
+         String(static_cast<unsigned>(evidence.waitEntryLevel)) +
+         ",\"wait_exit_level\":" +
+         String(static_cast<unsigned>(evidence.waitExitLevel)) +
+         ",\"pre_command_idle_ok\":" +
+         String(evidence.preCommandIdleOk ? "true" : "false") +
+         ",\"assertion_after_idle\":" +
+         String(evidence.assertionAfterIdle ? "true" : "false") +
+         ",\"pre_command_wait_ms\":" + String(evidence.preCommandWaitMs) +
+         ",\"wait_ms\":" + String(evidence.waitMs) +
+         ",\"assertion_latency_ms\":" +
+         String(evidence.assertionLatencyMs) + "}";
+}
+
 void recordWaitEvidence(const char *stage, uint32_t elapsedMs, bool busySeen) {
   if (!diagnosticReport.running) return;
   if (std::strcmp(stage, "PON") == 0) {
@@ -107,8 +214,23 @@ uint32_t epdBeginOperation(uint32_t spiHz) {
 bool epdFinishOperation(uint32_t startedAtMs, bool sequenceOk) {
   diagnosticReport.sequenceOk = sequenceOk;
   diagnosticReport.totalMs = millis() - startedAtMs;
+  diagnosticReport.finalBusyLevel = readBusyLevel();
+  diagnosticReport.finalRstLevel = digitalRead(EPD_PIN_RST) ? 1U : 0U;
+  diagnosticReport.finalCs1Level = digitalRead(EPD_PIN_CS) ? 1U : 0U;
+  diagnosticReport.finalCs2Level =
+      EPD_PIN_CS2 >= 0 && digitalRead(EPD_PIN_CS2) ? 1U : 0U;
+  diagnosticReport.finalSckLevel = digitalRead(EPD_PIN_SCK) ? 1U : 0U;
+  diagnosticReport.finalDcLevel = digitalRead(EPD_PIN_DC) ? 1U : 0U;
+  diagnosticReport.finalMosiLevel = digitalRead(EPD_PIN_MOSI) ? 1U : 0U;
   diagnosticReport.running = false;
   return sequenceOk;
+}
+
+void epdRecordFailure(const char *stage, int32_t code = 0) {
+  if (!diagnosticReport.running) return;
+  copyStage(diagnosticReport.failureStage,
+            sizeof(diagnosticReport.failureStage), stage);
+  diagnosticReport.failureCode = code;
 }
 
 inline void setPinIfConnected(int pin, uint8_t value) {
@@ -158,6 +280,28 @@ void epdStopHardwareSpi() {
   hardwareSpiStarted = false;
   pinMode(EPD_PIN_SCK, OUTPUT);
   pinMode(EPD_PIN_MOSI, OUTPUT);
+}
+
+bool epdFinishFailedOperationSafe(uint32_t startedAtMs,
+                                  const char *failureStage,
+                                  int32_t failureCode = 0) {
+  epdRecordFailure(failureStage, failureCode);
+  diagnosticReport.safeFinishBusyBeforePinsLow = readBusyLevel();
+  epdStopHardwareSpi();
+  epdHoldPanelPinsLow();
+  diagnosticReport.safeFinishBusyAfterPinsLow = readBusyLevel();
+  delay(5);
+  diagnosticReport.safeFinishBusyAfter5Ms = readBusyLevel();
+  return epdFinishOperation(startedAtMs, false);
+}
+
+bool epdRejectBeforePanelIo(uint32_t startedAtMs,
+                            const char *failureStage,
+                            int32_t failureCode = 0) {
+  // The callers of this wrapper have not selected a controller, clocked SPI,
+  // reset the panel, or issued a panel command. The shared safe finisher may
+  // only preserve the already-established LOW state and sample BUSY.
+  return epdFinishFailedOperationSafe(startedAtMs, failureStage, failureCode);
 }
 
 void epdWrite9(uint8_t dcx, uint8_t value) {
@@ -257,11 +401,23 @@ bool epdWaitIdle(const char *stage,
   // unplugged/miswired BUSY input from turning an immediate idle level into a
   // false successful refresh.
   const uint32_t started = millis();
-  bool sawBusy = digitalRead(EPD_PIN_BUSY) != EPD_BUSY_IDLE_LEVEL;
+  EpdBusyStageEvidence *stageEvidence = busyStageEvidence(stage);
+  const uint8_t waitEntryLevel = readBusyLevel();
+  if (stageEvidence) stageEvidence->waitEntryLevel = waitEntryLevel;
+  bool sawBusy = waitEntryLevel != EPD_BUSY_IDLE_LEVEL;
+  bool assertionAfterIdle =
+      requireBusyAssertion && sawBusy && stageEvidence &&
+      stageEvidence->preCommandIdleOk &&
+      stageEvidence->preCommandLevel == EPD_BUSY_IDLE_LEVEL;
+  uint32_t assertionLatencyMs = 0;
   if (requireBusyAssertion && !sawBusy) {
     while (millis() - started < EPD_BUSY_ASSERT_GRACE_MS) {
       if (digitalRead(EPD_PIN_BUSY) != EPD_BUSY_IDLE_LEVEL) {
         sawBusy = true;
+        assertionAfterIdle =
+            stageEvidence && stageEvidence->preCommandIdleOk &&
+            stageEvidence->preCommandLevel == EPD_BUSY_IDLE_LEVEL;
+        assertionLatencyMs = millis() - started;
         break;
       }
       delay(1);
@@ -277,6 +433,7 @@ bool epdWaitIdle(const char *stage,
         copyStage(diagnosticReport.busyMissingStage,
                   sizeof(diagnosticReport.busyMissingStage), stage);
       }
+      epdRecordWaitTrace(stage, readBusyLevel(), false, 0, elapsed);
       Serial.printf("EPD busy assertion missing at %s after %lu ms, BUSY=%d\n",
                     stage, static_cast<unsigned long>(elapsed),
                     digitalRead(EPD_PIN_BUSY));
@@ -304,6 +461,8 @@ bool epdWaitIdle(const char *stage,
                     sizeof(diagnosticReport.timeoutStage), stage);
         }
       }
+      epdRecordWaitTrace(stage, readBusyLevel(), assertionAfterIdle,
+                         assertionLatencyMs, elapsed);
       Serial.printf("EPD busy timeout at %s, BUSY=%d, busy_seen=%d\n",
                     stage, digitalRead(EPD_PIN_BUSY), sawBusy);
       return false;
@@ -324,6 +483,8 @@ bool epdWaitIdle(const char *stage,
               sizeof(diagnosticReport.lastWaitStage), stage);
     recordWaitEvidence(stage, elapsed, sawBusy);
   }
+  epdRecordWaitTrace(stage, readBusyLevel(), assertionAfterIdle,
+                     assertionLatencyMs, elapsed);
   return true;
 }
 
@@ -338,8 +499,12 @@ void epdRequestFailSafePowerOff(const char *cleanupStage) {
   // an assertion-sized window to accept POF before disconnecting its GPIOs.
   delay(EPD_BUSY_ASSERT_GRACE_MS);
   epdWaitIdle(cleanupStage, 30000);
+  diagnosticReport.safeFinishBusyBeforePinsLow = readBusyLevel();
   epdStopHardwareSpi();
   epdHoldPanelPinsLow();
+  diagnosticReport.safeFinishBusyAfterPinsLow = readBusyLevel();
+  delay(5);
+  diagnosticReport.safeFinishBusyAfter5Ms = readBusyLevel();
 }
 
 void epdReset() {
@@ -355,6 +520,7 @@ void epdReset() {
 
 bool epdPostDisplayPowerCut() {
   delay(6000);
+  epdRecordInformationalCommandEntry("post-display PSR");
   epdCommand(PSR);
   epdData(0x4F);
   epdData(0x6E);
@@ -369,13 +535,22 @@ bool epdPostDisplayPowerCut() {
   // Rev A1 leaves the ESP32 powered from USB when J2-1 is removed.  Hold every
   // panel-facing digital output LOW so the unpowered panel cannot be back-fed;
   // DC is a separate pin in 4-wire mode and must not be left HIGH.
+  diagnosticReport.safeFinishBusyBeforePinsLow = readBusyLevel();
   epdStopHardwareSpi();
   epdHoldPanelPinsLow();
+  diagnosticReport.safeFinishBusyAfterPinsLow = readBusyLevel();
+  delay(5);
+  diagnosticReport.safeFinishBusyAfter5Ms = readBusyLevel();
   return psrIdle;
 }
 
 bool epdSecondSettingAndRefresh() {
   Serial.println("EPD power on");
+  if (!epdRequireIdleBeforeCommand("PON")) {
+    Serial.println("EPD abort: BUSY not idle before PON; requesting safe power off");
+    epdRequestFailSafePowerOff("POF cleanup after pre-PON busy");
+    return false;
+  }
   epdCommand(PON);
   if (!epdWaitBusyThenIdle("PON")) {
     Serial.println("EPD abort: PON BUSY failure; requesting safe power off");
@@ -390,6 +565,11 @@ bool epdSecondSettingAndRefresh() {
   epdData(0x49);
 
   Serial.println("EPD display refresh");
+  if (!epdRequireIdleBeforeCommand("DRF")) {
+    Serial.println("EPD abort: BUSY not idle before DRF; requesting safe power off");
+    epdRequestFailSafePowerOff("POF cleanup after pre-DRF busy");
+    return false;
+  }
   epdCommand(DRF);
   epdData(0x00);
   if (!epdWaitBusyThenIdle("DRF")) {
@@ -399,12 +579,21 @@ bool epdSecondSettingAndRefresh() {
   }
 
   Serial.println("EPD power off");
+  if (!epdRequireIdleBeforeCommand("POF")) {
+    Serial.println("EPD abort: BUSY not idle before POF; requesting safe power off");
+    epdRequestFailSafePowerOff("POF cleanup after pre-POF busy");
+    return false;
+  }
   epdCommand(POF);
   epdData(0x00);
   if (!epdWaitBusyThenIdle("POF")) {
     Serial.println("EPD abort: POF BUSY failure");
+    diagnosticReport.safeFinishBusyBeforePinsLow = readBusyLevel();
     epdStopHardwareSpi();
     epdHoldPanelPinsLow();
+    diagnosticReport.safeFinishBusyAfterPinsLow = readBusyLevel();
+    delay(5);
+    diagnosticReport.safeFinishBusyAfter5Ms = readBusyLevel();
     return false;
   }
   delay(10);
@@ -596,7 +785,17 @@ String epdDiagnosticReportJson() {
                 ",\"drf_busy_seen\":" + String(diagnosticReport.drfBusySeen ? "true" : "false") +
                 ",\"pof_busy_seen\":" + String(diagnosticReport.pofBusySeen ? "true" : "false") +
                 ",\"post_psr_busy_seen\":" + String(diagnosticReport.postPsrBusySeen ? "true" : "false") +
+                ",\"pre_command_idle_failure\":" +
+                String(diagnosticReport.preCommandIdleFailure ? "true" : "false") +
+                ",\"failure_stage\":\"" +
+                String(diagnosticReport.failureStage) +
+                "\",\"failure_code\":" +
+                String(diagnosticReport.failureCode) +
                 ",\"spi_hz\":" + String(diagnosticReport.spiHz) +
+                ",\"free_psram_before\":" +
+                String(diagnosticReport.freePsramBefore) +
+                ",\"largest_psram_block_before\":" +
+                String(diagnosticReport.largestPsramBlockBefore) +
                 ",\"input_fnv1a\":" + String(diagnosticReport.inputFrameFnv1a) +
                 ",\"cs1_dtm_fnv1a\":" + String(diagnosticReport.cs1DtmFnv1a) +
                 ",\"cs2_dtm_fnv1a\":" + String(diagnosticReport.cs2DtmFnv1a) +
@@ -611,7 +810,39 @@ String epdDiagnosticReportJson() {
                 ",\"last_wait_stage\":\"" + String(diagnosticReport.lastWaitStage) +
                 "\",\"timeout_stage\":\"" + String(diagnosticReport.timeoutStage) +
                 "\",\"busy_missing_stage\":\"" + String(diagnosticReport.busyMissingStage) +
-                "\",\"mapping\":{" +
+                "\",\"pre_command_busy_stage\":\"" +
+                String(diagnosticReport.preCommandBusyStage) +
+                "\",\"busy_trace_schema_version\":1,\"busy_trace\":{" +
+                "\"idle_level\":" + String(EPD_BUSY_IDLE_LEVEL) +
+                ",\"pre_command_idle_timeout_ms\":" +
+                String(EPD_PRE_COMMAND_IDLE_TIMEOUT_MS) +
+                ",\"assert_grace_ms\":" + String(EPD_BUSY_ASSERT_GRACE_MS) +
+                ",\"reset\":" + epdBusyStageEvidenceJson(diagnosticReport.resetBusy) +
+                ",\"pon\":" + epdBusyStageEvidenceJson(diagnosticReport.ponBusy) +
+                ",\"drf\":" + epdBusyStageEvidenceJson(diagnosticReport.drfBusy) +
+                ",\"pof\":" + epdBusyStageEvidenceJson(diagnosticReport.pofBusy) +
+                ",\"post_psr\":" + epdBusyStageEvidenceJson(diagnosticReport.postPsrBusy) +
+                ",\"safe_finish\":{\"busy_before_pins_low\":" +
+                String(static_cast<unsigned>(diagnosticReport.safeFinishBusyBeforePinsLow)) +
+                ",\"busy_after_pins_low\":" +
+                String(static_cast<unsigned>(diagnosticReport.safeFinishBusyAfterPinsLow)) +
+                ",\"busy_after_5ms\":" +
+                String(static_cast<unsigned>(diagnosticReport.safeFinishBusyAfter5Ms)) +
+                "},\"final_gpio\":{\"busy\":" +
+                String(static_cast<unsigned>(diagnosticReport.finalBusyLevel)) +
+                ",\"rst\":" +
+                String(static_cast<unsigned>(diagnosticReport.finalRstLevel)) +
+                ",\"cs\":" +
+                String(static_cast<unsigned>(diagnosticReport.finalCs1Level)) +
+                ",\"cs2\":" +
+                String(static_cast<unsigned>(diagnosticReport.finalCs2Level)) +
+                ",\"sck\":" +
+                String(static_cast<unsigned>(diagnosticReport.finalSckLevel)) +
+                ",\"dc\":" +
+                String(static_cast<unsigned>(diagnosticReport.finalDcLevel)) +
+                ",\"mosi\":" +
+                String(static_cast<unsigned>(diagnosticReport.finalMosiLevel)) +
+                "}},\"mapping\":{" +
                 "\"cs1_source_half\":" + String(EPD_CS1_SOURCE_HALF) +
                 ",\"cs1_flip_x\":" + String(EPD_CS1_FLIP_X ? "true" : "false") +
                 ",\"cs1_flip_y\":" + String(EPD_CS1_FLIP_Y ? "true" : "false") +
@@ -1007,6 +1238,978 @@ static uint32_t epdStreamPackedFrameController(const uint8_t *frame, bool second
   return dtmHash;
 }
 
+#if MF1750_ENABLE_UNKNOWN_PROBE
+
+#ifndef MF1750_UNKNOWN_PROBE_CODE
+#error "Experimental unknown-probe build requires MF1750_UNKNOWN_PROBE_CODE"
+#endif
+
+#if MF1750_UNKNOWN_PROBE_CODE != 4 && MF1750_UNKNOWN_PROBE_CODE != 7
+#error "MF1750_UNKNOWN_PROBE_CODE must be exactly 4 or 7"
+#endif
+
+static_assert(EPD_CS1_SOURCE_HALF == 0 && !EPD_CS1_FLIP_X &&
+                  !EPD_CS1_FLIP_Y && !EPD_CS1_NIBBLE_SWAP &&
+                  EPD_CS2_SOURCE_HALF == 1 && !EPD_CS2_FLIP_X &&
+                  !EPD_CS2_FLIP_Y && !EPD_CS2_NIBBLE_SWAP,
+              "EC5 probe identities require the frozen MAP_ORIENT_V1 mapping");
+
+namespace {
+
+static constexpr uint8_t EC5_UNKNOWN_CODE = MF1750_UNKNOWN_PROBE_CODE;
+static constexpr uint16_t EC5_ROI_Y0 = 268;
+static constexpr uint16_t EC5_ROI_Y1 = 332;
+static constexpr uint16_t EC5_LEFT_X0 = 224;
+static constexpr uint16_t EC5_LEFT_X1 = 288;
+static constexpr uint16_t EC5_RIGHT_X0 = 736;
+static constexpr uint16_t EC5_RIGHT_X1 = 800;
+static constexpr size_t EC5_UNKNOWN_PIXELS = 2U * 64U * 64U;
+static constexpr size_t EC5_WHITE_PIXELS =
+    static_cast<size_t>(EPD_WIDTH) * EPD_HEIGHT - EC5_UNKNOWN_PIXELS;
+
+#if MF1750_UNKNOWN_PROBE_CODE == 4
+static constexpr uint32_t EC5_FRAME_FNV1A = 0x68533DC5UL;
+static constexpr uint32_t EC5_DTM_FNV1A = 0x15B7EDC5UL;
+static constexpr uint8_t EC5_FRAME_SHA256[32] = {
+    0x5A, 0x2E, 0x79, 0x7E, 0xA0, 0x58, 0x79, 0x7F,
+    0x01, 0xFE, 0xFE, 0x6D, 0x07, 0x3B, 0xBB, 0x28,
+    0xF3, 0x9B, 0xBB, 0xF7, 0x1C, 0x07, 0x8C, 0x1A,
+    0xF7, 0x2D, 0xBB, 0x8F, 0xC3, 0xE5, 0x87, 0x7E,
+};
+static constexpr uint8_t EC5_DTM_SHA256[32] = {
+    0xA8, 0x05, 0x6C, 0xDD, 0x45, 0x0F, 0x70, 0x70,
+    0x9E, 0xC7, 0x5A, 0x0A, 0x04, 0x00, 0x0D, 0xFB,
+    0xFB, 0x1F, 0x06, 0x00, 0x0A, 0xE5, 0x96, 0x42,
+    0x09, 0x02, 0x15, 0x6B, 0xEC, 0x7B, 0xAB, 0x00,
+};
+static_assert(
+    EC5_DTM_SHA256[0] == 0xA8 && EC5_DTM_SHA256[1] == 0x05 &&
+        EC5_DTM_SHA256[2] == 0x6C && EC5_DTM_SHA256[3] == 0xDD &&
+        EC5_DTM_SHA256[4] == 0x45 && EC5_DTM_SHA256[5] == 0x0F &&
+        EC5_DTM_SHA256[6] == 0x70 && EC5_DTM_SHA256[7] == 0x70 &&
+        EC5_DTM_SHA256[8] == 0x9E && EC5_DTM_SHA256[9] == 0xC7 &&
+        EC5_DTM_SHA256[10] == 0x5A && EC5_DTM_SHA256[11] == 0x0A &&
+        EC5_DTM_SHA256[12] == 0x04 && EC5_DTM_SHA256[13] == 0x00 &&
+        EC5_DTM_SHA256[14] == 0x0D && EC5_DTM_SHA256[15] == 0xFB &&
+        EC5_DTM_SHA256[16] == 0xFB && EC5_DTM_SHA256[17] == 0x1F &&
+        EC5_DTM_SHA256[18] == 0x06 && EC5_DTM_SHA256[19] == 0x00 &&
+        EC5_DTM_SHA256[20] == 0x0A && EC5_DTM_SHA256[21] == 0xE5 &&
+        EC5_DTM_SHA256[22] == 0x96 && EC5_DTM_SHA256[23] == 0x42 &&
+        EC5_DTM_SHA256[24] == 0x09 && EC5_DTM_SHA256[25] == 0x02 &&
+        EC5_DTM_SHA256[26] == 0x15 && EC5_DTM_SHA256[27] == 0x6B &&
+        EC5_DTM_SHA256[28] == 0xEC && EC5_DTM_SHA256[29] == 0x7B &&
+        EC5_DTM_SHA256[30] == 0xAB && EC5_DTM_SHA256[31] == 0x00,
+    "U04 compiled DTM SHA-256 bytes differ from the frozen host identity");
+#else
+static constexpr uint32_t EC5_FRAME_FNV1A = 0xA1C5ADC5UL;
+static constexpr uint32_t EC5_DTM_FNV1A = 0x97F125C5UL;
+static constexpr uint8_t EC5_FRAME_SHA256[32] = {
+    0xD9, 0xD4, 0x38, 0x88, 0xC6, 0x8B, 0x48, 0x37,
+    0x76, 0xBB, 0x43, 0xA5, 0x3C, 0xC1, 0x08, 0x4B,
+    0x85, 0x49, 0xD0, 0x0D, 0x9F, 0xF7, 0x0E, 0xF2,
+    0xF1, 0x22, 0x7F, 0xAF, 0xE0, 0xAC, 0x7B, 0x3E,
+};
+static constexpr uint8_t EC5_DTM_SHA256[32] = {
+    0x2E, 0x21, 0x71, 0x2A, 0xEC, 0xA3, 0xEE, 0xEC,
+    0x9E, 0x24, 0xD9, 0x31, 0x2F, 0x4A, 0x60, 0x1C,
+    0x7B, 0x02, 0x12, 0x79, 0x2F, 0x7D, 0x34, 0x19,
+    0xA1, 0x50, 0x44, 0x2C, 0xC8, 0x0E, 0xA6, 0xAC,
+};
+static_assert(
+    EC5_DTM_SHA256[0] == 0x2E && EC5_DTM_SHA256[1] == 0x21 &&
+        EC5_DTM_SHA256[2] == 0x71 && EC5_DTM_SHA256[3] == 0x2A &&
+        EC5_DTM_SHA256[4] == 0xEC && EC5_DTM_SHA256[5] == 0xA3 &&
+        EC5_DTM_SHA256[6] == 0xEE && EC5_DTM_SHA256[7] == 0xEC &&
+        EC5_DTM_SHA256[8] == 0x9E && EC5_DTM_SHA256[9] == 0x24 &&
+        EC5_DTM_SHA256[10] == 0xD9 && EC5_DTM_SHA256[11] == 0x31 &&
+        EC5_DTM_SHA256[12] == 0x2F && EC5_DTM_SHA256[13] == 0x4A &&
+        EC5_DTM_SHA256[14] == 0x60 && EC5_DTM_SHA256[15] == 0x1C &&
+        EC5_DTM_SHA256[16] == 0x7B && EC5_DTM_SHA256[17] == 0x02 &&
+        EC5_DTM_SHA256[18] == 0x12 && EC5_DTM_SHA256[19] == 0x79 &&
+        EC5_DTM_SHA256[20] == 0x2F && EC5_DTM_SHA256[21] == 0x7D &&
+        EC5_DTM_SHA256[22] == 0x34 && EC5_DTM_SHA256[23] == 0x19 &&
+        EC5_DTM_SHA256[24] == 0xA1 && EC5_DTM_SHA256[25] == 0x50 &&
+        EC5_DTM_SHA256[26] == 0x44 && EC5_DTM_SHA256[27] == 0x2C &&
+        EC5_DTM_SHA256[28] == 0xC8 && EC5_DTM_SHA256[29] == 0x0E &&
+        EC5_DTM_SHA256[30] == 0xA6 && EC5_DTM_SHA256[31] == 0xAC,
+    "U07 compiled DTM SHA-256 bytes differ from the frozen host identity");
+#endif
+
+static constexpr const char *EC5_FAILURE_NONE = "none";
+static constexpr const char *EC5_FAILURE_ALLOCATION = "allocation";
+static constexpr const char *EC5_FAILURE_FRAME_BUILD = "frame_build";
+static constexpr const char *EC5_FAILURE_FULL_SHA = "full_sha";
+static constexpr const char *EC5_FAILURE_CS1_COMPUTE = "cs1_compute";
+static constexpr const char *EC5_FAILURE_CS2_COMPUTE = "cs2_compute";
+static constexpr const char *EC5_FAILURE_CS1_IDENTITY = "cs1_identity";
+static constexpr const char *EC5_FAILURE_CS2_IDENTITY = "cs2_identity";
+static constexpr const char *EC5_FAILURE_CASCADE_PREPARE = "cascade_prepare";
+static constexpr const char *EC5_FAILURE_STREAM_IDENTITY = "stream_identity";
+static constexpr const char *EC5_FAILURE_REFRESH_SEQUENCE = "refresh_sequence";
+
+struct Ec5DtmIdentity {
+  uint32_t fnv1a = 0;
+  uint8_t sha256[32] = {};
+};
+
+struct Ec5FixtureValidation {
+  const char *failureStage = EC5_FAILURE_NONE;
+  int32_t failureCode = 0;
+  uint32_t frameFnv1a = 0;
+  Ec5DtmIdentity cs1;
+  Ec5DtmIdentity cs2;
+};
+
+bool ec5PixelIsUnknown(uint16_t x, uint16_t y) {
+  if (y < EC5_ROI_Y0 || y >= EC5_ROI_Y1) return false;
+  return (x >= EC5_LEFT_X0 && x < EC5_LEFT_X1) ||
+         (x >= EC5_RIGHT_X0 && x < EC5_RIGHT_X1);
+}
+
+bool ec5BuildAndValidateFrame(uint8_t *frame, uint32_t *frameFnv1a) {
+  if (!frame || !frameFnv1a) return false;
+  std::memset(frame, 0x11, EPD_FRAME_BYTES);
+  const uint8_t unknownPair =
+      static_cast<uint8_t>((EC5_UNKNOWN_CODE << 4) | EC5_UNKNOWN_CODE);
+  static constexpr size_t kRowBytes = EPD_WIDTH / 2;
+  for (uint16_t y = EC5_ROI_Y0; y < EC5_ROI_Y1; ++y) {
+    std::memset(frame + static_cast<size_t>(y) * kRowBytes + EC5_LEFT_X0 / 2,
+                unknownPair, (EC5_LEFT_X1 - EC5_LEFT_X0) / 2);
+    std::memset(frame + static_cast<size_t>(y) * kRowBytes + EC5_RIGHT_X0 / 2,
+                unknownPair, (EC5_RIGHT_X1 - EC5_RIGHT_X0) / 2);
+  }
+
+  size_t unknownCount = 0;
+  size_t whiteCount = 0;
+  bool layoutOk = true;
+  for (uint16_t y = 0; layoutOk && y < EPD_HEIGHT; ++y) {
+    const size_t rowOffset = static_cast<size_t>(y) * kRowBytes;
+    for (uint16_t x = 0; x < EPD_WIDTH; x += 2) {
+      const uint8_t value = frame[rowOffset + x / 2];
+      const uint8_t high = static_cast<uint8_t>(value >> 4);
+      const uint8_t low = static_cast<uint8_t>(value & 0x0F);
+      const bool highUnknown = ec5PixelIsUnknown(x, y);
+      const bool lowUnknown = ec5PixelIsUnknown(static_cast<uint16_t>(x + 1), y);
+      const uint8_t expectedHigh = highUnknown ? EC5_UNKNOWN_CODE : EPD_COLOR_WHITE;
+      const uint8_t expectedLow = lowUnknown ? EC5_UNKNOWN_CODE : EPD_COLOR_WHITE;
+      if (high != expectedHigh || low != expectedLow) {
+        layoutOk = false;
+        break;
+      }
+      unknownCount += static_cast<size_t>(highUnknown) +
+                      static_cast<size_t>(lowUnknown);
+      whiteCount += static_cast<size_t>(!highUnknown) +
+                    static_cast<size_t>(!lowUnknown);
+    }
+  }
+  *frameFnv1a = fnv1a(frame, EPD_FRAME_BYTES);
+  return layoutOk && unknownCount == EC5_UNKNOWN_PIXELS &&
+         whiteCount == EC5_WHITE_PIXELS && *frameFnv1a == EC5_FRAME_FNV1A;
+}
+
+bool ec5ComputeDtmIdentity(const uint8_t *frame,
+                           bool secondController,
+                           Ec5DtmIdentity *identity,
+                           int32_t *errorCode) {
+  if (!frame || !identity || !errorCode) return false;
+  *identity = Ec5DtmIdentity{};
+  *errorCode = 0;
+  static constexpr size_t kFullRowBytes = EPD_WIDTH / 2;
+  static constexpr size_t kControllerRowBytes = EPD_CONTROLLER_WIDTH / 2;
+  uint8_t mappedRow[kControllerRowBytes] = {};
+  const uint8_t controllerIndex = secondController ? 1 : 0;
+  const ControllerMapping &mapping = CONTROLLER_MAPPINGS[controllerIndex];
+  mbedtls_sha256_context context;
+  mbedtls_sha256_init(&context);
+  const int startsResult = mbedtls_sha256_starts_ret(&context, 0);
+  if (startsResult != 0) {
+    *errorCode = startsResult;
+    mbedtls_sha256_free(&context);
+    return false;
+  }
+  uint32_t dtmHash = FNV1A_OFFSET_BASIS;
+  for (uint16_t outputY = 0; outputY < EPD_HEIGHT; ++outputY) {
+    const uint16_t sourceY = mapping.flipY ? EPD_HEIGHT - 1 - outputY : outputY;
+    const size_t rowOffset = static_cast<size_t>(sourceY) * kFullRowBytes;
+    const size_t halfOffset =
+        static_cast<size_t>(mapping.sourceHalf) * kControllerRowBytes;
+    const uint8_t *row = frame + rowOffset + halfOffset;
+    for (size_t outputByte = 0; outputByte < kControllerRowBytes; ++outputByte) {
+      const size_t sourceByte =
+          mapping.flipX ? kControllerRowBytes - 1 - outputByte : outputByte;
+      uint8_t value = row[sourceByte];
+      if (mapping.flipX != mapping.nibbleSwap) value = (value << 4) | (value >> 4);
+      mappedRow[outputByte] = value;
+      dtmHash = fnv1aUpdate(dtmHash, value);
+    }
+    const int updateResult =
+        mbedtls_sha256_update_ret(&context, mappedRow, sizeof(mappedRow));
+    if (updateResult != 0) {
+      *errorCode = updateResult;
+      mbedtls_sha256_free(&context);
+      return false;
+    }
+  }
+  const int finishResult =
+      mbedtls_sha256_finish_ret(&context, identity->sha256);
+  mbedtls_sha256_free(&context);
+  if (finishResult != 0) {
+    *errorCode = finishResult;
+    return false;
+  }
+  identity->fnv1a = dtmHash;
+  return true;
+}
+
+bool ec5IdentityMatches(const Ec5DtmIdentity &identity) {
+  return identity.fnv1a == EC5_DTM_FNV1A &&
+         std::memcmp(identity.sha256, EC5_DTM_SHA256,
+                      sizeof(identity.sha256)) == 0;
+}
+
+bool ec5ValidateFixture(uint8_t *frame, Ec5FixtureValidation *validation) {
+  if (!frame || !validation) return false;
+  *validation = Ec5FixtureValidation{};
+  if (!ec5BuildAndValidateFrame(frame, &validation->frameFnv1a)) {
+    validation->failureStage = EC5_FAILURE_FRAME_BUILD;
+    return false;
+  }
+
+  uint8_t frameDigest[32] = {};
+  const int fullShaResult =
+      mbedtls_sha256_ret(frame, EPD_FRAME_BYTES, frameDigest, 0);
+  if (fullShaResult != 0 ||
+      std::memcmp(frameDigest, EC5_FRAME_SHA256, sizeof(frameDigest)) != 0) {
+    validation->failureStage = EC5_FAILURE_FULL_SHA;
+    validation->failureCode = fullShaResult;
+    return false;
+  }
+
+  if (!ec5ComputeDtmIdentity(frame, false, &validation->cs1,
+                             &validation->failureCode)) {
+    validation->failureStage = EC5_FAILURE_CS1_COMPUTE;
+    return false;
+  }
+  if (!ec5ComputeDtmIdentity(frame, true, &validation->cs2,
+                             &validation->failureCode)) {
+    validation->failureStage = EC5_FAILURE_CS2_COMPUTE;
+    return false;
+  }
+  if (!ec5IdentityMatches(validation->cs1)) {
+    validation->failureStage = EC5_FAILURE_CS1_IDENTITY;
+    return false;
+  }
+  if (!ec5IdentityMatches(validation->cs2)) {
+    validation->failureStage = EC5_FAILURE_CS2_IDENTITY;
+    return false;
+  }
+  return true;
+}
+
+}  // namespace
+
+bool epdValidateCompiledUnknownProbeFixture() {
+  uint8_t *frame = static_cast<uint8_t *>(ps_malloc(EPD_FRAME_BYTES));
+  if (!frame) return false;
+  Ec5FixtureValidation validation;
+  const bool valid = ec5ValidateFixture(frame, &validation);
+  std::free(frame);
+  return valid;
+}
+
+bool epdDisplayCompiledUnknownProbe() {
+  const uint32_t started = epdBeginOperation(EPD_SPI_DEFAULT_HZ);
+  Serial.printf(
+      "EC5 EXPERIMENTAL fixed unknown-code probe: code=0x%X, no retry\n",
+      static_cast<unsigned>(EC5_UNKNOWN_CODE));
+  diagnosticReport.freePsramBefore = ESP.getFreePsram();
+  diagnosticReport.largestPsramBlockBefore =
+      heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM);
+  uint8_t *frame = static_cast<uint8_t *>(ps_malloc(EPD_FRAME_BYTES));
+  if (!frame) {
+    Serial.println("EC5 probe rejected before panel I/O: PSRAM allocation failed");
+    return epdRejectBeforePanelIo(started, EC5_FAILURE_ALLOCATION);
+  }
+
+  Ec5FixtureValidation validation;
+  const bool identityOk = ec5ValidateFixture(frame, &validation);
+  diagnosticReport.inputFrameFnv1a = validation.frameFnv1a;
+  diagnosticReport.cs1DtmFnv1a = validation.cs1.fnv1a;
+  diagnosticReport.cs2DtmFnv1a = validation.cs2.fnv1a;
+  if (!identityOk) {
+    Serial.printf(
+        "EC5 probe rejected before panel I/O: stage=%s, error_code=%ld\n",
+        validation.failureStage,
+        static_cast<long>(validation.failureCode));
+    std::free(frame);
+    return epdRejectBeforePanelIo(started, validation.failureStage,
+                                  validation.failureCode);
+  }
+
+  if (!epdPrepareCascade(EPD_SPI_DEFAULT_HZ)) {
+    std::free(frame);
+    return epdFinishFailedOperationSafe(started, EC5_FAILURE_CASCADE_PREPARE);
+  }
+  const uint32_t cs1Started = millis();
+  diagnosticReport.cs1DtmFnv1a = epdStreamPackedFrameController(frame, false);
+  diagnosticReport.cs1UploadMs = millis() - cs1Started;
+  const uint32_t cs2Started = millis();
+  diagnosticReport.cs2DtmFnv1a = epdStreamPackedFrameController(frame, true);
+  diagnosticReport.cs2UploadMs = millis() - cs2Started;
+  diagnosticReport.mappingApplied = true;
+  std::free(frame);
+
+  if (diagnosticReport.cs1DtmFnv1a != EC5_DTM_FNV1A ||
+      diagnosticReport.cs2DtmFnv1a != EC5_DTM_FNV1A) {
+    Serial.println("EC5 probe aborted before PON: streamed DTM identity mismatch");
+    return epdFinishFailedOperationSafe(started, EC5_FAILURE_STREAM_IDENTITY);
+  }
+  setActiveControllers(true, true);
+  const bool ok = epdSecondSettingAndRefresh();
+  epdSetSpiFrequency(EPD_SPI_DEFAULT_HZ);
+  Serial.printf("EC5 fixed probe refresh: %s\n", ok ? "PASS" : "FAILED");
+  if (!ok) epdRecordFailure(EC5_FAILURE_REFRESH_SEQUENCE);
+  return epdFinishOperation(started, ok);
+}
+
+#endif  // MF1750_ENABLE_UNKNOWN_PROBE
+
+#if MF1750_ENABLE_U04_U05_COMPARE
+
+static_assert(EPD_CS1_SOURCE_HALF == 0 && !EPD_CS1_FLIP_X &&
+                  !EPD_CS1_FLIP_Y && !EPD_CS1_NIBBLE_SWAP &&
+                  EPD_CS2_SOURCE_HALF == 1 && !EPD_CS2_FLIP_X &&
+                  !EPD_CS2_FLIP_Y && !EPD_CS2_NIBBLE_SWAP,
+              "EC5 U04/U05 comparison requires MAP_ORIENT_V1 mapping");
+
+namespace {
+
+static constexpr uint16_t COMPARE_TOP_Y0 = 188;
+static constexpr uint16_t COMPARE_TOP_Y1 = 252;
+static constexpr uint16_t COMPARE_BOTTOM_Y0 = 348;
+static constexpr uint16_t COMPARE_BOTTOM_Y1 = 412;
+static constexpr uint16_t COMPARE_CS1_X0 = 224;
+static constexpr uint16_t COMPARE_CS1_X1 = 288;
+static constexpr uint16_t COMPARE_CS2_X0 = 736;
+static constexpr uint16_t COMPARE_CS2_X1 = 800;
+static constexpr uint8_t COMPARE_U04_CODE = 0x4;
+static constexpr uint8_t COMPARE_U05_CODE = EPD_COLOR_BLUE;
+static constexpr size_t COMPARE_PIXELS_PER_CODE = 2U * 64U * 64U;
+static constexpr size_t COMPARE_WHITE_PIXELS =
+    static_cast<size_t>(EPD_WIDTH) * EPD_HEIGHT -
+    2U * COMPARE_PIXELS_PER_CODE;
+
+static constexpr uint32_t COMPARE_FRAME_FNV1A = 0x9A7A3DC5UL;
+static constexpr uint32_t COMPARE_CS1_DTM_FNV1A = 0x65B20DC5UL;
+static constexpr uint32_t COMPARE_CS2_DTM_FNV1A = 0xD9B20DC5UL;
+
+// These are deliberately runtime-addressable local objects. The offline ELF
+// gate reads the exact symbols from .symtab; matching bytes elsewhere do not
+// satisfy the compiled-identity contract.
+static const uint8_t EC5_FRAME_SHA256[32] = {
+    0xC3, 0xF1, 0xD1, 0x9A, 0xDB, 0x80, 0x16, 0x93,
+    0x39, 0xD3, 0x2A, 0x7E, 0x7E, 0x61, 0xBB, 0x5F,
+    0x3A, 0x0D, 0xB9, 0xE2, 0xE8, 0x23, 0x08, 0x04,
+    0x12, 0xEA, 0x91, 0x22, 0x7E, 0xAA, 0x31, 0x0D,
+};
+static const uint8_t EC5_CS1_DTM_SHA256[32] = {
+    0x58, 0x3A, 0x45, 0xA8, 0x3F, 0x38, 0x13, 0x9E,
+    0xA8, 0x23, 0x29, 0x4A, 0x1A, 0x0D, 0x6F, 0x41,
+    0x75, 0xBE, 0xD4, 0x48, 0x76, 0xEC, 0x94, 0xD8,
+    0x83, 0xFC, 0xC0, 0x43, 0x29, 0xDF, 0xDB, 0x50,
+};
+static const uint8_t EC5_CS2_DTM_SHA256[32] = {
+    0xA9, 0xC4, 0xCE, 0xD5, 0x4F, 0xC4, 0x56, 0xF4,
+    0x24, 0xF6, 0x15, 0xC6, 0x88, 0x5D, 0xD6, 0x61,
+    0x51, 0x7E, 0xBD, 0xC8, 0xA1, 0x2E, 0xE9, 0x58,
+    0x1D, 0x14, 0x20, 0xE1, 0xA9, 0x99, 0x6A, 0xD3,
+};
+
+static constexpr const char *COMPARE_FAILURE_NONE = "none";
+static constexpr const char *COMPARE_FAILURE_ALLOCATION = "allocation";
+static constexpr const char *COMPARE_FAILURE_FRAME_BUILD = "frame_build";
+static constexpr const char *COMPARE_FAILURE_FULL_SHA = "full_sha";
+static constexpr const char *COMPARE_FAILURE_CS1_COMPUTE = "cs1_compute";
+static constexpr const char *COMPARE_FAILURE_CS2_COMPUTE = "cs2_compute";
+static constexpr const char *COMPARE_FAILURE_CS1_IDENTITY = "cs1_identity";
+static constexpr const char *COMPARE_FAILURE_CS2_IDENTITY = "cs2_identity";
+static constexpr const char *COMPARE_FAILURE_CASCADE_PREPARE =
+    "cascade_prepare";
+static constexpr const char *COMPARE_FAILURE_STREAM_IDENTITY =
+    "stream_identity";
+static constexpr const char *COMPARE_FAILURE_REFRESH_SEQUENCE =
+    "refresh_sequence";
+
+struct CompareDtmIdentity {
+  uint32_t fnv1a = 0;
+  uint8_t sha256[32] = {};
+};
+
+struct CompareFixtureValidation {
+  const char *failureStage = COMPARE_FAILURE_NONE;
+  int32_t failureCode = 0;
+  uint32_t frameFnv1a = 0;
+  CompareDtmIdentity cs1;
+  CompareDtmIdentity cs2;
+};
+
+bool compareInside(uint16_t x, uint16_t x0, uint16_t x1) {
+  return x >= x0 && x < x1;
+}
+
+uint8_t compareExpectedCode(uint16_t x, uint16_t y) {
+  const bool top = y >= COMPARE_TOP_Y0 && y < COMPARE_TOP_Y1;
+  const bool bottom = y >= COMPARE_BOTTOM_Y0 && y < COMPARE_BOTTOM_Y1;
+  const bool cs1 = compareInside(x, COMPARE_CS1_X0, COMPARE_CS1_X1);
+  const bool cs2 = compareInside(x, COMPARE_CS2_X0, COMPARE_CS2_X1);
+  if ((cs1 && top) || (cs2 && bottom)) {
+    return COMPARE_U04_CODE;
+  }
+  if ((cs1 && bottom) || (cs2 && top)) {
+    return COMPARE_U05_CODE;
+  }
+  return EPD_COLOR_WHITE;
+}
+
+void compareFillRoi(uint8_t *frame, uint16_t x0, uint16_t x1, uint16_t y0,
+                    uint16_t y1, uint8_t code) {
+  static constexpr size_t kRowBytes = EPD_WIDTH / 2;
+  const uint8_t pair = static_cast<uint8_t>((code << 4) | code);
+  for (uint16_t y = y0; y < y1; ++y) {
+    std::memset(frame + static_cast<size_t>(y) * kRowBytes + x0 / 2, pair,
+                (x1 - x0) / 2);
+  }
+}
+
+bool compareBuildAndValidateFrame(uint8_t *frame, uint32_t *frameFnv1a) {
+  if (!frame || !frameFnv1a) return false;
+  std::memset(frame, 0x11, EPD_FRAME_BYTES);
+  compareFillRoi(frame, COMPARE_CS1_X0, COMPARE_CS1_X1, COMPARE_TOP_Y0,
+                 COMPARE_TOP_Y1, COMPARE_U04_CODE);
+  compareFillRoi(frame, COMPARE_CS1_X0, COMPARE_CS1_X1, COMPARE_BOTTOM_Y0,
+                 COMPARE_BOTTOM_Y1, COMPARE_U05_CODE);
+  compareFillRoi(frame, COMPARE_CS2_X0, COMPARE_CS2_X1, COMPARE_TOP_Y0,
+                 COMPARE_TOP_Y1, COMPARE_U05_CODE);
+  compareFillRoi(frame, COMPARE_CS2_X0, COMPARE_CS2_X1, COMPARE_BOTTOM_Y0,
+                 COMPARE_BOTTOM_Y1, COMPARE_U04_CODE);
+
+  size_t histogram[16] = {};
+  bool layoutOk = true;
+  static constexpr size_t kRowBytes = EPD_WIDTH / 2;
+  for (uint16_t y = 0; layoutOk && y < EPD_HEIGHT; ++y) {
+    const size_t rowOffset = static_cast<size_t>(y) * kRowBytes;
+    for (uint16_t x = 0; x < EPD_WIDTH; x += 2) {
+      const uint8_t value = frame[rowOffset + x / 2];
+      const uint8_t high = static_cast<uint8_t>(value >> 4);
+      const uint8_t low = static_cast<uint8_t>(value & 0x0F);
+      if (high != compareExpectedCode(x, y) ||
+          low != compareExpectedCode(static_cast<uint16_t>(x + 1), y)) {
+        layoutOk = false;
+        break;
+      }
+      ++histogram[high];
+      ++histogram[low];
+    }
+  }
+  *frameFnv1a = fnv1a(frame, EPD_FRAME_BYTES);
+  return layoutOk && histogram[EPD_COLOR_WHITE] == COMPARE_WHITE_PIXELS &&
+         histogram[COMPARE_U04_CODE] == COMPARE_PIXELS_PER_CODE &&
+         histogram[COMPARE_U05_CODE] == COMPARE_PIXELS_PER_CODE &&
+         histogram[0] + histogram[2] + histogram[3] + histogram[6] +
+                 histogram[7] + histogram[8] + histogram[9] + histogram[10] +
+                 histogram[11] + histogram[12] + histogram[13] +
+                 histogram[14] + histogram[15] ==
+             0 &&
+         *frameFnv1a == COMPARE_FRAME_FNV1A;
+}
+
+bool compareComputeDtmIdentity(const uint8_t *frame, bool secondController,
+                               CompareDtmIdentity *identity,
+                               int32_t *errorCode) {
+  if (!frame || !identity || !errorCode) return false;
+  *identity = CompareDtmIdentity{};
+  *errorCode = 0;
+  static constexpr size_t kFullRowBytes = EPD_WIDTH / 2;
+  static constexpr size_t kControllerRowBytes = EPD_CONTROLLER_WIDTH / 2;
+  uint8_t mappedRow[kControllerRowBytes] = {};
+  const ControllerMapping &mapping =
+      CONTROLLER_MAPPINGS[secondController ? 1 : 0];
+  mbedtls_sha256_context context;
+  mbedtls_sha256_init(&context);
+  const int startsResult = mbedtls_sha256_starts_ret(&context, 0);
+  if (startsResult != 0) {
+    *errorCode = startsResult;
+    mbedtls_sha256_free(&context);
+    return false;
+  }
+  uint32_t dtmHash = FNV1A_OFFSET_BASIS;
+  for (uint16_t outputY = 0; outputY < EPD_HEIGHT; ++outputY) {
+    const uint16_t sourceY = mapping.flipY ? EPD_HEIGHT - 1 - outputY : outputY;
+    const size_t rowOffset = static_cast<size_t>(sourceY) * kFullRowBytes;
+    const size_t halfOffset =
+        static_cast<size_t>(mapping.sourceHalf) * kControllerRowBytes;
+    const uint8_t *row = frame + rowOffset + halfOffset;
+    for (size_t outputByte = 0; outputByte < kControllerRowBytes;
+         ++outputByte) {
+      const size_t sourceByte = mapping.flipX
+                                    ? kControllerRowBytes - 1 - outputByte
+                                    : outputByte;
+      uint8_t value = row[sourceByte];
+      if (mapping.flipX != mapping.nibbleSwap)
+        value = static_cast<uint8_t>((value << 4) | (value >> 4));
+      mappedRow[outputByte] = value;
+      dtmHash = fnv1aUpdate(dtmHash, value);
+    }
+    const int updateResult =
+        mbedtls_sha256_update_ret(&context, mappedRow, sizeof(mappedRow));
+    if (updateResult != 0) {
+      *errorCode = updateResult;
+      mbedtls_sha256_free(&context);
+      return false;
+    }
+  }
+  const int finishResult =
+      mbedtls_sha256_finish_ret(&context, identity->sha256);
+  mbedtls_sha256_free(&context);
+  if (finishResult != 0) {
+    *errorCode = finishResult;
+    return false;
+  }
+  identity->fnv1a = dtmHash;
+  return true;
+}
+
+bool compareIdentityMatches(const CompareDtmIdentity &identity,
+                            bool secondController) {
+  const uint32_t expectedFnv = secondController ? COMPARE_CS2_DTM_FNV1A
+                                                : COMPARE_CS1_DTM_FNV1A;
+  const uint8_t *expectedSha = secondController ? EC5_CS2_DTM_SHA256
+                                                : EC5_CS1_DTM_SHA256;
+  return identity.fnv1a == expectedFnv &&
+         std::memcmp(identity.sha256, expectedSha, sizeof(identity.sha256)) ==
+             0;
+}
+
+bool compareValidateFixture(uint8_t *frame,
+                            CompareFixtureValidation *validation) {
+  if (!frame || !validation) return false;
+  *validation = CompareFixtureValidation{};
+  if (!compareBuildAndValidateFrame(frame, &validation->frameFnv1a)) {
+    validation->failureStage = COMPARE_FAILURE_FRAME_BUILD;
+    return false;
+  }
+  uint8_t frameDigest[32] = {};
+  const int fullShaResult =
+      mbedtls_sha256_ret(frame, EPD_FRAME_BYTES, frameDigest, 0);
+  if (fullShaResult != 0 ||
+      std::memcmp(frameDigest, EC5_FRAME_SHA256, sizeof(frameDigest)) != 0) {
+    validation->failureStage = COMPARE_FAILURE_FULL_SHA;
+    validation->failureCode = fullShaResult;
+    return false;
+  }
+  if (!compareComputeDtmIdentity(frame, false, &validation->cs1,
+                                 &validation->failureCode)) {
+    validation->failureStage = COMPARE_FAILURE_CS1_COMPUTE;
+    return false;
+  }
+  if (!compareComputeDtmIdentity(frame, true, &validation->cs2,
+                                 &validation->failureCode)) {
+    validation->failureStage = COMPARE_FAILURE_CS2_COMPUTE;
+    return false;
+  }
+  if (!compareIdentityMatches(validation->cs1, false)) {
+    validation->failureStage = COMPARE_FAILURE_CS1_IDENTITY;
+    return false;
+  }
+  if (!compareIdentityMatches(validation->cs2, true)) {
+    validation->failureStage = COMPARE_FAILURE_CS2_IDENTITY;
+    return false;
+  }
+  return true;
+}
+
+}  // namespace
+
+bool epdValidateCompiledU04U05CompareFixture() {
+  uint8_t *frame = static_cast<uint8_t *>(ps_malloc(EPD_FRAME_BYTES));
+  if (!frame) return false;
+  CompareFixtureValidation validation;
+  const bool valid = compareValidateFixture(frame, &validation);
+  std::free(frame);
+  return valid;
+}
+
+bool epdDisplayCompiledU04U05Compare() {
+  const uint32_t started = epdBeginOperation(EPD_SPI_DEFAULT_HZ);
+  Serial.println("EC5 fixed U04/U05 four-ROI comparison, no dither/retry");
+  diagnosticReport.freePsramBefore = ESP.getFreePsram();
+  diagnosticReport.largestPsramBlockBefore =
+      heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM);
+  uint8_t *frame = static_cast<uint8_t *>(ps_malloc(EPD_FRAME_BYTES));
+  if (!frame) {
+    return epdRejectBeforePanelIo(started, COMPARE_FAILURE_ALLOCATION);
+  }
+
+  CompareFixtureValidation validation;
+  const bool identityOk = compareValidateFixture(frame, &validation);
+  diagnosticReport.inputFrameFnv1a = validation.frameFnv1a;
+  diagnosticReport.cs1DtmFnv1a = validation.cs1.fnv1a;
+  diagnosticReport.cs2DtmFnv1a = validation.cs2.fnv1a;
+  if (!identityOk) {
+    std::free(frame);
+    return epdRejectBeforePanelIo(started, validation.failureStage,
+                                  validation.failureCode);
+  }
+
+  if (!epdPrepareCascade(EPD_SPI_DEFAULT_HZ)) {
+    std::free(frame);
+    return epdFinishFailedOperationSafe(started,
+                                        COMPARE_FAILURE_CASCADE_PREPARE);
+  }
+  const uint32_t cs1Started = millis();
+  diagnosticReport.cs1DtmFnv1a = epdStreamPackedFrameController(frame, false);
+  diagnosticReport.cs1UploadMs = millis() - cs1Started;
+  const uint32_t cs2Started = millis();
+  diagnosticReport.cs2DtmFnv1a = epdStreamPackedFrameController(frame, true);
+  diagnosticReport.cs2UploadMs = millis() - cs2Started;
+  diagnosticReport.mappingApplied = true;
+  std::free(frame);
+
+  if (diagnosticReport.cs1DtmFnv1a != COMPARE_CS1_DTM_FNV1A ||
+      diagnosticReport.cs2DtmFnv1a != COMPARE_CS2_DTM_FNV1A) {
+    return epdFinishFailedOperationSafe(started,
+                                        COMPARE_FAILURE_STREAM_IDENTITY);
+  }
+  setActiveControllers(true, true);
+  const bool ok = epdSecondSettingAndRefresh();
+  epdSetSpiFrequency(EPD_SPI_DEFAULT_HZ);
+  if (!ok) epdRecordFailure(COMPARE_FAILURE_REFRESH_SEQUENCE);
+  return epdFinishOperation(started, ok);
+}
+
+#endif  // MF1750_ENABLE_U04_U05_COMPARE
+
+#if MF1750_ENABLE_SIXSTATE_PROBE
+
+#ifndef MF1750_UNKNOWN_PROBE_CODE
+#error "Six-state experimental build requires MF1750_UNKNOWN_PROBE_CODE"
+#endif
+
+#if MF1750_UNKNOWN_PROBE_CODE != 4 && MF1750_UNKNOWN_PROBE_CODE != 7
+#error "Six-state candidate must be exactly 4 or 7"
+#endif
+
+static_assert(EPD_WIDTH == 1024 && EPD_HEIGHT == 600 &&
+                  EPD_FRAME_BYTES == 307200,
+              "Six-state fixtures are frozen for 1024x600 packed 4bpp");
+static_assert(EPD_CS1_SOURCE_HALF == 0 && !EPD_CS1_FLIP_X &&
+                  !EPD_CS1_FLIP_Y && !EPD_CS1_NIBBLE_SWAP &&
+                  EPD_CS2_SOURCE_HALF == 1 && !EPD_CS2_FLIP_X &&
+                  !EPD_CS2_FLIP_Y && !EPD_CS2_NIBBLE_SWAP,
+              "Six-state identities require frozen MAP_ORIENT_V1 mapping");
+
+namespace {
+
+static constexpr uint8_t SIXSTATE_CANDIDATE = MF1750_UNKNOWN_PROBE_CODE;
+static constexpr uint16_t SIXSTATE_ROI_SIDE = 24;
+static constexpr uint16_t SIXSTATE_LEFT_X0 = 244;
+static constexpr uint16_t SIXSTATE_RIGHT_X0 = 756;
+static constexpr uint16_t SIXSTATE_Y0[6] = {48, 144, 240, 336, 432, 528};
+static constexpr uint8_t SIXSTATE_INITIAL_CODE[6] = {
+    EPD_COLOR_WHITE, EPD_COLOR_BLACK, EPD_COLOR_RED,
+    EPD_COLOR_YELLOW, EPD_COLOR_BLUE, EPD_COLOR_GREEN,
+};
+static constexpr size_t SIXSTATE_ROI_COUNT = 12;
+static constexpr size_t SIXSTATE_TARGET_PIXELS =
+    SIXSTATE_ROI_COUNT * SIXSTATE_ROI_SIDE * SIXSTATE_ROI_SIDE;
+
+struct SixStateIdentity {
+  uint32_t frameFnv1a;
+  uint32_t dtmFnv1a;
+  const char *frameSha256;
+  const char *dtmSha256;
+  uint32_t histogram[16];
+};
+
+static constexpr SixStateIdentity SIXSTATE_PRIMER_IDENTITY = {
+    0xE4F04785UL,
+    0x58214425UL,
+    "94ee82ae66fe8372e8c1d977a158dc60d55c36da86fc44f8b2a9a01c6d47ab0e",
+    "f5bb17a5726f851da2bf322ffea8f0ea791f70788184ada4261b89aa43dc39af",
+    {1152, 608640, 1152, 1152, 0, 1152, 1152, 0,
+     0, 0, 0, 0, 0, 0, 0, 0},
+};
+
+#if MF1750_UNKNOWN_PROBE_CODE == 4
+static constexpr SixStateIdentity SIXSTATE_TARGET_IDENTITY = {
+    0x263BD845UL,
+    0xEF6ED905UL,
+    "81b0ed1b715551ddb2546d4f123c5c3d479bc8802ff9d2570e38d9b57b4645e6",
+    "c4efd83606b72c49b7c0d67865e4df98ef31e5d40f071299558e10c5a212dd0f",
+    {0, 607488, 0, 0, 6912, 0, 0, 0,
+     0, 0, 0, 0, 0, 0, 0, 0},
+};
+#else
+static constexpr SixStateIdentity SIXSTATE_TARGET_IDENTITY = {
+    0xF93BD8C5UL,
+    0xE4D43B45UL,
+    "149ba0f5c3fd779d6870f655b53d726d6d1297e016331de4d394e411410e0e21",
+    "139a0aa919d78a1aa572db49a7c90fe3a4f29476ab4d80ba3bb0f439f0191b3d",
+    {0, 607488, 0, 0, 0, 0, 0, 6912,
+     0, 0, 0, 0, 0, 0, 0, 0},
+};
+#endif
+
+static constexpr SixStateIdentity SIXSTATE_WHITE_IDENTITY = {
+    0x13340DC5UL,
+    0xB7A855C5UL,
+    "91f1ed45bf609a23fbdcfd037027c2e271484f58321a4707e889d11859d8453d",
+    "8b8fe04d4d48ab9d1abb4a858f68544164d1a091998664eef06869c098a78158",
+    {0, 614400, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 0, 0, 0},
+};
+
+const SixStateIdentity *sixStateIdentity(EpdSixStateRole role) {
+  switch (role) {
+    case EpdSixStateRole::Primer:
+      return &SIXSTATE_PRIMER_IDENTITY;
+    case EpdSixStateRole::Target:
+      return &SIXSTATE_TARGET_IDENTITY;
+    case EpdSixStateRole::White:
+      return &SIXSTATE_WHITE_IDENTITY;
+  }
+  return nullptr;
+}
+
+const char *sixStateRoleName(EpdSixStateRole role) {
+  switch (role) {
+    case EpdSixStateRole::Primer:
+      return "primer";
+    case EpdSixStateRole::Target:
+      return "target";
+    case EpdSixStateRole::White:
+      return "white";
+  }
+  return "invalid";
+}
+
+int sixStateRoiIndex(uint16_t x, uint16_t y) {
+  const bool inX =
+      (x >= SIXSTATE_LEFT_X0 && x < SIXSTATE_LEFT_X0 + SIXSTATE_ROI_SIDE) ||
+      (x >= SIXSTATE_RIGHT_X0 && x < SIXSTATE_RIGHT_X0 + SIXSTATE_ROI_SIDE);
+  if (!inX) return -1;
+  for (uint8_t index = 0; index < 6; ++index) {
+    if (y >= SIXSTATE_Y0[index] &&
+        y < SIXSTATE_Y0[index] + SIXSTATE_ROI_SIDE) {
+      return index;
+    }
+  }
+  return -1;
+}
+
+uint8_t sixStateExpectedPixel(EpdSixStateRole role, uint16_t x, uint16_t y) {
+  const int roi = sixStateRoiIndex(x, y);
+  if (role == EpdSixStateRole::White || roi < 0) return EPD_COLOR_WHITE;
+  if (role == EpdSixStateRole::Target) return SIXSTATE_CANDIDATE;
+  return SIXSTATE_INITIAL_CODE[roi];
+}
+
+bool sixStateShaMatches(const uint8_t *data, size_t length,
+                        const char *expectedHex) {
+  if (!data || !expectedHex || std::strlen(expectedHex) != 64) return false;
+  uint8_t digest[32] = {};
+  if (mbedtls_sha256_ret(data, length, digest, 0) != 0) return false;
+  static constexpr char kHex[] = "0123456789abcdef";
+  for (size_t index = 0; index < sizeof(digest); ++index) {
+    if (expectedHex[index * 2] != kHex[digest[index] >> 4] ||
+        expectedHex[index * 2 + 1] != kHex[digest[index] & 0x0F]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool sixStateBuildAndValidateFrame(EpdSixStateRole role, uint8_t *frame) {
+  const SixStateIdentity *identity = sixStateIdentity(role);
+  if (!identity || !frame) return false;
+  std::memset(frame, 0x11, EPD_FRAME_BYTES);
+  static constexpr size_t kRowBytes = EPD_WIDTH / 2;
+  if (role != EpdSixStateRole::White) {
+    for (uint8_t roi = 0; roi < 6; ++roi) {
+      const uint8_t code = role == EpdSixStateRole::Target
+                               ? SIXSTATE_CANDIDATE
+                               : SIXSTATE_INITIAL_CODE[roi];
+      const uint8_t pair = static_cast<uint8_t>((code << 4) | code);
+      for (uint16_t y = SIXSTATE_Y0[roi];
+           y < SIXSTATE_Y0[roi] + SIXSTATE_ROI_SIDE; ++y) {
+        std::memset(frame + static_cast<size_t>(y) * kRowBytes +
+                              SIXSTATE_LEFT_X0 / 2,
+                    pair, SIXSTATE_ROI_SIDE / 2);
+        std::memset(frame + static_cast<size_t>(y) * kRowBytes +
+                              SIXSTATE_RIGHT_X0 / 2,
+                    pair, SIXSTATE_ROI_SIDE / 2);
+      }
+    }
+  }
+
+  uint32_t histogram[16] = {};
+  size_t roiPixels = 0;
+  for (uint16_t y = 0; y < EPD_HEIGHT; ++y) {
+    const size_t rowOffset = static_cast<size_t>(y) * kRowBytes;
+    for (uint16_t x = 0; x < EPD_WIDTH; x += 2) {
+      const uint8_t packed = frame[rowOffset + x / 2];
+      const uint8_t high = packed >> 4;
+      const uint8_t low = packed & 0x0F;
+      if (high != sixStateExpectedPixel(role, x, y) ||
+          low != sixStateExpectedPixel(role, static_cast<uint16_t>(x + 1), y)) {
+        return false;
+      }
+      ++histogram[high];
+      ++histogram[low];
+      roiPixels += static_cast<size_t>(sixStateRoiIndex(x, y) >= 0);
+      roiPixels +=
+          static_cast<size_t>(sixStateRoiIndex(static_cast<uint16_t>(x + 1), y) >= 0);
+    }
+  }
+  if (roiPixels != SIXSTATE_TARGET_PIXELS ||
+      std::memcmp(histogram, identity->histogram, sizeof(histogram)) != 0 ||
+      fnv1a(frame, EPD_FRAME_BYTES) != identity->frameFnv1a ||
+      !sixStateShaMatches(frame, EPD_FRAME_BYTES, identity->frameSha256)) {
+    return false;
+  }
+  return true;
+}
+
+bool sixStateComputeDtmIdentity(const uint8_t *frame, bool secondController,
+                                uint32_t *fnvOut, uint8_t shaOut[32]) {
+  if (!frame || !fnvOut || !shaOut) return false;
+  static constexpr size_t kFullRowBytes = EPD_WIDTH / 2;
+  static constexpr size_t kControllerRowBytes = EPD_CONTROLLER_WIDTH / 2;
+  uint8_t mappedRow[kControllerRowBytes] = {};
+  const ControllerMapping &mapping = CONTROLLER_MAPPINGS[secondController ? 1 : 0];
+  mbedtls_sha256_context context;
+  mbedtls_sha256_init(&context);
+  if (mbedtls_sha256_starts_ret(&context, 0) != 0) {
+    mbedtls_sha256_free(&context);
+    return false;
+  }
+  uint32_t hash = FNV1A_OFFSET_BASIS;
+  for (uint16_t outputY = 0; outputY < EPD_HEIGHT; ++outputY) {
+    const uint16_t sourceY = mapping.flipY ? EPD_HEIGHT - 1 - outputY : outputY;
+    const uint8_t *row = frame + static_cast<size_t>(sourceY) * kFullRowBytes +
+                         static_cast<size_t>(mapping.sourceHalf) * kControllerRowBytes;
+    for (size_t outputByte = 0; outputByte < kControllerRowBytes; ++outputByte) {
+      const size_t sourceByte = mapping.flipX
+                                    ? kControllerRowBytes - 1 - outputByte
+                                    : outputByte;
+      uint8_t value = row[sourceByte];
+      if (mapping.flipX != mapping.nibbleSwap) value = (value << 4) | (value >> 4);
+      mappedRow[outputByte] = value;
+      hash = fnv1aUpdate(hash, value);
+    }
+    if (mbedtls_sha256_update_ret(&context, mappedRow, sizeof(mappedRow)) != 0) {
+      mbedtls_sha256_free(&context);
+      return false;
+    }
+  }
+  const bool ok = mbedtls_sha256_finish_ret(&context, shaOut) == 0;
+  mbedtls_sha256_free(&context);
+  *fnvOut = hash;
+  return ok;
+}
+
+bool sixStateDtmMatches(const uint8_t *frame, bool secondController,
+                        const SixStateIdentity &identity) {
+  uint32_t hash = 0;
+  uint8_t digest[32] = {};
+  if (!sixStateComputeDtmIdentity(frame, secondController, &hash, digest) ||
+      hash != identity.dtmFnv1a) {
+    return false;
+  }
+  static constexpr char kHex[] = "0123456789abcdef";
+  for (size_t index = 0; index < sizeof(digest); ++index) {
+    if (identity.dtmSha256[index * 2] != kHex[digest[index] >> 4] ||
+        identity.dtmSha256[index * 2 + 1] != kHex[digest[index] & 0x0F]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+}  // namespace
+
+bool epdValidateCompiledSixStateFixtures() {
+  uint8_t *frame = static_cast<uint8_t *>(ps_malloc(EPD_FRAME_BYTES));
+  if (!frame) return false;
+  static constexpr EpdSixStateRole kRoles[] = {
+      EpdSixStateRole::Primer, EpdSixStateRole::Target,
+      EpdSixStateRole::White,
+  };
+  bool ok = true;
+  for (const EpdSixStateRole role : kRoles) {
+    const SixStateIdentity *identity = sixStateIdentity(role);
+    ok = identity && sixStateBuildAndValidateFrame(role, frame) &&
+         sixStateDtmMatches(frame, false, *identity) &&
+         sixStateDtmMatches(frame, true, *identity);
+    if (!ok) break;
+  }
+  std::free(frame);
+  return ok;
+}
+
+bool epdDisplayCompiledSixState(EpdSixStateRole role) {
+  const uint32_t started = epdBeginOperation(EPD_SPI_DEFAULT_HZ);
+  const SixStateIdentity *identity = sixStateIdentity(role);
+  if (!identity) {
+    Serial.println("EC5 six-state rejected: invalid compiled role");
+    return epdFinishOperation(started, false);
+  }
+  Serial.printf("EC5 six-state fixed role=%s candidate=0x%X; no retry\n",
+                sixStateRoleName(role),
+                static_cast<unsigned>(SIXSTATE_CANDIDATE));
+  uint8_t *frame = static_cast<uint8_t *>(ps_malloc(EPD_FRAME_BYTES));
+  if (!frame) {
+    Serial.println("EC5 six-state rejected before panel I/O: PSRAM allocation failed");
+    return epdFinishOperation(started, false);
+  }
+  const bool identityOk =
+      sixStateBuildAndValidateFrame(role, frame) &&
+      sixStateDtmMatches(frame, false, *identity) &&
+      sixStateDtmMatches(frame, true, *identity);
+  if (!identityOk) {
+    Serial.println("EC5 six-state rejected before panel I/O: frozen identity mismatch");
+    std::free(frame);
+    return epdFinishOperation(started, false);
+  }
+  diagnosticReport.inputFrameFnv1a = identity->frameFnv1a;
+  if (!epdPrepareCascade(EPD_SPI_DEFAULT_HZ)) {
+    std::free(frame);
+    return epdFinishOperation(started, false);
+  }
+  const uint32_t cs1Started = millis();
+  diagnosticReport.cs1DtmFnv1a = epdStreamPackedFrameController(frame, false);
+  diagnosticReport.cs1UploadMs = millis() - cs1Started;
+  const uint32_t cs2Started = millis();
+  diagnosticReport.cs2DtmFnv1a = epdStreamPackedFrameController(frame, true);
+  diagnosticReport.cs2UploadMs = millis() - cs2Started;
+  diagnosticReport.mappingApplied = true;
+  std::free(frame);
+  if (diagnosticReport.cs1DtmFnv1a != identity->dtmFnv1a ||
+      diagnosticReport.cs2DtmFnv1a != identity->dtmFnv1a) {
+    Serial.println("EC5 six-state aborted before PON: streamed DTM mismatch");
+    epdStopHardwareSpi();
+    epdHoldPanelPinsLow();
+    return epdFinishOperation(started, false);
+  }
+  setActiveControllers(true, true);
+  const bool ok = epdSecondSettingAndRefresh();
+  epdSetSpiFrequency(EPD_SPI_DEFAULT_HZ);
+  Serial.printf("EC5 six-state fixed refresh: %s\n", ok ? "PASS" : "FAILED");
+  return epdFinishOperation(started, ok);
+}
+
+#endif  // MF1750_ENABLE_SIXSTATE_PROBE
+
 bool epdDisplayFrameAtFrequency(const uint8_t *frame, size_t len, uint32_t spiHz) {
   const uint32_t started = epdBeginOperation(spiHz);
   if (!frame || len != EPD_FRAME_BYTES) {
@@ -1258,3 +2461,27 @@ void epdClearBlack512x600() {
   epdSecondSettingAndRefresh();
   Serial.println("EPD custom black frame done");
 }
+
+#if MF1750_ENABLE_EIGHTCODE_ATLAS
+#include "ec5_eightcode_atlas_driver.inc"
+#endif
+
+#if MF1750_ENABLE_COLOR_LAB
+#include "ec5_color_lab_driver.inc"
+#endif
+
+#if MF1750_ENABLE_OTP_TRANSITION_MATRIX
+#include "ec5_otp_transition_matrix_driver.inc"
+#endif
+
+#if MF1750_ENABLE_DITHER_COLOR_ATLAS
+#include "ec5_dither_color_atlas_driver.inc"
+#endif
+
+#if MF1750_ENABLE_RUNTIME_LUT_EMPIRICAL_H3
+#include "ec5_runtime_lut_empirical_h3_driver.inc"
+#endif
+
+#if MF1750_ENABLE_FACTORY_OTP_WHITE_RECOVERY
+#include "ec5_factory_otp_white_recovery_driver.inc"
+#endif

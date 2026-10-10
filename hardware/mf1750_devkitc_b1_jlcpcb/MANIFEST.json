@@ -1,0 +1,294 @@
+{
+  "checks": {
+    "bom_cpl_reference_sets_identical": true,
+    "drc_violations": 0,
+    "erc_errors": 0,
+    "erc_warnings": 0,
+    "fit_smt_refs": 46,
+    "gerber_files": 12,
+    "r16_fit_r15_dnp": true,
+    "schematic_parity_errors": 0,
+    "unconnected_pads": 0,
+    "unique_lcsc_parts": 16
+  },
+  "fabrication": {
+    "board_mm": [
+      62.0,
+      58.0
+    ],
+    "controlled_impedance": false,
+    "finished_thickness_mm": 1.6,
+    "gerber_audit": {
+      "board_outline_mm": [
+        62.0,
+        58.0
+      ],
+      "drill_tools_and_counts": {
+        "NPTH": {
+          "2.5": 2
+        },
+        "PTH": {
+          "0.3": 75,
+          "0.75": 2,
+          "0.8": 44
+        }
+      },
+      "files": {
+        "mf1750_devkitc_b1_single_power_layer-B_Cu.gbl": "bottom copper / L4",
+        "mf1750_devkitc_b1_single_power_layer-B_Mask.gbs": "bottom solder mask",
+        "mf1750_devkitc_b1_single_power_layer-Bottom Silkscreen.gbo": "bottom silkscreen",
+        "mf1750_devkitc_b1_single_power_layer-Edge_Cuts.gm1": "single board outline",
+        "mf1750_devkitc_b1_single_power_layer-F_Cu.gtl": "top copper / L1",
+        "mf1750_devkitc_b1_single_power_layer-F_Mask.gts": "top solder mask",
+        "mf1750_devkitc_b1_single_power_layer-F_Paste.gtp": "top paste; R15 removed",
+        "mf1750_devkitc_b1_single_power_layer-In1_Cu.g1": "ground plane / L2",
+        "mf1750_devkitc_b1_single_power_layer-In2_Cu.g2": "power routing / L3",
+        "mf1750_devkitc_b1_single_power_layer-NPTH.drl": "non-plated drill",
+        "mf1750_devkitc_b1_single_power_layer-PTH.drl": "plated drill",
+        "mf1750_devkitc_b1_single_power_layer-Top Silkscreen.gto": "top silkscreen"
+      },
+      "paste_r15_present": false,
+      "paste_r16_present": true,
+      "top_paste_flashes": 144
+    },
+    "inner_copper_oz": 0.5,
+    "layers": 4,
+    "outer_copper_oz": 1.0,
+    "stackup": "JLC04161H-7628",
+    "surface_finish": "ENIG_1U"
+  },
+  "files": {
+    "MF1750_DEVKITC_B1_KICAD_SOURCE.zip": {
+      "bytes": 224468,
+      "sha256": "1f7d8f8748ecd19c588c33f955a98368c3f76ca2c35467f700614f4071c7d526"
+    },
+    "README_ORDER.md": {
+      "bytes": 5300,
+      "sha256": "278d3fa1de98749cbbc68a5f02393c99a4d9a39ee7b91bb3034ef9746705928a"
+    },
+    "gerber_files/mf1750_devkitc_b1_single_power_layer-B_Cu.gbl": {
+      "bytes": 147228,
+      "sha256": "3e790f537fedbcf2b19e9edc10a6516bed321f90ba9f8819db187873c8c43958"
+    },
+    "gerber_files/mf1750_devkitc_b1_single_power_layer-B_Mask.gbs": {
+      "bytes": 3053,
+      "sha256": "ff1afe970261af8989d512798b6c511cdbb0d45cb835433a82873bbf0d5d4f95"
+    },
+    "gerber_files/mf1750_devkitc_b1_single_power_layer-Bottom Silkscreen.gbo": {
+      "bytes": 49099,
+      "sha256": "ef09c8dfa84eb7d2177f73840f272553a809ecc1737dcfb9e1efcfb6cd52bed3"
+    },
+    "gerber_files/mf1750_devkitc_b1_single_power_layer-Edge_Cuts.gm1": {
+      "bytes": 614,
+      "sha256": "64eb5d3aa7ccdcf4cabb5796fb90018e0610f58613ce5f5eb8220cb960dc7d9a"
+    },
+    "gerber_files/mf1750_devkitc_b1_single_power_layer-F_Cu.gtl": {
+      "bytes": 260629,
+      "sha256": "5cdc3908e6c56a118e2843f27918ee0892b2dbb9a452a9d4891a302cdaa4e66b"
+    },
+    "gerber_files/mf1750_devkitc_b1_single_power_layer-F_Mask.gts": {
+      "bytes": 8269,
+      "sha256": "2b8b4937792e057030743dac8437df15df7b07212cb8d3a78106e0995fd86a2f"
+    },
+    "gerber_files/mf1750_devkitc_b1_single_power_layer-F_Paste.gtp": {
+      "bytes": 6679,
+      "sha256": "3ac019c1949b5efa4f4965609a3b8ac479537cda57d6bf3317d426c93ac05054"
+    },
+    "gerber_files/mf1750_devkitc_b1_single_power_layer-In1_Cu.g1": {
+      "bytes": 152706,
+      "sha256": "d5b29c6dba034e9da3da7124bb4d86c916eb58eb90d53a293f080d930fb702c9"
+    },
+    "gerber_files/mf1750_devkitc_b1_single_power_layer-In2_Cu.g2": {
+      "bytes": 8546,
+      "sha256": "5852c63e7fa7e67c2332e25baa97e6b57e78785307b5a6ce68030bc0a5c62133"
+    },
+    "gerber_files/mf1750_devkitc_b1_single_power_layer-NPTH.drl": {
+      "bytes": 366,
+      "sha256": "e34eccf09021f0e0e00c5d8994d0dbe6b95200c0fa4fc346bb66d5cd7ced1e9f"
+    },
+    "gerber_files/mf1750_devkitc_b1_single_power_layer-PTH.drl": {
+      "bytes": 2263,
+      "sha256": "1d2b72824aa28034edb4f42a015a2ad20fdf38ae789ff2f9c5ce31244f936a04"
+    },
+    "gerber_files/mf1750_devkitc_b1_single_power_layer-Top Silkscreen.gto": {
+      "bytes": 31343,
+      "sha256": "850170257f1e26a963287d76310971e0ff5405709e25b527f83d46a592fbe93a"
+    },
+    "project_source/MF1750_Compact.pretty/ESP32-S3-DevKitC-1_Socket.kicad_mod": {
+      "bytes": 6289,
+      "sha256": "849a5067df38cf7498aa901303927dfde5471dcf0db394bbab7152e411073e97"
+    },
+    "project_source/MF1750_Production.pretty/Omron_XF2M-5015-1A_1x50_P0.5mm_DualContact.kicad_mod": {
+      "bytes": 6312,
+      "sha256": "ad83f5c7ccd1b8c857ed0cfe739a9074eba5876a18c7a34fe1800e598d5afbae"
+    },
+    "project_source/MF1750_Production.pretty/SXN_SMMS0650_7.1x6.6mm.kicad_mod": {
+      "bytes": 1521,
+      "sha256": "14f7e512c20e4739485cd9938b44198189830828dd24e1abcfc920a286a349a0"
+    },
+    "project_source/MF1750_Production.pretty/XUNPU_FPC-05FB-50PH20_1x50_P0.5mm_DualContact.kicad_mod": {
+      "bytes": 6787,
+      "sha256": "d4a3741b4db6bab83659def1724ba440b76f823a8dc56414fefa7121a54e62d9"
+    },
+    "project_source/README.md": {
+      "bytes": 3181,
+      "sha256": "31f3027725dd30e983ba52dcb388ecd91c95bdd0e5622c1515e1a25683ac388d"
+    },
+    "project_source/bom_reference.csv": {
+      "bytes": 5683,
+      "sha256": "d0af582ea0cf9b4f087bafecc84f704da2a98b84690353e27f8933378333b864"
+    },
+    "project_source/fp-lib-table": {
+      "bytes": 333,
+      "sha256": "56542405eaff8f95245edd9ac290a9fe8021bfc547479390d270ec3f44454a69"
+    },
+    "project_source/mf1750_devkitc_b1_single_power_layer.kicad_pcb": {
+      "bytes": 849643,
+      "sha256": "d44afcd28056045aa19c875d424b6ad7d9e84712e238ee2340f6d087da62fde3"
+    },
+    "project_source/mf1750_devkitc_b1_single_power_layer.kicad_prl": {
+      "bytes": 2323,
+      "sha256": "84911816151a6c772bee0887630830f9cb37452169a3a429672d6ecd071eb10a"
+    },
+    "project_source/mf1750_devkitc_b1_single_power_layer.kicad_pro": {
+      "bytes": 1255,
+      "sha256": "ba26af897f39a3eda18448233faf9f247d78da2c3c19595577e3e1df6f9e40f3"
+    },
+    "project_source/mf1750_devkitc_b1_single_power_layer.kicad_sch": {
+      "bytes": 160187,
+      "sha256": "ccb8ad72021231ce9768b86800a8536fc4d18ffc8e3edf8822c5b3040c757d95"
+    },
+    "project_source/mf1750_local.kicad_sym": {
+      "bytes": 25712,
+      "sha256": "e4c9cad8724cf196c6a47f5306234d015d74e27da5e452ef57acc2b4111ac9d0"
+    },
+    "project_source/source_archive_drc.rpt": {
+      "bytes": 462,
+      "sha256": "1e7fa5cc5ca3f4924e48ea5a46e6293e13488b1c6f02205bff96856fe9740b0b"
+    },
+    "project_source/source_archive_erc.rpt": {
+      "bytes": 369,
+      "sha256": "bbf950f7cdfde2ef8181b276a25ae39c47f50d33d172179822d40df53a4a1fc7"
+    },
+    "project_source/sym-lib-table": {
+      "bytes": 169,
+      "sha256": "51eb3ecd2794733938c0ef2f90918b8935863bb8707cd125ba9b1797065bcb7c"
+    },
+    "support/BOM_MANUAL_THT.csv": {
+      "bytes": 615,
+      "sha256": "5f461179f2f1c2415fc4b1b43c624903720cd72c80f0291d62a028aefcd089fe"
+    },
+    "support/BOM_SMT_AUDIT_EXPANDED.csv": {
+      "bytes": 4536,
+      "sha256": "36f6bcd7c9df1c9e543e7d3782fa9b78a836c58bee67e147f59d36c7b42b0e52"
+    },
+    "support/DNP_LIST.csv": {
+      "bytes": 156,
+      "sha256": "2ae7f2d1793e9ca13fc3b81ede53e7e893d7d09f1f96dc47ab3f6f62e53a3aa5"
+    },
+    "support/DRC_zero.rpt": {
+      "bytes": 462,
+      "sha256": "02a7b265c16982e8c3fccb5a300541e2461e0b4ea945cec5c6eb4c7e7bee2ba6"
+    },
+    "support/ERC_zero.rpt": {
+      "bytes": 357,
+      "sha256": "d5381c2a3a6f397f58c2ec4822801d2f5996f1f71afb3290a573012efaec6e4f"
+    },
+    "support/ORIENTATION_CHECKLIST.csv": {
+      "bytes": 554,
+      "sha256": "c05f4d4b6fc35bcaa41129a19efd2a5d3d77f0700eca3dbc04001ed8bc8ae48f"
+    },
+    "support/PRE_EXPORT_SOURCE_AUDIT_NOTE.md": {
+      "bytes": 385,
+      "sha256": "1983cd434091181d1efcc799f6326d96e9b76e84603695ec3f71827b42097878"
+    },
+    "support/PRE_EXPORT_SOURCE_VERIFICATION.json": {
+      "bytes": 3843,
+      "sha256": "2f20828eba83ff755b5091bfe862fdf1182e202aa74c3bec82b97db04bcdaf9a"
+    },
+    "support/STACKUP_AND_FAB_NOTES.md": {
+      "bytes": 803,
+      "sha256": "a10f330413a585a5f942b123753ae5213c1c2af317e604977c4939e542f068a1"
+    },
+    "support/assembly_bottom.png": {
+      "bytes": 277021,
+      "sha256": "e18e7314c4ae49b1381f04ee000db1bc14ec1e853956c07afb5f1f3af12d856d"
+    },
+    "support/assembly_bottom_mirrored.pdf": {
+      "bytes": 60431,
+      "sha256": "b6bb08026703a66b7ef3a61ff33f3531cd0ed66824a0ef085e059b6a31e30a8b"
+    },
+    "support/assembly_top.pdf": {
+      "bytes": 86868,
+      "sha256": "dd3f9cb18280e152d5f6c242d540420123613e0759edf068544e8f3156ece6c9"
+    },
+    "support/assembly_top.png": {
+      "bytes": 476386,
+      "sha256": "34703ca1703364d5689ccf279638e73753367db158b2ef00d2370114456479b5"
+    },
+    "support/board_statistics.json": {
+      "bytes": 2305,
+      "sha256": "a7473247d5589dccce636bb19433aac88a811a4c84d961f0311721ee083a165d"
+    },
+    "support/design_audit.json": {
+      "bytes": 2132,
+      "sha256": "bd4cd83537b41d224a23a8907d1acc56d74896f82d90ad9a374150fbe7eb5cde"
+    },
+    "support/drill_maps/mf1750_devkitc_b1_single_power_layer-NPTH-drl_map.pdf": {
+      "bytes": 12303,
+      "sha256": "6972de0996d0103d227c9e1a48b7ef1ebe570257e5977284150545fadb984a92"
+    },
+    "support/drill_maps/mf1750_devkitc_b1_single_power_layer-NPTH.drl": {
+      "bytes": 366,
+      "sha256": "e34eccf09021f0e0e00c5d8994d0dbe6b95200c0fa4fc346bb66d5cd7ced1e9f"
+    },
+    "support/drill_maps/mf1750_devkitc_b1_single_power_layer-PTH-drl_map.pdf": {
+      "bytes": 16257,
+      "sha256": "0f4ea219d68fd3f3cad2347ab73611336597e683892b807011637132b711c19c"
+    },
+    "support/drill_maps/mf1750_devkitc_b1_single_power_layer-PTH.drl": {
+      "bytes": 2263,
+      "sha256": "1d2b72824aa28034edb4f42a015a2ad20fdf38ae789ff2f9c5ce31244f936a04"
+    },
+    "support/drill_report.txt": {
+      "bytes": 890,
+      "sha256": "a17ebceabd68d2e22696641b683703c9368abd4a17c9a6a78c7ce03f67796175"
+    },
+    "support/netlist.ipc": {
+      "bytes": 21576,
+      "sha256": "d848cdc46a172f896cb651c47df96a9349cd4aa28fb2de5fb8dea121ae850a27"
+    },
+    "support/schematic.pdf": {
+      "bytes": 182875,
+      "sha256": "a0ac8ca1cadc383d6a9d08460c66deb488695d013336a0b3ce64262c3611b025"
+    },
+    "upload/JLCPCB_BOM_MF1750_DEVKITC_B1_SMT.csv": {
+      "bytes": 1107,
+      "sha256": "3123da5e7ac49a9b872f19e7ca20d4e8d53bb57414ccabbc8c2301c3f71f81a3"
+    },
+    "upload/JLCPCB_CPL_MF1750_DEVKITC_B1_SMT.csv": {
+      "bytes": 1658,
+      "sha256": "7025047ba3612bd900a83e5effce5cb6b49c43826dd3f92ad9c1a90910dbf35d"
+    },
+    "upload/JLCPCB_PCB_MF1750_DEVKITC_B1_4L.zip": {
+      "bytes": 153146,
+      "sha256": "1d782d5747a43853114f6baf19ec707f098dcc1448d7c0f204f297b01f80ffdd"
+    }
+  },
+  "generated_utc": "2026-08-13T23:51:39.392552+00:00",
+  "hard_holds": [
+    "J1/C6/C15 body-to-functional-edge distances are about 1.47/1.25/2.25 mm, below JLCPCB's general 2.5 mm PCBA term; explicit JLCPCB PCBA engineering acceptance of the exact panel and placement is mandatory.",
+    "Online bare-board Gerber/DFM preview alone does not release the known edge-distance deviation.",
+    "JLC upload preview must confirm J1, D1-D4, Q1/Q2 orientation and R16 FIT/R15 DNP.",
+    "J2 socket remains manual until 0.80 mm finished-hole and N16R8 Z-envelope fit are measured.",
+    "LCSC stock and exact part matching must be reconfirmed at order time."
+  ],
+  "project": "mf1750_devkitc_b1_single_power_layer",
+  "revision": "B1-4L-JLCPCB-ENGINEERING-FIRST-ARTICLE",
+  "schema": 1,
+  "source": {
+    "pcb_sha256": "d44afcd28056045aa19c875d424b6ad7d9e84712e238ee2340f6d087da62fde3",
+    "reference_bom_sha256": "d0af582ea0cf9b4f087bafecc84f704da2a98b84690353e27f8933378333b864",
+    "schematic_sha256": "ccb8ad72021231ce9768b86800a8536fc4d18ffc8e3edf8822c5b3040c757d95"
+  }
+}

@@ -1,0 +1,89 @@
+** Drc report for mf1750_devkitc_b1_single_power_layer.kicad_pcb **
+** Created on 2026-08-13T20:39:21 **
+** Report includes: Errors, Warnings, Exclusions **
+
+** Found 19 DRC violations **
+[tracks_crossing]: Tracks crossing
+    Local override; error
+    @(8.8250 mm, 44.0000 mm): Track [/V_B] on In2.Cu, length 2.3186 mm
+    @(7.1750 mm, 44.0000 mm): Track [/3V3] on In2.Cu, length 2.1213 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0918 mm)
+    Local override; error
+    @(3.1750 mm, 44.0000 mm): Track [/3V3] on In2.Cu, length 1.5811 mm
+    @(2.4332 mm, 44.5795 mm): Track [/V_B] on In2.Cu, length 15.7877 mm
+[tracks_crossing]: Tracks crossing
+    Local override; error
+    @(1.5347 mm, 42.8072 mm): Track [/3V3] on In2.Cu, length 3.1215 mm
+    @(2.4332 mm, 44.5795 mm): Track [/V_B] on In2.Cu, length 15.7877 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /V_B 和 /3V3)
+    Local override; error
+    @(3.4932 mm, 45.6395 mm): Track [/V_B] on In2.Cu, length 1.4991 mm
+    @(3.7419 mm, 45.0144 mm): Track [/3V3] on In2.Cu, length 0.3650 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /V_B 和 /3V3)
+    Local override; error
+    @(3.4932 mm, 45.6395 mm): Track [/V_B] on In2.Cu, length 1.4991 mm
+    @(3.9329 mm, 44.8234 mm): Track [/3V3] on In2.Cu, length 0.2701 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /3V3 和 /V_B)
+    Local override; error
+    @(3.7419 mm, 45.0144 mm): Track [/3V3] on In2.Cu, length 0.3650 mm
+    @(7.1855 mm, 45.6395 mm): Track [/V_B] on In2.Cu, length 3.6923 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1880 mm)
+    Local override; error
+    @(3.4932 mm, 45.6395 mm): Track [/V_B] on In2.Cu, length 1.4991 mm
+    @(3.9329 mm, 44.7579 mm): Track [/3V3] on In2.Cu, length 0.0655 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1979 mm)
+    Local override; error
+    @(2.4332 mm, 44.5795 mm): Track [/V_B] on In2.Cu, length 15.7877 mm
+    @(1.5353 mm, 32.5060 mm): Track [/3V3] on In2.Cu, length 0.0008 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1979 mm)
+    Local override; error
+    @(2.4332 mm, 44.5795 mm): Track [/V_B] on In2.Cu, length 15.7877 mm
+    @(1.5353 mm, 31.8204 mm): Track [/3V3] on In2.Cu, length 0.6856 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1979 mm)
+    Local override; error
+    @(1.3340 mm, 31.6191 mm): Track [/3V3] on In2.Cu, length 0.2847 mm
+    @(2.4332 mm, 44.5795 mm): Track [/V_B] on In2.Cu, length 15.7877 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1880 mm)
+    Local override; error
+    @(3.4932 mm, 45.6395 mm): Track [/V_B] on In2.Cu, length 1.4991 mm
+    @(3.9329 mm, 44.8234 mm): Track [/3V3] on In2.Cu, length 2.4187 mm
+[shorting_items]: 短路了两个不同网络的项目 (网络 /V_B 和 /3V3)
+    Local override; error
+    @(3.4932 mm, 45.6395 mm): Track [/V_B] on In2.Cu, length 1.4991 mm
+    @(4.0000 mm, 45.2725 mm): Track [/3V3] on In2.Cu, length 2.7275 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1985 mm)
+    Local override; error
+    @(1.5347 mm, 32.5066 mm): Track [/3V3] on In2.Cu, length 10.3006 mm
+    @(2.4332 mm, 44.5795 mm): Track [/V_B] on In2.Cu, length 15.7877 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.1161 mm)
+    Local override; error
+    @(7.1855 mm, 45.6395 mm): Track [/V_B] on In2.Cu, length 3.6923 mm
+    @(6.3516 mm, 44.8234 mm): Track [/3V3] on In2.Cu, length 1.1645 mm
+[clearance]: 间距违规 ( 间距 0.2000 mm; 实际 0.0418 mm)
+    Local override; error
+    @(3.1750 mm, 44.0000 mm): Track [/3V3] on In2.Cu, length 1.0718 mm
+    @(2.4332 mm, 44.5795 mm): Track [/V_B] on In2.Cu, length 15.7877 mm
+[lib_footprint_issues]: 当前配置中不包含封装库 'MF1750_Production'
+    Local override; warning
+    @(31.0000 mm, 5.0000 mm): Footprint J1
+[lib_footprint_issues]: 当前配置中不包含封装库 'MF1750_Production'
+    Local override; warning
+    @(9.5000 mm, 27.5000 mm): Footprint L1
+[lib_footprint_issues]: 当前配置中不包含封装库 'MF1750_Production'
+    Local override; warning
+    @(46.0000 mm, 27.5000 mm): Footprint L2
+[lib_footprint_issues]: 当前配置中不包含封装库 'MF1750_Compact'
+    Local override; warning
+    @(5.5000 mm, 56.0000 mm): Footprint J2
+
+** Found 0 unconnected pads **
+
+** Found 0 Footprint errors **
+
+** Ignored checks **
+    - Tuning profile track geometries
+    - Silkscreen clearance
+    - Silkscreen clipped by solder mask
+    - Footprint doesn't match copy in library
+
+** End of Report **

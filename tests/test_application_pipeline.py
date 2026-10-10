@@ -9,9 +9,11 @@ import unittest
 from host.application import (
     ApplicationArtifact,
     ApplicationError,
+    ImageDecodeError,
     FitPolicy,
     InputSource,
     PreparationPurpose,
+    decode_normalized_source,
     normalize_raster,
     prepare_image,
     validate_application_frame,
@@ -22,6 +24,7 @@ from host.color_pipeline import (
     PipelineOptions,
     RasterImage,
     reference_palette,
+    encode_rgb_png,
 )
 from host.epd_frame import (
     FRAME_BYTES,
@@ -308,6 +311,29 @@ class ApplicationPipelineTests(unittest.TestCase):
         self.assertEqual((cover.width, cover.height), (2, 2))
         self.assertEqual(cover.pixels[:6], bytes((255, 0, 0, 0, 0, 255)))
         self.assertEqual(stretch.pixels[:12], bytes((255, 0, 0)) * 2 + bytes((0, 0, 255)) * 2)
+
+    def test_v2_source_decode_recomputes_hash_and_records_colour_assumption(self) -> None:
+        source = encode_rgb_png(2, 1, bytes((255, 0, 0, 0, 0, 255)))
+        decoded = decode_normalized_source(
+            source,
+            "image/png",
+            FitPolicy.STRETCH,
+            target_width=4,
+            target_height=2,
+        )
+        self.assertEqual((decoded.raster.width, decoded.raster.height), (4, 2))
+        self.assertEqual(decoded.source_sha256, hashlib.sha256(source).hexdigest())
+        self.assertTrue(decoded.provenance["srgb_assumption"])
+        self.assertEqual(decoded.provenance["icc_handling"], "untagged_explicit_srgb_assumption")
+        self.assertFalse(decoded.provenance["formal_colour_eligible"])
+        self.assertIs(decoded.provenance["hardware_tested"], False)
+
+    def test_v2_source_decode_rejects_mime_mismatch_and_ambiguous_rotation(self) -> None:
+        source = encode_rgb_png(2, 1, bytes((255, 0, 0, 0, 0, 255)))
+        with self.assertRaisesRegex(ImageDecodeError, "does not match"):
+            decode_normalized_source(source, "image/jpeg")
+        with self.assertRaisesRegex(ImageDecodeError, "rotation_degrees"):
+            decode_normalized_source(source, "image/png", rotation_degrees=45)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "kind": "mf1750-same-r20-parity-v1-offline-build-record",
+  "created_date": "2026-08-28",
+  "status": "OFFLINE_BUILD_PASS_LIVE_NOT_EXECUTED",
+  "identity": {
+    "build_tag": "MF1750_EC5_SAME_R20_PARITY_2X4_V1_2026-08-28",
+    "test_id": "EC5-SAME-R20-PARITY-2X4-V1",
+    "campaign_id": "EC5_SAME_R20_PARITY_2X4_V1",
+    "contract_id": "718d6cf628cd14a869b73f77f6414fcdd8a5b364863849899403afde2f3463f8",
+    "nvs_namespace": "sr20p_v1",
+    "nvs_cursor_key": "cursor_srp1",
+    "nvs_boot_key": "boot_srp1",
+    "base_route": "/api/ec5/same-r20-parity-v1"
+  },
+  "artifacts": {
+    "bin": {
+      "path": ".pio/build-runtime-lut-same-r20-parity-v1/ec5_runtime_lut_same_r20_parity_v1/firmware.bin",
+      "bytes": 801712,
+      "sha256": "d65fb20b3e3843563561340d6bb450fc469ade4e503fec87eec3f0369e30977f"
+    },
+    "elf": {
+      "path": ".pio/build-runtime-lut-same-r20-parity-v1/ec5_runtime_lut_same_r20_parity_v1/firmware.elf",
+      "bytes": 13299408,
+      "sha256": "bf15d35d12af897d89afd2ab65141a50dd3dc4e2350877abc3ada530f8de94b6"
+    }
+  },
+  "actions": [
+    {
+      "ordinal": 1,
+      "role": "SAME_R20_ACTIVE_ACTIVE_ATLAS",
+      "descriptor_id": "246de22c2a8f450752a960230bd88de7a62ce42300c7f6401bbb562d07ef76ba",
+      "action_id": "7dd101c61553c9a10b97beeb7c3c8ce26e79c410d3b2ac3040db572065fd49f4",
+      "global_tuple_id": "4ba82591a96bc789f1ec2ea17ab81d4ae7e8986386cad8264a8dac48f021e820"
+    },
+    {
+      "ordinal": 2,
+      "role": "FACTORY_OTP_WHITE_AFTER_ACTIVE_ACTIVE",
+      "descriptor_id": "becf21026a58d964c576698dd007904c600b1a5f46a3d02d241d83b7583da7b3",
+      "action_id": "f4d447808e151be7860e3a59afe41e5030072fabdb51a566c83c83a642318816",
+      "global_tuple_id": null
+    },
+    {
+      "ordinal": 3,
+      "role": "SAME_R20_COMMENTED_COMMENTED_ATLAS",
+      "descriptor_id": "556b730c7c115dc956f7b547064df0145ccfdfc55cd2bf8dd7e170718cbb2af2",
+      "action_id": "e62b7b784ddd4108f18606d9b34b0341c41bc82225576fa4ae0849117de2b381",
+      "global_tuple_id": "1d4efb64203093929779a31321695100a6c778367157d633a2dcccabdbdc4038"
+    },
+    {
+      "ordinal": 4,
+      "role": "FACTORY_OTP_WHITE_AFTER_COMMENTED_COMMENTED",
+      "descriptor_id": "10b8d5e08e484f6973b2980e1aa9565cdf3e4402468077e64ccf820469818a21",
+      "action_id": "711ba3e2310347645f6734537041959eb6f6dd419d26882bdc4264ad66fdc717",
+      "global_tuple_id": null
+    }
+  ],
+  "frame_binding": {
+    "atlas_sha256": "79182e188e32cd320cdaec36dee4410d06d603b1a155c8328bb63cfbdfbab2d6",
+    "controller_dtm_sha256": "f85f377c573d9747821c0264ec3b59e488cd99732c566e54b3454486813682da",
+    "factory_white_frame_sha256": "91f1ed45bf609a23fbdcfd037027c2e271484f58321a4707e889d11859d8453d",
+    "factory_white_controller_dtm_sha256": "8b8fe04d4d48ab9d1abb4a858f68544164d1a091998664eef06869c098a78158"
+  },
+  "source_files": {
+    "platformio.runtime_lut_same_r20_parity_v1.ini": "d67df6318f598035aa0e271a6d4a263ad31fe9a5b0dc16c15de01abe381fe420",
+    "src/ec5_runtime_lut_same_r20_parity_v1_epd_driver.cpp": "c55e3902d164b746ec447b516c0c8c0804feef70a87fd8c0a960d06b62d84fa2",
+    "src/ec5_runtime_lut_same_r20_parity_v1_driver.inc": "7be3a6572bb6faa5a403f698a21049edce833b37e15fe84922e0ff3618c2277c",
+    "src/ec5_runtime_lut_same_r20_parity_v1_identity.inc": "782a07023911bbf978114835303b27fa670c65601df0743d38ae1cdb9d162233",
+    "src/ec5_runtime_lut_same_r20_parity_v1_main.cpp": "622f7e7c043bff24dff036e0d7169b9a7a3e4a83e82aeb1675e01da4f9772b4b",
+    "src/ec5_runtime_lut_same_r20_parity_v1_main_config.inc": "4e8d2b18edbc532178ee533d185218520e6680f5ebae7c209cc4f747d711e606",
+    "tools/mf1750_runtime_lut_same_r20_parity_v1_pack.py": "1d69ffbf8270931fa1901f5a1dc9f052a2aec3fae80e9c6f1297a9df117cd4f6",
+    "tools/mf1750_runtime_lut_same_r20_parity_v1_once.py": "17e164835f628567f234f0e13ce49ed03223190496af730606c2ce75e1ee907a",
+    "tests/test_mf1750_runtime_lut_same_r20_parity_v1.py": "01172816ed5f5e76dd2059f190ce7895c308c056e83359dada123619806ca8d9"
+  },
+  "verification": {
+    "platformio_clean_build": "PASS",
+    "pytest": "15 passed",
+    "ruff_check": "PASS",
+    "ruff_format_check": "PASS",
+    "py_compile": "PASS",
+    "dry_validate": "PASS"
+  },
+  "safety": {
+    "device_network_accessed": false,
+    "serial_or_com_accessed": false,
+    "relay_accessed": false,
+    "firmware_flashed": false,
+    "device_reset": false,
+    "visible_refreshes": 0
+  }
+}

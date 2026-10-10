@@ -4,13 +4,14 @@
 
 阶段：F（未知编码实验准备）
 
-设计状态：`READY FOR REVIEW`
+设计状态：`STAGE A/B SOFTWARE EXECUTION PACKAGES FROZEN / HARDWARE NOT EXECUTED`
 
-实现状态：`BLOCKED / NOT IMPLEMENTED`
+实现状态：`U04/U07 ONE-SHOT CHAINS IMPLEMENTED / HARDWARE 0 ACTIONS`
 
 Hardware tested: `NO`
 
-用户授权记录：无固件实现、COM8 刷写、上电或未知码刷新授权。
+用户授权记录：用户已允许白天离线开发；本轮没有 COM8/串口/网络/
+设备访问、刷写、上电或未知码刷新授权。不推断当前 J2 状态。
 
 适用基线：MF-17506-M009F-T、1024×600、4bpp packed、双 SPD1657B revision
 `0x04`、MF1750 Rev A1、R15 已拆、R16=0 Ω、CS1=GPIO7、CS2=GPIO10。
@@ -22,10 +23,41 @@ Hardware tested: `NO`
 - [`TODO_EPD_EXTENDED_COLOR_TESTS_2026-08-05.md`](TODO_EPD_EXTENDED_COLOR_TESTS_2026-08-05.md)
 - [`MF1750_DRIVER_API.md`](MF1750_DRIVER_API.md)
 
+### 2026-08-09 实现增补
+
+原始第 1--16 节是完整测量资格设计；当前另实现了一条更窄的、有人监督的
+技术验证链，不冒充 EC0--EC4 或最终产品资格：
+
+- production/release 默认排除 EC5 入口；U04、U07 为分离 PlatformIO 环境，候选码
+  编译期固定，每个 binary 不得引用另一候选身份；
+- Stage A 是白底、CS1/CS2 左右镜像 `64×64` ROI。设备侧已实现精确
+  header/intent 校验的 `arm→execute`，NVS 持久 `virgin/claimed/consumed/fault`，在调用
+  driver 之前落盘 consumed；重启、过期/重复请求或不明 POST 均 fail-closed；
+- Stage A host 层在第一个 POST 前原子创建不可重用 claim，ARM/EXECUTE 各最多一次，
+  超时后只读轮询；U07 必须先验证 U04 真实 result、`0/5/30 min` 观察和白色
+  恢复 PASS。晚间固定为 `RC2G 白→U04→RC2G 白→U07→RC2G 白`，真屏 `0/5`；
+- Stage B 已生成六初态×双 DTM 镜像无抖动资产：白/黑/红/黄/蓝/绿六个
+  `24×24` 均匀 ROI，target 全部写入同一 U04 或 U07。每候选固定三轮
+  `primer→target→white`，共九个跨重启持久 ordinal；target 后必须有 `0/5/30 min`
+  真实观察，white PASS 才能进入下轮，U07 另受 Stage A 门禁。真屏每候选 `0/9`。
+
+两阶段均无 raw-frame ingress、启动/定时刷新、自动 retry 或自动 recovery。Stage A/B
+release、runner、binary、资产和预览的身份已经冻结，联合聚焦回归为
+`193 passed, 59 subtests passed`。这只表示软件执行包可供晚间实物 preflight；不改变
+“Hardware tested: NO”，也不预先授权任何刷写或刷新。
+
+本文后文保留的“每次 POF 后断 J2”是早期完整测量资格设计，不是当前有人监督
+技术验证的日常步骤。当前执行以
+[`EC5_NO_DITHER_EVENING_TEST_PLAN_2026-08-09.md`](EC5_NO_DITHER_EVENING_TEST_PLAN_2026-08-09.md)
+为准：正常 safe-finish 后的观察和同固件后续 action 之间不要求额外断 J2；刷写/
+更换固件、改接线、故障或明确冷启动边界才要求断开。
+
 ## 1. 目的和非目标
 
-本文件只设计一个能验证 `0x4`、随后单独验证 `0x7` 的固定小面积黑盒探针。它不
-实现任何固件，不授权硬件动作，也不说明未知码安全或有效。
+本文件原始部分设计一个能验证 `0x4`、随后单独验证 `0x7` 的固定小面积黑盒探针；
+2026-08-09 已实现 Stage A 白初态五步链和 Stage B 六初态九步/候选链。它们不授权
+硬件动作，也不说明未知码安全
+或有效。
 
 非目标：
 
@@ -57,9 +89,9 @@ Hardware tested: `NO`
 - [ ] 实验 build 仍使用已经批准的厂家初始化和片上 OTP waveform；
 - [ ] 现有冻结生产目录和 PCB 文件不修改。
 
-在当前授权下不得修改 `src/`。未来若用户批准实现，也不能复制另一套初始化/高压
-代码来绕过公共 guard；应先单独审查一个编译期隔离、只接受固定 fixture enum 的
-私有驱动入口。任何必要的 `src/epd_driver.*` 修改仍需用户明确授权。
+后续开发指令已允许实现离线 scaffold，因此 `src/epd_driver.*` 增加了默认关闭、只接受
+编译期固定 fixture 的私有入口；正式六色 guard 未放宽。该代码变更不等于硬件授权，
+也不得复制另一套初始化/高压代码来绕过公共 guard。
 
 ## 3. 风险边界
 
@@ -149,14 +181,15 @@ U07 build:     only candidate 0x7 fixture exists
 
 要求：
 
-- [ ] 默认宏为关闭，例如 `MF1750_ENABLE_UNKNOWN_PROBE=0`；
-- [ ] candidate 不得由 HTTP、串口或配置文件动态指定；
-- [ ] U04 binary 不包含 U07 fixture 或 0x7 action；
-- [ ] 完成全部 0x4、恢复和报告评审后，用户重新授权才可构建/刷写 U07；
-- [ ] 每个 binary 具有不同 build tag、binary SHA-256 和 manifest SHA-256；
-- [ ] 实验 build 不能继承正式 release 的硬件通过状态；
-- [ ] 实验宏、route、fixture 和私有入口均由 release 静态检查证明不存在；
-- [ ] 当前任务不创建这些 build，不修改固件。
+- [x] 默认宏为关闭：`MF1750_ENABLE_UNKNOWN_PROBE=0`；
+- [x] candidate 不得由 HTTP、串口或配置文件动态指定；
+- [x] U04 binary 不包含 U07 fixture 或 0x7 action；
+- [x] U07 可在白天离线预构建和冻结；只有完成 U04 `0/5/30 min` 观察、白恢复和报告
+      评审并取得新的实时授权后，才可刷写/执行 U07；
+- [x] U04/U07 具有不同 build tag 和 binary SHA-256；release manifest 已绑定 exact panel；
+- [x] 实验 build 不能继承正式 release 的硬件通过状态；
+- [x] release 静态检查不含 EC5 route/test ID；
+- [x] 离线 build/release 已冻结，未刷入 ESP32、未执行真屏。
 
 把 0x4 和 0x7 放进同一 binary 后只靠 UI 隐藏不合格，因为它不能形成阶段间的
 重新授权门。
@@ -506,9 +539,14 @@ release guard 回归、binary/frame/双 DTM hash 冻结，并重新授予 COM8 �
 - [ ] 日志、探头或测量 setup hash 缺失时 fail closed；
 - [ ] 模拟 PON/DRF/POF BUSY 异常时无自动重试。
 
-## 16. 实现前审查门
+## 16. 完整硬件执行前审查门
 
-以下全部满足后，才可向用户请求实现实验固件：
+本节约束完整测量资格、扩大面积、耐久和任何产品结论。2026-08-09 冻结的小面积、有人
+监督技术 pilot 采用本文第 26--52 行声明的窄边界及晚间计划，不宣称 EC0--EC4/C/D
+资格；其软件执行包就绪仍不能跳过晚间实物 preflight、逐 action 授权、停止门和恢复门。
+
+离线 scaffold 的存在不跳过以下完整资格门；全部满足后，才可请求扩大为正式未知码
+测量 campaign：
 
 - [ ] EC0～EC4 已完成，D 原厂六色和恢复资格可靠；
 - [ ] C 阶段测量系统、安全链和所有绝对门已 GO；
@@ -516,11 +554,11 @@ release guard 回归、binary/frame/双 DTM hash 冻结，并重新授予 COM8 �
       数值化 cooldown、最大尝试次数、frame/hash 与失败隔离规则；
 - [ ] 有专用牺牲屏，黄金参考屏不执行未知码；
 - [ ] 第 4 节 layout 和第 5 节 hash 已独立复核；
-- [ ] 私有 fixture-only 驱动入口设计完成，不放宽正式 guard；
-- [ ] release/U04/U07 build 分离和静态门禁设计通过；
-- [ ] 一次性 arm、持久 consumed、reset/network fault 行为通过模拟测试；
-- [ ] 用户明确批准是否实现；
-- [ ] 若实现需要修改 `src/epd_driver.*`，用户明确批准该精确范围。
+- [x] 私有 fixture-only 驱动入口设计完成，不放宽正式 guard；
+- [x] release/U04/U07 build 分离和静态门禁已实现；Stage A/B binary/release SHA 已冻结；
+- [x] 一次性 arm、持久 consumed、reset/network fault 行为已有聚焦离线测试；
+- [x] 用户已允许继续离线代码与编译工作；
+- [ ] 用户明确批准精确 binary、test ID、刷写和一次可见刷新。
 
 实现完成后仍不得自动执行硬件。COM8 刷写、断电、上电、电源确认、指定 test ID、
 刷新后确认、恢复和最终断电均是独立授权门。
@@ -529,15 +567,19 @@ release guard 回归、binary/frame/双 DTM hash 冻结，并重新授予 COM8 �
 
 | 项目 | 状态 |
 |---|---|
-| F 离线设计草案 | READY FOR USER REVIEW；NOT USER-APPROVED |
-| 固定 ROI/面积 | DESIGN FROZEN；待实现前复核 |
-| hash | OFFLINE VERIFIED；待实验 build 再复核 |
-| 实验固件 | NOT IMPLEMENTED / BLOCKED |
-| release guard 修改 | NONE |
+| F 离线设计草案 | Stage A/B 软件执行包、资产、预览和一次性门禁已冻结；硬件尚未执行 |
+| 固定 ROI/面积 | IMPLEMENTED / OFFLINE VERIFIED |
+| hash | Stage A release canonical `adedbbdf...d7dd`；Stage B canonical `b500fee2...db04`；frame/双 DTM/binary 均由各 manifest 深度绑定 |
+| 实验固件 | Stage A U04/U07 与 Stage B U04/U07 均 COMPILE PASS；未刷写 |
+| host once/review chain | Stage A 五步、Stage B 九步/候选门已实现并离线深验；真实时间观察、原生白恢复与跨阶段证据均 fail-closed |
+| device arm/persistent consumed | IMPLEMENTED / OFFLINE TESTED；NVS fail-closed，不提供网络 clear/reset |
+| release guard 修改 | 默认关闭；release binary 无 EC5 route/test ID |
 | 正式 API 修改 | NONE |
-| `src/` 修改 | NONE |
-| Hardware tested | NO |
+| `src/` 修改 | 私有编译期 fixture 入口；正式六色 guard 不变 |
+| Stage A Hardware tested | `0/5` |
+| Stage B Hardware tested | `0/9` per approved candidate |
 | 刷写/上电/刷新授权 | NONE |
-| 下一步 | 用户审查；不进入实现或硬件 |
+| 本轮硬件边界 | 零设备/网络/串口/刷写/上电/刷新；当前 J2 不推断；最近已知实测固件仍为 RC2G `9df897...0cd772` |
+| 下一步 | 今晚经实物 preflight 后从 Stage A A1 开始逐项授权；Stage B 不自动跟随 |
 
 本文件的完成只表示离线安全设计可以评审，不表示 C、D、G 或任何硬件门已经通过。

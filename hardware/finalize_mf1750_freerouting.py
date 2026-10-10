@@ -1,17 +1,17 @@
-from __future__ import annotations
-
 """Import the completed Freerouting session and build production outputs.
 
 Run this with KiCad's bundled Python after ``prepare_mf1750_freerouting_seed.py``
 and Freerouting have produced ``freerouting_result.ses``.
 """
 
+from __future__ import annotations
+
 import sys
 import subprocess
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import route_mf1750_production_v1 as route
+import route_mf1750_production_v1 as route  # noqa: E402
 
 
 def remove_redundant_single_layer_vias(board: route.pcbnew.BOARD) -> int:

@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "kind": "mf1750-h0-archive-manifest",
+  "snapshot_id": "MF1750_REV_A1_RC2C_ACCEPTED_20260804",
+  "generated_at": "2026-08-06T12:54:23+08:00",
+  "archive_revision": 2,
+  "status": {
+    "source_and_evidence_archived": true,
+    "accepted_binary_archived": false,
+    "accepted_binary_status": "MISSING_EXACT_BYTES",
+    "release_tag_status": "NOT_AUTHORIZED_NOT_CREATED",
+    "durable_off_machine_copy_verified": false,
+    "h0_complete": false
+  },
+  "accepted_subject": {
+    "hardware_revision": "MF1750 Rev A1",
+    "hardware_configuration": "R15 removed; R16 populated with 0 ohm; GPIO7=CS1; GPIO10=CS2; dual SPD1657B revision 0x04",
+    "firmware_build_tag": "MF1750_DRIVER_RC2C_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_2026-08-04",
+    "driver_api": "MF1750_R16_CASCADE_V3",
+    "hardware_tested": true,
+    "hardware_test_date": "2026-08-04",
+    "hardware_test_scope": [
+      "100 kHz protocol revalidation with MAP_ORIENT_V1",
+      "formal 1 MHz full-frame MAP_ORIENT_V1 refresh",
+      "full-frame and per-half DTM hash verification",
+      "strict PON, DRF and POF BUSY evidence",
+      "colour order, orientation and centre-seam visual acceptance",
+      "user-confirmed qualitative power and temperature observations, plus recorded safe shutdown"
+    ],
+    "evidence_document": "docs/REV_A1_R16_CASCADE_FULLFRAME_TEST_2026-08-04.md"
+  },
+  "git_identity": {
+    "manufacturing_baseline": {
+      "commit": "3033da082072c6088983bd07f36ad6b8aa7b9778",
+      "commit_tree": "d7dfd95953241830e62083a390358817941308aa",
+      "hardware_tree": "49d92d031eafbc8f680aee0698d7c2e877bd696c",
+      "mf1750_production_v1_tree": "bdcf24728016ab434635adfd476af9b8153dc13b",
+      "production_tree": "701ff3a71b87a9d0d91070f6631507091a774a3f"
+    },
+    "tested_implementation": {
+      "commit": "2427833ac2c637a24f046ef63156b9f96577f267",
+      "commit_tree": "75dc41dd26f08a917898edf2ed24a54f951e9372",
+      "src_tree": "8a1f1d044fa8ef59894f98a7ed1440759e99d3ee",
+      "platformio_ini_blob": "7376f5a291140f047bc79528617368b709d0ad84",
+      "main_cpp_blob": "06fe8c17c33e15fdb393b1bc8a35b730deb8ff8e",
+      "epd_driver_cpp_blob": "ca92996a36872c8cea14412377bd11504bcf9b4e",
+      "epd_driver_h_blob": "fdfc32be3a09061393f3e32bc515ace26fc25ebf"
+    },
+    "acceptance_evidence": {
+      "commit": "fd548e34660069980e777574e5061aef813bb1cc",
+      "commit_tree": "35397720095fd9467a1b71b9395c2d426e7089ff",
+      "acceptance_document_blob": "c338404f724116d141539d3c5f915e1d0c0a507f"
+    },
+    "release_documentation": {
+      "commit": "018071bcea306a5c90e1e78a66c5219956b29145",
+      "commit_tree": "23eaee0a54b92858c389298de7e2f7e6853874d5",
+      "driver_api_document_blob": "21d0586ad97ad82afaaf79a0d7224cb67969d7c1",
+      "readme_blob": "78f3cbf8efd87188936024190c870c508712048c",
+      "acceptance_document_blob": "220acba192c4f723b961acad2125c7f7a76a47a1"
+    },
+    "head_at_archive_time": {
+      "commit": "172840c091bd963633860b5dfde6f327d30ab665",
+      "commit_tree": "356e649f6b2033e6693fcaaa9aad9b922b0c6cea",
+      "src_tree": "a2810e62debffea9e6ac4163c55ce9d9ff7f0ae3"
+    },
+    "verified_equivalence": {
+      "tested_source_matches_acceptance_commit": true,
+      "manufacturing_hardware_tree_matches_release_documentation_commit": true,
+      "manufacturing_hardware_tree_matches_head_at_archive_time": true
+    }
+  },
+  "accepted_firmware_binary": {
+    "filename": "firmware.bin",
+    "expected_size_bytes": 796272,
+    "expected_sha256": "F763FE0518DE00040990C85C510B077EC67C0270C5909BB6A4CEF619F45C475B",
+    "archived": false,
+    "reason": "The exact bytes used for hardware acceptance were not present in the repository or scoped local artifact search. Rebuild outputs are not accepted as substitutes."
+  },
+  "rejected_rebuild_attempts": [
+    {
+      "source_commit": "fd548e34660069980e777574e5061aef813bb1cc",
+      "environment": "PlatformIO Core 6.1.19 with platformio/espressif32 7.0.1 and the current ignored local wifi_secrets.h",
+      "repeat_count": 2,
+      "size_bytes": 796272,
+      "sha256": "CD8B3792DB00555C0859E2641A85DE5CE766B29109AF85198B1CFD12D346318B",
+      "accepted": false
+    },
+    {
+      "source_commit": "fd548e34660069980e777574e5061aef813bb1cc",
+      "environment": "PlatformIO Core 6.1.19 with platformio/espressif32 7.0.1 and without local wifi_secrets.h",
+      "repeat_count": 1,
+      "size_bytes": 795888,
+      "sha256": "C4D3B4F46089B5FC623BEDC7A0D4094651AE455AB836344E03716D59F0427453",
+      "accepted": false
+    }
+  ],
+  "rebuild_workspace": {
+    "path": "C:/tmp/esp32_c73_rc2c_rebuild_20260806",
+    "deleted_after_audit": true,
+    "reason": "It contained an ignored local Wi-Fi configuration copy and non-matching build outputs."
+  },
+  "archive_payloads": [
+    {
+      "filename": "01-repository-release-018071bcea306a5c90e1e78a66c5219956b29145.zip",
+      "role": "Repository release documentation plus the unchanged manufacturing tree, exported directly from Git objects",
+      "source_commit": "018071bcea306a5c90e1e78a66c5219956b29145",
+      "size_bytes": 32036118,
+      "sha256": "A41BDBB8320D3352B5D4AB06F6CBA89FA898961A62F41B452902F28F43718CB8",
+      "zip_entry_count": 412,
+      "file_entry_count": 352,
+      "git_blob_bytes_verified": true,
+      "line_ending_conversion": "disabled with core.autocrlf=false",
+      "exact_wifi_secrets_h_entry_count": 0
+    },
+    {
+      "filename": "02-tested-firmware-source-2427833ac2c637a24f046ef63156b9f96577f267.zip",
+      "role": "Exact tracked PlatformIO and src source tree for the firmware implementation subjected to acceptance",
+      "source_commit": "2427833ac2c637a24f046ef63156b9f96577f267",
+      "size_bytes": 25577,
+      "sha256": "7061F65F6026F6990194E0E890F8A2B7DC2BA3F058AB656B1CA24FB55DA4E218",
+      "zip_entry_count": 9,
+      "file_entry_count": 7,
+      "git_blob_bytes_verified": true,
+      "line_ending_conversion": "disabled with core.autocrlf=false",
+      "exact_wifi_secrets_h_entry_count": 0
+    }
+  ],
+  "archive_staging_directory": "C:/tmp/MF1750_H0_REV_A1_RC2C_ACCEPTED_20260804_ARCHIVED_20260806",
+  "working_tree_policy": {
+    "content_included": false,
+    "selection_method": "git archive from fixed object IDs with core.autocrlf=false, followed by per-file Git blob SHA-1 verification",
+    "current_candidate_rc2f_included_as_accepted_subject": false,
+    "ignored_wifi_secrets_included": false
+  },
+  "excluded_current_candidate": {
+    "firmware_build_tag": "MF1750_DRIVER_RC2F_R16_CCSET_MAPHASH_COLORGUARD_JOBTRACE_PSRFIX_WEBPHOTO_PHYSICAL_2026-08-05",
+    "size_bytes": 811056,
+    "sha256": "AE5261AA2E679B4AEA11C9C4C2CE5D12BD561EC72748828ECC5BA570A03A4A20",
+    "hardware_tested": false,
+    "reason": "RC2F is a later software candidate and cannot inherit RC2C hardware acceptance."
+  },
+  "release_tag": {
+    "created": false,
+    "name": null,
+    "target": null,
+    "authorization_required": "Explicit user authorization after manifest and target review"
+  },
+  "limitations": [
+    "H0 is not complete until the exact accepted firmware binary is recovered and hashed.",
+    "The staging directory is not a durable or off-machine backup.",
+    "No Git tag was created.",
+    "No device was accessed, powered, flashed or refreshed during this archive operation."
+  ]
+}

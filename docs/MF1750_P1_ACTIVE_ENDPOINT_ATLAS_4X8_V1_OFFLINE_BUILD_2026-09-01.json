@@ -1,0 +1,700 @@
+{
+  "actions": [
+    {
+      "action_id": "7d14bc5f70da46f1eb3a86ab1c54734dffa1e9dcac62147a1d62bcedb25e9526",
+      "boot_admission": {
+        "admission": "FRESH_CURSOR_AND_BOOT_KEY_ABSENT_ONLY",
+        "campaign_boot_binding_key": "boot_p1a",
+        "firmware_arm_gate": true,
+        "firmware_dispatch_gate": true,
+        "firmware_execute_gate": true,
+        "post_containment_resume_allowed": false,
+        "reboot_resume_allowed": false,
+        "required_prior_ordinal": null,
+        "required_prior_terminal_state": null
+      },
+      "branch": "P1_FRESH_ONE_SHOT_ACTIVE_ACTIVE_ENDPOINT_ATLAS_4X8_V1",
+      "controller_dtm_byte_identical": true,
+      "cs1_dtm": {
+        "bytes": 153600,
+        "fnv1a": 4203669957,
+        "sha256": "b64c835514b4b6110002c1c2cb366a93bf804f5953229107fa52b27de83dfe0f"
+      },
+      "cs2_dtm": {
+        "bytes": 153600,
+        "fnv1a": 4203669957,
+        "sha256": "b64c835514b4b6110002c1c2cb366a93bf804f5953229107fa52b27de83dfe0f"
+      },
+      "descriptor_id": "14a1b108c74e8898a1e5cc235ff93fdc8b315aebc45fc4682481a6aa915187d2",
+      "driver_role": "Source",
+      "frame": {
+        "bytes": 307200,
+        "fnv1a": 3129030085,
+        "histogram": [
+          41600,
+          41600,
+          41600,
+          41600,
+          41600,
+          41600,
+          41600,
+          323200
+        ],
+        "sha256": "d8ee6b0889c8c2e92e3d0d34410f93d90f924816c59987de496ef0ca27ac1768"
+      },
+      "global_header": "active",
+      "global_tuple_id": "4ba82591a96bc789f1ec2ea17ab81d4ae7e8986386cad8264a8dac48f021e820",
+      "ordinal": 1,
+      "palette_source": "L535_RUNTIME",
+      "prior_static_action_id": null,
+      "profile_id": "LEGACY_ACTIVE_HEADER__CS1_ACTIVE535__CS2_ACTIVE535",
+      "role": "P1_ACTIVE_COMPLETE_PROFILE_POSITION_BALANCED_4X8_ENDPOINT_ATLAS",
+      "round": 1,
+      "waveform_binding": {
+        "complete_profile_tuple": true,
+        "controller_payloads_byte_identical": true,
+        "cs1": {
+          "r20_command": "0x20",
+          "r20_prefix_bytes": 535,
+          "r20_prefix_sha256": "716cc229f8b954c4c66c387d69e80d2eb26c9a5a99b4bdd653f1282ace56e44b",
+          "r21_bytes": 704,
+          "r21_command": "0x21",
+          "r21_sha256": "24acee297a3397869e18899db60585b90d94ffef3435330424f67e752df7863f"
+        },
+        "cs2": {
+          "r20_command": "0x20",
+          "r20_prefix_bytes": 535,
+          "r20_prefix_sha256": "716cc229f8b954c4c66c387d69e80d2eb26c9a5a99b4bdd653f1282ace56e44b",
+          "r21_bytes": 704,
+          "r21_command": "0x21",
+          "r21_sha256": "24acee297a3397869e18899db60585b90d94ffef3435330424f67e752df7863f"
+        },
+        "global_header_sha256": "48a53562060e9c822334a73f900dbd1323fd3fe096576ef75663b64216e275c8",
+        "global_tuple_id": "4ba82591a96bc789f1ec2ea17ab81d4ae7e8986386cad8264a8dac48f021e820",
+        "hidden_enable_bytes": 1,
+        "hidden_enable_command": "0xe9",
+        "hidden_enable_sha256": "4bf5122f344554c53bde2ebb8cd2b7e3d1600ad631c385a5d7cce23c7785459a",
+        "id": "LEGACY_ACTIVE_HEADER__CS1_ACTIVE535__CS2_ACTIVE535",
+        "name": "active",
+        "pll_command": "0x30",
+        "pll_payload_bytes": 1,
+        "pll_payload_sha256": "dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986",
+        "power_command": "0x01",
+        "power_payload_bytes": 6,
+        "power_payload_sha256": "f8f668ee0ab3b9c33f41c05bd62b6e2b857c5e069af6be33b054e24bd24390f2",
+        "runtime_psr_bytes": 2,
+        "runtime_psr_command": "0x00",
+        "runtime_psr_sha256": "f4f9cebb6bf66b2369526e4f73a9e76a4d0f8e3d19236f694c9e8d10f5b90b09",
+        "tres_bytes": 4,
+        "tres_command": "0x61",
+        "tres_sha256": "0565923077a817f3e440956414c0b42acb07b2fb3a421344ac4830afd99d7ee1"
+      }
+    }
+  ],
+  "artifacts": {
+    "firmware.bin": {
+      "bytes": 799024,
+      "path": ".pio/build-p1-active-endpoint-atlas-4x8-v1/ec5_p1_active_endpoint_atlas_4x8_v1/firmware.bin",
+      "sha256": "f5c83b357c1db3dd065669e36d0ac9a09edfe47c720fadecad98c196a81652ed"
+    },
+    "firmware.elf": {
+      "bytes": 13286576,
+      "path": ".pio/build-p1-active-endpoint-atlas-4x8-v1/ec5_p1_active_endpoint_atlas_4x8_v1/firmware.elf",
+      "sha256": "c6eb0203cd7b5cd2373199ead8857cb793e495a459bced12aa3fd5160e5b7a7c"
+    }
+  },
+  "build_tag": "MF1750_EC5_P1_ACTIVE_ENDPOINT_ATLAS_4X8_V1_2026-09-01",
+  "campaign_id": "EC5_P1_ACTIVE_ENDPOINT_ATLAS_4X8_V1",
+  "contract": {
+    "absolute_colour_claimed": false,
+    "action_count": 1,
+    "actions": [
+      {
+        "action_id": "7d14bc5f70da46f1eb3a86ab1c54734dffa1e9dcac62147a1d62bcedb25e9526",
+        "boot_admission": {
+          "admission": "FRESH_CURSOR_AND_BOOT_KEY_ABSENT_ONLY",
+          "campaign_boot_binding_key": "boot_p1a",
+          "firmware_arm_gate": true,
+          "firmware_dispatch_gate": true,
+          "firmware_execute_gate": true,
+          "post_containment_resume_allowed": false,
+          "reboot_resume_allowed": false,
+          "required_prior_ordinal": null,
+          "required_prior_terminal_state": null
+        },
+        "branch": "P1_FRESH_ONE_SHOT_ACTIVE_ACTIVE_ENDPOINT_ATLAS_4X8_V1",
+        "controller_dtm_byte_identical": true,
+        "cs1_dtm": {
+          "bytes": 153600,
+          "fnv1a": 4203669957,
+          "sha256": "b64c835514b4b6110002c1c2cb366a93bf804f5953229107fa52b27de83dfe0f"
+        },
+        "cs2_dtm": {
+          "bytes": 153600,
+          "fnv1a": 4203669957,
+          "sha256": "b64c835514b4b6110002c1c2cb366a93bf804f5953229107fa52b27de83dfe0f"
+        },
+        "descriptor_id": "14a1b108c74e8898a1e5cc235ff93fdc8b315aebc45fc4682481a6aa915187d2",
+        "driver_role": "Source",
+        "frame": {
+          "bytes": 307200,
+          "fnv1a": 3129030085,
+          "histogram": [
+            41600,
+            41600,
+            41600,
+            41600,
+            41600,
+            41600,
+            41600,
+            323200
+          ],
+          "sha256": "d8ee6b0889c8c2e92e3d0d34410f93d90f924816c59987de496ef0ca27ac1768"
+        },
+        "global_header": "active",
+        "global_tuple_id": "4ba82591a96bc789f1ec2ea17ab81d4ae7e8986386cad8264a8dac48f021e820",
+        "ordinal": 1,
+        "palette_source": "L535_RUNTIME",
+        "prior_static_action_id": null,
+        "profile_id": "LEGACY_ACTIVE_HEADER__CS1_ACTIVE535__CS2_ACTIVE535",
+        "role": "P1_ACTIVE_COMPLETE_PROFILE_POSITION_BALANCED_4X8_ENDPOINT_ATLAS",
+        "round": 1,
+        "waveform_binding": {
+          "complete_profile_tuple": true,
+          "controller_payloads_byte_identical": true,
+          "cs1": {
+            "r20_command": "0x20",
+            "r20_prefix_bytes": 535,
+            "r20_prefix_sha256": "716cc229f8b954c4c66c387d69e80d2eb26c9a5a99b4bdd653f1282ace56e44b",
+            "r21_bytes": 704,
+            "r21_command": "0x21",
+            "r21_sha256": "24acee297a3397869e18899db60585b90d94ffef3435330424f67e752df7863f"
+          },
+          "cs2": {
+            "r20_command": "0x20",
+            "r20_prefix_bytes": 535,
+            "r20_prefix_sha256": "716cc229f8b954c4c66c387d69e80d2eb26c9a5a99b4bdd653f1282ace56e44b",
+            "r21_bytes": 704,
+            "r21_command": "0x21",
+            "r21_sha256": "24acee297a3397869e18899db60585b90d94ffef3435330424f67e752df7863f"
+          },
+          "global_header_sha256": "48a53562060e9c822334a73f900dbd1323fd3fe096576ef75663b64216e275c8",
+          "global_tuple_id": "4ba82591a96bc789f1ec2ea17ab81d4ae7e8986386cad8264a8dac48f021e820",
+          "hidden_enable_bytes": 1,
+          "hidden_enable_command": "0xe9",
+          "hidden_enable_sha256": "4bf5122f344554c53bde2ebb8cd2b7e3d1600ad631c385a5d7cce23c7785459a",
+          "id": "LEGACY_ACTIVE_HEADER__CS1_ACTIVE535__CS2_ACTIVE535",
+          "name": "active",
+          "pll_command": "0x30",
+          "pll_payload_bytes": 1,
+          "pll_payload_sha256": "dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986",
+          "power_command": "0x01",
+          "power_payload_bytes": 6,
+          "power_payload_sha256": "f8f668ee0ab3b9c33f41c05bd62b6e2b857c5e069af6be33b054e24bd24390f2",
+          "runtime_psr_bytes": 2,
+          "runtime_psr_command": "0x00",
+          "runtime_psr_sha256": "f4f9cebb6bf66b2369526e4f73a9e76a4d0f8e3d19236f694c9e8d10f5b90b09",
+          "tres_bytes": 4,
+          "tres_command": "0x61",
+          "tres_sha256": "0565923077a817f3e440956414c0b42acb07b2fb3a421344ac4830afd99d7ee1"
+        }
+      }
+    ],
+    "automatic_chaining": false,
+    "build_tag": "MF1750_EC5_P1_ACTIVE_ENDPOINT_ATLAS_4X8_V1_2026-09-01",
+    "campaign_id": "EC5_P1_ACTIVE_ENDPOINT_ATLAS_4X8_V1",
+    "colour_equivalence_claimed": false,
+    "controller_bus_capture_claimed": false,
+    "controller_payload_source_identity_claimed": true,
+    "external_containment": {
+      "factory_otp_white_after_required": true,
+      "factory_otp_white_before_required": true,
+      "outside_campaign": true,
+      "post_white_clean_visual_gate_required": true,
+      "successor_identity_bound_after_main_artifact_seal": true,
+      "white_actions_in_campaign": 0
+    },
+    "factory_otp_white_ordinals": [],
+    "fresh_one_shot": true,
+    "full_screen_global_refresh": true,
+    "geometry": {
+      "background_code": 7,
+      "border": false,
+      "controller_dtm_byte_identical": true,
+      "controller_width": 512,
+      "cs2_position_mirrored": false,
+      "grid_columns_per_controller": 8,
+      "grid_rows": 4,
+      "height": 600,
+      "positions": [
+        {
+          "code": 0,
+          "column": 0,
+          "height": 100,
+          "row": 0,
+          "width": 52,
+          "x": 20,
+          "y": 44
+        },
+        {
+          "code": 1,
+          "column": 1,
+          "height": 100,
+          "row": 0,
+          "width": 52,
+          "x": 80,
+          "y": 44
+        },
+        {
+          "code": 2,
+          "column": 2,
+          "height": 100,
+          "row": 0,
+          "width": 52,
+          "x": 140,
+          "y": 44
+        },
+        {
+          "code": 3,
+          "column": 3,
+          "height": 100,
+          "row": 0,
+          "width": 52,
+          "x": 200,
+          "y": 44
+        },
+        {
+          "code": 4,
+          "column": 4,
+          "height": 100,
+          "row": 0,
+          "width": 52,
+          "x": 260,
+          "y": 44
+        },
+        {
+          "code": 5,
+          "column": 5,
+          "height": 100,
+          "row": 0,
+          "width": 52,
+          "x": 320,
+          "y": 44
+        },
+        {
+          "code": 6,
+          "column": 6,
+          "height": 100,
+          "row": 0,
+          "width": 52,
+          "x": 380,
+          "y": 44
+        },
+        {
+          "code": 7,
+          "column": 7,
+          "height": 100,
+          "row": 0,
+          "width": 52,
+          "x": 440,
+          "y": 44
+        },
+        {
+          "code": 4,
+          "column": 0,
+          "height": 100,
+          "row": 1,
+          "width": 52,
+          "x": 20,
+          "y": 180
+        },
+        {
+          "code": 5,
+          "column": 1,
+          "height": 100,
+          "row": 1,
+          "width": 52,
+          "x": 80,
+          "y": 180
+        },
+        {
+          "code": 6,
+          "column": 2,
+          "height": 100,
+          "row": 1,
+          "width": 52,
+          "x": 140,
+          "y": 180
+        },
+        {
+          "code": 7,
+          "column": 3,
+          "height": 100,
+          "row": 1,
+          "width": 52,
+          "x": 200,
+          "y": 180
+        },
+        {
+          "code": 0,
+          "column": 4,
+          "height": 100,
+          "row": 1,
+          "width": 52,
+          "x": 260,
+          "y": 180
+        },
+        {
+          "code": 1,
+          "column": 5,
+          "height": 100,
+          "row": 1,
+          "width": 52,
+          "x": 320,
+          "y": 180
+        },
+        {
+          "code": 2,
+          "column": 6,
+          "height": 100,
+          "row": 1,
+          "width": 52,
+          "x": 380,
+          "y": 180
+        },
+        {
+          "code": 3,
+          "column": 7,
+          "height": 100,
+          "row": 1,
+          "width": 52,
+          "x": 440,
+          "y": 180
+        },
+        {
+          "code": 1,
+          "column": 0,
+          "height": 100,
+          "row": 2,
+          "width": 52,
+          "x": 20,
+          "y": 316
+        },
+        {
+          "code": 2,
+          "column": 1,
+          "height": 100,
+          "row": 2,
+          "width": 52,
+          "x": 80,
+          "y": 316
+        },
+        {
+          "code": 3,
+          "column": 2,
+          "height": 100,
+          "row": 2,
+          "width": 52,
+          "x": 140,
+          "y": 316
+        },
+        {
+          "code": 4,
+          "column": 3,
+          "height": 100,
+          "row": 2,
+          "width": 52,
+          "x": 200,
+          "y": 316
+        },
+        {
+          "code": 5,
+          "column": 4,
+          "height": 100,
+          "row": 2,
+          "width": 52,
+          "x": 260,
+          "y": 316
+        },
+        {
+          "code": 6,
+          "column": 5,
+          "height": 100,
+          "row": 2,
+          "width": 52,
+          "x": 320,
+          "y": 316
+        },
+        {
+          "code": 7,
+          "column": 6,
+          "height": 100,
+          "row": 2,
+          "width": 52,
+          "x": 380,
+          "y": 316
+        },
+        {
+          "code": 0,
+          "column": 7,
+          "height": 100,
+          "row": 2,
+          "width": 52,
+          "x": 440,
+          "y": 316
+        },
+        {
+          "code": 5,
+          "column": 0,
+          "height": 100,
+          "row": 3,
+          "width": 52,
+          "x": 20,
+          "y": 452
+        },
+        {
+          "code": 6,
+          "column": 1,
+          "height": 100,
+          "row": 3,
+          "width": 52,
+          "x": 80,
+          "y": 452
+        },
+        {
+          "code": 7,
+          "column": 2,
+          "height": 100,
+          "row": 3,
+          "width": 52,
+          "x": 140,
+          "y": 452
+        },
+        {
+          "code": 0,
+          "column": 3,
+          "height": 100,
+          "row": 3,
+          "width": 52,
+          "x": 200,
+          "y": 452
+        },
+        {
+          "code": 1,
+          "column": 4,
+          "height": 100,
+          "row": 3,
+          "width": 52,
+          "x": 260,
+          "y": 452
+        },
+        {
+          "code": 2,
+          "column": 5,
+          "height": 100,
+          "row": 3,
+          "width": 52,
+          "x": 320,
+          "y": 452
+        },
+        {
+          "code": 3,
+          "column": 6,
+          "height": 100,
+          "row": 3,
+          "width": 52,
+          "x": 380,
+          "y": 452
+        },
+        {
+          "code": 4,
+          "column": 7,
+          "height": 100,
+          "row": 3,
+          "width": 52,
+          "x": 440,
+          "y": 452
+        }
+      ],
+      "row_codes": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        [
+          4,
+          5,
+          6,
+          7,
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          0
+        ],
+        [
+          5,
+          6,
+          7,
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      ],
+      "same_layout_both_controllers": true,
+      "samples_per_code_per_controller_per_frame": 4,
+      "spatial_dither": false,
+      "width": 1024
+    },
+    "identical_target_repeat_actions": 0,
+    "local_hold_claimed": false,
+    "mid_refresh_power_cut": false,
+    "middle_history_actions": 0,
+    "nvs_boot_key": "boot_p1a",
+    "nvs_key": "cursor_p1a",
+    "nvs_namespace": "p1ae4x8v1",
+    "one_visible_refresh_per_action": true,
+    "partial_refresh": false,
+    "profile": {
+      "complete_profile_tuple": true,
+      "controller_payloads_byte_identical": true,
+      "cs1": {
+        "r20_command": "0x20",
+        "r20_prefix_bytes": 535,
+        "r20_prefix_sha256": "716cc229f8b954c4c66c387d69e80d2eb26c9a5a99b4bdd653f1282ace56e44b",
+        "r21_bytes": 704,
+        "r21_command": "0x21",
+        "r21_sha256": "24acee297a3397869e18899db60585b90d94ffef3435330424f67e752df7863f"
+      },
+      "cs2": {
+        "r20_command": "0x20",
+        "r20_prefix_bytes": 535,
+        "r20_prefix_sha256": "716cc229f8b954c4c66c387d69e80d2eb26c9a5a99b4bdd653f1282ace56e44b",
+        "r21_bytes": 704,
+        "r21_command": "0x21",
+        "r21_sha256": "24acee297a3397869e18899db60585b90d94ffef3435330424f67e752df7863f"
+      },
+      "global_header_sha256": "48a53562060e9c822334a73f900dbd1323fd3fe096576ef75663b64216e275c8",
+      "global_tuple_id": "4ba82591a96bc789f1ec2ea17ab81d4ae7e8986386cad8264a8dac48f021e820",
+      "hidden_enable_bytes": 1,
+      "hidden_enable_command": "0xe9",
+      "hidden_enable_sha256": "4bf5122f344554c53bde2ebb8cd2b7e3d1600ad631c385a5d7cce23c7785459a",
+      "id": "LEGACY_ACTIVE_HEADER__CS1_ACTIVE535__CS2_ACTIVE535",
+      "name": "active",
+      "pll_command": "0x30",
+      "pll_payload_bytes": 1,
+      "pll_payload_sha256": "dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986",
+      "power_command": "0x01",
+      "power_payload_bytes": 6,
+      "power_payload_sha256": "f8f668ee0ab3b9c33f41c05bd62b6e2b857c5e069af6be33b054e24bd24390f2",
+      "runtime_psr_bytes": 2,
+      "runtime_psr_command": "0x00",
+      "runtime_psr_sha256": "f4f9cebb6bf66b2369526e4f73a9e76a4d0f8e3d19236f694c9e8d10f5b90b09",
+      "tres_bytes": 4,
+      "tres_command": "0x61",
+      "tres_sha256": "0565923077a817f3e440956414c0b42acb07b2fb3a421344ac4830afd99d7ee1"
+    },
+    "qualified_colours": 0,
+    "qualified_lightness_levels": 0,
+    "recovery": false,
+    "retry": false,
+    "runtime_lut_ordinals": [
+      1
+    ],
+    "schema": "mf1750-p1-active-endpoint-atlas-4x8-contract-v1",
+    "source_history_actions": 0,
+    "test_id": "EC5-P1-ACTIVE-ENDPOINT-ATLAS-4X8-V1",
+    "variant_key": "P1_ACTIVE_ENDPOINT_ATLAS_4X8_V1",
+    "window_refresh": false
+  },
+  "contract_id": "d36450e7cf69ad2e5e612f9df5b5abe0d33a036f9c3198a79a9e0e97a89a59f2",
+  "device_network_accessed": false,
+  "display_refreshed": false,
+  "firmware_flashed": false,
+  "hardware_accessed": false,
+  "kind": "mf1750-p1-active-endpoint-atlas-4x8-offline-identities-v1",
+  "nvs_namespace": "p1ae4x8v1",
+  "offline_only": true,
+  "offline_validation": {
+    "clean_build_passed": true,
+    "deterministic_rebuild_passed": true,
+    "display_refreshed": false,
+    "firmware_flashed": false,
+    "focused_pytest": "5 passed",
+    "hardware_accessed": false,
+    "network_requests": 0,
+    "py_compile": "PASS",
+    "relay_accessed": false,
+    "ruff": "PASS",
+    "serial_or_com_accessed": false
+  },
+  "relay_accessed": false,
+  "schema_version": 1,
+  "serial_or_com_accessed": false,
+  "source_files": [
+    {
+      "bytes": 917,
+      "path": "platformio.p1_active_endpoint_atlas_4x8_v1.ini",
+      "sha256": "d24eb9e4cadbcf5888e4d7d1284a3891fb9ad420282d46a1d2c70fd935e97dd3"
+    },
+    {
+      "bytes": 3807,
+      "path": "src/ec5_p1_active_endpoint_atlas_4x8_v1_identity.inc",
+      "sha256": "9df138f2280a512ee079f2b0fc2ba195e2a842a61160c84858ff5648eb928adf"
+    },
+    {
+      "bytes": 6360,
+      "path": "src/ec5_p1_active_endpoint_atlas_4x8_v1_main_config.inc",
+      "sha256": "849a27f5fcdda6ed2a78d36c6147067bfd3f1fdf1cbcd87f90518532b25a3359"
+    },
+    {
+      "bytes": 132,
+      "path": "src/ec5_p1_active_endpoint_atlas_4x8_v1_main.cpp",
+      "sha256": "19b9a77f321d003e30b0f60e82600bff43f558f744cb5f7e6700e89f377cfacb"
+    },
+    {
+      "bytes": 44810,
+      "path": "src/ec5_p1_active_endpoint_atlas_4x8_v1_program.inc",
+      "sha256": "fdad0f85503861c49609598685357a63889793a33bd8b79a6645800b48c19bbd"
+    },
+    {
+      "bytes": 181,
+      "path": "src/ec5_p1_active_endpoint_atlas_4x8_v1_epd_driver.cpp",
+      "sha256": "066cf720e87889f92a16a4fd4b8b6ab2634b2be6a405e7f30241432ee6cb2343"
+    },
+    {
+      "bytes": 39164,
+      "path": "src/ec5_p1_active_endpoint_atlas_4x8_v1_driver.inc",
+      "sha256": "a62b5562e568345696739ee35e6d44e6307c6e8181f626203459d4bd9f0a6bf3"
+    },
+    {
+      "bytes": 14108,
+      "path": "tools/mf1750_p1_active_endpoint_atlas_4x8_v1_pack.py",
+      "sha256": "60a031b3bd4d7ae302dfacedadf966c9a63cbcba9826f6a85efe7a0328ab1872"
+    },
+    {
+      "bytes": 4820,
+      "path": "tests/test_mf1750_p1_active_endpoint_atlas_4x8_v1_firmware.py",
+      "sha256": "ba123ed562faa10d992b6d673452d3b602fdc580628f67ea2d4ec6216e1a2722"
+    }
+  ],
+  "test_id": "EC5-P1-ACTIVE-ENDPOINT-ATLAS-4X8-V1",
+  "variant_key": "P1_ACTIVE_ENDPOINT_ATLAS_4X8_V1"
+}

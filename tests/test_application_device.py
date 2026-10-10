@@ -14,7 +14,6 @@ from host.application import (
     OfflineAdapter,
     PreparationPurpose,
     SessionError,
-    SessionState,
     prepare_image,
 )
 from host.application.device import ARM_CONFIRMATION, ARM_TTL_S
@@ -206,6 +205,24 @@ class HttpAdapterTests(unittest.TestCase):
             adapter.poll_job()
         self.assertNotEqual(adapter.state.value, "protocol_verified")
 
+    def test_matching_failed_job_closes_activity_but_keeps_fault_lock(self) -> None:
+        responses = valid_refresh_responses(self.artifact.frame)
+        failed = json.loads(responses["/api/job"][0][1])
+        failed.update({"state": "failed", "result": False})
+        responses["/api/job"] = [(200, json.dumps(failed))]
+        adapter, _ = adapter_with_responses(responses)
+        adapter.refresh_enqueue(self.artifact, DEFAULT_MAPPINGS)
+
+        with self.assertRaisesRegex(AdapterError, "reported failed"):
+            adapter.poll_job()
+        self.assertFalse(adapter.cancel()["remote_job_may_continue"])
+        aborted = adapter.local_abort()
+        self.assertFalse(aborted["remote_job_may_continue"])
+        self.assertTrue(aborted["new_submission_locked"])
+        self.assertEqual(aborted["unresolved_job"]["state"], "terminal_failed")
+        with self.assertRaisesRegex(AdapterError, "active refresh context"):
+            adapter.version_preflight(DEFAULT_MAPPINGS)
+
     def test_operation_id_or_report_mismatch_cannot_succeed(self) -> None:
         responses = valid_refresh_responses(self.artifact.frame)
         diagnostic = json.loads(responses["/api/diagnostic/report"][0][1])
@@ -258,6 +275,92 @@ class HttpAdapterTests(unittest.TestCase):
         aborted = adapter.local_abort()
         self.assertFalse(aborted["remote_cancelled"])
         self.assertTrue(aborted["remote_job_may_continue"])
+        self.assertTrue(aborted["new_submission_locked"])
+        self.assertTrue(adapter.refresh_in_flight)
+        self.assertEqual(adapter.state.value, "local_aborted")
+        with self.assertRaisesRegex(AdapterError, "active refresh context"):
+            adapter.version_preflight(DEFAULT_MAPPINGS)
+        with self.assertRaisesRegex(AdapterError, "refresh is active"):
+            adapter.bind_artifact(self.artifact)
+
+    def test_local_abort_after_terminal_job_keeps_safe_finish_quarantine(self) -> None:
+        responses = valid_refresh_responses(self.artifact.frame)
+        adapter, _ = adapter_with_responses(responses)
+        adapter.refresh_enqueue(self.artifact, DEFAULT_MAPPINGS)
+        completed = adapter.poll_job()
+        self.assertEqual(completed["state"], "completed_pending_report")
+
+        aborted = adapter.local_abort()
+        self.assertFalse(aborted["remote_job_may_continue"])
+        self.assertTrue(aborted["new_submission_locked"])
+        self.assertEqual(
+            aborted["unresolved_job"]["state"],
+            "terminal_completed_pending_diagnostic",
+        )
+        self.assertTrue(adapter.refresh_in_flight)
+        with self.assertRaisesRegex(AdapterError, "active refresh context"):
+            adapter.version_preflight(DEFAULT_MAPPINGS)
+
+    def test_local_abort_before_any_enqueue_attempt_can_return_to_preflight(self) -> None:
+        adapter, requester = adapter_with_responses(
+            valid_refresh_responses(self.artifact.frame)
+        )
+        aborted = adapter.local_abort()
+        self.assertFalse(aborted["remote_job_may_continue"])
+        self.assertFalse(aborted["new_submission_locked"])
+        self.assertFalse(adapter.refresh_in_flight)
+        adapter.version_preflight(DEFAULT_MAPPINGS)
+        self.assertEqual(requester.calls[-1], ("GET", "/api/version"))
+
+    def test_ambiguous_enqueue_abort_stays_quarantined(self) -> None:
+        responses = valid_refresh_responses(self.artifact.frame)
+        responses["/api/frame"] = [
+            frame_tool.FrameToolNetworkError("synthetic ambiguous enqueue")
+        ]
+        adapter, requester = adapter_with_responses(responses)
+        with self.assertRaises(AdapterNetworkError):
+            adapter.refresh_enqueue(self.artifact, DEFAULT_MAPPINGS)
+        self.assertTrue(adapter.refresh_in_flight)
+
+        aborted = adapter.local_abort()
+        self.assertTrue(aborted["remote_job_may_continue"])
+        self.assertTrue(aborted["new_submission_locked"])
+        self.assertIsNone(aborted["unresolved_job"]["job_id"])
+        with self.assertRaisesRegex(AdapterError, "active refresh context"):
+            adapter.version_preflight(DEFAULT_MAPPINGS)
+        self.assertEqual(
+            requester.calls,
+            [
+                ("GET", "/api/version"),
+                ("GET", "/api/version"),
+                ("POST", "/api/frame"),
+            ],
+        )
+
+    def test_session_local_abort_quarantines_an_unresolved_remote_job(self) -> None:
+        responses = valid_refresh_responses(self.artifact.frame)
+        requester = ScriptedRequester(responses)
+        requester.responses["/api/version"] *= 2
+        session = ApplicationSession(
+            HttpDeviceAdapter("http://device.invalid", requester=requester)
+        )
+        session.set_artifact(self.artifact)
+        session.allow_device_connection()
+        session.version_preflight(DEFAULT_MAPPINGS)
+        session.arm_refresh(ARM_CONFIRMATION)
+        session.enqueue_refresh(DEFAULT_MAPPINGS)
+
+        aborted = session.local_abort()
+        self.assertTrue(aborted["remote_job_may_continue"])
+        self.assertTrue(aborted["new_submission_locked"])
+        self.assertTrue(session.refresh_locked)
+        status = session.status()
+        self.assertTrue(status["local_abort_quarantine"])
+        self.assertTrue(status["remote_job_may_continue"])
+        with self.assertRaisesRegex(SessionError, "active"):
+            session.version_preflight(DEFAULT_MAPPINGS)
+        with self.assertRaisesRegex(SessionError, "active"):
+            session.set_artifact(authorized_artifact((0, 0, 0)))
 
     def test_connection_and_arm_each_require_explicit_user_action(self) -> None:
         requester = ScriptedRequester(valid_refresh_responses(self.artifact.frame))
@@ -402,13 +505,20 @@ class HttpAdapterTests(unittest.TestCase):
         responses["/api/version"] = [
             (200, version_body()),
             (200, version_body().replace("Free PSRAM: 7900000", "Free PSRAM: 7800001")),
+            (200, version_body()),
         ]
         adapter, requester = adapter_with_responses(responses, self.artifact)
         with self.assertRaisesRegex(AdapterError, "changed after arm"):
             adapter.refresh_enqueue(self.artifact, DEFAULT_MAPPINGS)
+        self.assertFalse(adapter.refresh_in_flight)
+        adapter.version_preflight(DEFAULT_MAPPINGS)
         self.assertEqual(
             requester.calls,
-            [("GET", "/api/version"), ("GET", "/api/version")],
+            [
+                ("GET", "/api/version"),
+                ("GET", "/api/version"),
+                ("GET", "/api/version"),
+            ],
         )
 
     def test_returned_job_is_not_an_alias_for_private_job_evidence(self) -> None:

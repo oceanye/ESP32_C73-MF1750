@@ -1,0 +1,258 @@
+{
+  "schema": "mf1750-runtime-lut-hue-brightness-redpink-v2-offline-build-record-v1",
+  "date": "2026-08-27",
+  "status": "OFFLINE_BUILD_READY_NOT_FLASHED_NOT_RUN",
+  "evidence_scope": "offline_preparation_only_separate_live_records_required",
+  "safety": {
+    "network_requests": 0,
+    "visible_refreshes": 0,
+    "device_network_accessed": false,
+    "serial_or_com_accessed": false,
+    "relay_accessed": false,
+    "firmware_flashed": false,
+    "device_reset": false,
+    "display_refreshed": false
+  },
+  "identity": {
+    "variant_key": "L535_TARGET_HUE_REDPINK_BRIGHTNESS_HISTORY_8X8_ABA_V2",
+    "build_tag": "MF1750_EC5_TARGET_HUE_REDPINK_BRIGHTNESS_8X8_ABA_SINGLE_APP_BOOT_FLASH_VERIFY_V2_2026-08-27",
+    "test_id": "EC5-TARGET-HUE-REDPINK-BRIGHTNESS-8X8-ABA-V2",
+    "campaign_id": "EC5_TARGET_HUE_REDPINK_BRIGHTNESS_8X8_ABA_V2",
+    "device_api_version": "MF1750_EC5_TARGET_HUE_REDPINK_BRIGHTNESS_DEVICE_V2",
+    "identity_revision": "runtime-lut-target-hue-redpink-brightness-factory-white-single-app-boot-flash-verify-v3",
+    "contract_id": "1308b6eb60ea786a2e1db2a2c984809fd446e9b1e32b1d14a54bf0356128ff8c",
+    "nvs_namespace": "rlhbrp_v2",
+    "nvs_cursor_key": "cursor_rpb2",
+    "nvs_campaign_boot_key": "boot_rpb2",
+    "claims_path": ".test-output/hardware/.mf1750_target_hue_redpink_brightness_v2_claims",
+    "output_path": ".test-output/hardware/MF1750_TARGET_HUE_REDPINK_BRIGHTNESS_20260827_V2",
+    "v1_identity_reused": false
+  },
+  "successor_isolation": {
+    "v1_faulted_nvs_cannot_poison_fresh_v2": true,
+    "v1_campaign_resume": false,
+    "v1_nvs_reused": false,
+    "v1_routes_reused": false,
+    "v1_claims_reused": false,
+    "v1_outputs_reused": false,
+    "v1_actions_or_descriptors_reused": false,
+    "old_v1_runtime_tokens_in_active_source_or_bin": 0,
+    "v2_second_boot_fails_closed": true
+  },
+  "target_selection": {
+    "transport_profile": "L535_ACTIVE_GLOBAL",
+    "transport_code": 0,
+    "target_hue_catalog_id": "94eabf2d00b2f0e90e86201f54923029b25182c140c757023b77f8f302165fd8",
+    "selection_not_guess": true,
+    "cs1_provisional_visual_name": "olive/yellow-green",
+    "cs2_provisional_visual_name": "red",
+    "controller_color_equivalence_claimed": false,
+    "shared_red_or_pink_hue_claimed": false,
+    "qualified_brightness_levels": 0,
+    "runtime_code7_semantics": "unqualified_separator_and_background_transport_code_not_white",
+    "factory_otp_white_fill_byte": "0x11"
+  },
+  "payload": {
+    "controllers": 2,
+    "recipes_per_controller": 64,
+    "unique_recipes": 64,
+    "physical_observations": 128,
+    "source_columns": "active_code_0_to_7",
+    "middle_rows": "commented_code_0_to_7",
+    "fixed_target": "active_code_0",
+    "same_recipes_on_both_controllers": true,
+    "cs2_mirrored": false,
+    "spatial_dither": false,
+    "v1_frames_exact": true,
+    "v1_cs1_cs2_dtm_exact": true,
+    "v1_lut_geometry_transport_exact": true
+  },
+  "device_enforced_same_boot": {
+    "schema": "mf1750-persisted-campaign-boot-binding-v1",
+    "initialize_only_when_cursor_key_absent_ready_ordinal1": true,
+    "persisted_before_any_action": true,
+    "encoding": "uint64 high32_then_low32_hex_nonce",
+    "readback_required": true,
+    "setup_gate_before_epd_begin": true,
+    "arm_gate": true,
+    "execute_gate": true,
+    "dispatch_gate": true,
+    "direct_exact_post_resume_after_reboot": false,
+    "reboot_resume_allowed": false,
+    "main_campaign_resume_after_containment": false,
+    "boot_mismatch_fault_locked_before_driver": true
+  },
+  "single_app_boot_flash_verify": {
+    "helper_path": "tools/mf1750_app_only_single_boot_flash.py",
+    "helper_bytes": 12170,
+    "helper_sha256": "529fbe5bf5a70254aaef5a042923d4699e1c27f1b478ef09c79c8f5fd1a1e451",
+    "application_offset": "0x10000",
+    "write_flash_before": "default_reset",
+    "write_flash_after": "no_reset",
+    "verify_flash_before": "no_reset",
+    "verify_flash_after": "hard_reset",
+    "application_boots_between_write_and_verify": 0,
+    "first_application_boot_after_verify": true,
+    "forbidden_between_write_verify_and_diagnose": [
+      "chip_id",
+      "serial_monitor",
+      "extra_com_open_or_reconnect",
+      "extra_reset",
+      "power_cycle",
+      "additional_flash"
+    ],
+    "python_version": "3.11.7",
+    "esptool_version": "4.11.0",
+    "esptool_script_sha256": "7e6833367b891629474c7717eb1689178377c1b13be286016ef72ee2c4e269a9"
+  },
+  "field_bindings": {
+    "serial_port": "COM8_EXTERNALLY_PROVIDED_NOT_ACCESSED_BY_THIS_OFFLINE_RECORD",
+    "base_url": "UNBOUND_DO_NOT_GUESS",
+    "base_url_required_form": "http_private_loopback_or_link_local_literal_ipv4_origin",
+    "proxy": false,
+    "redirect": false,
+    "main_flash_evidence": ".test-output/hardware/MF1750_TARGET_HUE_REDPINK_BRIGHTNESS_20260827_V2/app-only-single-boot-flash.json",
+    "main_diagnostic_evidence": ".test-output/hardware/MF1750_TARGET_HUE_REDPINK_BRIGHTNESS_20260827_V2/j2-off-diagnostic.json"
+  },
+  "diagnose_j2_off": {
+    "cli": "diagnose-j2-off",
+    "confirmation_before_artifacts_or_network": "--confirm-j2-off",
+    "refuse_existing_output_before_artifacts_or_network": true,
+    "output_reservation": "O_EXCL",
+    "artifact_preflight_before_network": true,
+    "artifact_failure_seals_zero_request_evidence": true,
+    "get_order": ["version", "manifest", "status", "report"],
+    "network": {"get": 4, "post": 0},
+    "complete_transcript_required": true,
+    "permanent_claims_created": 0,
+    "claims_directory_accessed": false,
+    "visible_refreshes": 0,
+    "private_literal_ipv4_only": true,
+    "proxy": false,
+    "redirect": false,
+    "fresh_ready_status_exact_gate_before_busy_gate": true,
+    "fault_locked_busy_null_reports_state_gate": true
+  },
+  "protocol": {
+    "action_count": 6,
+    "factory_otp_white_ordinals": [1, 6],
+    "target_repeat_ordinal": 5,
+    "target_repeat_separate_operator_decision": true,
+    "ordinal5_confirmation_flag": "--confirm-visible-candidate-after-ordinal4",
+    "target_repeat_automatic_dispatch": false,
+    "skip_to_ordinal_6_allowed": false,
+    "ordinal_6_requires_ordinal_5_complete": true,
+    "automatic_chaining": false,
+    "automatic_retry": false,
+    "automatic_recovery": false,
+    "raw_busy_required": 1,
+    "firmware_busy_gates": ["ARM", "EXECUTE", "DISPATCH"],
+    "arm_intent": "ARM_ONE_FIXED_REDPINK_V2_HUE_BRIGHTNESS_CANDIDATE_ACTION",
+    "execute_intent": "EXECUTE_ARMED_REDPINK_V2_HUE_BRIGHTNESS_CANDIDATE_ACTION_ONCE"
+  },
+  "ordinal4_fast_gate": {
+    "if_no_visible_difference": {
+      "seal_main_campaign": true,
+      "arm_ordinal5": false,
+      "arm_ordinal6": false,
+      "relay_off_before_containment": true,
+      "use_fresh_redpink_v2_containment": true,
+      "resume_main_after_containment": false,
+      "then_continue_next_target": true
+    },
+    "if_clear_visible_hit": {
+      "operator_may_arm_ordinal5_repeat": true,
+      "ordinal5_confirmation_required": true,
+      "ordinal6_main_white_only_after_repeat_accepted": true
+    }
+  },
+  "routes": {
+    "base": "/api/ec5/target-hue-redpink-brightness-v2",
+    "read_only": ["version", "manifest", "status", "report"],
+    "mutations": ["arm", "execute"]
+  },
+  "fixed_output_files": {
+    "diagnostic": "j2-off-diagnostic.json",
+    "actions": [
+      "action-01-factory-otp-white-anchor.json",
+      "action-02-source-columns.json",
+      "action-03-middle-rows.json",
+      "action-04-redpink-64-candidates.json",
+      "action-05-redpink-repeat.json",
+      "action-06-factory-otp-white-recovery.json"
+    ]
+  },
+  "actions": [
+    {
+      "ordinal": 1,
+      "role": "FACTORY_OTP_WHITE_HEALTH_ANCHOR",
+      "descriptor_id": "a15984ff9d49a9f582f66e6b531ece72cceecc1a5da4d05114a29cd8728595d6",
+      "action_id": "5b49a9dd08873f820e319cc4f25a3f1e7f361ff472240f7b0976fc3d7b629c82"
+    },
+    {
+      "ordinal": 2,
+      "role": "REDPINK_SOURCE_GRID_ACTIVE",
+      "descriptor_id": "f8be9c4b7a116bba02550a52d7d487129d21191d146b74daed2dd96753e5a997",
+      "action_id": "571c2123a04183e6b844056c98d8f09f8868bbfabbe4df1ad6e2f0dc2cc6cd0d"
+    },
+    {
+      "ordinal": 3,
+      "role": "REDPINK_MIDDLE_GRID_COMMENTED",
+      "descriptor_id": "500e3afbb4121920136a5f8bfe1a7a55efb76373fcd7c226afa4a4c4d2f82fe6",
+      "action_id": "fe222580dd4910e6655ecf7376e8d243d46af724674b20c88adef28d9547eba8"
+    },
+    {
+      "ordinal": 4,
+      "role": "REDPINK_FIXED_TARGET_ACTIVE_CODE0",
+      "descriptor_id": "77d9f6a4e2022fc3afb341379f6cdc2e9381706367d8bfbf13edba7758ed4809",
+      "action_id": "b7498932338a3165b6339acfe8ab675e77eac925487d3da7436bb92b6baff826"
+    },
+    {
+      "ordinal": 5,
+      "role": "REDPINK_FIXED_TARGET_REPEAT_ACTIVE_CODE0",
+      "descriptor_id": "328b6d307450fc85d311ccb9ceeb332f44ce90297c5f2e6fc9f49a61a5c71608",
+      "action_id": "190f8ce1746d91ad3a0f0ebc609c48b987990e8536c417c6a1bbbc0e797e030d"
+    },
+    {
+      "ordinal": 6,
+      "role": "FACTORY_OTP_WHITE_RECOVERY",
+      "descriptor_id": "f7f1e36f9c8135501a6f9181ed44faf438beac9312d299e23ee69fc5fc6827c0",
+      "action_id": "755e6efe5b621dd4f4165d8d5e440eb55688afb489f36edafb8583b18f5a29e4"
+    }
+  ],
+  "artifacts": {
+    "bin": {
+      "path": ".pio/build-runtime-lut-hue-brightness-redpink-v2/ec5_runtime_lut_hue_brightness_redpink_v2/firmware.bin",
+      "bytes": 801936,
+      "sha256": "e50acc57e0ef98953f1e40695eba17ae03a3df85b25941eacf332bad78c084fe"
+    },
+    "elf": {
+      "path": ".pio/build-runtime-lut-hue-brightness-redpink-v2/ec5_runtime_lut_hue_brightness_redpink_v2/firmware.elf",
+      "bytes": 13297040,
+      "sha256": "925bbcab8b730d245ca569abd46fa3daa25ba16b4befab2788f35989db5fe8fb"
+    }
+  },
+  "containment_binding": {
+    "direction": "containment_exactly_binds_main_no_reverse_contract_dependency",
+    "campaign_id": "EC5_TARGET_HUE_REDPINK_BRIGHTNESS_V2_WHITE_CONTAINMENT",
+    "contract_id": "73f6bb1db45aa5ec570e854067cb2ad29d6994206a8816e1eadfa7fc763c2c92",
+    "main_campaign_resume_after_containment": false
+  },
+  "verification": {
+    "platformio_clean_build": "PASS",
+    "focused_main_pytest": "63 passed",
+    "focused_containment_pytest": "21 passed",
+    "single_app_boot_helper_pytest": "6 passed",
+    "combined_v2_v1_containment_catalog_blue_helper_regression": "206 passed",
+    "independent_main_audit": "PASS_CONDITIONAL_LIVE_GO_ORDINALS_1_TO_4_ONLY",
+    "ruff_check": "PASS",
+    "ruff_format_check": "PASS",
+    "py_compile": "PASS",
+    "runner_describe_network_requests": 0,
+    "runner_describe_visible_refreshes": 0,
+    "runner_dry_validate": "PASS",
+    "runner_dry_validate_network_requests": 0,
+    "runner_dry_validate_visible_refreshes": 0,
+    "runner_dry_validate_firmware_binding": true
+  }
+}

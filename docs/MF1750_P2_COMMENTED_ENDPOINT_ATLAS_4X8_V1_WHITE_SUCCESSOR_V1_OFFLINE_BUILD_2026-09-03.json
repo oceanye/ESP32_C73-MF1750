@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "kind": "mf1750-p2-commented-endpoint-atlas-4x8-v1-white-successor-v1-offline-build-seal",
+  "created_on": "2026-09-04",
+  "result": "PASS",
+  "offline_only": true,
+  "hardware_accessed": false,
+  "device_network_accessed": false,
+  "serial_or_com_accessed": false,
+  "relay_accessed": false,
+  "camera_accessed": false,
+  "firmware_flashed": false,
+  "display_refreshed": false,
+  "campaign_id": "EC5_P2_COMMENTED_ENDPOINT_ATLAS_4X8_V1_WHITE_SUCCESSOR_V1",
+  "test_id": "EC5-P2-COMMENTED-ENDPOINT-ATLAS-4X8-V1-WHITE-SUCCESSOR-V1",
+  "contract_id": "bd58d575e4f56d7d77602716446d00cf1501c83021f209406d233071525234d3",
+  "descriptor_id": "312b07fa5bac5ff93274bc342c0579640e8264f38b74e18e4904b3ddd6daef16",
+  "action_id": "677c37c9962f507e2110f644735c1a1c4be87286073b70d1babe8d42856e3b19",
+  "source_gate": {
+    "source_campaign_id": "EC5_P2_COMMENTED_ENDPOINT_ATLAS_4X8_V1",
+    "source_main_contract_id": "6eb7be2835fac28df8922c86ab6236a7bd8cc81152ea72ad3be47bdc266ac216",
+    "source_main_offline_build_file": "docs/MF1750_P2_COMMENTED_ENDPOINT_ATLAS_4X8_V1_OFFLINE_BUILD_2026-09-03.json",
+    "source_main_offline_build_file_sha256": "e2c1adce901971fa2472967c8f237507861ac697e3fc3ef9b8ed51a5301a2d06",
+    "accepted_source_ordinals": [
+      1
+    ],
+    "accepted_source_role": "P2_COMMENTED_COMPLETE_PROFILE_POSITION_BALANCED_4X8_ENDPOINT_ATLAS",
+    "accepted_source_descriptor_id": "dcbbb2f433c84d8804678f41a77cca21c14705383b5893b36fb8e9f3e036c9bc",
+    "accepted_source_action_id": "ec26e0f76f194f0e6c58a2879310dfccd9d110656bff62dc4f230086105777b9",
+    "fixed_terminal_path": ".test-output/hardware/MF1750_P2_COMMENTED_ENDPOINT_ATLAS_4X8_V1/action-01-commented-complete-position-balanced-4x8-endpoint-atlas.json",
+    "terminal_state_required": "COMPLETE",
+    "driver_call_count_for_action_required": 1,
+    "total_driver_call_count_required": 1,
+    "visible_refreshes_required": 1,
+    "source_fault_accepted": false,
+    "source_early_stop_accepted": false,
+    "automatic_source_selection": false,
+    "source_terminal_evidence_available_at_offline_seal": false,
+    "live_gate_state": "WAITING_FOR_FRESH_P2_C_ORDINAL1_COMPLETE"
+  },
+    "source_artifacts": {
+    "firmware_bin": {
+      "bytes": 798496,
+      "sha256": "61d7704f4dfbcfd3b2ec21aa1eb571b400bf5ee391ababe6e4da1dc54010935d"
+    },
+    "firmware_elf": {
+      "bytes": 13286496,
+      "sha256": "451b7663aabd40a0771161c334c41f1f9be39ff0d47b2b7a7342b4edda9f7ac1"
+    }
+  },
+  "successor_action": {
+    "profile_id": "WF23_25",
+    "factory_otp": true,
+    "runtime_lut_write": false,
+    "custom_waveform_write": false,
+    "one_visible_refresh": true,
+    "full_busy_required": true,
+    "startup_refresh": false,
+    "retry": false,
+    "fallback": false,
+    "automatic_recovery": false,
+    "autochain": false,
+    "main_campaign_resume_after_containment": false,
+    "nvs_namespace": "p2catwsv1",
+    "nvs_key": "used_p2cw1",
+    "route": "/api/ec5/p2-commented-endpoint-atlas-4x8-v1/white-successor-v1"
+  },
+  "successor_artifacts": {
+    "firmware_bin": {
+      "bytes": 787440,
+      "sha256": "acf27e1358f869b4f5663e8a84ad4f38ab047557c90a9d64c4fa44c66c079277"
+    },
+    "firmware_elf": {
+      "bytes": 13214848,
+      "sha256": "2b41cb8413d24b5f6c36083d5381d7d21fdd64679dd9d45dab68a1492c059ed3"
+    },
+    "compiled_descriptor_marker_counts": {
+      "firmware_bin": 1,
+      "firmware_elf": 1
+    }
+  },
+  "generated_sources": {
+    "main": {
+      "bytes": 28086,
+      "sha256": "e463ead9cceb5f4596f2f0953fbaa5d56afe64992b02075a915563a364c02db9"
+    },
+    "driver": {
+      "bytes": 101,
+      "sha256": "0e34ed03c6655d906b0e23cef5f8c383db2f395d57665c7698ac44098d859f32"
+    },
+    "identity": {
+      "bytes": 2222,
+      "sha256": "a09a8a66fd88b1f3212d41ec2d474efeaee865d6222d9192abc3c259f0490310"
+    }
+  },
+  "verification": {
+    "platformio_isolated_clean_build_1": "PASS",
+    "platformio_isolated_clean_build_2": "PASS_IDENTICAL_BIN_AND_ELF",
+    "build_command": "python tools/mf1750_p2_commented_endpoint_atlas_4x8_v1_white_successor_v1_build.py build",
+      "pytest": {
+      "command": "python -m pytest -q tests/test_mf1750_p2_commented_endpoint_atlas_4x8_v1_firmware.py tests/test_mf1750_p2_commented_endpoint_atlas_4x8_v1_once.py tests/test_mf1750_p2_commented_endpoint_atlas_4x8_v1_white_successor_v1.py tests/test_mf1750_p2_retained_clean_white_human_review.py",
+        "result": "26 passed"
+    },
+    "ruff": "PASS",
+    "py_compile": "PASS",
+    "runner_cli_dry_validate": "PASS",
+    "independent_audit": "PASS",
+    "artifact_postflight": "PASS"
+  },
+  "package_readiness": {
+    "main_plus_white_successor_offline_sealed": true,
+    "hardware_execution_performed": false,
+    "live_source_gate_deferred_until_p2_c_ordinal1_complete_exists": true,
+    "white_successor_may_not_follow_fault_or_early_stop": true,
+    "white_successor_may_not_run_automatically": true
+  },
+  "claim_boundary": {
+    "qualified_colors": 0,
+    "qualified_gray_levels": 0,
+    "qualified_brightness_levels": 0,
+    "absolute_color_claimed": false,
+    "controller_color_equivalence_claimed": false
+  }
+}

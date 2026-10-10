@@ -1,0 +1,235 @@
+{
+  "schema_version": 1,
+  "kind": "mf1750-lightness-batch-record-template",
+  "record_is_evidence": false,
+  "template_contains_no_live_authorization": true,
+  "plan_version": "MF1750_LIGHTNESS_MASTER_V1_20260912",
+  "plan_sha256": "4ab3253a7c350c3e4c90fc3c2bdf59911c6065a3b6cf475ebe877742caae19b9",
+  "run_id": null,
+  "batch_id": null,
+  "authorized_action": null,
+  "authorization_original_text": null,
+  "authorization_recorded_at": null,
+  "requested_levels": null,
+  "requested_levels_allowed": [
+    3,
+    5,
+    10
+  ],
+  "requested_levels_applicability": "W0=not_applicable; LH1 screening/ladders only use 3, 5, or 10; this field is a level count, never a repetition count",
+  "max_per_released_action": {
+    "arm": 1,
+    "execute": 1,
+    "driver": 1,
+    "visible_refresh": 1
+  },
+  "actual_counts": {
+    "camera_saved_frames": null,
+    "camera_warmup_frames": null,
+    "relay_queries": null,
+    "relay_switches": null,
+    "icmp_echo": null,
+    "http_gets": null,
+    "http_posts": null,
+    "flash": null,
+    "reset": null,
+    "claim": null,
+    "white_recovery": null,
+    "busy_status_polls": null,
+    "arm": null,
+    "execute": null,
+    "driver": null,
+    "visible_refresh": null,
+    "retry": null,
+    "autochain": null
+  },
+  "device": {
+    "panel_id": null,
+    "controller_revisions": {
+      "CS1": null,
+      "CS2": null
+    },
+    "master_slave_roles": {
+      "CS1": null,
+      "CS2": null
+    },
+    "com_enumeration": null,
+    "exact_ipv4_mac_binding": null,
+    "post_flash_boot": null,
+    "running_elf_sha256": null,
+    "post_flash_j2_off_diagnostic": null,
+    "j2_off_expected_raw_busy": 0,
+    "j2_on_expected_idle_raw_busy": 1
+  },
+  "source_target": {
+    "source_state": null,
+    "middle_state": null,
+    "source_evidence": null,
+    "target_state": null,
+    "action_role": null,
+    "ordinal": null,
+    "prior_action_and_review": null,
+    "source_white_firmware_sha256": null,
+    "test_phase": null,
+    "waveform_internal_phase": "OPAQUE"
+  },
+  "sealed_files": {
+    "firmware_bin": null,
+    "firmware_elf": null,
+    "contract": null,
+    "descriptor": null,
+    "action": null,
+    "frame": null,
+    "controller_frames": {
+      "CS1": null,
+      "CS2": null
+    },
+    "profile_tuple": null,
+    "runner": null,
+    "runner_dependencies": []
+  },
+  "consumption": {
+    "original_claim_paths": [],
+    "claim_hashes": [],
+    "nvs_namespace": null,
+    "nvs_key": null,
+    "cursor_before": null,
+    "cursor_after": null,
+    "nvs_erased": false,
+    "new_claim_directory_to_bypass_prior_consumption": false
+  },
+  "electrical": {
+    "relay_identity": null,
+    "relay_query_receipt": null,
+    "commanded_state": null,
+    "electrical_state_proven": false,
+    "external_measurement": {
+      "instrument_id": null,
+      "channel": null,
+      "measurement_points": null,
+      "reference_ground": null,
+      "measured_at": null,
+      "raw_readings": null,
+      "units": null,
+      "acceptance_basis": null,
+      "load_connected": null,
+      "discharge_complete_evidence": null
+    }
+  },
+  "camera": {
+    "required_usb_id": "VID_32E4:PID_4801",
+    "fresh_enumeration": null,
+    "actual_instance": null,
+    "requested_settings": null,
+    "effective_before": null,
+    "effective_after": null,
+    "all_setting_writes": null,
+    "full_panel_visual_review": null,
+    "coverage_observed": null,
+    "raw_supported": null,
+    "iso_supported": null,
+    "hardware_trigger_supported": null,
+    "unsupported_or_unknown_reasons": [],
+    "setup_id": null,
+    "illumination": null,
+    "photos": [],
+    "sidecars": []
+  },
+  "analysis_dataset": {
+    "path": null,
+    "sha256": null,
+    "kind": "mf1750-lightness-test-observations-v1",
+    "generator": "tools.mf1750_lightness_test create",
+    "explicit_batch_envelope_not_analyzer_input": true,
+    "requested_levels": null,
+    "threshold_version": "MF1750_LIGHTNESS_TEST_V1_20260911",
+    "lab_space": null,
+    "data_origin": null,
+    "identity": null,
+    "observations": null
+  },
+  "environment": {
+    "temperature_raw": null,
+    "temperature_c": null,
+    "temperature_source": null,
+    "temperature_observed_at": null
+  },
+  "roi": {
+    "manifest": null,
+    "controller_local_positions": [
+      "TL",
+      "TR",
+      "BL",
+      "BR"
+    ],
+    "central_patch_fraction": 0.6,
+    "cs2_transform_evidence": null,
+    "edge_and_background_controls": null
+  },
+  "optical": {
+    "lab_space": null,
+    "calibration_evidence": null,
+    "screening_thresholds": {
+      "version": "MF1750_LIGHTNESS_TEST_V1_20260911",
+      "scope": "offline optical screening only; not a live admission gate",
+      "manufacturer_specification": false,
+      "minimum_delta_lstar": 2.0,
+      "minimum_delta_e00": 3.0,
+      "maximum_hue_difference_degrees": 5.0,
+      "minimum_chroma_exclusive": 8.0,
+      "position_p95_absolute_delta_lstar_maximum": 3.0,
+      "position_p95_delta_e76_maximum": 5.0,
+      "noise_sample_count_minimum": 10,
+      "noise_formula": "max(5*MAD, ci95_half_width) for each ROI; pair uses max of both ROIs",
+      "pair_rule": "median AND each matching quadrant; all pairs in ladder share hue",
+      "pair_noise_rule": "both delta_L and delta_E00 must exceed their own noise bound",
+      "cross_controller_delta_lstar_maximum": 3.0,
+      "cross_controller_delta_e76_maximum": 5.0,
+      "cross_controller_hue_difference_maximum": 5.0,
+      "thresholds_lowered_for_5_or_10_levels": false
+    },
+    "lifecycle_threshold_version": "MF1750_LIFECYCLE_REVIEW_V1_20260912",
+    "lifecycle_automatic_gate_implemented": false,
+    "noise_by_roi_by_metric": null,
+    "screening_results_by_controller": {
+      "CS1": null,
+      "CS2": null
+    },
+    "hold_evidence": null,
+    "fresh_reconstruction_runs": [],
+    "fresh_reconstruction_minimum": 3,
+    "discovery_counts_as_reconstruction": false,
+    "retention_target_seconds": [
+      5,
+      60,
+      600
+    ],
+    "retention_capture_time_windows_predeclared": null,
+    "retention_actual_times": null,
+    "cross_controller_result": null
+  },
+  "raw_evidence": {
+    "action": null,
+    "status": [],
+    "busy_timeline": null,
+    "operator_observations": [],
+    "derived_analysis": []
+  },
+  "judgement": {
+    "protocol": null,
+    "optical": null,
+    "candidate_lightness": null,
+    "lifecycle": null,
+    "verdict": null,
+    "qualified_count": 0,
+    "qualified_basis": null,
+    "next_unique_action": null,
+    "missing_prerequisites": [],
+    "next_action_already_authorized": null
+  },
+  "file_reference_format": {
+    "path": null,
+    "bytes": null,
+    "sha256": null
+  }
+}
