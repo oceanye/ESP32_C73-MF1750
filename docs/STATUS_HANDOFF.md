@@ -7,7 +7,20 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-10-11 10:05 +0800`
+最后更新：`2026-10-11 10:45 +0800`
+
+## 2026-10-11 10:45 +0800 波形方案完整复核与离线修正（0 刷新）
+
+本条完成代码/证据复核和现场计划修正，不新增真屏刷新、不消费 action/claim。
+
+- 修正了 L535 阶梯驱动的扩展接口：生成物现在显式封存每个 rung 的 PLL payload，驱动从所选 rung 发送 `0x30`，并离线断言 `R20[1:5] == PWR[2:6]`、`R20[6] == PLL[0]`。既有 VSH 阶梯仍保持 PLL `0x02`，行为不变；这项修正为后续 PLL A/B 变体提供正确接入点。
+- 当前生成物仍只有 VSH 6000/6600/7200 三个 rung，三者 PLL 都是 `0x02`；A1 `0x03` 和 B1 `+6.9V` 尚未生成专用固件，不能把本次离线修正误当成现场测试已就绪。
+- 明确当前实际 runtime 顺序：`PSR → PWR + wait → PLL → TRES → CS1/CS2 各自 E9 → R20/535 → R21/704 FF`。格式注册表目前只覆盖 E9/R20，R21 仍需在抓包和 manifest 中单独记录。
+- 重新划分风险：WF20/WF23 是跨工程 9×8×11 opaque profile，不能切成当前 535B 的六个颜色 category，也不能把 799B/H3 或 record 直接嵌入当前路径；category/record 真屏路线暂列 NO-GO，先做 legacy 535B 离线差分。
+- record 语义审计因封存 `EDP_init.c` 尺寸/SHA 不匹配暂不可复跑；不放宽 pin，不把旧 corpus 结论升级为字段语义。
+- 现有 offline contract 的单组 `vsh/vsl` 摘要只映射 LV2，不能代替完整 PWR 四路请求值；A1/B1 manifest 必须扩展记录四路电压和旧/当前 loader source 身份。
+- 第一轮现场上限修正为 6 刷，但目前只是 conditional 排程：P0/被动捕获 0 刷 → C0 active 白清+条纹 2 刷 → A1 PLL `0x02→0x03` 2 刷 → B1 单轴 VSH_LV2 `+6.9V` 2 刷；A1/B1 专用 bundle、固件和被动捕获闭环尚未生成，未获得上机资格；没有方向性信号就停止扩展。
+- 回归：`tests.test_runtime_waveform_l535_table_builder` 16/16 通过；`check_repo_contract.py` passed=true、hardware_tested=false。仅保留既有 manifest 时间警告。
 
 ## 2026-10-11 10:05 +0800 调色板 v2 重标定**被 schema 拒发**（0 刷新）：日光批端点暴露色域坍缩——品红已比黑暗、黄无彩度
 
@@ -29,6 +42,15 @@
 - **下一入口**：①绿漂移机理（面板老化 vs LUT 状态漂移——同参照物跨日重拍定性）；②调色板重标定批（PAL1 列帧日光重测）；③朝向机理函证+MISO backlog；④指纹格设计教训入档。
 - 回归：无 host 代码变更。
 
+## 2026-10-11 09:30 +0800 波形挖掘多方案策划（离线）
+
+已建立 [`MF1750_WAVEFORM_EXPLORATION_OPTIONS_20261011.md`](MF1750_WAVEFORM_EXPLORATION_OPTIONS_20261011.md)，本条不新增真屏刷新、不消费 action/claim。
+
+- 方案集按信息价值和风险排序：P0 → PLL 时间尺度 → PWR 单轴 → vendor profile/category 替换 → 单 record → 历史预处理 → 被动时序捕获 → 时间响应测量。
+- 第一轮推荐只做：一次 P0/被动捕获、PLL `0x02↔0x03` A/B、一个 VSH_LV2 或 VSL_LV2 单轴候选；不重复 MAP-v2、6600/7200 VSH、同码剂量和未知字节盲扫。
+- `WF20_25/WF23_25` 仅作为跨 profile 结构差分候选，必须先离线审计，再以单 category、牺牲屏和可回退固件方式验证，不视为当前面板授权波形。
+- 所有直接中间态必须通过全宽均匀、与全部端点有足够色差、0/30/60/300s 稳定和二次复现四道门。
+
 ## 2026-10-11 07:50 +0800 DITHER_ATLAS 批完成（2 刷）：图卡上屏可读，本 session 定量不可信（系统性暗蓝移+格点失锁），灯具灭事件零刷新恢复成功
 
 - **本轮新增刷新=2（OTP 白清 + atlas 帧），qualified=0/256，无重发；回刷生产已补做并 verify pass。** 批 [`DITHER_ATLAS_20261010_V1`](../.test-output/hardware/DITHER_ATLAS_20261010_V1/) manifest canonical **`17d3f9e7326783c5b861da067318af464eeedfe5ca30d4a681fbadaf4d9078bf`**（87 证据自封）。终态：屏保留 atlas 帧，relay OFF，MCU 生产。
@@ -37,6 +59,16 @@
 - **核心交付（每色有效明度级数）如实降级**：渲染本身分级可见（照片清晰），但本 session 系统性暗蓝移（连续第四次 session 复现，跨光源）+ 白底不白导致格点失锁 → 逐格 Lab 不可信，最佳估计级数仅记录不判定（见批次 `offline/dither-atlas-measured.json`）。**抖动路线本身未被证伪**——需要日光类照明或灯光谱重标定后再测。
 - **下一入口**：①面板老化/相机漂移鉴别（同一已知参照物跨日重拍即可定性，0 刷新）；②日光窗口重测 atlas（帧在屏上/离线包在案，2 刷即可重测）；③朝向机理函证+MISO backlog。
 - 回归：新增 `tools/mf1750_dither_atlas_frame_build.py` + 9 项测试全过；既有套件与 contract 干净保持。
+
+## 2026-10-11 07:30 +0800 无抖动直接波形测试交接（离线）
+
+已建立 [`MF1750_DIRECT_WAVEFORM_TEST_HANDOFF_20261011.md`](MF1750_DIRECT_WAVEFORM_TEST_HANDOFF_20261011.md)，供用户现场安排下一批测试。本条不新增真屏刷新、不消费 action/claim。
+
+- 主线冻结为：P0 硬件确认 → S0 初始化序列 manifest → S1 当前序列/vendor-like A/B → W1 单变量 LUT/record 波形实验；抖动仅保留为备用路线。
+- `NEW_INTERMEDIATE` 必须是全宽均匀、与全部端点有足够 `ΔE00` 距离、0/30/60/300 s 稳定并能独立复现的直接波形态；端点别名、色相漂移、残留和几何异常不计入。
+- 当前 6000 mV 仅可作为白清干净后的补测；6600/7200 mV、MAP-v2 和 identical-repeat 不再重复。
+- 做硬件读回前先确认共享 `SI0/SDA` 的方向和引脚，不默认存在独立 MISO；所有未知 record/命令禁止盲扫。
+- 现场完成 P0 后再决定是否进入 S1；任何 BUSY、DRF、照明或几何前置失败都停止本批并封存证据。
 
 ## 2026-10-10 21:35 +0800 VSH 电压阶梯批完成（6 刷）：**6600↔7200 统计无差异（max ΔE00 0.66），电压轴暂无新色**；6000 档被其慢速白清污染
 
