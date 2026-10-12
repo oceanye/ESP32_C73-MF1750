@@ -7,7 +7,15 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-10-12 11:07 +0800`
+最后更新：`2026-10-13`
+
+## 2026-10-13 波形主线阶段 A（离线基线核验）**PASS 全绿**：A1/B1 确定性复现 + 双 env 编译 + 定向测试 79 过——真屏阶梯前的离线基线钉死（0 刷新）
+
+- **handoff 合入**：`docs/MF1750_NEXT_HANDOFF_20261013.md`（分支 `handoff-waveform-next-20261013`）已 fast-forward 合入 main 并推送，main=`3b47633`。后续计划按该 handoff 四阶段（A 离线核验 → B 被动捕获 → C 相机固定 → D 同 session 单变量阶梯）执行。
+- **阶段 A 结果**（agent-6 执行，纯离线 0 刷写）：①`mf1750_wf_ab_bundle_build.py` 重跑逐字节不变（git status 干净）；②A1/B1 两个 PlatformIO env 编译 SUCCESS（含 clean 后全量重编，bin sha 不变）；③`check_repo_contract.py` passed=true，定向 pytest（frame_tool + repo_contract + runtime_waveform_l535）**79 passed + 52 subtests 0 失败**。
+- **SHA-256 钉死**（与 10-11 pinned 值零差异）：生产 bin `ba59c3d6…`；A1 bin `215caed7…`（R20 `64876bce…` / PWR `f8f668ee…` / PLL `084fed08…`=0x03）；B1 bin `64b356c2…`（R20 `d0ede719…` / PWR `e2a7ca9a…` / PLL `dbc1b4c9…`=0x02）。备注：生成器内容 hash（LF）`09f70d97…` vs 磁盘文件（CRLF）`84d46e0b…` 为编码差，跨平台核对统一用文件字节 sha。
+- **GitHub 失败检查查明**（handoff 阻断项之一）：`1aa7dec` 的 Host tests job 失败原因是 CI runner 缺 PIL/playwright（`test_application_pipeline` 2 例 + `test_application_browser_e2e` 导入失败），**非波形代码回归**；PlatformIO build 检查通过。
+- **下一入口**：①阶段 C 前置——等用户恢复相机取景（四角全入画、固定曝光/照明）后重钉四边形过 P0；②阶段 D 同 session 阶梯：OTP 白清基线 → L535 active 复现 → VSH 6600 → 7200 → A1 → B1，命中藏青/DRF 超门/BUSY 异常/光学门失败即停；③A1/B1 维持冻结（阶段 B 被动捕获无逻辑分析仪工具链）。
 
 ## 2026-10-12 11:07 +0800 VSH6600 白清裕度复验 **PARTIAL**：+600mV 改变了失败签名（藏青→灰米）但未恢复白——面板漂移已越过 6600（2 刷）
 
