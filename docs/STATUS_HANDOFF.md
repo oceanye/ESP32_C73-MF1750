@@ -9,6 +9,16 @@
 
 最后更新：`2026-10-17 21:19 +0800`
 
+## 2026-10-17 离线 LUT 结构差分：DRF 双峰不能由公开表结构解码；最强文档化线索=PSR.LUT_EN；后续变体全部汇入被动捕获门（0 刷新）
+
+- **批次 [`LUT_STRUCT_DIFF_20261017_V1`](../.test-output/offline/LUT_STRUCT_DIFF_20261017_V1/)（analysis.md + duration-arithmetic.json，manifest sha `142df036…`），纯离线，未改 src/。**
+- **反推算术**：慢 bin 32671ms@43Hz≈1404.85 有效帧；同帧数 50Hz→28097ms（≠21691）；commented 若 50Hz 达 21691ms 需 1084.55 帧（少 22.8%），但其非 FF group 反而更多（48 vs 40）——**"group 数+PLL 档位"模型证伪**。1.506≈65/43 仅为数字巧合（0x08 不在手册 FR 档位表）。**同一 active 表+同 PLL=0x02 历史上出过 21691 快 bin → 静态表内容不唯一决定 DRF。**
+- **最强文档化机制线索**：PSR.LUT_EN——生产 0x69=OTP、L535 runtime 0xE9=MCU，选择 PON/DRF 用 OTP 还是 MCU 波形设置；VSH_LV 只是电压轨不是时长字段。
+- **White group 6/7**：全 FF 是否 skip/end/padding 无文档证据，不能命名"清场白阶段缺失"；group 6 单 11B 替换可审计但语义安全未证明，NOT_QUALIFIED，首次不得 6+7 同时替换。
+- **候选排序**：①被动捕获 OTP vs active 既有序列（PSR/PLL 写入次数与最后值、R20/R21 hash、E9 payload、BUSY 时序）；②A1 PLL 43→50Hz（捕获后；预注册预期 drf 28097ms±5%——缩放但仍藏青=时间尺度非主轴，仍 32671=PLL/执行路径假设不符）；③White group 6 单 record 替换（捕获后另行授权；白场恢复门 L≥B_L−5、std_L≤5、drf±5%，drf>34305 即停）；④B1 仅在前述路径出现可解释响应后再做。
+- **决策点（待用户）**：无逻辑分析仪则候选①②③全堵；要么提供捕获工具链，要么用户明确授权豁免捕获门做 A1 单变量实验（可逆、预注册预期），否则波形变体线暂停。
+- **下一入口**：用户裁定捕获门；A1/B1/group6 均未上屏，生产 OTP 白场持留。
+
 ## 2026-10-17 21:19 +0800 同 session VSH 阶梯 **LV_AXIS_EXHAUSTED_LE_7200**：7200 仍藏青+慢 DRF，升压路线封存，转 LUT 结构差分（5 刷）
 
 - **批次 [`WF_LADDER_20261013_V1`](../.test-output/hardware/WF_LADDER_20261013_V1/)（目录名沿用任务书日期，实际执行 10-17），`manifest-final.json` sha `e04443ff…`，刷新 5/预算 6（阶梯 4 + OTP 恢复 1），qualified=0。** A1/B1 未刷，无 OTP 写入。
