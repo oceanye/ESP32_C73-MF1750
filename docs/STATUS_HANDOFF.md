@@ -7,7 +7,15 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-10-18 19:54 +0800`
+最后更新：`2026-10-18 20:21 +0800`
+
+## 2026-10-18 20:21 +0800 二分 R2B **NAVY**：VCOM 单类不充分，紫灰消失回藏青——必要内容在 Black/White 或需跨类交互（3 刷）
+
+- **批次 [`WF_BISECT_R2B_20261018_V1`](../.test-output/hardware/WF_BISECT_R2B_20261018_V1/)，manifest sha `c315f684…`，刷新 3/3、刷写 2/2；离线包 manifest `fd1e1f69…`。** 系列授权第三刀。
+- **变体**：仅 VCOM records [7:95] commented（58B 差异），其余全 active。**bin `0b30a838…`，R20 `fc06e860…`。** tag `MF1750_WF_BISECT_R2B_20261018`。
+- **结果**：drf 32671；藏青（L26.1/a11.0/b-32.3，std_L 2.40，300s 极稳定）——与 active 签名一致。**VCOM-only 阴性 + R2A 三类联合阳性 → 必要内容在 Black/White，或 VCOM 需与 Black/White 交互。**
+- **下一刀 R2C（系列授权内）**：Black+White 两类联合 commented，VCOM 与其余 active；紫灰→拆 Black/White 单类；藏青→需 VCOM↔Black/White 跨类交互。
+- **收尾**：回生产预检 PASS，OTP 恢复 21691 白场，relay OFF，busy=0。
 
 ## 2026-10-18 19:54 +0800 二分 R2A **MAUVE**：紫灰必要内容锁定 VCOM/Black/White 三类（[7:271]，185B 差异）（3 刷）
 
