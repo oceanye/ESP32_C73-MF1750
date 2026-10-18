@@ -7,7 +7,15 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-10-18 10:27 +0800`
+最后更新：`2026-10-18 19:27 +0800`
+
+## 2026-10-18 19:27 +0800 二分第一刀 R1 **MAUVE**：records 内容决定紫灰，active 表头电压/PLL 脱罪——二分进入 records 内部（3 刷）
+
+- **批次 [`WF_BISECT_R1_20261018_V1`](../.test-output/hardware/WF_BISECT_R1_20261018_V1/)，manifest sha `856b3ccd…`，刷新 3/3、刷写 2/2；离线包同名 manifest `2028fc2e…`。** 用户"授权二分"系列第一刀。
+- **变体**：R20 表头 [0:7] 全 active（PLL=0x02），六 category records [7:535] 全 commented；385B 差异全在 records。双断言+编译+contract+79 测试全绿。**bin `2b9164e2…`，R20 `241a4402…`，PWR `f8f668ee…`，PLL `dbc1b4c9…`。** tag `MF1750_WF_BISECT_R1_20261018`。四边形重钉 `[(0.4100,0.1370),(0.8882,0.1203),(0.9107,0.5233),(0.3503,0.4853)]`。
+- **结果**：R1 drf 32661（PLL0x02 预期内）；场色紫灰（t0 L57.8/a6.5/b-10.2→t300 L55.3/a8.6/b-10.2，std_L≤2.33），复现门全过。**整表紫灰在 active 表头下同样出现→records 内容充分，表头电压/VCOM/PLL 均脱罪。** drf 跟随 PLL（32661@0x02 vs 28131@0x03）第四次闭环。
+- **下一刀 R2A（系列授权内直接推进）**：active 表头不变，仅 VCOM+Black+White 三类 records 用 commented，Yellow+Red+Power 保持 active；仍紫灰→在三类内继续二分；紫灰消失→必要内容在 Yellow/Red/Power 或跨 category 交互。
+- **收尾**：回生产预检 PASS，OTP 恢复 21681 白场，relay OFF，busy=0。
 
 ## 2026-10-18 紫灰场独立复现 **REPRODUCED_MAUVE_CANDIDATE_INTERMEDIATE**：波形路线首个立项候选中间态——均匀、稳定、drf 逐毫秒一致（3 刷）
 
