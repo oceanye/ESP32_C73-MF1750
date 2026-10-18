@@ -7,7 +7,13 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-10-18 22:51 +0800`
+最后更新：`2026-10-18 22:54 +0800`
+
+## 2026-10-18 22:54 +0800 构建线交付：White records 4–7 剩余 12 组合全部预构建（0 刷新）——4-bit 全映射真屏队列开跑
+
+- **离线包 [`WF_WMASK_BUNDLES_20261018_V1`](../.test-output/offline/WF_WMASK_BUNDLES_20261018_V1/)，manifest canonical sha `25c21d27…`。** 通用生成器 `tools/mf1750_wf_wmask_build.py`（mask bit0/1/2/3=records 4/5/6/7）+ O_EXCL 打包器；12 变体=mask 01/02/05/06/07/08/09/0A/0B/0C/0D/0E（排除 00=active、03=R2G、04=G6、0F=R2F）。tag 统一 `MF1750_WF_WMASK_<mask>_20261018`，env `…-wf-wmask-<mask 小写>`。
+- **验证**：12/12 env 编译 SUCCESS（每变体断言：掩码内==commented、其余 535B==active、PWR/PLL 镜像、R21 全 FF）；生产重编 `ba59c3d6…` 零差异；contract passed=true（11/11）；定向 pytest **146 passed+52 subtests**。
+- **队列（精简协议首批）**：批 1=0C{6,7}、批 2=01{4}、批 3=02{5}、批 4=08{7}（全基线复核）→双组合 05/09/06/0A→三组合 07/0B/0D/0E。基线只拍 t0、每 4 批全检；扫描期新稳态记"未复现观测"，复现安排在映射完成后对重点色统一做。
 
 ## 2026-10-18 22:51 +0800 紫红独立复现 **REPRODUCED_PURPLE_RED**：第二候选中间态立项；用户批准精简协议，多 agent 流水线启动（3 刷）
 
