@@ -7,7 +7,15 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-10-18 21:13 +0800`
+最后更新：`2026-10-18 21:38 +0800`
+
+## 2026-10-18 21:38 +0800 二分 R2E **NAVY**：White records 0–3 不充分——必要内容在 records 4/5/7 或跨 record 交互（3 刷）
+
+- **批次 [`WF_BISECT_R2E_20261018_V1`](../.test-output/hardware/WF_BISECT_R2E_20261018_V1/)，manifest sha `859d8925…`，刷新 3/3、刷写 2/2；离线包 manifest `088865b7…`。** 系列授权第六刀。
+- **变体**：仅 White records 0–3 [183:227] commented（30B 差异），其余全 active。**bin `d6c5bed8…`，R20 `8bf31839…`。** tag `MF1750_WF_BISECT_R2E_20261018`。
+- **结果**：drf 32671；藏青（L33.0/a11.7/b-27.0，std_L 1.66）。**records 0–3 阴性。**
+- **下一刀 R2F（系列授权内）**：White records 4–7 联合 commented；紫灰→后半组充分再拆；藏青→需前后半跨 record 交互。
+- **收尾**：回生产预检 PASS，OTP 恢复 21691 白场，relay OFF，busy=0。
 
 ## 2026-10-18 21:13 +0800 二分 R2D **MAUVE**：White 单类充分——紫灰必要内容收束到 White 类 63B（3 刷）
 
