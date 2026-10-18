@@ -7,7 +7,16 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-10-17 21:58 +0800`
+最后更新：`2026-10-18 09:11 +0800`
+
+## 2026-10-18 09:11 +0800 White group 6 单 record 替换 **NO_CHANGE**：藏青+慢 DRF 依旧——group 6 非白恢复关键段，单 record 修复路线受挫（3 刷）
+
+- **批次 [`WF_G6_WHITE_20261017_V1`](../.test-output/hardware/WF_G6_WHITE_20261017_V1/)，manifest sha `d3b3d8f7…`，刷新 3/3、刷写 2/2；离线包同名目录（offline/）manifest `629db8fa…`。** 用户授权（"授权"）仅限 group 6 单 record。
+- **变体**：R20[249:260]（零基 White group 6，对厂商源码 White-GROUP7 标签）active 11×FF → commented `EF FF FF EF EF EF EF 6F FF ED EF`；其余全 active，PLL=0x02 不带入 A1。离线+编译期断言（535B 逐位、diff 仅该 11B、PWR/PLL 镜像）；新 env `esp32-s3-devkitc-1-wf-g6-white` 编译 SUCCESS；tag `MF1750_WF_G6_WHITE_20261017` 入白名单；contract passed=true，定向 79 passed+52 subtests；生产 bin 重编零差异。**变体 bin `847048fd…`，R20 `7c12c68f…`，PWR `f8f668ee…`，PLL `dbc1b4c9…`。**
+- **结果**：OTP 基线 21691 白场 L75.1；**G6 变体 drf 32681（慢 bin）+藏青**（t0 L31.2/b-27.8，t300 L28.8；照明 ratio 1.2102 故 L 高于 A1 批）；无新稳定场色。判决 **NO_CHANGE_GROUP6_NOT_WHITE_RECOVERY_KEY**。OTP 恢复 21691 白场。
+- **累计排除**：VSH_LV 电压轴（6000–7200）、PLL 时间轴（43/50 精确缩放但藏青不变）、White group 6 单 record。剩余：group 7（仍 FF）、White 类别其余 record、表头其他电压轨（VSL_LV/VSH_LV2）、PSR 执行路径。
+- **收尾**：回生产 `ba59c3d6…` 预检 PASS，relay OFF，busy=0，白场持留。
+- **下一入口（待用户裁定）**：建议**整表 commented 方向探针**（表身份单变量，多字节但决定性：白→再二分定位；藏青→active/commented 内容差整体脱罪，转 PSR/面板态）；或继续 G7 单 record 最小步进。
 
 ## 2026-10-17 21:58 +0800 A1 PLL 50Hz 单变量实验 **SCALED_TIME_AXIS 精确命中**：drf 28131ms vs 预注册 28097±5%（偏差 34ms）——PLL 生效、帧数固定，但藏青持续，时间轴非白恢复主轴（3 刷）
 
