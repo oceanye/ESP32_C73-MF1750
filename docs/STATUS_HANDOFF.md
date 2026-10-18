@@ -7,7 +7,15 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-10-18 19:27 +0800`
+最后更新：`2026-10-18 19:54 +0800`
+
+## 2026-10-18 19:54 +0800 二分 R2A **MAUVE**：紫灰必要内容锁定 VCOM/Black/White 三类（[7:271]，185B 差异）（3 刷）
+
+- **批次 [`WF_BISECT_R2A_20261018_V1`](../.test-output/hardware/WF_BISECT_R2A_20261018_V1/)，manifest sha `3d827f81…`，刷新 3/3、刷写 2/2；离线包 manifest `106e3205…`。** 系列授权第二刀。
+- **变体**：表头/Yellow/Red/Power 全 active，仅 VCOM+Black+White records [7:271] commented；PLL=0x02。**bin `3583e691…`，R20 `4aa70b34…`。** tag `MF1750_WF_BISECT_R2A_20261018`。四边形重钉 `[(0.3960,0.1707),(0.8648,0.1577),(0.8890,0.5557),(0.3327,0.5147)]`。
+- **结果**：drf 32671；紫灰（t0 L58.6/a6.8/b-11.5→t300 L55.9/a8.9/b-11.7，std_L≤2.36），门全过。**Yellow/Red/Power 与紫灰无关。**
+- **下一刀 R2B（系列授权内）**：仅 VCOM category commented，其余全 active；紫灰→VCOM 单类充分；消失→必要内容在 Black/White 或跨类交互。
+- **收尾**：回生产预检 PASS，OTP 恢复 21681 白场，relay OFF，busy=0。
 
 ## 2026-10-18 19:27 +0800 二分第一刀 R1 **MAUVE**：records 内容决定紫灰，active 表头电压/PLL 脱罪——二分进入 records 内部（3 刷）
 
