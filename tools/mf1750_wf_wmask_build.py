@@ -10,9 +10,11 @@ registered GrayExt bases 0E/0C/0D.  Their family labels 1E/1C/1D mean
 "low-nibble base plus the whole records 0-3 group"; they are not reinterpreted
 as an 8-bit bitmask.  A mutually exclusive single record-add capability is
 registered only for base 0E with labels 0E_R0/0E_R1/0E_R2/0E_R3, each meaning
-base 0E plus exactly one records 0-3 member, again not a bitmask.
-The generator deliberately excludes the active baseline and the already-built
-R2G, G6, R2F, and R2D variants.
+base 0E plus exactly one records 0-3 member, again not a bitmask.  A further
+mutually exclusive record-subset capability is registered only for base 0E
+with labels 0E_R0R1/0E_R0R2/0E_R0R3, meaning base 0E plus exactly that pair;
+it likewise is not a bitmask.  The generator deliberately excludes the active
+baseline and the already-built R2G, G6, R2F, and R2D variants.
 
 No device, network, relay, camera, serial, or flashing access.
 """
@@ -83,6 +85,25 @@ SINGLE_RECORD_ADD_VARIANTS = {
     },
 }
 SINGLE_RECORD_ADD_RECORDS = tuple(SINGLE_RECORD_ADD_VARIANTS)
+RECORD_SUBSET_ADD_BASE_MASK = 0x0E
+RECORD_SUBSET_ADD_VARIANTS = {
+    (0, 1): {
+        "records": frozenset({0, 1, 5, 6, 7}),
+        "diff_bytes": 36,
+        "r20_sha256": "01938613895b88ba779089e5ede7b572b0a1cfdc294bccd80fcd5bca56b6de45",
+    },
+    (0, 2): {
+        "records": frozenset({0, 2, 5, 6, 7}),
+        "diff_bytes": 36,
+        "r20_sha256": "9d8f1eb6f86022d639e1c0b38a5e63838ab10fffc315022a2896b6aacacf98d6",
+    },
+    (0, 3): {
+        "records": frozenset({0, 3, 5, 6, 7}),
+        "diff_bytes": 35,
+        "r20_sha256": "7c93c6b1532bbbee4e71cffd8d8e83056b321be1ab04fd1dc039906daa5d717b",
+    },
+}
+RECORD_SUBSET_ADD_SUBSETS = tuple(RECORD_SUBSET_ADD_VARIANTS)
 WHITE_CATEGORY_START = 183
 WHITE_RECORDS_4_7_START = 227
 WHITE_CATEGORY_END = 271
@@ -107,46 +128,75 @@ def mask_label(mask: int) -> str:
 
 
 def family_label(
-    mask: int, group_add: bool = False, record_add: int | None = None
+    mask: int,
+    group_add: bool = False,
+    record_add: int | None = None,
+    record_subset: tuple[int, ...] | None = None,
 ) -> str:
+    if record_subset is not None:
+        return f"{mask_label(mask)}_{''.join(f'R{record}' for record in record_subset)}"
     if record_add is not None:
         return f"{mask_label(mask)}_R{record_add}"
     return f"1{mask:X}" if group_add else mask_label(mask)
 
 
-def slug(mask: int, group_add: bool = False, record_add: int | None = None) -> str:
-    return f"wf_wmask_{family_label(mask, group_add, record_add)}"
+def slug(
+    mask: int,
+    group_add: bool = False,
+    record_add: int | None = None,
+    record_subset: tuple[int, ...] | None = None,
+) -> str:
+    return f"wf_wmask_{family_label(mask, group_add, record_add, record_subset)}"
 
 
-def tag(mask: int, group_add: bool = False, record_add: int | None = None) -> str:
-    date = GRAYEXT_DATE if group_add or record_add is not None else DATE
-    return f"MF1750_WF_WMASK_{family_label(mask, group_add, record_add)}_{date}"
+def tag(
+    mask: int,
+    group_add: bool = False,
+    record_add: int | None = None,
+    record_subset: tuple[int, ...] | None = None,
+) -> str:
+    date = GRAYEXT_DATE if group_add or record_add is not None or record_subset is not None else DATE
+    return f"MF1750_WF_WMASK_{family_label(mask, group_add, record_add, record_subset)}_{date}"
 
 
-def env_name(mask: int, group_add: bool = False, record_add: int | None = None) -> str:
-    env_label = family_label(mask, group_add, record_add).lower()
-    if record_add is not None:
+def env_name(
+    mask: int,
+    group_add: bool = False,
+    record_add: int | None = None,
+    record_subset: tuple[int, ...] | None = None,
+) -> str:
+    env_label = family_label(mask, group_add, record_add, record_subset).lower()
+    if record_add is not None or record_subset is not None:
         env_label = env_label.replace("_", "-")
     return f"esp32-s3-devkitc-1-wf-wmask-{env_label}"
 
 
 def selected_records(
-    mask: int, group_add: bool = False, record_add: int | None = None
+    mask: int,
+    group_add: bool = False,
+    record_add: int | None = None,
+    record_subset: tuple[int, ...] | None = None,
 ) -> list[int]:
-    if group_add and record_add is not None:
-        raise ValueError("group_add and record_add are mutually exclusive")
+    selected_modes = int(group_add) + int(record_add is not None) + int(record_subset is not None)
+    if selected_modes > 1:
+        raise ValueError("group_add, record_add, and record_subset are mutually exclusive")
     low_records = {4 + bit for bit in range(4) if mask & (1 << bit)}
     if group_add:
         return sorted(low_records | GROUP_ADD_RECORDS)
     if record_add is not None:
         return sorted(low_records | {record_add})
+    if record_subset is not None:
+        return sorted(low_records | set(record_subset))
     return sorted(low_records)
 
 
 def source_paths(
-    mask: int, group_add: bool = False, record_add: int | None = None
+    mask: int,
+    group_add: bool = False,
+    record_add: int | None = None,
+    record_subset: tuple[int, ...] | None = None,
 ) -> dict[str, Path]:
-    stem = slug(mask, group_add, record_add)
+    stem = slug(mask, group_add, record_add, record_subset)
     return {
         "include": ROOT / f"src/generated/spd1657_{stem}.inc",
         "driver": ROOT / f"src/{stem}_epd_driver.cpp",
@@ -191,14 +241,17 @@ def _render_include(
     report: dict,
     group_add: bool = False,
     record_add: int | None = None,
+    record_subset: tuple[int, ...] | None = None,
 ) -> str:
-    namespace = slug(mask, group_add, record_add)
-    records = "+".join(str(record) for record in selected_records(mask, group_add, record_add))
+    namespace = slug(mask, group_add, record_add, record_subset)
+    records = "+".join(
+        str(record) for record in selected_records(mask, group_add, record_add, record_subset)
+    )
     spans = ", ".join(
         f"[{start}:{end}]"
         for start, end in (
             _record_span(record)
-            for record in selected_records(mask, group_add, record_add)
+            for record in selected_records(mask, group_add, record_add, record_subset)
         )
     )
     if group_add:
@@ -207,6 +260,16 @@ def _render_include(
             f"// White record 4/5/6/7 from base mask 0x{mask_label(mask)}.  Family label",
             f"// {family_label(mask, True)} additionally selects the whole records 0-3 group;",
             "// it is not an 8-bit bitmask.  Final commented White records are",
+            f"// {records} at {spans}; every other R20 byte is exactly active.",
+            "// PWR and PLL=0x02 are exactly active.  R21/runtime stay unchanged.",
+        ]
+    elif record_subset is not None:
+        comments = [
+            "// Generated by tools/mf1750_wf_wmask_build.py.  Mask bit 0/1/2/3 selects",
+            f"// White record 4/5/6/7 from base mask 0x{mask_label(mask)}.  Family label",
+            f"// {family_label(mask, False, None, record_subset)} additionally selects exactly White records "
+            f"{'+'.join(str(record) for record in record_subset)};",
+            "// it is not a bitmask.  Final commented White records are",
             f"// {records} at {spans}; every other R20 byte is exactly active.",
             "// PWR and PLL=0x02 are exactly active.  R21/runtime stay unchanged.",
         ]
@@ -240,6 +303,12 @@ def _render_include(
     ]
     if group_add:
         lines.append("static constexpr bool kAddWhiteRecords0To3 = true;")
+    elif record_subset is not None:
+        lines.append(
+            "static constexpr std::uint8_t kAddedWhiteRecords[2] = {"
+            + ", ".join(f"0x{record:02X}" for record in record_subset)
+            + "};"
+        )
     elif record_add is not None:
         lines.append(f"static constexpr std::uint8_t kAddedWhiteRecord = 0x{record_add:02X};")
     lines.extend([
@@ -264,10 +333,13 @@ def _render_driver(
     runtime_tail: str,
     group_add: bool = False,
     record_add: int | None = None,
+    record_subset: tuple[int, ...] | None = None,
 ) -> str:
-    label = family_label(mask, group_add, record_add)
-    stem = slug(mask, group_add, record_add)
-    records = "+".join(str(record) for record in selected_records(mask, group_add, record_add))
+    label = family_label(mask, group_add, record_add, record_subset)
+    stem = slug(mask, group_add, record_add, record_subset)
+    records = "+".join(
+        str(record) for record in selected_records(mask, group_add, record_add, record_subset)
+    )
     guard = f"WfWmask{label}"
     if group_add:
         family_comment = (
@@ -281,6 +353,29 @@ def _render_driver(
         use_commented = (
             "(index >= 183 && index < 227 && l535_variant::kAddWhiteRecords0To3) ||\n"
             "         (index >= 227 && index < 271 &&\n"
+            "          ((l535_variant::kWhiteRecordMask >> ((index - 227) / 11)) & 0x01U) != 0)"
+        )
+    elif record_subset is not None:
+        subset_conditions = []
+        for index, record in enumerate(record_subset):
+            start, end = _record_span(record)
+            subset_conditions.append(
+                f"(index >= {start} && index < {end} &&\n"
+                f"          l535_variant::kAddedWhiteRecords[{index}] == 0x{record:02X})"
+            )
+        family_comment = (
+            f"// Family label {label} means base 0x{mask_label(mask)} plus exactly White records "
+            f"{'+'.join(str(record) for record in record_subset)};\n"
+            "// it is not a bitmask.\n"
+        )
+        family_assert = (
+            f"static_assert(l535_variant::kAddedWhiteRecords[0] == 0x{record_subset[0]:02X} &&\n"
+            f"                  l535_variant::kAddedWhiteRecords[1] == 0x{record_subset[1]:02X},\n"
+            '              "White record-subset identities are not set");\n'
+        )
+        use_commented = (
+            " ||\n         ".join(subset_conditions)
+            + " ||\n         (index >= 227 && index < 271 &&\n"
             "          ((l535_variant::kWhiteRecordMask >> ((index - 227) / 11)) & 0x01U) != 0)"
         )
     elif record_add is not None:
@@ -403,14 +498,17 @@ def _render_main(
     template: str,
     group_add: bool = False,
     record_add: int | None = None,
+    record_subset: tuple[int, ...] | None = None,
 ) -> str:
     old_tag = "MF1750_WF_BISECT_R2G_20261018"
     old_boot = "WF bisection R2G: commented White records 4+5"
-    records = "+".join(str(record) for record in selected_records(mask, group_add, record_add))
-    new_boot = f"WF WMASK {family_label(mask, group_add, record_add)}: commented White records {records}"
+    records = "+".join(
+        str(record) for record in selected_records(mask, group_add, record_add, record_subset)
+    )
+    new_boot = f"WF WMASK {family_label(mask, group_add, record_add, record_subset)}: commented White records {records}"
     if template.count(old_tag) != 1 or template.count(old_boot) != 1:
         raise RuntimeError("R2G main template identity markers changed")
-    return template.replace(old_tag, tag(mask, group_add, record_add)).replace(old_boot, new_boot)
+    return template.replace(old_tag, tag(mask, group_add, record_add, record_subset)).replace(old_boot, new_boot)
 
 
 def _write_generated(path: Path, content: str) -> None:
@@ -426,10 +524,24 @@ def build_offline_variant(
     mask: int,
     group_add: bool = False,
     record_add: int | None = None,
+    record_subset: tuple[int, ...] | None = None,
 ) -> tuple[dict, dict[str, str]]:
-    if group_add and record_add is not None:
-        raise ValueError("group_add and record_add are mutually exclusive")
-    if record_add is not None:
+    selected_modes = int(group_add) + int(record_add is not None) + int(record_subset is not None)
+    if selected_modes > 1:
+        raise ValueError("group_add, record_add, and record_subset are mutually exclusive")
+    if record_subset is not None:
+        if (
+            mask != RECORD_SUBSET_ADD_BASE_MASK
+            or record_subset not in RECORD_SUBSET_ADD_VARIANTS
+        ):
+            raise ValueError(
+                "record-subset add is registered only for base 0x0E and subsets "
+                "(0,1), (0,2), (0,3)"
+            )
+        if set(selected_records(mask, False, None, record_subset)) != \
+                RECORD_SUBSET_ADD_VARIANTS[record_subset]["records"]:
+            raise RuntimeError(f"record-subset add base 0x{mask:02X} record set drifted")
+    elif record_add is not None:
         if mask != SINGLE_RECORD_ADD_BASE_MASK or record_add not in SINGLE_RECORD_ADD_VARIANTS:
             raise ValueError(
                 "single record-add is registered only for base 0x0E and records 0, 1, 2, 3"
@@ -447,8 +559,8 @@ def build_offline_variant(
             raise RuntimeError(f"GrayExt base 0x{mask:02X} record set drifted")
     elif mask not in PENDING_MASKS:
         raise ValueError(f"mask 0x{mask:02X} is excluded or invalid: {EXCLUDED_MASKS.get(mask)}")
-    records = selected_records(mask, group_add, record_add)
-    label = family_label(mask, group_add, record_add)
+    records = selected_records(mask, group_add, record_add, record_subset)
+    label = family_label(mask, group_add, record_add, record_subset)
     active = builder.from_reference("active").to_bytes()
     commented = builder.from_reference("commented").to_bytes()
     if len(active) != R20_BYTES or len(commented) != R20_BYTES:
@@ -504,6 +616,8 @@ def build_offline_variant(
     expected_family = None
     if group_add:
         expected_family = GRAYEXT_VARIANTS[mask]
+    elif record_subset is not None:
+        expected_family = RECORD_SUBSET_ADD_VARIANTS[record_subset]
     elif record_add is not None:
         expected_family = SINGLE_RECORD_ADD_VARIANTS[record_add]
     if expected_family is not None:
@@ -523,8 +637,8 @@ def build_offline_variant(
         "commented_records": records,
         "active_white_records": [record for record in range(8) if record not in records],
         "selected_spans": [list(span) for span in selected_spans],
-        "tag": tag(mask, group_add, record_add),
-        "env": env_name(mask, group_add, record_add),
+        "tag": tag(mask, group_add, record_add, record_subset),
+        "env": env_name(mask, group_add, record_add, record_subset),
         "active_r20_sha256": _sha256(active),
         "commented_r20_sha256": _sha256(commented),
         "r20_sha256": _sha256(variant_bytes),
@@ -561,6 +675,20 @@ def build_offline_variant(
             "grayext_diff_byte_count_matches_pin": True,
             "grayext_r20_sha256_matches_pin": True,
         })
+    elif record_subset is not None:
+        report.update({
+            "family_label": label,
+            "base_mask_hex": f"0x{mask_label(mask)}",
+            "record_subset_add": list(record_subset),
+            "family_label_is_not_bitmask": True,
+            "expected_diff_byte_count_vs_active": expected_family["diff_bytes"],
+            "expected_r20_sha256": expected_family["r20_sha256"],
+        })
+        report["assertions"].update({
+            "record_subset_add_family_is_explicit_base_plus_subset": True,
+            "record_subset_add_diff_byte_count_matches_pin": True,
+            "record_subset_add_r20_sha256_matches_pin": True,
+        })
     elif record_add is not None:
         report.update({
             "family_label": label,
@@ -580,9 +708,9 @@ def build_offline_variant(
     runtime_tail = driver_template[driver_template.index("namespace {"):]
     main_template = MAIN_TEMPLATE_PATH.read_text(encoding="utf-8")
     rendered = {
-        "include": _render_include(mask, report, group_add, record_add),
-        "driver": _render_driver(mask, runtime_tail, group_add, record_add),
-        "main": _render_main(mask, main_template, group_add, record_add),
+        "include": _render_include(mask, report, group_add, record_add, record_subset),
+        "driver": _render_driver(mask, runtime_tail, group_add, record_add, record_subset),
+        "main": _render_main(mask, main_template, group_add, record_add, record_subset),
     }
     if rendered["driver"][rendered["driver"].index("namespace {"):] != runtime_tail:
         raise RuntimeError(f"mask/family {label} PSR/runtime tail differs from R2G")
@@ -597,6 +725,8 @@ def build_offline_variant(
     }
     if group_add:
         report["compile_time_assertions"]["records0_3_group_flag_and_base_mask"] = True
+    elif record_subset is not None:
+        report["compile_time_assertions"]["record_subset_add_identities_and_base_mask"] = True
     elif record_add is not None:
         report["compile_time_assertions"]["single_record_add_identity_and_base_mask"] = True
     for kind, content in rendered.items():
@@ -606,10 +736,13 @@ def build_offline_variant(
 
 
 def generate_sources(
-    mask: int, group_add: bool = False, record_add: int | None = None
+    mask: int,
+    group_add: bool = False,
+    record_add: int | None = None,
+    record_subset: tuple[int, ...] | None = None,
 ) -> dict:
-    report, rendered = build_offline_variant(mask, group_add, record_add)
-    paths = source_paths(mask, group_add, record_add)
+    report, rendered = build_offline_variant(mask, group_add, record_add, record_subset)
+    paths = source_paths(mask, group_add, record_add, record_subset)
     for kind, content in rendered.items():
         _write_generated(paths[kind], content)
     for kind, path in paths.items():
@@ -617,6 +750,18 @@ def generate_sources(
             raise RuntimeError(f"on-disk {kind} hash differs after generation: {path}")
         report[f"{kind}_path"] = path.relative_to(ROOT).as_posix()
     return report
+
+
+def _parse_record_subset(value: str) -> tuple[int, ...]:
+    try:
+        subset = tuple(int(part, 10) for part in value.split(","))
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("record subset must be comma-separated integers") from error
+    if subset not in RECORD_SUBSET_ADD_VARIANTS:
+        raise argparse.ArgumentTypeError(
+            "record subset must be one of 0,1 / 0,2 / 0,3"
+        )
+    return subset
 
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
@@ -635,11 +780,19 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         choices=SINGLE_RECORD_ADD_RECORDS,
         help="with --mask 0E, add exactly one White record 0, 1, 2, or 3",
     )
+    parser.add_argument(
+        "--record-subset",
+        type=_parse_record_subset,
+        help="with --mask 0E, add one registered R0-anchored pair such as 0,1",
+    )
     args = parser.parse_args(argv)
-    if args.group_add and args.record_add is not None:
-        parser.error("--group-add and --record-add are mutually exclusive")
+    selected_modes = int(args.group_add) + int(args.record_add is not None) + int(args.record_subset is not None)
+    if selected_modes > 1:
+        parser.error("--group-add, --record-add, and --record-subset are mutually exclusive")
     if args.record_add is not None and not args.mask:
         parser.error("--record-add requires --mask 0E")
+    if args.record_subset is not None and not args.mask:
+        parser.error("--record-subset requires --mask 0E")
     return args
 
 
@@ -652,13 +805,17 @@ def main(argv: Sequence[str] | None = None) -> int:
     else:
         masks = PENDING_MASKS
     reports = [
-        generate_sources(mask, args.group_add, args.record_add) for mask in masks
+        generate_sources(mask, args.group_add, args.record_add, args.record_subset)
+        for mask in masks
     ]
     print(json.dumps({
         "schema_version": 1,
         "records0_3_group_add": args.group_add,
         "single_record_add": args.record_add,
-        "family_labels_are_not_bitmasks": args.group_add or args.record_add is not None,
+        "record_subset_add": list(args.record_subset) if args.record_subset is not None else None,
+        "family_labels_are_not_bitmasks": (
+            args.group_add or args.record_add is not None or args.record_subset is not None
+        ),
         "variant_count": len(reports),
         "variants": reports,
     }, indent=1))

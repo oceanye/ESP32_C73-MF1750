@@ -7,7 +7,14 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-10-19 19:17 +0800`
+最后更新：`2026-10-19 21:15 +0800`
+
+## 2026-10-19 21:15 +0800 0E records0–3 两两组合离线包 **BUILD_PASS**：R0R1/R0R2/R0R3 待真屏（0 刷新）
+
+- **离线包 [`WF_WMASK_0E_PAIRS_BUNDLES_20261019_V1`](../.test-output/offline/WF_WMASK_0E_PAIRS_BUNDLES_20261019_V1/)，manifest canonical sha `7935fa24…`。** 目的=在已复现的 R0（复现 L33.71）与 1E 筛查（L37.86）之间寻找中间明度级；三点均锚定 R0，避免无方向扫全部六对。`0E_R0R1/R0R2/R0R3` 是显式 family label，不是 bitmask。
+- **三变体**：`0E_R0R1={0,1,5,6,7}` bin `2f439c59…`；`0E_R0R2={0,2,5,6,7}` bin `44524f72…`；`0E_R0R3={0,3,5,6,7}` bin `6d9efdba…`。表头/其他 category/R21/PSR/runtime/PWR/PLL=0x02 全部不变；不触碰 B1 VSH_LV2 或 record 内任意字节。
+- **验证**：3/3 PlatformIO env 编译 SUCCESS；定向 pytest **156 passed + 84 subtests**；contract passed=true；生产 env 重编仍 `ba59c3d6…` 且生产源零差异。全部 12 个低 4-bit、3 个 GrayExt、4 个单 record 生成结果逐字节不变；三个 build tag 已入白名单。
+- **下一入口**：真屏筛查 `0E_R0R1→0E_R0R2→0E_R0R3`（t0/t30、恢复生产白场）；判定重点=是否出现介于 R0 与 1E 且可分辨的新明度级。
 
 ## 2026-10-19 19:17 +0800 0E_R0 独立复现 **REPRODUCED**：L≈34 的暗中间态正式立项（3 刷）
 
