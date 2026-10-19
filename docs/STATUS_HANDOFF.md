@@ -7,7 +7,14 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-10-19 13:52 +0800`
+最后更新：`2026-10-19 14:34 +0800`
+
+## 2026-10-19 14:34 +0800 灰阶扩展离线包 **BUILD_PASS**：1E/1C/1D 三变体构建完成（0 刷新，待真屏）
+
+- **离线包 [`WF_WMASK_GRAYEXT_BUNDLES_20261019_V1`](../.test-output/offline/WF_WMASK_GRAYEXT_BUNDLES_20261019_V1/)，manifest canonical sha `63b509cf…`。** 目标=测试 `0F→1F` 已有交互（records 0–3 加入后 L52.21→57.55、a13.00→7.84）能否迁移到 0E/0C/0D，从而补 `0E→0C→0D` 之间的灰阶级差。`1E/1C/1D` 是 family label，不是 8-bit bitmask；低 4-bit base 语义不变。
+- **三变体**：`1E={0,1,2,3,5,6,7}`（bin `c30fa0ed…`）；`1C={0,1,2,3,6,7}`（bin `c9089587…`）；`1D={0,1,2,3,4,6,7}`（bin `cefa9b59…`）。表头/其他 category/R21/PSR/runtime/PWR/PLL=0x02 全部不变；不触碰 B1 VSH_LV2 或 record 内任意字节。
+- **验证**：3/3 PlatformIO env 编译 SUCCESS；定向 pytest **150 passed + 70 subtests**；contract passed=true；生产 env 重编仍 `ba59c3d6…` 且生产源零差异。旧低 4-bit 12 组合生成结果逐字节不变。三个 build tag 已入 `mf1750_frame_tool.py` 白名单。
+- **下一入口**：按既定 t0/t30 精简协议串行真屏 `1E→1C→1D`（每批 OTP 基线 t0、变体 t0/t30、恢复生产白场；新点只标初筛，后续另做独立复现）。若某 base 出现新稳定级，再拆该 base 的 records 0–3 单 record；若全阴性则停止该扩展分支。
 
 ## 2026-10-19 13:52 +0800 重点色复现批 0E/01 均 **REPRODUCED**：0D/0E/01 三个重点色全部跨批通过（两批共 6 刷 4 写）
 

@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-"""Seal the 12 prebuilt WF WMASK firmware variants into one offline bundle.
+"""Seal prebuilt WF WMASK firmware variants into an offline bundle.
 
+By default this seals the original 12 low-4-bit variants.  With --group-add it
+seals the GrayExt family 1E/1C/1D: a low-4-bit base plus the whole White
+records 0-3 group.  Family labels are not reinterpreted as an 8-bit bitmask.
 The destination directory and every file are created exclusively.  No device,
 network, relay, camera, serial, or flashing access is performed.
 """
@@ -23,10 +26,12 @@ from tools import mf1750_wf_wmask_build as build  # noqa: E402
 from tools.check_repo_contract import run_checks  # noqa: E402
 
 OUT = ROOT / ".test-output/offline/WF_WMASK_BUNDLES_20261018_V1"
+GRAYEXT_OUT = ROOT / ".test-output/offline/WF_WMASK_GRAYEXT_BUNDLES_20261019_V1"
 PRODUCTION_BIN = ROOT / ".pio/build/esp32-s3-devkitc-1/firmware.bin"
 PRODUCTION_SHA256 = "ba59c3d6111a15c3426eddedf63188bf323083fdca24dec98939835b43dacdc3"
 PYTEST_COMMAND = (
-    "python -m pytest -q tests/test_frame_tool.py tests/test_repo_contract.py "
+    "python -m pytest -q tests/test_mf1750_wf_wmask_build.py "
+    "tests/test_frame_tool.py tests/test_repo_contract.py "
     "tests/test_runtime_waveform_contract.py "
     "tests/test_runtime_waveform_l535_table_builder.py "
     "tests/test_runtime_waveform_campaign.py "
@@ -69,6 +74,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--pytest-passed", type=int, required=True)
     parser.add_argument("--pytest-subtests-passed", type=int, required=True)
+    parser.add_argument(
+        "--group-add",
+        action="store_true",
+        help="seal GrayExt 1E/1C/1D instead of the original 12 low-4-bit variants",
+    )
     return parser.parse_args(argv)
 
 
@@ -76,8 +86,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parse_args(argv)
     if args.pytest_passed < 1 or args.pytest_subtests_passed < 0:
         raise SystemExit("invalid pytest summary")
-    if OUT.exists():
-        raise SystemExit(f"offline bundle already exists; refusing to overwrite: {OUT}")
+    output_dir = GRAYEXT_OUT if args.group_add else OUT
+    masks = build.GRAYEXT_BASE_MASKS if args.group_add else build.PENDING_MASKS
+    expected_count = len(masks)
+    if output_dir.exists():
+        raise SystemExit(f"offline bundle already exists; refusing to overwrite: {output_dir}")
     contract = run_checks(ROOT)
     if contract["passed"] is not True:
         raise SystemExit("repository contract is not clean")
@@ -90,16 +103,16 @@ def main(argv: Sequence[str] | None = None) -> int:
     platformio = (ROOT / "platformio.ini").read_text(encoding="utf-8")
     artifacts: dict[str, bytes] = {}
     combinations = []
-    for mask in build.PENDING_MASKS:
-        label = build.mask_label(mask)
+    for mask in masks:
+        label = build.family_label(mask, args.group_add)
         lower = label.lower()
-        report, rendered = build.build_offline_variant(mask)
-        paths = build.source_paths(mask)
+        report, rendered = build.build_offline_variant(mask, args.group_add)
+        paths = build.source_paths(mask, args.group_add)
         for kind, path in paths.items():
             if path.read_bytes() != rendered[kind].encode("utf-8"):
                 raise SystemExit(f"generated source drifted before packing: {path}")
-        env = build.env_name(mask)
-        tag = build.tag(mask)
+        env = build.env_name(mask, args.group_add)
+        tag = build.tag(mask, args.group_add)
         if tag not in frame_tool or tag not in api_doc:
             raise SystemExit(f"tag registration missing: {tag}")
         if f"[env:{env}]" not in platformio:
@@ -127,9 +140,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             "elf_sha256": _sha256(firmware_elf),
         }
         artifacts[report_name] = _pretty(report)
-        combinations.append({
-            "mask_hex": f"0x{label}",
-            "commented_records": build.selected_records(mask),
+        combination = {
+            "mask_hex": report["mask_hex"],
+            "commented_records": build.selected_records(mask, args.group_add),
             "tag": tag,
             "env": env,
             "build": "SUCCESS",
@@ -156,36 +169,66 @@ def main(argv: Sequence[str] | None = None) -> int:
                 }
                 for kind, path in paths.items()
             },
-        })
+        }
+        if args.group_add:
+            combination.update({
+                "family_label": label,
+                "base_mask_hex": report["mask_hex"],
+                "records0_3_group_add": True,
+                "family_label_is_not_bitmask": True,
+                "expected_diff_byte_count_vs_active": report["expected_diff_byte_count_vs_active"],
+                "expected_r20_sha256": report["expected_r20_sha256"],
+            })
+        combinations.append(combination)
 
-    if len(combinations) != 12:
-        raise SystemExit("WMASK pending combination count is not exactly 12")
-    if len({item["r20_sha256"] for item in combinations}) != 12:
+    if len(combinations) != expected_count:
+        raise SystemExit(f"WMASK combination count is not exactly {expected_count}")
+    if len({item["r20_sha256"] for item in combinations}) != expected_count:
         raise SystemExit("WMASK R20 identities are not unique")
-    if len({item["firmware_bin"]["sha256"] for item in combinations}) != 12:
+    if len({item["firmware_bin"]["sha256"] for item in combinations}) != expected_count:
         raise SystemExit("WMASK firmware identities are not unique")
 
     files = [
         {"file": name, "bytes": len(payload), "sha256": _sha256(payload)}
         for name, payload in sorted(artifacts.items())
     ]
-    manifest = {
-        "schema_version": 1,
-        "kind": "mf1750-wf-wmask-offline-bundle-batch",
-        "batch_id": "WF_WMASK_BUNDLES_20261018_V1",
-        "created_at": datetime.now().astimezone().isoformat(timespec="seconds"),
-        "offline_only": True,
-        "hardware_tested": False,
-        "refresh_count": 0,
-        "mask_bit_mapping": {"bit0": 4, "bit1": 5, "bit2": 6, "bit3": 7},
-        "combination_enumeration": {
+    if args.group_add:
+        enumeration = {
+            "pending_count": len(build.GRAYEXT_BASE_MASKS),
+            "family_labels": [
+                build.family_label(mask, True) for mask in build.GRAYEXT_BASE_MASKS
+            ],
+            "base_masks": [
+                f"0x{build.mask_label(mask)}" for mask in build.GRAYEXT_BASE_MASKS
+            ],
+            "group_add_records": sorted(build.GROUP_ADD_RECORDS),
+            "family_label_semantics": (
+                "family label = low-4-bit base plus the whole records 0-3 group; "
+                "not an 8-bit bitmask"
+            ),
+        }
+    else:
+        enumeration = {
             "total_4bit_masks": 16,
             "pending_count": 12,
             "pending_masks": [f"0x{build.mask_label(mask)}" for mask in build.PENDING_MASKS],
             "excluded": {
                 f"0x{mask:02X}": reason for mask, reason in sorted(build.EXCLUDED_MASKS.items())
             },
-        },
+        }
+    manifest = {
+        "schema_version": 1,
+        "kind": (
+            "mf1750-wf-wmask-grayext-offline-bundle-batch"
+            if args.group_add else "mf1750-wf-wmask-offline-bundle-batch"
+        ),
+        "batch_id": output_dir.name,
+        "created_at": datetime.now().astimezone().isoformat(timespec="seconds"),
+        "offline_only": True,
+        "hardware_tested": False,
+        "refresh_count": 0,
+        "mask_bit_mapping": {"bit0": 4, "bit1": 5, "bit2": 6, "bit3": 7},
+        "combination_enumeration": enumeration,
         "generator": {
             "path": "tools/mf1750_wf_wmask_build.py",
             "sha256": _fingerprint(ROOT / "tools/mf1750_wf_wmask_build.py")["sha256"],
@@ -230,32 +273,39 @@ def main(argv: Sequence[str] | None = None) -> int:
             "sha256": "",
         },
     }
+    if args.group_add:
+        manifest["records0_3_group_add"] = {
+            "enabled": True,
+            "records": sorted(build.GROUP_ADD_RECORDS),
+            "family_labels_are_not_bitmasks": True,
+        }
     unsigned = dict(manifest)
     unsigned.pop("integrity")
     manifest["integrity"]["sha256"] = _sha256(_canonical(unsigned))
     manifest_payload = _pretty(manifest)
 
-    OUT.mkdir(parents=False, exist_ok=False)
+    output_dir.mkdir(parents=False, exist_ok=False)
     for name, payload in sorted(artifacts.items()):
-        _write_new(OUT / name, payload)
-    _write_new(OUT / "manifest.json", manifest_payload)
+        _write_new(output_dir / name, payload)
+    _write_new(output_dir / "manifest.json", manifest_payload)
 
-    sealed = json.loads((OUT / "manifest.json").read_text(encoding="utf-8"))
+    sealed = json.loads((output_dir / "manifest.json").read_text(encoding="utf-8"))
     seal = sealed["integrity"]["sha256"]
     sealed_unsigned = dict(sealed)
     sealed_unsigned.pop("integrity")
     if _sha256(_canonical(sealed_unsigned)) != seal:
         raise SystemExit("manifest self-seal verification failed")
     for entry in sealed["files"]:
-        payload = (OUT / entry["file"]).read_bytes()
+        payload = (output_dir / entry["file"]).read_bytes()
         if len(payload) != entry["bytes"] or _sha256(payload) != entry["sha256"]:
             raise SystemExit(f"bundle file fingerprint failed: {entry['file']}")
 
     print(json.dumps({
-        "bundle": OUT.relative_to(ROOT).as_posix(),
+        "bundle": output_dir.relative_to(ROOT).as_posix(),
         "combinations": [
             {
-                "mask": item["mask_hex"],
+                "label": item.get("family_label", item["mask_hex"]),
+                "base_mask": item["mask_hex"],
                 "records": item["commented_records"],
                 "tag": item["tag"],
                 "r20_sha256": item["r20_sha256"],
