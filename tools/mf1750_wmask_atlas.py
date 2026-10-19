@@ -6,8 +6,10 @@ Each repeated --cell argument is BATCH_DIR|LABEL|MASK|STEM[|TIME].  TIME
 and STEM-diagnostic.json; it never searches for substitute evidence names.
 Numeric masks sort ascending (00, 01, ... 0F, then higher conceptual masks);
 registered GrayExt family labels 1C/1D/1E follow while retaining input order,
-and other non-numeric references come last.  These family labels mean a low
-4-bit base plus the whole records 0-3 group and are not bitmasks.
+then explicit 0E_R0/0E_R1/0E_R2/0E_R3 single-record family labels, and other
+non-numeric references come last.  GrayExt labels mean a low-4-bit base plus
+the whole records 0-3 group; 0E_R* labels mean base 0E plus exactly one
+records 0-3 member.  None of these family labels is interpreted as a bitmask.
 Missing warped/Lab/diagnostic evidence skips that cell and is reported.
 
 To extend an atlas, add another --cell and select a new --output-dir.  The
@@ -85,16 +87,20 @@ def _parse_cell(value: str, input_index: int) -> CellSpec:
 
 
 GRAYEXT_FAMILY_LABELS = frozenset({"1C", "1D", "1E"})
+SINGLE_RECORD_FAMILY_LABELS = frozenset({"0E_R0", "0E_R1", "0E_R2", "0E_R3"})
+FAMILY_LABELS = GRAYEXT_FAMILY_LABELS | SINGLE_RECORD_FAMILY_LABELS
 
 
 def _mask_sort_key(cell: CellSpec) -> tuple[int, int, int]:
     text = cell.mask.strip()
     if text in GRAYEXT_FAMILY_LABELS:
         return 1, cell.input_index, cell.input_index
+    if text in SINGLE_RECORD_FAMILY_LABELS:
+        return 2, cell.input_index, cell.input_index
     if re.fullmatch(r"(?:0[xX])?[0-9A-Fa-f]+", text):
         value = int(text[2:] if text.lower().startswith("0x") else text, 16)
         return 0, value, cell.input_index
-    return 2, cell.input_index, cell.input_index
+    return 3, cell.input_index, cell.input_index
 
 
 def _load_json(path: Path, label: str) -> dict[str, Any]:
@@ -268,9 +274,7 @@ def _render_sheet(
             width=2,
         )
         lab = cell["lab"]
-        mask_caption = (
-            "family" if cell["mask"] in GRAYEXT_FAMILY_LABELS else "mask"
-        )
+        mask_caption = "family" if cell["mask"] in FAMILY_LABELS else "mask"
         draw.text(
             (x + 4, y + cell_height + 8),
             f"{cell['label']} | {mask_caption} {cell['mask']} | {cell['time']}",
@@ -367,6 +371,12 @@ def main(argv: Sequence[str] | None = None) -> int:
             "grayext_family_label_semantics": (
                 "low-4-bit base plus the whole records 0-3 group; not bitmasks"
             ),
+            "single_record_family_labels_after_grayext": True,
+            "single_record_family_labels": sorted(SINGLE_RECORD_FAMILY_LABELS),
+            "single_record_family_label_semantics": (
+                "base 0E plus exactly one records 0-3 member; not bitmasks"
+            ),
+            "family_labels_are_not_interpreted_as_hex_masks": True,
             "other_non_numeric_references_last": True,
         },
         "central_roi": {

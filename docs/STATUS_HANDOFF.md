@@ -7,7 +7,13 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-10-19 18:45 +0800`
+最后更新：`2026-10-19 18:57 +0800`
+
+## 2026-10-19 18:57 +0800 25 格 0E 分解对比图集完成：R0 候选与同簇可并排追溯（0 刷新）
+
+- **图集 [`WF_WMASK_ATLAS_0E_R0TO3_20261019_V1/wmask-atlas.png`](../.test-output/offline/WF_WMASK_ATLAS_0E_R0TO3_20261019_V1/wmask-atlas.png)，25/25 格、0 跳过，manifest sha `b3192f65…`。** 覆盖 21 格既有结果+`0E_R0/R1/R2/R3`；四个新格 caption 均为 family label，非 bitmask。原 21 格图集复核未变（sha `ddea89c0…`）。
+- **图集工具更新**：`tools/mf1750_wmask_atlas.py` 已识别 `0E_R0…R3` 单 record family label，并在 GrayExt 后、REF 前排序。
+- **下一入口**：对 **0E_R0** 做独立复现（参考 t0 `L34.87/a5.39/b-13.47/std_L2.18`；门沿用 |ΔL/a/b|≤3、std_L≤3、t0→t30 |ΔL|≤2、drf 32671±5%）。
 
 ## 2026-10-19 18:45 +0800 0E_R3 完成：四点分解全部扫完，单 record 只形成 L≈33.3–34.9 小簇（3 刷）
 
