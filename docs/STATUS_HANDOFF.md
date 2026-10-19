@@ -7,7 +7,14 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-10-19 15:06 +0800`
+最后更新：`2026-10-19 15:25 +0800`
+
+## 2026-10-19 15:25 +0800 GrayExt 批 1C **SCREENING_LIGHTER_BUT_CHROMATIC_NOT_NEUTRAL**：0C 上 group-add 不推向 0D（3 刷）
+
+- **批次 [`WF_WMASK_1C_20261019_V1`](../.test-output/hardware/WF_WMASK_1C_20261019_V1/)，manifest sha `d246b34a…`，3 刷 2 写。** 变体 `1C={0,1,2,3,6,7}`、records4/5 active；bin `c9089587…`。OTP 基线 drf 21691、白场 L65.94；变体 drf 32671，BUSY/sequence 正常。
+- **结果**：t0 `L47.24/a10.27/b-8.14/std_L2.19` → t30 `L47.18/a10.29/b-8.13/std_L2.22`，30s `|ΔL|=0.06`，场色均匀浅紫灰/灰粉。相对 0C scan 仅 `+0.59 L`，但 `+3.75 a`；比 1E 高 `9.38 L`，仍比 0D scan 低 `11.18 L`。**records 0–3 在 0C base 上不产生有效抬亮/中性化，group-add 不能沿 0C 推向 0D。**
+- **收尾**：恢复生产 `ba59c3d6…` + OTP 白场（drf 21681，L65.71/std_L3.08），relay OFF、BUSY=0。
+- **下一入口**：批 1D（base 0D + records 0–3），判定高端近中性点是否仍可抬亮/降彩。
 
 ## 2026-10-19 15:06 +0800 GrayExt 批 1E **SCREENING_LIGHTER_BUT_NOT_NEUTRALER**：records 0–3 确实抬亮 0E，但品红增强（3 刷）
 
