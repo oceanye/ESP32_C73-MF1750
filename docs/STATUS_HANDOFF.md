@@ -7,7 +7,15 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-10-20 05:57 +0800`
+最后更新：`2026-10-20 07:45 +0800`
+
+## 2026-10-20 07:45 +0800 多区域分块/跨波形首批离线实现 **BUILD_PASS**：路线 A/B 双 env 就绪（0 刷新）
+
+- **离线包 [`MF1750_PARTIAL_BLOCK_20261020_V1`](../.test-output/offline/MF1750_PARTIAL_BLOCK_20261020_V1/)，manifest canonical sha `935765b9…`，9 载荷 hash 全对、自封核验通过。** 双 env 编译 SUCCESS：`partial-atlas-1e`（tag `MF1750_PARTIAL_BLOCK_ATLAS_1E_20261020`，bin `c3d79bbe…`）与 `partial-block-ptlw`（tag `MF1750_PARTIAL_BLOCK_PTLW_20261020`，bin `bf901f07…`）。另有多 ROI 测量工具 `tools/mf1750_multi_roi_lab.py` 先行合入（93f6558）。
+- **路线 A（P0）**：1E profile 白底全屏帧 + 7 个 192×160 ROI（code 0–6，避开 x=512 接缝、偶数对齐）；帧 sha `afb12260…`、布局 hash `c9fd73ee…`；端点 `POST /api/partial-atlas-1e`；ROI JSON 直接喂多 ROI 工具。
+- **路线 B（P1–P3）**：5 动作（factory 白锚 → A=1E(48,64,160,120) → B=0E(304,240,160,120) 保持A → C=1C(48,416,160,120) 保持AB → 白恢复）；传输逐字节复现 8 月封印干净配方（PTLW `0x83` 9-byte 包含式、code7 preload → 单 PTLW + cropped DTM 9600B → PON/DRF/POF，PON 后不重复 PTLW）；R20 与对应完整帧 profile 逐字节一致（1E `5f1820da…`/0E `82528a6b…`/1C `7070dc29…`）；`/api/frame` 上传入口已移除，无运行时坐标/LUT 输入。
+- **验证**：定向 172 passed + 117 subtests；contract passed=true；生产 env 重编精确命中 `ba59c3d6…`、生产源零 diff；一处显式记录的偏差=路线 B 刷新段不含 BTST2（8 月配方硬契约）。
+- **下一入口**：P0 真屏——刷 `partial-atlas-1e`，一次完整刷新，t0/t30 + 多 ROI Lab + 照明 ratio，判定 code0–6 在 1E 波形下的明度/色差可分辨性。
 
 ## 2026-10-20 05:37 +0800 多区域分块与跨波形局部保持 handoff（0 刷新）
 
