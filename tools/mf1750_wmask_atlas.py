@@ -4,8 +4,10 @@
 Each repeated --cell argument is BATCH_DIR|LABEL|MASK|STEM[|TIME].  TIME
  defaults to t0.  The tool reads exactly STEM-TIME-warped.jpg, STEM-lab.json,
 and STEM-diagnostic.json; it never searches for substitute evidence names.
-Numeric masks sort ascending (00, 01, ... 0F, then higher conceptual masks),
-while non-numeric references retain their input order after numeric cells.
+Numeric masks sort ascending (00, 01, ... 0F, then higher conceptual masks);
+registered GrayExt family labels 1C/1D/1E follow while retaining input order,
+and other non-numeric references come last.  These family labels mean a low
+4-bit base plus the whole records 0-3 group and are not bitmasks.
 Missing warped/Lab/diagnostic evidence skips that cell and is reported.
 
 To extend an atlas, add another --cell and select a new --output-dir.  The
@@ -82,12 +84,17 @@ def _parse_cell(value: str, input_index: int) -> CellSpec:
     return CellSpec(Path(batch), label, mask, stem, time, input_index)
 
 
+GRAYEXT_FAMILY_LABELS = frozenset({"1C", "1D", "1E"})
+
+
 def _mask_sort_key(cell: CellSpec) -> tuple[int, int, int]:
     text = cell.mask.strip()
+    if text in GRAYEXT_FAMILY_LABELS:
+        return 1, cell.input_index, cell.input_index
     if re.fullmatch(r"(?:0[xX])?[0-9A-Fa-f]+", text):
         value = int(text[2:] if text.lower().startswith("0x") else text, 16)
         return 0, value, cell.input_index
-    return 1, cell.input_index, cell.input_index
+    return 2, cell.input_index, cell.input_index
 
 
 def _load_json(path: Path, label: str) -> dict[str, Any]:
@@ -261,9 +268,12 @@ def _render_sheet(
             width=2,
         )
         lab = cell["lab"]
+        mask_caption = (
+            "family" if cell["mask"] in GRAYEXT_FAMILY_LABELS else "mask"
+        )
         draw.text(
             (x + 4, y + cell_height + 8),
-            f"{cell['label']} | mask {cell['mask']} | {cell['time']}",
+            f"{cell['label']} | {mask_caption} {cell['mask']} | {cell['time']}",
             fill=(15, 22, 32),
             font=label_font,
         )
@@ -352,7 +362,12 @@ def main(argv: Sequence[str] | None = None) -> int:
             "cell_image_size": [args.cell_width, args.cell_height],
             "sheet_size": list(sheet.size),
             "numeric_masks_sorted_ascending": True,
-            "non_numeric_references_after_numeric_masks": True,
+            "grayext_family_labels_after_numeric_masks": True,
+            "grayext_family_labels": sorted(GRAYEXT_FAMILY_LABELS),
+            "grayext_family_label_semantics": (
+                "low-4-bit base plus the whole records 0-3 group; not bitmasks"
+            ),
+            "other_non_numeric_references_last": True,
         },
         "central_roi": {
             "width_fraction": roi_width,

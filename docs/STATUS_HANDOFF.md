@@ -7,7 +7,13 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-10-19 15:43 +0800`
+最后更新：`2026-10-19 15:58 +0800`
+
+## 2026-10-19 15:58 +0800 21 格 GrayExt 对比图集完成：1D 与全映射可并排追溯（0 刷新）
+
+- **图集 [`WF_WMASK_ATLAS_GRAYEXT_20261019_V1/wmask-atlas.png`](../.test-output/offline/WF_WMASK_ATLAS_GRAYEXT_20261019_V1/wmask-atlas.png)，21/21 格、0 跳过，manifest sha `ddea89c0…`。** 覆盖原 16 个 mask+R2D+OTP 白，以及 `1E/1C/1D` 三个 GrayExt family label；caption 明确 family≠bitmask。
+- **图集工具更新**：`tools/mf1750_wmask_atlas.py` 已识别 GrayExt family label，避免把 `1C/1D/1E` 误解析为新 8-bit mask；原 18 格图集目录复核未变（manifest `05c669a4…`）。
+- **下一入口**：1D 独立复现批；复现门沿用 |ΔL/a/b|≤3、std_L≤3、t0→t30 |ΔL|≤2、drf 32671±5%，参考 `L59.87/a-0.57/b-6.76/std_L2.91`。
 
 ## 2026-10-19 15:43 +0800 GrayExt 批 1D **SCREENING_NEAR_NEUTRAL_AND_LIGHTER_CHROMA_REDUCED**：高端近中性新筛查点出现（3 刷）
 
