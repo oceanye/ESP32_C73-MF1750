@@ -7,7 +7,14 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-10-19 16:37 +0800`
+最后更新：`2026-10-19 17:14 +0800`
+
+## 2026-10-19 17:14 +0800 0E 单 record 分解离线包 **BUILD_PASS**：R0/R1/R2/R3 四变体待真屏（0 刷新）
+
+- **离线包 [`WF_WMASK_0E_R0TO3_BUNDLES_20261019_V1`](../.test-output/offline/WF_WMASK_0E_R0TO3_BUNDLES_20261019_V1/)，manifest canonical sha `8d7143cf…`。** 目的=在唯一明显抬亮的 0E base 上拆 records 0–3，寻找 0E 复现 `L32.02` → 1E 筛查 `L37.86` 之间的可控明度级。`0E_R0…R3` 是显式 family label，不是 bitmask。
+- **四变体**：`0E_R0={0,5,6,7}` bin `5fe3ad67…`；`0E_R1={1,5,6,7}` bin `92fe7084…`；`0E_R2={2,5,6,7}` bin `56af5c3e…`；`0E_R3={3,5,6,7}` bin `d74d654b…`。表头/其他 category/R21/PSR/runtime/PWR/PLL=0x02 全部不变；不触碰 B1 VSH_LV2 或 record 内任意字节。
+- **验证**：4/4 PlatformIO env 编译 SUCCESS；定向 pytest **153 passed + 77 subtests**；contract passed=true；生产 env 重编仍 `ba59c3d6…` 且生产源零差异。旧 12 个低 4-bit 与 3 个 GrayExt group-add 生成结果逐字节不变；四个 build tag 已入白名单。
+- **下一入口**：真屏筛查顺序 `0E_R0→0E_R1→0E_R2→0E_R3`（每批 t0/t30、恢复生产白场；只标初筛，不直接立项）。判定重点=是否出现介于 0E 与 1E 且可分辨的新明度级，而不是是否接近中性。
 
 ## 2026-10-19 16:37 +0800 1D 均匀性空间诊断完成：std 超门主要来自共享照明/几何梯度，但不构成复现上诉（0 刷新）
 

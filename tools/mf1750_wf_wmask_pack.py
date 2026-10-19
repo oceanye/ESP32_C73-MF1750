@@ -3,9 +3,11 @@
 
 By default this seals the original 12 low-4-bit variants.  With --group-add it
 seals the GrayExt family 1E/1C/1D: a low-4-bit base plus the whole White
-records 0-3 group.  Family labels are not reinterpreted as an 8-bit bitmask.
-The destination directory and every file are created exclusively.  No device,
-network, relay, camera, serial, or flashing access is performed.
+records 0-3 group.  With --single-record-add it seals 0E_R0/0E_R1/0E_R2/0E_R3:
+base 0E plus exactly one records 0-3 member.  Family labels are not
+reinterpreted as bitmasks.  The destination directory and every file are
+created exclusively.  No device, network, relay, camera, serial, or flashing
+access is performed.
 """
 
 from __future__ import annotations
@@ -27,6 +29,7 @@ from tools.check_repo_contract import run_checks  # noqa: E402
 
 OUT = ROOT / ".test-output/offline/WF_WMASK_BUNDLES_20261018_V1"
 GRAYEXT_OUT = ROOT / ".test-output/offline/WF_WMASK_GRAYEXT_BUNDLES_20261019_V1"
+SINGLE_RECORD_ADD_OUT = ROOT / ".test-output/offline/WF_WMASK_0E_R0TO3_BUNDLES_20261019_V1"
 PRODUCTION_BIN = ROOT / ".pio/build/esp32-s3-devkitc-1/firmware.bin"
 PRODUCTION_SHA256 = "ba59c3d6111a15c3426eddedf63188bf323083fdca24dec98939835b43dacdc3"
 PYTEST_COMMAND = (
@@ -79,16 +82,34 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         action="store_true",
         help="seal GrayExt 1E/1C/1D instead of the original 12 low-4-bit variants",
     )
-    return parser.parse_args(argv)
+    parser.add_argument(
+        "--single-record-add",
+        action="store_true",
+        help="seal 0E_R0/0E_R1/0E_R2/0E_R3 instead of the other variant families",
+    )
+    args = parser.parse_args(argv)
+    if args.group_add and args.single_record_add:
+        parser.error("--group-add and --single-record-add are mutually exclusive")
+    return args
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = parse_args(argv)
     if args.pytest_passed < 1 or args.pytest_subtests_passed < 0:
         raise SystemExit("invalid pytest summary")
-    output_dir = GRAYEXT_OUT if args.group_add else OUT
-    masks = build.GRAYEXT_BASE_MASKS if args.group_add else build.PENDING_MASKS
-    expected_count = len(masks)
+    if args.single_record_add:
+        output_dir = SINGLE_RECORD_ADD_OUT
+        variant_specs = [
+            (build.SINGLE_RECORD_ADD_BASE_MASK, False, record_add)
+            for record_add in build.SINGLE_RECORD_ADD_RECORDS
+        ]
+    elif args.group_add:
+        output_dir = GRAYEXT_OUT
+        variant_specs = [(mask, True, None) for mask in build.GRAYEXT_BASE_MASKS]
+    else:
+        output_dir = OUT
+        variant_specs = [(mask, False, None) for mask in build.PENDING_MASKS]
+    expected_count = len(variant_specs)
     if output_dir.exists():
         raise SystemExit(f"offline bundle already exists; refusing to overwrite: {output_dir}")
     contract = run_checks(ROOT)
@@ -103,16 +124,16 @@ def main(argv: Sequence[str] | None = None) -> int:
     platformio = (ROOT / "platformio.ini").read_text(encoding="utf-8")
     artifacts: dict[str, bytes] = {}
     combinations = []
-    for mask in masks:
-        label = build.family_label(mask, args.group_add)
+    for mask, group_add, record_add in variant_specs:
+        label = build.family_label(mask, group_add, record_add)
         lower = label.lower()
-        report, rendered = build.build_offline_variant(mask, args.group_add)
-        paths = build.source_paths(mask, args.group_add)
+        report, rendered = build.build_offline_variant(mask, group_add, record_add)
+        paths = build.source_paths(mask, group_add, record_add)
         for kind, path in paths.items():
             if path.read_bytes() != rendered[kind].encode("utf-8"):
                 raise SystemExit(f"generated source drifted before packing: {path}")
-        env = build.env_name(mask, args.group_add)
-        tag = build.tag(mask, args.group_add)
+        env = build.env_name(mask, group_add, record_add)
+        tag = build.tag(mask, group_add, record_add)
         if tag not in frame_tool or tag not in api_doc:
             raise SystemExit(f"tag registration missing: {tag}")
         if f"[env:{env}]" not in platformio:
@@ -142,7 +163,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         artifacts[report_name] = _pretty(report)
         combination = {
             "mask_hex": report["mask_hex"],
-            "commented_records": build.selected_records(mask, args.group_add),
+            "commented_records": build.selected_records(mask, group_add, record_add),
             "tag": tag,
             "env": env,
             "build": "SUCCESS",
@@ -170,11 +191,20 @@ def main(argv: Sequence[str] | None = None) -> int:
                 for kind, path in paths.items()
             },
         }
-        if args.group_add:
+        if group_add:
             combination.update({
                 "family_label": label,
                 "base_mask_hex": report["mask_hex"],
                 "records0_3_group_add": True,
+                "family_label_is_not_bitmask": True,
+                "expected_diff_byte_count_vs_active": report["expected_diff_byte_count_vs_active"],
+                "expected_r20_sha256": report["expected_r20_sha256"],
+            })
+        elif record_add is not None:
+            combination.update({
+                "family_label": label,
+                "base_mask_hex": report["mask_hex"],
+                "single_record_add": record_add,
                 "family_label_is_not_bitmask": True,
                 "expected_diff_byte_count_vs_active": report["expected_diff_byte_count_vs_active"],
                 "expected_r20_sha256": report["expected_r20_sha256"],
@@ -192,7 +222,21 @@ def main(argv: Sequence[str] | None = None) -> int:
         {"file": name, "bytes": len(payload), "sha256": _sha256(payload)}
         for name, payload in sorted(artifacts.items())
     ]
-    if args.group_add:
+    if args.single_record_add:
+        enumeration = {
+            "pending_count": len(build.SINGLE_RECORD_ADD_RECORDS),
+            "family_labels": [
+                build.family_label(build.SINGLE_RECORD_ADD_BASE_MASK, False, record_add)
+                for record_add in build.SINGLE_RECORD_ADD_RECORDS
+            ],
+            "base_mask": f"0x{build.mask_label(build.SINGLE_RECORD_ADD_BASE_MASK)}",
+            "record_add_values": list(build.SINGLE_RECORD_ADD_RECORDS),
+            "family_label_semantics": (
+                "family label = base 0E plus exactly one records 0-3 member; "
+                "not a bitmask"
+            ),
+        }
+    elif args.group_add:
         enumeration = {
             "pending_count": len(build.GRAYEXT_BASE_MASKS),
             "family_labels": [
@@ -219,7 +263,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     manifest = {
         "schema_version": 1,
         "kind": (
-            "mf1750-wf-wmask-grayext-offline-bundle-batch"
+            "mf1750-wf-wmask-single-record-add-offline-bundle-batch"
+            if args.single_record_add
+            else "mf1750-wf-wmask-grayext-offline-bundle-batch"
             if args.group_add else "mf1750-wf-wmask-offline-bundle-batch"
         ),
         "batch_id": output_dir.name,
@@ -273,7 +319,14 @@ def main(argv: Sequence[str] | None = None) -> int:
             "sha256": "",
         },
     }
-    if args.group_add:
+    if args.single_record_add:
+        manifest["single_record_add"] = {
+            "enabled": True,
+            "base_mask": f"0x{build.mask_label(build.SINGLE_RECORD_ADD_BASE_MASK)}",
+            "record_add_values": list(build.SINGLE_RECORD_ADD_RECORDS),
+            "family_labels_are_not_bitmasks": True,
+        }
+    elif args.group_add:
         manifest["records0_3_group_add"] = {
             "enabled": True,
             "records": sorted(build.GROUP_ADD_RECORDS),

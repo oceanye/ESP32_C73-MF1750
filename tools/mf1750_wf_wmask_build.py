@@ -8,8 +8,11 @@ other R20 byte comes from active.  The low-4-bit meaning is unchanged.
 The separate records 0-3 group-add capability is available only for the
 registered GrayExt bases 0E/0C/0D.  Their family labels 1E/1C/1D mean
 "low-nibble base plus the whole records 0-3 group"; they are not reinterpreted
-as an 8-bit bitmask.  The generator deliberately excludes the active baseline
-and the already-built R2G, G6, R2F, and R2D variants.
+as an 8-bit bitmask.  A mutually exclusive single record-add capability is
+registered only for base 0E with labels 0E_R0/0E_R1/0E_R2/0E_R3, each meaning
+base 0E plus exactly one records 0-3 member, again not a bitmask.
+The generator deliberately excludes the active baseline and the already-built
+R2G, G6, R2F, and R2D variants.
 
 No device, network, relay, camera, serial, or flashing access.
 """
@@ -56,6 +59,30 @@ GRAYEXT_VARIANTS = {
     },
 }
 GRAYEXT_BASE_MASKS = tuple(GRAYEXT_VARIANTS)
+SINGLE_RECORD_ADD_BASE_MASK = 0x0E
+SINGLE_RECORD_ADD_VARIANTS = {
+    0: {
+        "records": frozenset({0, 5, 6, 7}),
+        "diff_bytes": 27,
+        "r20_sha256": "dcf82f0aa317c22f074bfa972dfd0c8b3b79ef69d46258ac06454ec34f12c2fb",
+    },
+    1: {
+        "records": frozenset({1, 5, 6, 7}),
+        "diff_bytes": 32,
+        "r20_sha256": "3f6219a921145fba5ac80a762bdb8578e6f3b8dfb0a68c981a015de49a9650bc",
+    },
+    2: {
+        "records": frozenset({2, 5, 6, 7}),
+        "diff_bytes": 32,
+        "r20_sha256": "d634c25fdc427d43c511d1c54b69bdcffd556d7e8934bd41c4b893b5249561cc",
+    },
+    3: {
+        "records": frozenset({3, 5, 6, 7}),
+        "diff_bytes": 31,
+        "r20_sha256": "7bfed76433d8b6467a444bb9a3f7ff389d86c650d97f942a2aa2c03856877c24",
+    },
+}
+SINGLE_RECORD_ADD_RECORDS = tuple(SINGLE_RECORD_ADD_VARIANTS)
 WHITE_CATEGORY_START = 183
 WHITE_RECORDS_4_7_START = 227
 WHITE_CATEGORY_END = 271
@@ -79,32 +106,47 @@ def mask_label(mask: int) -> str:
     return f"{mask:02X}"
 
 
-def family_label(mask: int, group_add: bool = False) -> str:
+def family_label(
+    mask: int, group_add: bool = False, record_add: int | None = None
+) -> str:
+    if record_add is not None:
+        return f"{mask_label(mask)}_R{record_add}"
     return f"1{mask:X}" if group_add else mask_label(mask)
 
 
-def slug(mask: int, group_add: bool = False) -> str:
-    return f"wf_wmask_{family_label(mask, group_add)}"
+def slug(mask: int, group_add: bool = False, record_add: int | None = None) -> str:
+    return f"wf_wmask_{family_label(mask, group_add, record_add)}"
 
 
-def tag(mask: int, group_add: bool = False) -> str:
-    date = GRAYEXT_DATE if group_add else DATE
-    return f"MF1750_WF_WMASK_{family_label(mask, group_add)}_{date}"
+def tag(mask: int, group_add: bool = False, record_add: int | None = None) -> str:
+    date = GRAYEXT_DATE if group_add or record_add is not None else DATE
+    return f"MF1750_WF_WMASK_{family_label(mask, group_add, record_add)}_{date}"
 
 
-def env_name(mask: int, group_add: bool = False) -> str:
-    return f"esp32-s3-devkitc-1-wf-wmask-{family_label(mask, group_add).lower()}"
+def env_name(mask: int, group_add: bool = False, record_add: int | None = None) -> str:
+    env_label = family_label(mask, group_add, record_add).lower()
+    if record_add is not None:
+        env_label = env_label.replace("_", "-")
+    return f"esp32-s3-devkitc-1-wf-wmask-{env_label}"
 
 
-def selected_records(mask: int, group_add: bool = False) -> list[int]:
+def selected_records(
+    mask: int, group_add: bool = False, record_add: int | None = None
+) -> list[int]:
+    if group_add and record_add is not None:
+        raise ValueError("group_add and record_add are mutually exclusive")
     low_records = {4 + bit for bit in range(4) if mask & (1 << bit)}
     if group_add:
         return sorted(low_records | GROUP_ADD_RECORDS)
+    if record_add is not None:
+        return sorted(low_records | {record_add})
     return sorted(low_records)
 
 
-def source_paths(mask: int, group_add: bool = False) -> dict[str, Path]:
-    stem = slug(mask, group_add)
+def source_paths(
+    mask: int, group_add: bool = False, record_add: int | None = None
+) -> dict[str, Path]:
+    stem = slug(mask, group_add, record_add)
     return {
         "include": ROOT / f"src/generated/spd1657_{stem}.inc",
         "driver": ROOT / f"src/{stem}_epd_driver.cpp",
@@ -144,12 +186,20 @@ def _fmt_array(name: str, payload: bytes) -> str:
     return "\n".join(lines)
 
 
-def _render_include(mask: int, report: dict, group_add: bool = False) -> str:
-    namespace = slug(mask, group_add)
-    records = "+".join(str(record) for record in selected_records(mask, group_add))
+def _render_include(
+    mask: int,
+    report: dict,
+    group_add: bool = False,
+    record_add: int | None = None,
+) -> str:
+    namespace = slug(mask, group_add, record_add)
+    records = "+".join(str(record) for record in selected_records(mask, group_add, record_add))
     spans = ", ".join(
         f"[{start}:{end}]"
-        for start, end in (_record_span(record) for record in selected_records(mask, group_add))
+        for start, end in (
+            _record_span(record)
+            for record in selected_records(mask, group_add, record_add)
+        )
     )
     if group_add:
         comments = [
@@ -157,6 +207,15 @@ def _render_include(mask: int, report: dict, group_add: bool = False) -> str:
             f"// White record 4/5/6/7 from base mask 0x{mask_label(mask)}.  Family label",
             f"// {family_label(mask, True)} additionally selects the whole records 0-3 group;",
             "// it is not an 8-bit bitmask.  Final commented White records are",
+            f"// {records} at {spans}; every other R20 byte is exactly active.",
+            "// PWR and PLL=0x02 are exactly active.  R21/runtime stay unchanged.",
+        ]
+    elif record_add is not None:
+        comments = [
+            "// Generated by tools/mf1750_wf_wmask_build.py.  Mask bit 0/1/2/3 selects",
+            f"// White record 4/5/6/7 from base mask 0x{mask_label(mask)}.  Family label",
+            f"// {family_label(mask, False, record_add)} additionally selects exactly White record {record_add};",
+            "// it is not a bitmask.  Final commented White records are",
             f"// {records} at {spans}; every other R20 byte is exactly active.",
             "// PWR and PLL=0x02 are exactly active.  R21/runtime stay unchanged.",
         ]
@@ -181,6 +240,8 @@ def _render_include(mask: int, report: dict, group_add: bool = False) -> str:
     ]
     if group_add:
         lines.append("static constexpr bool kAddWhiteRecords0To3 = true;")
+    elif record_add is not None:
+        lines.append(f"static constexpr std::uint8_t kAddedWhiteRecord = 0x{record_add:02X};")
     lines.extend([
         "static constexpr std::size_t kR20PayloadBytes = 535;",
         f"// sha256(R20)={report['r20_sha256']}",
@@ -198,31 +259,55 @@ def _render_include(mask: int, report: dict, group_add: bool = False) -> str:
     return "\n".join(lines)
 
 
-def _render_driver(mask: int, runtime_tail: str, group_add: bool = False) -> str:
-    label = family_label(mask, group_add)
-    stem = slug(mask, group_add)
-    records = "+".join(str(record) for record in selected_records(mask, group_add))
+def _render_driver(
+    mask: int,
+    runtime_tail: str,
+    group_add: bool = False,
+    record_add: int | None = None,
+) -> str:
+    label = family_label(mask, group_add, record_add)
+    stem = slug(mask, group_add, record_add)
+    records = "+".join(str(record) for record in selected_records(mask, group_add, record_add))
     guard = f"WfWmask{label}"
-    group_comment = (
-        f"// Family label {label} means base 0x{mask_label(mask)} plus the whole records 0-3 group;\n"
-        "// it is not an 8-bit bitmask.\n"
-        if group_add else ""
-    )
-    group_assert = (
-        "static_assert(l535_variant::kAddWhiteRecords0To3,\n"
-        '              "GrayExt records 0-3 group-add flag is not set");\n'
-        if group_add else ""
-    )
-    use_commented = (
-        "(index >= 183 && index < 227 && l535_variant::kAddWhiteRecords0To3) ||\n"
-        "         (index >= 227 && index < 271 &&\n"
-        "          ((l535_variant::kWhiteRecordMask >> ((index - 227) / 11)) & 0x01U) != 0)"
-        if group_add else
-        "index >= 227 && index < 271 &&\n"
-        "         ((l535_variant::kWhiteRecordMask >> ((index - 227) / 11)) & 0x01U) != 0"
-    )
+    if group_add:
+        family_comment = (
+            f"// Family label {label} means base 0x{mask_label(mask)} plus the whole records 0-3 group;\n"
+            "// it is not an 8-bit bitmask.\n"
+        )
+        family_assert = (
+            "static_assert(l535_variant::kAddWhiteRecords0To3,\n"
+            '              "GrayExt records 0-3 group-add flag is not set");\n'
+        )
+        use_commented = (
+            "(index >= 183 && index < 227 && l535_variant::kAddWhiteRecords0To3) ||\n"
+            "         (index >= 227 && index < 271 &&\n"
+            "          ((l535_variant::kWhiteRecordMask >> ((index - 227) / 11)) & 0x01U) != 0)"
+        )
+    elif record_add is not None:
+        start, end = _record_span(record_add)
+        family_comment = (
+            f"// Family label {label} means base 0x{mask_label(mask)} plus exactly White record {record_add};\n"
+            "// it is not a bitmask.\n"
+        )
+        family_assert = (
+            f"static_assert(l535_variant::kAddedWhiteRecord == 0x{record_add:02X},\n"
+            '              "single White record-add identity is not set");\n'
+        )
+        use_commented = (
+            f"(index >= {start} && index < {end} &&\n"
+            f"          l535_variant::kAddedWhiteRecord == 0x{record_add:02X}) ||\n"
+            "         (index >= 227 && index < 271 &&\n"
+            "          ((l535_variant::kWhiteRecordMask >> ((index - 227) / 11)) & 0x01U) != 0)"
+        )
+    else:
+        family_comment = ""
+        family_assert = ""
+        use_commented = (
+            "index >= 227 && index < 271 &&\n"
+            "         ((l535_variant::kWhiteRecordMask >> ((index - 227) / 11)) & 0x01U) != 0"
+        )
     prefix = f"""// Dedicated translation unit for WF WMASK 0x{label}: commented White records {records}.
-{group_comment}// Every unselected R20 byte, PWR, PLL=0x02, R21, PSR, and the runtime sequence
+{family_comment}// Every unselected R20 byte, PWR, PLL=0x02, R21, PSR, and the runtime sequence
 // remain on the sealed active path.  Generated independently of the pinned bisect TUs.
 #include "epd_driver.h"
 
@@ -250,7 +335,7 @@ namespace l535_variant = mf1750::runtime_lut::{stem};
 
 static_assert(l535_variant::kWhiteRecordMask == 0x{mask_label(mask)},
               "compiled White record mask differs from the preregistered mask");
-{group_assert}static_assert(sizeof(l535_variant::kR20Payload) == 535,
+{family_assert}static_assert(sizeof(l535_variant::kR20Payload) == 535,
               "WMASK R20 payload must be exactly 535 bytes");
 
 constexpr bool wfWmask{label}UseCommented(std::size_t index) {{
@@ -313,14 +398,19 @@ static_assert(l535_lut::active::kR21PayloadBytes == 704 &&
     return prefix + runtime_tail
 
 
-def _render_main(mask: int, template: str, group_add: bool = False) -> str:
+def _render_main(
+    mask: int,
+    template: str,
+    group_add: bool = False,
+    record_add: int | None = None,
+) -> str:
     old_tag = "MF1750_WF_BISECT_R2G_20261018"
     old_boot = "WF bisection R2G: commented White records 4+5"
-    records = "+".join(str(record) for record in selected_records(mask, group_add))
-    new_boot = f"WF WMASK {family_label(mask, group_add)}: commented White records {records}"
+    records = "+".join(str(record) for record in selected_records(mask, group_add, record_add))
+    new_boot = f"WF WMASK {family_label(mask, group_add, record_add)}: commented White records {records}"
     if template.count(old_tag) != 1 or template.count(old_boot) != 1:
         raise RuntimeError("R2G main template identity markers changed")
-    return template.replace(old_tag, tag(mask, group_add)).replace(old_boot, new_boot)
+    return template.replace(old_tag, tag(mask, group_add, record_add)).replace(old_boot, new_boot)
 
 
 def _write_generated(path: Path, content: str) -> None:
@@ -333,9 +423,21 @@ def _write_generated(path: Path, content: str) -> None:
 
 
 def build_offline_variant(
-    mask: int, group_add: bool = False
+    mask: int,
+    group_add: bool = False,
+    record_add: int | None = None,
 ) -> tuple[dict, dict[str, str]]:
-    if group_add:
+    if group_add and record_add is not None:
+        raise ValueError("group_add and record_add are mutually exclusive")
+    if record_add is not None:
+        if mask != SINGLE_RECORD_ADD_BASE_MASK or record_add not in SINGLE_RECORD_ADD_VARIANTS:
+            raise ValueError(
+                "single record-add is registered only for base 0x0E and records 0, 1, 2, 3"
+            )
+        if set(selected_records(mask, False, record_add)) != \
+                SINGLE_RECORD_ADD_VARIANTS[record_add]["records"]:
+            raise RuntimeError(f"single record-add base 0x{mask:02X} record set drifted")
+    elif group_add:
         if mask not in GRAYEXT_VARIANTS:
             raise ValueError(
                 f"records 0-3 group-add is registered only for GrayExt bases "
@@ -345,8 +447,8 @@ def build_offline_variant(
             raise RuntimeError(f"GrayExt base 0x{mask:02X} record set drifted")
     elif mask not in PENDING_MASKS:
         raise ValueError(f"mask 0x{mask:02X} is excluded or invalid: {EXCLUDED_MASKS.get(mask)}")
-    records = selected_records(mask, group_add)
-    label = family_label(mask, group_add)
+    records = selected_records(mask, group_add, record_add)
+    label = family_label(mask, group_add, record_add)
     active = builder.from_reference("active").to_bytes()
     commented = builder.from_reference("commented").to_bytes()
     if len(active) != R20_BYTES or len(commented) != R20_BYTES:
@@ -399,15 +501,18 @@ def build_offline_variant(
     selected_spans = [_record_span(record) for record in records]
     if any(not any(start <= index < end for start, end in selected_spans) for index in diff):
         raise RuntimeError(f"mask/family {label} diff escaped selected records")
+    expected_family = None
     if group_add:
-        expected_grayext = GRAYEXT_VARIANTS[mask]
-        if len(diff) != expected_grayext["diff_bytes"]:
+        expected_family = GRAYEXT_VARIANTS[mask]
+    elif record_add is not None:
+        expected_family = SINGLE_RECORD_ADD_VARIANTS[record_add]
+    if expected_family is not None:
+        if len(diff) != expected_family["diff_bytes"]:
             raise RuntimeError(
-                f"GrayExt {label} diff count {len(diff)} != pinned "
-                f"{expected_grayext['diff_bytes']}"
+                f"{label} diff count {len(diff)} != pinned {expected_family['diff_bytes']}"
             )
-        if _sha256(variant_bytes) != expected_grayext["r20_sha256"]:
-            raise RuntimeError(f"GrayExt {label} R20 SHA-256 differs from pinned value")
+        if _sha256(variant_bytes) != expected_family["r20_sha256"]:
+            raise RuntimeError(f"{label} R20 SHA-256 differs from pinned value")
 
     report = {
         "schema_version": 1,
@@ -418,8 +523,8 @@ def build_offline_variant(
         "commented_records": records,
         "active_white_records": [record for record in range(8) if record not in records],
         "selected_spans": [list(span) for span in selected_spans],
-        "tag": tag(mask, group_add),
-        "env": env_name(mask, group_add),
+        "tag": tag(mask, group_add, record_add),
+        "env": env_name(mask, group_add, record_add),
         "active_r20_sha256": _sha256(active),
         "commented_r20_sha256": _sha256(commented),
         "r20_sha256": _sha256(variant_bytes),
@@ -448,22 +553,36 @@ def build_offline_variant(
             "records0_3_group_add": True,
             "family_label_is_not_bitmask": True,
             "group_add_records": sorted(GROUP_ADD_RECORDS),
-            "expected_diff_byte_count_vs_active": GRAYEXT_VARIANTS[mask]["diff_bytes"],
-            "expected_r20_sha256": GRAYEXT_VARIANTS[mask]["r20_sha256"],
+            "expected_diff_byte_count_vs_active": expected_family["diff_bytes"],
+            "expected_r20_sha256": expected_family["r20_sha256"],
         })
         report["assertions"].update({
             "grayext_family_is_explicit_base_plus_records0_3_group": True,
             "grayext_diff_byte_count_matches_pin": True,
             "grayext_r20_sha256_matches_pin": True,
         })
+    elif record_add is not None:
+        report.update({
+            "family_label": label,
+            "base_mask_hex": f"0x{mask_label(mask)}",
+            "single_record_add": record_add,
+            "family_label_is_not_bitmask": True,
+            "expected_diff_byte_count_vs_active": expected_family["diff_bytes"],
+            "expected_r20_sha256": expected_family["r20_sha256"],
+        })
+        report["assertions"].update({
+            "single_record_add_family_is_explicit_base_plus_one_record": True,
+            "single_record_add_diff_byte_count_matches_pin": True,
+            "single_record_add_r20_sha256_matches_pin": True,
+        })
 
     driver_template = DRIVER_TEMPLATE_PATH.read_text(encoding="utf-8")
     runtime_tail = driver_template[driver_template.index("namespace {"):]
     main_template = MAIN_TEMPLATE_PATH.read_text(encoding="utf-8")
     rendered = {
-        "include": _render_include(mask, report, group_add),
-        "driver": _render_driver(mask, runtime_tail, group_add),
-        "main": _render_main(mask, main_template, group_add),
+        "include": _render_include(mask, report, group_add, record_add),
+        "driver": _render_driver(mask, runtime_tail, group_add, record_add),
+        "main": _render_main(mask, main_template, group_add, record_add),
     }
     if rendered["driver"][rendered["driver"].index("namespace {"):] != runtime_tail:
         raise RuntimeError(f"mask/family {label} PSR/runtime tail differs from R2G")
@@ -478,15 +597,19 @@ def build_offline_variant(
     }
     if group_add:
         report["compile_time_assertions"]["records0_3_group_flag_and_base_mask"] = True
+    elif record_add is not None:
+        report["compile_time_assertions"]["single_record_add_identity_and_base_mask"] = True
     for kind, content in rendered.items():
         report[f"{kind}_content_lf_sha256"] = _sha256(content.encode("utf-8"))
     del report["r20_payload"]
     return report, rendered
 
 
-def generate_sources(mask: int, group_add: bool = False) -> dict:
-    report, rendered = build_offline_variant(mask, group_add)
-    paths = source_paths(mask, group_add)
+def generate_sources(
+    mask: int, group_add: bool = False, record_add: int | None = None
+) -> dict:
+    report, rendered = build_offline_variant(mask, group_add, record_add)
+    paths = source_paths(mask, group_add, record_add)
     for kind, content in rendered.items():
         _write_generated(paths[kind], content)
     for kind, path in paths.items():
@@ -506,7 +629,18 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         action="store_true",
         help="add the whole White records 0-3 group; with --all generates GrayExt 1E/1C/1D",
     )
-    return parser.parse_args(argv)
+    parser.add_argument(
+        "--record-add",
+        type=int,
+        choices=SINGLE_RECORD_ADD_RECORDS,
+        help="with --mask 0E, add exactly one White record 0, 1, 2, or 3",
+    )
+    args = parser.parse_args(argv)
+    if args.group_add and args.record_add is not None:
+        parser.error("--group-add and --record-add are mutually exclusive")
+    if args.record_add is not None and not args.mask:
+        parser.error("--record-add requires --mask 0E")
+    return args
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -517,11 +651,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         masks = GRAYEXT_BASE_MASKS
     else:
         masks = PENDING_MASKS
-    reports = [generate_sources(mask, args.group_add) for mask in masks]
+    reports = [
+        generate_sources(mask, args.group_add, args.record_add) for mask in masks
+    ]
     print(json.dumps({
         "schema_version": 1,
         "records0_3_group_add": args.group_add,
-        "family_labels_are_not_bitmasks": args.group_add,
+        "single_record_add": args.record_add,
+        "family_labels_are_not_bitmasks": args.group_add or args.record_add is not None,
         "variant_count": len(reports),
         "variants": reports,
     }, indent=1))
