@@ -7,7 +7,15 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-10-19 15:25 +0800`
+最后更新：`2026-10-19 15:43 +0800`
+
+## 2026-10-19 15:43 +0800 GrayExt 批 1D **SCREENING_NEAR_NEUTRAL_AND_LIGHTER_CHROMA_REDUCED**：高端近中性新筛查点出现（3 刷）
+
+- **批次 [`WF_WMASK_1D_20261019_V1`](../.test-output/hardware/WF_WMASK_1D_20261019_V1/)，manifest sha `48a2fc73…`，3 刷 2 写。** 变体 `1D={0,1,2,3,4,6,7}`、仅 record5 active；bin `cefa9b59…`。OTP 基线 drf 21681、白场 L64.46；变体 drf 32671，BUSY/sequence 正常。
+- **结果**：t0 `L59.87/a-0.57/b-6.76/std_L2.91` → t30 `L59.42/a-0.51/b-6.77/std_L2.90`，30s `|ΔL|=0.45`，场色均匀近中性暖浅灰。相对 0D scan `+1.45 L/+4.26 b`，相对 0D 复现 `+0.38 L/+3.99 b`；a≈-0.6，b 明显向零收敛。相对 1F 更亮且低彩（ΔL=+2.32、Δa=-8.41），不是 0D/1F duplicate。
+- **阶段结论**：records 0–3 的 group-add 是强 base 依赖交互——0E 只抬亮但增品红，0C 基本无效，**0D 则保持近中性并显著减少蓝色偏移**。1D 是当前最有价值的新高端近中性筛查候选，需独立复现后才可立项。
+- **收尾**：恢复生产 `ba59c3d6…` + OTP 白场（drf 21691，L64.40/std_L3.28），relay OFF、BUSY=0。
+- **下一入口**：①更新 21 格对比图集；②对 1D 做独立复现（同变体、同 t0/t30 门，参考 t0 L59.87/a-0.57/b-6.76/std_L2.91）；③若 1D 复现，再评估是否拆 records 0–3 找同族相邻明度。
 
 ## 2026-10-19 15:25 +0800 GrayExt 批 1C **SCREENING_LIGHTER_BUT_CHROMATIC_NOT_NEUTRAL**：0C 上 group-add 不推向 0D（3 刷）
 
