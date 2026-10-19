@@ -1,10 +1,3 @@
-## 2026-10-20 05:37 +0800 多区域分块与跨波形局部保持 handoff（0 刷新）
-
-- **离线交接已推送**：[`MF1750_PARTIAL_BLOCK_WAVEFORM_HANDOFF_20261020.md`](MF1750_PARTIAL_BLOCK_WAVEFORM_HANDOFF_20261020.md)。当前 `wf_wmask_1E/1C/1D` 仍是完整帧 packed-4bpp，单个 DRF 绑定一条 R20 waveform。
-- **路线 A**：固定单 waveform 多区域 atlas，用多个 `PTLW` 窗口验证局部写入和旧区保持；**路线 B**：`PTLW=0x83` + cropped DTM，验证跨 waveform 的 A/B/C 区域共存。
-- **离线窗口**：A=(48,64,160,120)、B=(304,240,160,120)、C=(48,416,160,120)；SPI 1 MHz、9-byte inclusive window、160×120 crop、PWR/PLL/R21/PSR/runtime 保持现有 profile。
-- **顺序与门**：factory white→A→white→B→white→C→white；每步恰好一次 ARM/EXECUTE/visible refresh，记录 t0/t30、四边、旧区闪烁/残留。P0 payload/DTM/窗口合同，P1 单窗口四边，P2 A→B→C 旧区保持，P3 重复目标稳定；BUSY/POF/边缘异常立即 STOP 并恢复白场。**0 刷新，不构成真屏授权。**
-
 # ESP32_C73 当前状态交接
 
 > 上下文清理后的短入口：[`CONTEXT_RESET_HANDOFF_2026-09-05.md`](CONTEXT_RESET_HANDOFF_2026-09-05.md)。
@@ -15,6 +8,14 @@
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
 最后更新：`2026-10-20 05:57 +0800`
+
+## 2026-10-20 05:37 +0800 多区域分块与跨波形局部保持 handoff（0 刷新）
+
+- **离线交接已推送**：[`MF1750_PARTIAL_BLOCK_WAVEFORM_HANDOFF_20261020.md`](MF1750_PARTIAL_BLOCK_WAVEFORM_HANDOFF_20261020.md)。当前 `wf_wmask_1E/1C/1D` 仍是完整帧 packed-4bpp，单个 DRF 绑定一条 R20 waveform。
+- **路线 A**：固定单 waveform 多区域 atlas，用多个 `PTLW` 窗口验证局部写入和旧区保持；**路线 B**：`PTLW=0x83` + cropped DTM，验证跨 waveform 的 A/B/C 区域共存。
+- **离线窗口**：A=(48,64,160,120)、B=(304,240,160,120)、C=(48,416,160,120)；SPI 1 MHz、9-byte inclusive window、160×120 crop、PWR/PLL/R21/PSR/runtime 保持现有 profile。
+- **顺序与门**：factory white→A→white→B→white→C→white；每步恰好一次 ARM/EXECUTE/visible refresh，记录 t0/t30、四边、旧区闪烁/残留。P0 payload/DTM/窗口合同，P1 单窗口四边，P2 A→B→C 旧区保持，P3 重复目标稳定；BUSY/POF/边缘异常立即 STOP 并恢复白场。**0 刷新，不构成真屏授权。**
+- **执行状态（补记）**：用户指令执行该 handoff；成对暗簇复现与定向 group-add 候选让路，转入本主线离线实现。
 
 ## 2026-10-19 23:20 +0800 0E_R0R3 记录对筛查 **SCREENING_JOINS_DARK_PAIR_CLUSTER_LOWER_EDGE**：三点 pair 分支闭合（3 刷 2 写）
 
