@@ -434,5 +434,107 @@ class SpatialDecodeAuditTests(unittest.TestCase):
         self.assertEqual(tool._fnv1a(tool.controller_stream(frame_v2, True)), 0xC4138DC5)
 
 
+class V3SessionTests(unittest.TestCase):
+    """Route A V3: normalization + probes + V2 atlas session env."""
+
+    def test_normalize_sequence_is_pinned(self) -> None:
+        seq = tool.V3_NORMALIZE_SEQUENCE
+        self.assertEqual(len(seq), 8)
+        self.assertEqual([s["kind"] for s in seq[:2]], ["factory_otp_white"] * 2)
+        self.assertEqual(
+            [(s["kind"], s["code"]) for s in seq[2:]],
+            [("active_uniform", 0), ("active_uniform", 1)] * 3,
+        )
+        self.assertEqual(seq[-1]["code"], 1)
+        contract = tool.render_v3()["src/generated/partial_atlas_1e_v3_contract.inc"]
+        self.assertIn("kNormalizeStepCount = 8", contract)
+        self.assertIn("FACTORY_OTP_WHITE", contract)
+        self.assertIn("ACTIVE_UNIFORM", contract)
+
+    def test_tuple_binding_byte_identity(self) -> None:
+        report = tool.build_v3_report()
+        self.assertEqual(report["tuples"]["active"]["r20_sha256"],
+                         tool.V3_ACTIVE_R20_SHA256)
+        self.assertEqual(report["tuples"]["active"]["pwr_sha256"], wmask.PWR_SHA256)
+        self.assertEqual(report["tuples"]["active"]["pll_sha256"], wmask.PLL_SHA256)
+        self.assertEqual(report["tuples"]["active"]["r21_sha256"], wmask.R21_SHA256)
+        self.assertEqual(report["tuples"]["1E"]["r20_sha256"],
+                         wmask.build_offline_variant(0x0E, True)[0]["r20_sha256"])
+        self.assertFalse(report["tuples"]["factory_otp"]["runtime_lut_uploaded"])
+
+    def test_frame_and_stream_identities(self) -> None:
+        identities = tool.v3_identities()
+        frames, streams = identities["frames"], identities["streams"]
+        self.assertEqual(frames["black"]["sha256"],
+                         "7818f5542a0404157573be6cffc0e0c8e68ce3c0f5d17d07ccdd9313fb700baf")
+        self.assertEqual(frames["white"]["sha256"],
+                         "91f1ed45bf609a23fbdcfd037027c2e271484f58321a4707e889d11859d8453d")
+        self.assertEqual(frames["probe7"]["sha256"],
+                         "f27255891c2b00350b2f7aca6f0719116c6a29262008b7621ef4b7df66b099f2")
+        # The V3 atlas action carries the exact V2 frame.
+        self.assertEqual(frames["atlas_v2"]["sha256"],
+                         "1bca805d48996052b748fdaaae9ac8579c2d72b241d2ed5a4836f28d181dc22b")
+        self.assertEqual(frames["atlas_v2"]["fnv1a"], 0x96EDCDC5)
+        self.assertEqual(streams["white"], 0xB7A855C5)
+        self.assertEqual(streams["probe7"], 0x285715C5)
+        self.assertEqual(streams["black"], 0xC18E7DC5)
+        self.assertEqual(streams["atlas_v2_cs1"], 0x28DCCDC5)
+        self.assertEqual(streams["atlas_v2_cs2"], 0xC4138DC5)
+
+    def test_v3_driver_structure_and_tail_identity(self) -> None:
+        driver = tool.render_v3()["src/partial_atlas_1e_v3_epd_driver.cpp"]
+        self.assertIn(tool._r2g_tail(), driver)
+        for inc in ("spd1657_legacy_535_reference.inc", "spd1657_wf_wmask_1E.inc",
+                    "partial_atlas_1e_v2_layout.inc", "partial_atlas_1e_v3_contract.inc"):
+            self.assertIn(f'#include "generated/{inc}"', driver)
+        self.assertIn("namespace pb_profile_1e = mf1750::runtime_lut::wf_wmask_1E;", driver)
+        self.assertIn("pbv3LoadRuntimeTuple", driver)
+        self.assertIn("pbv3::kAtlasV2FrameFnv1a", driver)
+        self.assertIn("epdDisplayCompiledFactoryOtpWhiteRecovery", driver)
+        self.assertEqual(tool.build_v3_report()["runtime_tail_sha256"],
+                         tool.build_report("V1")["runtime_tail_sha256"])
+
+    def test_v3_main_endpoints_and_no_frame_ingress(self) -> None:
+        main = tool.render_v3()["src/partial_atlas_1e_v3_main.cpp"]
+        self.assertIn('MF1750_PARTIAL_BLOCK_ATLAS_1E_20261020_V3', main)
+        for route in ("normalize", "probe-code7", "probe-code1",
+                      "atlas-v2", "white-recovery"):
+            with self.subTest(route=route):
+                self.assertIn(f'server.on("/api/partial-atlas-v3/{route}"', main)
+        self.assertIn('server.on("/api/partial-atlas-v3/steps", HTTP_GET', main)
+        self.assertIn("epdGetPartialAtlasV3StepReports", main)
+        self.assertNotIn('server.on("/api/frame"', main)
+        self.assertNotIn("frame-ingress", main)
+
+    def test_v3_render_deterministic_and_matches_disk(self) -> None:
+        first, second = tool.render_v3(), tool.render_v3()
+        self.assertEqual(first, second)
+        for relative, content in first.items():
+            with self.subTest(source=relative):
+                path = ROOT / relative
+                self.assertTrue(path.is_file())
+                self.assertEqual(path.read_bytes(), content.encode("utf-8"))
+
+    def test_v3_env_tag_and_doc_registration(self) -> None:
+        platformio = (ROOT / "platformio.ini").read_text(encoding="utf-8")
+        frame_tool = (ROOT / "tools/mf1750_frame_tool.py").read_text(encoding="utf-8")
+        api_doc = (ROOT / "docs/MF1750_DRIVER_API.md").read_text(encoding="utf-8")
+        self.assertIn(f"[env:{tool.ATLAS_ENV_V3}]", platformio)
+        self.assertIn(tool.ATLAS_TAG_V3, frame_tool)
+        self.assertIn(tool.ATLAS_TAG_V3, api_doc)
+        self.assertIn(f'FW_BUILD_TAG = "{tool.ATLAS_TAG_V3}"',
+                      tool.render_v3()["src/partial_atlas_1e_v3_main.cpp"])
+
+    def test_v3_roi_list_is_the_v2_layout(self) -> None:
+        # The V3 atlas action refreshes the V2 frame, so the measurement
+        # regions are the V2 layout's regions.
+        doc = tool.atlas_roi_list_doc("V2")
+        self.assertEqual(
+            [region["name"] for region in doc["regions"]],
+            ["code0", "code1", "code2", "code3", "code4", "code5",
+             "code7_probe", "code6"],
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
