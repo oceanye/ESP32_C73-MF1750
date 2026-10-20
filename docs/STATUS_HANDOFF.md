@@ -7,7 +7,17 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-10-20 08:20 +0800`
+最后更新：`2026-10-20 09:15 +0800`
+
+## 2026-10-20 09:15 +0800 P0 两异常排查完成：code0 固有语义 + bg_ref 排除映射 bug（0 刷新）
+
+- **分析包 [`PARTIAL_BLOCK_P0_ANOMALY_ANALYSIS_20261020_V1`](../.test-output/offline/PARTIAL_BLOCK_P0_ANOMALY_ANALYSIS_20261020_V1/)，manifest canonical sha `227b43c7…`。**
+- **异常 1（code0 不可见）= 1E 固有波形语义**：1E 与 active 的全部差异仅在 White category `[183:271)`；code0 的驱动相位被 records 0–3 注释移除。处置：布局保留 code0 作"不可见"对照格，可见深色锚点改用 code4（复测 L29.8）。
+- **异常 2（bg_ref 橄榄块）排除映射/生成器 bug**：按驱动真实级联映射逐像素解码封印帧，8/8 区域纯净、code 与布局一致（回归测试 `SpatialDecodeAuditTests` 固化）。最强假设：1E 接通了 active 表中惰性的 code7 White G7/G8 槽，显现依赖像素残余前态；完全可逆、无残留。判别实验并入 P0 重验（code7↔code6 换位探针）。
+- **附带发现（测量管线）**：P0 官方多 ROI 值用了默认四边形、与本批机位不符，定量被配准误差稀释（code1 官方 L54.6 vs 干净复测 L35.8）。即日起多 ROI 分析强制逐批 `--corners`。
+- **handoff 修订 2**：路线 B patch code code0→code4；P0 V2 布局加 code7 换位探针。
+- **验证**：定向 175 passed + 125 subtests；contract passed=true。无 V2 bundle（映射无 bug，帧不重出）；V1 仍是规范身份。
+- **下一入口**：构建 P0 V2 布局 bundle（code7 探针换位）+ 路线 B patch code4 重出 → P0 重验 → P1。
 
 ## 2026-10-20 08:20 +0800 P0 路线 A 多区域 atlas **P0_NOT_PASSED**：传输全对但两处屏显异常（3 刷 2 写）
 
