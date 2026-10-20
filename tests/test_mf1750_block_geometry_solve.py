@@ -269,11 +269,11 @@ class MedianBackgroundDetectionTests(SyntheticFixtureMixin, unittest.TestCase):
     "V3 recon batch photos not present",
 )
 class V3ReconPhotoSanityTests(unittest.TestCase):
-    """Qualitative regression on the real V3 recon batch atlas photo.
+    """Regression on the real V3 recon batch atlas photo.
 
-    The V3 layout differs from V4; this only verifies the solver does not
-    crash and reproduces the arbitrated assignment (geometry-unflipped-A.json:
-    teal=code0, mauve=code4, yellowgreen=code5; code1 invisible).
+    The V3 layout differs from V4; this pins that the pipeline reproduces the
+    arbitrated unflipped assignment (teal=code0, mauve=code4,
+    yellowgreen=code5, code1 invisible) with a decisive rim tie-break.
     """
 
     def test_v3_atlas_photo_sanity(self) -> None:
@@ -286,29 +286,94 @@ class V3ReconPhotoSanityTests(unittest.TestCase):
                 rim_photo_file=V3_BATCH / "01-otp-t0.jpg",
             )
             report = json.loads((Path(tmp) / "v3" / "geometry.json").read_text(encoding="utf-8"))
-            # Detection matches the V3 narrative: 3 macro diff blobs (2 clean
-            # blocks + merged sliver haze at the right edge).
-            self.assertEqual(report["detection"]["blob_count"], 3)
-            self.assertEqual(report["assignment"]["full_blocks_used"], 2)
-            # V3 history lesson: block geometry alone leaves a symmetric tie;
-            # the tool must report it instead of guessing reliably.
-            self.assertGreaterEqual(report["assignment"]["corner_score_tie_count"], 2)
-            self.assertFalse(report["assignment"]["reliable"])
-            self.assertTrue(set(result["detected"]) <= set(r["name"] for r in report["blocks"]))
+            # The pipeline now reproduces the arbitrated V3 assignment
+            # (geometry-unflipped-A.json: teal=code0, mauve=code4,
+            # yellowgreen=code5; code1 invisible) with the rim anchor breaking
+            # the symmetric tie decisively.
+            for name in ("code0", "code4", "code5"):
+                self.assertIn(name, result["detected"])
+            self.assertIn("code1", result["missing"])
+            self.assertEqual(report["assignment"]["tie_broken_by"], "rim_x0_anchor")
+            self.assertTrue(report["assignment"]["reliable"])
+            self.assertEqual(report["detection"]["blob_count"], 6)
             homography = np.array(report["homography_content_to_photo"])
             self.assertTrue(np.all(np.isfinite(homography)))
             self.assertIsNotNone(result["rim_err"])
-            self.assertTrue(
-                all(
-                    math.isfinite(v)
-                    for block in report["blocks"]
-                    for point in block["photo_quad_pred"]
-                    for v in point
-                )
-            )
+            self.assertLess(result["rim_err"], 100.0)
             roi_lab.verify_report(Path(tmp) / "v3" / "geometry.json")
             lab = json.loads((Path(tmp) / "v3" / "lab-report.json").read_text(encoding="utf-8"))
             self.assertEqual(len(lab["regions"]), 8)
+
+
+V4_BATCH = ROOT / ".test-output/hardware/MF1750_PARTIAL_BLOCK_P0V4_20261020_V2"
+
+
+@unittest.skipUnless(
+    (V4_BATCH / "05-atlas-t0.jpg").is_file()
+    and (V4_BATCH / "04-postnorm-white.jpg").is_file()
+    and (V4_BATCH / "01-otp-t0.jpg").is_file(),
+    "V4 batch photos not present",
+)
+class V4RealPhotoRegressionTests(unittest.TestCase):
+    """Pin the P0V4 real-photo detection/assignment intermediates.
+
+    Regression for the original failure: artifact specks dragged the area
+    median so the cluster filter rejected the true blocks, and a low-contrast
+    code4 (dark maroon vs dark navy) needed threshold 10 plus erosion-based
+    separation of halo-bridged neighbours.
+    """
+
+    def test_v4_detection_and_assignment(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            result = tool.solve(
+                photo_file=V4_BATCH / "05-atlas-t0.jpg",
+                roi_list_file=V4_ROI_LIST,
+                output_dir=Path(tmp) / "v4",
+                white_photo_file=V4_BATCH / "04-postnorm-white.jpg",
+                rim_photo_file=V4_BATCH / "01-otp-t0.jpg",
+            )
+            report = json.loads((Path(tmp) / "v4" / "geometry.json").read_text(encoding="utf-8"))
+            detection = report["detection"]
+            self.assertEqual(detection["diff_threshold"], 10.0)
+            self.assertEqual(detection["cluster_blob_count"], 7)
+            self.assertTrue(
+                all(not b["nonconforming"] for b in detection["blobs"])
+            )
+            self.assertTrue(
+                all(b["truncated_edge"] is None for b in detection["blobs"])
+            )
+            self.assertEqual(
+                sorted(result["detected"]),
+                ["code0", "code2", "code3", "code4", "code5", "code6", "code7"],
+            )
+            self.assertEqual(result["missing"], ["code1"])
+            self.assertEqual(report["assignment"]["corner_score_tie_count"], 2)
+            self.assertEqual(report["assignment"]["tie_broken_by"], "rim_x0_anchor")
+            self.assertTrue(report["assignment"]["reliable"])
+            for block in report["blocks"]:
+                if block["detection"] == "full":
+                    self.assertLess(block["reprojection_rms"], 10.0, block["name"])
+                    self.assertTrue(block["fully_in_frame_pred"], block["name"])
+            roi_lab.verify_report(Path(tmp) / "v4" / "geometry.json")
+
+    def test_v4_lab_table(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tool.solve(
+                photo_file=V4_BATCH / "05-atlas-t0.jpg",
+                roi_list_file=V4_ROI_LIST,
+                output_dir=Path(tmp) / "v4",
+                white_photo_file=V4_BATCH / "04-postnorm-white.jpg",
+            )
+            lab = json.loads((Path(tmp) / "v4" / "lab-report.json").read_text(encoding="utf-8"))
+            self.assertEqual(len(lab["regions"]), 8)
+            regions = {r["name"]: r for r in lab["regions"]}
+            # code1 is near-background invisible; every other code resolves
+            # against the batch-internal white field.
+            self.assertFalse(regions["code1"]["resolvable_vs_white"])
+            self.assertLess(regions["code1"]["delta_vs_white"]["dE76"], 3.0)
+            for name in ("code0", "code2", "code3", "code4", "code5", "code6", "code7"):
+                self.assertTrue(regions[name]["resolvable_vs_white"], name)
+                self.assertGreater(regions[name]["delta_vs_white"]["dE76"], 3.0, name)
 
 
 if __name__ == "__main__":

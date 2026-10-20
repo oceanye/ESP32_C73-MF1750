@@ -24,11 +24,11 @@ solve_geometry.py and geometry-unflipped-A.json):
      exactly — the V3 arbitration lesson; ties are broken by the rim anchor
      only when it clearly discriminates (factor-2 margin), otherwise they are
      reported and the assignment is marked reliable=false.
-  3. Optional rim anchor: with --rim-photo (white-field photo with the bright
-     active area against dark surround) the active-area quad is detected with
-     two-stage Otsu and rim_err is the mean distance of the projected content
-     x=0 line to the rim quad's photo-left vertical edge (rig convention, same
-     anchor as the V3 arbitration).
+  3. Optional rim anchor: with --rim-photo (white-field photo) candidate
+     panel-left edges are detected as vertical-ish Hough segments left of the
+     detected blocks (edge feature, not brightness: the desk can out-brighten
+     the panel).  rim_err is the mean distance of the projected content x=0
+     line to the nearest rim segment.
   4. Lab handoff: the photo (and white photo, if given) are warped back to the
      1024x600 content plane via H^-1 and measured with
      tools/mf1750_multi_roi_lab.py (batch white-field delta convention),
@@ -73,8 +73,9 @@ from tools import mf1750_multi_roi_lab as roi_lab  # noqa: E402
 
 SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 600
-DEFAULT_DIFF_THRESHOLD = 15.0
+DEFAULT_DIFF_THRESHOLD = 10.0
 DEFAULT_MIN_BLOB_AREA = 500
+CLUSTER_AREA_FACTOR = 2.6
 BORDER_PX = 6
 RIM_SAMPLE_POINTS = 40
 TRUNCATED_MATCH_MAX_DIST = 200.0
@@ -265,16 +266,35 @@ def detect_blobs(
         diff[panel_mask == 0] = 0
         method = "panel-gated-median-background-difference"
     scale = max(min(width, height) / 3000.0, 0.2)
-    # Kernels must stay below the inter-block gap (V4 compact layout: 10
-    # content px gaps ~= 10-25 photo px) so adjacent blocks never merge.
-    open_kernel = max(3, int(round(7 * scale)) | 1)
-    close_kernel = max(3, int(round(15 * scale)) | 1)
+    # P0V4 real-photo lessons: (a) low-contrast blocks (dark maroon vs dark
+    # navy background) need threshold ~10; (b) sub-pixel camera drift between
+    # the white and atlas shots leaves strong diff halos along block edges,
+    # which bridge adjacent blocks across the ~23 photo-px gap — so separate
+    # components with an erosion pass, then regrow each component into the
+    # un-eroded mask (dilate + intersect) to recover full block extent without
+    # re-bridging.
+    open_kernel = max(3, int(round(3 * scale)) | 1)
+    close_kernel = max(3, int(round(9 * scale)) | 1)
+    separate_kernel = max(3, int(round(17 * scale)) | 1)
     mask = (diff > threshold).astype(np.uint8) * 255
     mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, np.ones((open_kernel, open_kernel), np.uint8))
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, np.ones((close_kernel, close_kernel), np.uint8))
-    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    separated = cv2.erode(mask, np.ones((separate_kernel, separate_kernel), np.uint8))
+    contours, _ = cv2.findContours(separated, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     blobs: list[dict[str, Any]] = []
     for contour in contours:
+        if cv2.contourArea(contour) < min_area:
+            continue
+        component = np.zeros(mask.shape, np.uint8)
+        cv2.drawContours(component, [contour], -1, 255, cv2.FILLED)
+        component = cv2.dilate(
+            component, np.ones((separate_kernel, separate_kernel), np.uint8)
+        )
+        component = cv2.bitwise_and(component, mask)
+        regrown, _ = cv2.findContours(component, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        if not regrown:
+            continue
+        contour = max(regrown, key=cv2.contourArea)
         area = float(cv2.contourArea(contour))
         if area < min_area:
             continue
@@ -289,15 +309,39 @@ def detect_blobs(
         )
     blobs.sort(key=lambda blob: -blob["area"])
     if blobs:
-        # Drop phantom blobs whose area is inconsistent with the block cluster
-        # (panel-edge artifacts are much larger; specks much smaller).  Slivers
-        # truncated by the frame keep a lower bound allowance.
-        median_area = float(np.median([blob["area"] for blob in blobs]))
-        blobs = [
+        # Cluster consistency (P0V4 lesson: a median over ALL blobs is dragged
+        # down by artifact specks, which then rejects the true blocks).  Pick
+        # the largest window of blobs whose areas agree within a factor; blobs
+        # outside the cluster are artifacts.  Frame-truncated slivers are
+        # exempt from the lower bound (they are partial blocks).
+        cluster: list[dict[str, Any]] = []
+        for anchor in blobs:
+            window = [
+                blob
+                for blob in blobs
+                if blob["area"] <= anchor["area"]
+                and blob["area"] >= anchor["area"] / CLUSTER_AREA_FACTOR
+            ]
+            if len(window) > len(cluster) or (
+                len(window) == len(cluster)
+                and sum(b["area"] for b in window) > sum(b["area"] for b in cluster)
+            ):
+                cluster = window
+        cluster_min = min((blob["area"] for blob in cluster), default=0.0)
+        kept = list(cluster)
+        kept_ids = {id(blob) for blob in kept}
+        # Truncated slivers can be much smaller than full blocks; re-admit
+        # them as long as they clear the absolute floor relative to the
+        # cluster.  (id-based membership: blob dicts hold numpy arrays, which
+        # are not safely equality-comparable.)
+        kept.extend(
             blob
             for blob in blobs
-            if 0.15 * median_area <= blob["area"] <= 2.0 * median_area
-        ]
+            if blob["truncated_edge"] is not None
+            and id(blob) not in kept_ids
+            and blob["area"] >= max(min_area, 0.1 * cluster_min)
+        )
+        blobs = kept
     # Quad conformity: untruncated blobs whose side lengths deviate strongly
     # from the cluster median are merged/halo artifacts, not blocks (V3 diff
     # haze lesson).  They stay out of the fit but remain in the report.
@@ -333,7 +377,11 @@ def detect_blobs(
         "min_blob_area": min_area,
         "open_kernel": open_kernel,
         "close_kernel": close_kernel,
+        "separate_kernel": separate_kernel,
+        "separate_regrow": True,
+        "cluster_area_factor": CLUSTER_AREA_FACTOR,
         "raw_contour_count": len(contours),
+        "cluster_blob_count": len(blobs),
     }
     return blobs, detail
 
@@ -373,9 +421,9 @@ TIE_CORNER_EPSILON = 3.0
 CENTROID_PREFILTER_TOP = 256
 
 
-def _rim_score(homography: np.ndarray, rim_quad: np.ndarray) -> float:
-    """Mean distance of the rim quad's content-x=0 edge to the projected line."""
-    return rim_error(homography, rim_quad)["rim_err"]
+def _rim_score(homography: np.ndarray, rim_segments: Sequence[np.ndarray]) -> float:
+    """Mean distance of the nearest rim segment to the projected x=0 line."""
+    return rim_error(homography, rim_segments)["rim_err"]
 
 
 def _corner_refit(
@@ -458,7 +506,7 @@ def _corner_refit(
 def solve_assignment(
     regions: Sequence[Mapping[str, Any]],
     blobs: Sequence[dict[str, Any]],
-    rim_quad: np.ndarray | None = None,
+    rim_quad: Sequence[np.ndarray] | None = None,
 ) -> dict[str, Any]:
     full = [
         (index, blob)
@@ -612,54 +660,64 @@ def solve_assignment(
     }
 
 
-def detect_rim(rim_photo: np.ndarray) -> np.ndarray:
+def detect_rim(
+    rim_photo: np.ndarray, blob_centroids: np.ndarray | None = None
+) -> list[np.ndarray]:
+    """Detect candidate panel-left rim edges as vertical-ish Hough segments.
+
+    Brightness thresholding is not reliable for every framing (P0V4 lesson:
+    the desk can be brighter than the panel), so the rim is an *edge* feature,
+    matching the V3 arbitration's Hough-line rim anchor.  Candidate segments
+    must sit left of the detected blocks and overlap their vertical span.
+    Returns a list of [x0, y0, x1, y1] segments.
+    """
     gray = cv2.cvtColor(rim_photo, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (9, 9), 0)
-    # Two-stage Otsu: the first split can swallow a mid-bright bezel; the
-    # second stage re-splits the bright class (V3 OTP-white lesson).
-    _, binary = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-    bright_pixels = blurred[binary > 0]
-    if bright_pixels.size > 100:
-        stage2, _ = cv2.threshold(
-            bright_pixels, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU
-        )
-        refined = (blurred > stage2).astype(np.uint8) * 255
-        refined = cv2.morphologyEx(
-            refined, cv2.MORPH_OPEN, np.ones((15, 15), np.uint8)
-        )
-        contours2, _ = cv2.findContours(
-            refined, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
-        )
-        if contours2 and cv2.contourArea(max(contours2, key=cv2.contourArea)) >= (
-            0.01 * gray.shape[0] * gray.shape[1]
-        ):
-            binary = refined
-    contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    if not contours:
-        raise GeometrySolveError("rim photo: no bright region detected")
-    contour = max(contours, key=cv2.contourArea)
-    if cv2.contourArea(contour) < 0.01 * gray.shape[0] * gray.shape[1]:
-        raise GeometrySolveError("rim photo: bright active area implausibly small")
-    quad = _order_quad(cv2.boxPoints(cv2.minAreaRect(contour)))
-    height, width = gray.shape
-    coverage = float(
-        cv2.contourArea(cv2.boxPoints(cv2.minAreaRect(contour)).astype(np.float32))
-    ) / float(width * height)
-    if coverage > 0.98:
+    edges = cv2.Canny(blurred, 20, 60)
+    scale = max(min(gray.shape) / 3000.0, 0.2)
+    min_length = max(150, int(round(300 * scale)))
+    lines = cv2.HoughLinesP(
+        edges, 1, math.pi / 180, threshold=max(40, int(60 * scale)),
+        minLineLength=min_length, maxLineGap=max(10, int(40 * scale)),
+    )
+    if lines is None:
+        raise GeometrySolveError("rim photo: no line segments detected")
+    segments: list[np.ndarray] = []
+    if blob_centroids is not None and len(blob_centroids):
+        min_block_x = float(np.min(blob_centroids[:, 0]))
+        y0 = float(np.min(blob_centroids[:, 1]))
+        y1 = float(np.max(blob_centroids[:, 1]))
+        span = max(y1 - y0, 1.0)
+        y_lo, y_hi = y0 - 0.5 * span, y1 + 0.5 * span
+    else:
+        min_block_x, y_lo, y_hi = gray.shape[1], 0.0, float(gray.shape[0])
+    for line in lines.reshape(-1, 4):
+        x1, y1_, x2, y2_ = (float(v) for v in line)
+        dx, dy = x2 - x1, y2_ - y1_
+        if abs(dy) < 1 or abs(dx) > 0.35 * abs(dy):
+            continue
+        mid_x = (x1 + x2) / 2.0
+        seg_lo, seg_hi = min(y1_, y2_), max(y1_, y2_)
+        if mid_x >= min_block_x - 20:
+            continue
+        if seg_hi < y_lo or seg_lo > y_hi:
+            continue
+        segments.append(np.array([x1, y1_, x2, y2_]))
+    if not segments:
         raise GeometrySolveError(
-            "rim photo: bright region covers the whole frame; no rim edge identifiable"
+            "rim photo: no vertical rim edge left of the detected blocks; rim unusable"
         )
-    return quad
+    return segments
 
 
-def rim_error(homography: np.ndarray, rim_quad: np.ndarray) -> dict[str, Any]:
-    """Distance of the projected content x=0 line to the rim's left vertical edge.
+def rim_error(homography: np.ndarray, rim_segments: Sequence[np.ndarray]) -> dict[str, Any]:
+    """Distance of the projected content x=0 line to the nearest rim segment.
 
     Rig convention (same as the V3 arbitration): the panel active-area left
-    edge in the photo is content x=0.  The leftmost of the rim quad's two
-    vertical edges is the anchor; a rotated hypothesis projects content x=0 to
-    the opposite side of the panel and scores ~panel-width, which is how the
-    rim breaks assignment ties.
+    edge in the photo is content x=0.  rim_err is the mean point-to-line
+    distance of the best-matching Hough rim segment; a rotated hypothesis
+    projects content x=0 away from the true panel edge and scores much worse,
+    which is how the rim breaks assignment ties.
     """
     line_points = _project(homography, np.array([(0.0, 0.0), (0.0, SCREEN_HEIGHT)]))
     p0, p1 = line_points
@@ -670,20 +728,23 @@ def rim_error(homography: np.ndarray, rim_quad: np.ndarray) -> dict[str, Any]:
     def distance(point: np.ndarray) -> float:
         return abs(float(np.dot(point - p0, normal)))
 
-    vertical_edges = [(3, 0), (1, 2)]  # left, right in ordered quad
-    best_edge = min(
-        vertical_edges,
-        key=lambda edge: (rim_quad[edge[0]][0] + rim_quad[edge[1]][0]) / 2.0,
-    )
-    a, b = rim_quad[best_edge[0]], rim_quad[best_edge[1]]
-    samples = [a + (b - a) * index / (RIM_SAMPLE_POINTS - 1) for index in range(RIM_SAMPLE_POINTS)]
-    errors = [distance(sample) for sample in samples]
+    best: tuple[float, np.ndarray, list[float]] | None = None
+    for segment in rim_segments:
+        a = segment[:2]
+        b = segment[2:]
+        samples = [a + (b - a) * index / (RIM_SAMPLE_POINTS - 1) for index in range(RIM_SAMPLE_POINTS)]
+        errors = [distance(sample) for sample in samples]
+        mean_error = float(np.mean(errors))
+        if best is None or mean_error < best[0]:
+            best = (mean_error, segment, errors)
+    assert best is not None
+    mean_error, segment, errors = best
     return {
-        "anchor": "content x=0 line to photo-left vertical rim edge (rig convention)",
-        "rim_quad": np.round(rim_quad, 2).tolist(),
-        "selected_edge": [int(best_edge[0]), int(best_edge[1])],
+        "anchor": "content x=0 line to nearest photo-left rim edge segment (rig convention)",
+        "segment_count": len(rim_segments),
+        "selected_segment": [round(float(v), 2) for v in segment],
         "sample_count": RIM_SAMPLE_POINTS,
-        "rim_err": round(float(np.mean(errors)), 2),
+        "rim_err": round(mean_error, 2),
         "rim_err_max": round(float(np.max(errors)), 2),
     }
 
@@ -707,7 +768,7 @@ def _overlay(
     blobs: Sequence[dict[str, Any]],
     regions: Sequence[Mapping[str, Any]],
     homography: np.ndarray,
-    rim_quad: np.ndarray | None,
+    rim_quad: Sequence[np.ndarray] | None,
 ) -> bytes:
     vis = photo.copy()
     for blob in blobs:
@@ -728,7 +789,14 @@ def _overlay(
             cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 3,
         )
     if rim_quad is not None:
-        cv2.polylines(vis, [rim_quad.astype(np.int32)], True, (0, 255, 255), 3)
+        for segment in rim_quad:
+            cv2.line(
+                vis,
+                (int(segment[0]), int(segment[1])),
+                (int(segment[2]), int(segment[3])),
+                (0, 255, 255),
+                4,
+            )
     return _encode_jpeg(vis, "overlay")
 
 
@@ -757,17 +825,23 @@ def solve(
     if white_photo_file is not None:
         white_path = Path(white_photo_file)
         white_payload, white = _read_image(white_path, label="white photo")
-    rim = None
-    rim_payload = None
     rim_path = None
+    rim_image = None
     if rim_photo_file is not None:
         rim_path = Path(rim_photo_file)
         rim_payload, rim_image = _read_image(rim_path, label="rim photo")
-        rim = detect_rim(rim_image)
 
     blobs, detection_detail = detect_blobs(
         photo, white, threshold=diff_threshold, min_area=min_blob_area
     )
+    rim = None
+    if rim_image is not None:
+        rim = detect_rim(
+            rim_image,
+            blob_centroids=np.array([blob["centroid"] for blob in blobs])
+            if blobs
+            else None,
+        )
     assignment = solve_assignment(regions, blobs, rim_quad=rim)
     homography = assignment["homography"]
 
