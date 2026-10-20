@@ -7,7 +7,15 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-10-20 20:50 +0800`
+最后更新：`2026-10-20 22:05 +0800`
+
+## 2026-10-20 22:05 +0800 台架恢复 + relay 重绑完成：**POWER_RESTORED**，批次冻结解除
+
+- **证据 [`MF17506_RELAY_REBIND_20261020_V1`](../.test-output/hardware/MF17506_RELAY_REBIND_20261020_V1/)，新封印 canonical sha `ce9201f6…`，query-bound OFF 读回通过。** capture-current 逐项对比门：model/VID-PID/PnP/COM14/no-iSerial 全同，仅 usb_location 变（Hub_#0002→Hub_#0001），按 10-17 先例（主代理授权，用户本人恢复台架+连续"继续"）通过。
+- **供电复查全绿**：relay ON 后 BUSY `1,1,1,1,1`（健康判据恢复）；功率计 03.29V ON；uptime 连续无重启；生产 RC2G 身份；面板白场完好；relay OFF 收尾。conclusion 自封 sha `36ac5593…`。
+- **后续批次 `--rebind-seal` 一律改用新封印** `MF17506_RELAY_REBIND_20261020_V1/relay-rebind-20261020.json`（旧 hub2 封印 usb_location 已失效）。
+- **离线预制完成**（`bf4edd7`）：`tools/mf1750_block_geometry_solve.py` — V4 批后一键几何+Lab 管线（块检测对不可见 cell 鲁棒、角点重投影 RMS 归属仲裁、缘线锚破对称平局、白场 delta Lab 口径），13 合成测试全绿 + V3 真照 sanity 合理。
+- **下一入口**：重跑 P0V4 收尾批 `MF1750_PARTIAL_BLOCK_P0V4_20261020_V2`（12 刷 2 写预算不变，新 rebind 封印），收齐 8 码归一化后色调全表。
 
 ## 2026-10-20 20:50 +0800 台架供电安全核查（0 刷新 0 烧录）：**供电未恢复**，功率计输出为物理 OFF，批次继续冻结
 
