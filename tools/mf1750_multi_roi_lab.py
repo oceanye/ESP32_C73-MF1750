@@ -25,11 +25,32 @@ Lab convention (kept identical to the existing batches):
   p95 of the white-background screen area, optionally divided by a reference
   p95 (--reference-p95) with the 0.85/1.2 gate.
 
+Optional white-field comparison: --white-reference-image (warped 1024x600) or
+--white-reference-photo (raw photo, same quad warp) measures every layout
+region on a white-field capture with the same statistics.  Each region then
+additionally reports delta_vs_white {dL, da, db, dE76} (Euclidean Delta E*ab)
+and resolvable_vs_white (|dL| >= --min-delta-l or dE76 >= --min-delta-e;
+defaults 2.0 / 3.0), and the report top level records the white reference's
+source SHA-256 plus its per-region measurements.  When a white reference is
+given without an explicit --reference-p95, the white field's own background
+grayscale p95 becomes the illumination ratio reference.  Without a white
+reference the report structure is unchanged.
+
 The report is self-sealed with the tools/mf1750_wmask_atlas.py integrity
 convention: sha256 of the canonical JSON without the integrity member.
 --verify re-checks a written report.  Output files are created exclusively
 (O_EXCL); nothing is overwritten.  No hardware, serial, relay, network,
 camera, or flashing access is performed.
+
+Usage examples:
+  python tools/mf1750_multi_roi_lab.py --image t0-warped.jpg --layout layout.json \
+      --report out/report.json --annotated out/annotated.png --reference-p95 157
+  python tools/mf1750_multi_roi_lab.py --photo raw.jpg --layout layout.json \
+      --report out/report.json --warped-out out/warped.png
+  python tools/mf1750_multi_roi_lab.py --image blocks-warped.jpg --layout layout.json \
+      --white-reference-image white-warped.jpg --report out/report.json \
+      --min-delta-l 2 --min-delta-e 3
+  python tools/mf1750_multi_roi_lab.py --verify out/report.json
 """
 
 from __future__ import annotations
@@ -478,23 +499,13 @@ def _file_record(path: Path, payload: bytes) -> dict[str, Any]:
     }
 
 
-def measure(
-    *,
-    layout_file: str | Path,
-    report_file: str | Path,
-    image: str | Path | None = None,
-    photo: str | Path | None = None,
-    corners_text: str | None = None,
-    reference_p95: float | None = None,
-    annotated_file: str | Path | None = None,
-    warped_out_file: str | Path | None = None,
-) -> dict[str, Any]:
+def _load_screen_plane(
+    image: str | Path | None,
+    photo: str | Path | None,
+    corners_text: str | None,
+) -> tuple[Path, bytes, np.ndarray, dict[str, Any]]:
     if (image is None) == (photo is None):
         raise MultiRoiLabError("exactly one of image (warped) or photo (raw) is required")
-    if reference_p95 is not None and reference_p95 <= 0:
-        raise MultiRoiLabError("--reference-p95 must be positive")
-
-    regions, layout_payload = _load_layout(Path(layout_file))
     registration: dict[str, Any]
     if image is not None:
         image_path = Path(image)
@@ -530,9 +541,103 @@ def measure(
             "perspective_transform": transform.astype(float).tolist(),
             "screen_size": [SCREEN_WIDTH, SCREEN_HEIGHT],
         }
+    return image_path, image_payload, warped, registration
+
+
+def _delta_vs_white(
+    measurements: Sequence[dict[str, Any]],
+    white_measurements: Sequence[dict[str, Any]],
+    *,
+    min_delta_l: float,
+    min_delta_e: float,
+) -> None:
+    for measurement, white in zip(measurements, white_measurements):
+        assert measurement["name"] == white["name"]
+        d_l = measurement["L"] - white["L"]
+        d_a = measurement["a"] - white["a"]
+        d_b = measurement["b"] - white["b"]
+        d_e76 = math.sqrt(d_l * d_l + d_a * d_a + d_b * d_b)
+        measurement["delta_vs_white"] = {
+            "dL": round(d_l, 2),
+            "da": round(d_a, 2),
+            "db": round(d_b, 2),
+            "dE76": round(d_e76, 4),
+        }
+        measurement["resolvable_vs_white"] = bool(
+            abs(d_l) >= min_delta_l or d_e76 >= min_delta_e
+        )
+
+
+def measure(
+    *,
+    layout_file: str | Path,
+    report_file: str | Path,
+    image: str | Path | None = None,
+    photo: str | Path | None = None,
+    corners_text: str | None = None,
+    reference_p95: float | None = None,
+    annotated_file: str | Path | None = None,
+    warped_out_file: str | Path | None = None,
+    white_reference_image: str | Path | None = None,
+    white_reference_photo: str | Path | None = None,
+    min_delta_l: float = 2.0,
+    min_delta_e: float = 3.0,
+) -> dict[str, Any]:
+    if (image is None) == (photo is None):
+        raise MultiRoiLabError("exactly one of image (warped) or photo (raw) is required")
+    if (white_reference_image is not None) and (white_reference_photo is not None):
+        raise MultiRoiLabError(
+            "at most one of white-reference image (warped) or photo (raw) is allowed"
+        )
+    if reference_p95 is not None and reference_p95 <= 0:
+        raise MultiRoiLabError("--reference-p95 must be positive")
+    if min_delta_l < 0 or min_delta_e < 0:
+        raise MultiRoiLabError("delta thresholds must be non-negative")
+
+    regions, layout_payload = _load_layout(Path(layout_file))
+    image_path, image_payload, warped, registration = _load_screen_plane(
+        image, photo, corners_text
+    )
+
+    white_record: dict[str, Any] | None = None
+    white_background_p95: float | None = None
+    if white_reference_image is not None or white_reference_photo is not None:
+        white_path, white_payload, white_warped, white_registration = (
+            _load_screen_plane(white_reference_image, white_reference_photo, corners_text)
+        )
+        white_measurements = _measure_regions(white_warped, regions)
+        white_illumination = _illumination(white_warped, regions, None)
+        white_background_p95 = white_illumination["grayscale_p95"]
+        white_record = {
+            "image": _file_record(white_path, white_payload),
+            "registration": white_registration,
+            "regions": white_measurements,
+            "background_grayscale_p95": white_background_p95,
+        }
 
     measurements = _measure_regions(warped, regions)
-    illumination = _illumination(warped, regions, reference_p95)
+    if white_record is not None:
+        _delta_vs_white(
+            measurements,
+            white_record["regions"],
+            min_delta_l=min_delta_l,
+            min_delta_e=min_delta_e,
+        )
+    effective_reference_p95 = (
+        reference_p95 if reference_p95 is not None else white_background_p95
+    )
+    illumination = _illumination(warped, regions, effective_reference_p95)
+    if white_record is not None:
+        white_record["resolution_thresholds"] = {
+            "min_abs_dL": min_delta_l,
+            "min_dE76": min_delta_e,
+            "rule": "resolvable_vs_white = |dL| >= min_abs_dL or dE76 >= min_dE76",
+        }
+        illumination["reference_p95_source"] = (
+            "explicit --reference-p95"
+            if reference_p95 is not None
+            else "white-reference background grayscale p95"
+        )
 
     derived_payloads: dict[str, tuple[Path, bytes]] = {}
     if annotated_file is not None:
@@ -573,29 +678,33 @@ def measure(
             "device_io_performed": False,
         },
     }
+    if white_record is not None:
+        report_unsigned["white_reference"] = white_record
     report = seal_report(report_unsigned)
     report_payload = _pretty(report)
     _write_new(Path(report_file), report_payload)
     for path, payload in derived_payloads.values():
         _write_new(path, payload)
-    return {
+    result: dict[str, Any] = {
         "report_file": str(Path(report_file).resolve()),
         "report_canonical_sha256": report["integrity"]["sha256"],
         "region_count": len(measurements),
         "regions": [
             {
-                "name": item["name"],
-                "code": item["code"],
-                "L": item["L"],
-                "a": item["a"],
-                "b": item["b"],
-                "std_L": item["std_L"],
+                key: item[key]
+                for key in ("name", "code", "L", "a", "b", "std_L")
             }
             for item in measurements
         ],
         "illumination": illumination,
         "device_io_performed": False,
     }
+    if white_record is not None:
+        for summary, item in zip(result["regions"], measurements):
+            summary["delta_vs_white"] = item["delta_vs_white"]
+            summary["resolvable_vs_white"] = item["resolvable_vs_white"]
+        result["white_reference_sha256"] = white_record["image"]["sha256"]
+    return result
 
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
@@ -612,6 +721,10 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--annotated", type=Path, help="optional annotated overlay PNG")
     parser.add_argument("--warped-out", type=Path, help="optional warped panel PNG (photo mode)")
     parser.add_argument("--reference-p95", type=float, help="reference white p95 for the illumination ratio")
+    parser.add_argument("--white-reference-image", type=Path, help="warped 1024x600 white-field image for per-region deltas")
+    parser.add_argument("--white-reference-photo", type=Path, help="raw white-field photo (same quad warp) for per-region deltas")
+    parser.add_argument("--min-delta-l", type=float, default=2.0, help="resolvable_vs_white |dL| threshold (default 2.0)")
+    parser.add_argument("--min-delta-e", type=float, default=3.0, help="resolvable_vs_white dE76 threshold (default 3.0)")
     parser.add_argument("--verify", type=Path, help="re-check an existing report's integrity and exit")
     return parser.parse_args(argv)
 
@@ -633,6 +746,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             reference_p95=args.reference_p95,
             annotated_file=args.annotated,
             warped_out_file=args.warped_out,
+            white_reference_image=args.white_reference_image,
+            white_reference_photo=args.white_reference_photo,
+            min_delta_l=args.min_delta_l,
+            min_delta_e=args.min_delta_e,
         )
     except MultiRoiLabError as error:
         print(f"multi-ROI Lab error: {error}")

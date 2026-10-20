@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import math
 from pathlib import Path
 import sys
@@ -258,6 +259,155 @@ class ValidationTests(_FixtureMixin, unittest.TestCase):
                 layout_file=self.dir / "layout.json",
                 report_file=self.report_path(),
             )
+
+
+class WhiteReferenceTests(_FixtureMixin, unittest.TestCase):
+    def setUp(self) -> None:
+        super().setUp()
+        white = np.full((600, 1024, 3), WHITE, dtype=np.uint8)
+        cv2.imwrite(str(self.dir / "white.png"), white[:, :, ::-1])
+
+    def _run_with_white(self, **kwargs) -> dict:
+        return tool.measure(
+            image=self.dir / "screen.png",
+            layout_file=self.dir / "layout.json",
+            report_file=self.report_path(),
+            white_reference_image=self.dir / "white.png",
+            **kwargs,
+        )
+
+    def test_delta_and_resolvable_per_region(self) -> None:
+        result = self._run_with_white()
+        report = json.loads(self.report_path().read_text(encoding="utf-8"))
+        by_name = {r["name"]: r for r in report["regions"]}
+        white_lab = srgb8_to_lab(WHITE)
+        for name, _, rgb, _ in BLOCKS:
+            block_lab = srgb8_to_lab(rgb)
+            delta = by_name[name]["delta_vs_white"]
+            self.assertAlmostEqual(delta["dL"], block_lab[0] - white_lab[0], delta=0.05)
+            self.assertAlmostEqual(delta["da"], block_lab[1] - white_lab[1], delta=0.05)
+            self.assertAlmostEqual(delta["db"], block_lab[2] - white_lab[2], delta=0.05)
+            expected_e76 = math.dist(block_lab, white_lab)
+            self.assertAlmostEqual(delta["dE76"], expected_e76, delta=0.05)
+            self.assertTrue(by_name[name]["resolvable_vs_white"])
+        summary = {r["name"]: r for r in result["regions"]}
+        self.assertIn("delta_vs_white", summary["blk_red"])
+        self.assertIn("white_reference_sha256", result)
+
+    def test_near_white_block_not_resolvable(self) -> None:
+        image = np.full((600, 1024, 3), WHITE, dtype=np.uint8)
+        image[100:300, 100:400] = (233, 235, 236)
+        cv2.imwrite(str(self.dir / "near.png"), image[:, :, ::-1])
+        layout = _layout(regions=[{"name": "near", "code": 7, "x": 100, "y": 100, "w": 300, "h": 200}])
+        (self.dir / "near-layout.json").write_text(json.dumps(layout), encoding="utf-8")
+        tool.measure(
+            image=self.dir / "near.png",
+            layout_file=self.dir / "near-layout.json",
+            report_file=self.report_path("near-report.json"),
+            white_reference_image=self.dir / "white.png",
+        )
+        region = json.loads(self.report_path("near-report.json").read_text(encoding="utf-8"))["regions"][0]
+        self.assertFalse(region["resolvable_vs_white"])
+        self.assertLess(abs(region["delta_vs_white"]["dL"]), 2.0)
+        self.assertLess(region["delta_vs_white"]["dE76"], 3.0)
+
+    def test_thresholds_are_adjustable(self) -> None:
+        self._run_with_white(min_delta_l=1000.0, min_delta_e=1000.0)
+        report = json.loads(self.report_path().read_text(encoding="utf-8"))
+        self.assertTrue(all(not r["resolvable_vs_white"] for r in report["regions"]))
+        thresholds = report["white_reference"]["resolution_thresholds"]
+        self.assertEqual(thresholds["min_abs_dL"], 1000.0)
+        self.assertEqual(thresholds["min_dE76"], 1000.0)
+
+    def test_white_reference_sha256_recorded(self) -> None:
+        self._run_with_white()
+        report = json.loads(self.report_path().read_text(encoding="utf-8"))
+        expected = hashlib.sha256((self.dir / "white.png").read_bytes()).hexdigest()
+        self.assertEqual(report["white_reference"]["image"]["sha256"], expected)
+        white_regions = {r["name"]: r for r in report["white_reference"]["regions"]}
+        white_lab = srgb8_to_lab(WHITE)
+        for name, _, _, _ in BLOCKS:
+            self.assertAlmostEqual(white_regions[name]["L"], white_lab[0], delta=0.05)
+
+    def test_white_background_p95_used_as_illumination_reference(self) -> None:
+        result = self._run_with_white()
+        illumination = result["illumination"]
+        self.assertEqual(illumination["reference_p95"], 235.0)
+        self.assertEqual(illumination["reference_p95_source"], "white-reference background grayscale p95")
+        self.assertAlmostEqual(illumination["ratio"], 1.0, places=4)
+
+    def test_explicit_reference_p95_overrides_white(self) -> None:
+        result = self._run_with_white(reference_p95=200.0)
+        illumination = result["illumination"]
+        self.assertEqual(illumination["reference_p95"], 200.0)
+        self.assertEqual(illumination["reference_p95_source"], "explicit --reference-p95")
+
+    def test_white_reference_photo_mode(self) -> None:
+        photo = np.full((1000, 1600, 3), (30, 30, 30), dtype=np.uint8)
+        quad = np.array(
+            [[x * 1600, y * 1000] for x, y in tool.DEFAULT_RELATIVE_QUAD],
+            dtype=np.float32,
+        )
+        target = np.array([[0, 0], [1023, 0], [1023, 599], [0, 599]], dtype=np.float32)
+        screen_to_photo = cv2.getPerspectiveTransform(target, quad)
+        white_screen = np.full((600, 1024, 3), WHITE, dtype=np.uint8)[:, :, ::-1]
+        placed = cv2.warpPerspective(white_screen, screen_to_photo, (1600, 1000))
+        mask = cv2.warpPerspective(
+            np.full((600, 1024), 255, dtype=np.uint8), screen_to_photo, (1600, 1000)
+        )
+        photo[mask > 128] = placed[mask > 128]
+        white_photo = self.dir / "white-photo.png"
+        cv2.imwrite(str(white_photo), photo)
+        result = tool.measure(
+            image=self.dir / "screen.png",
+            layout_file=self.dir / "layout.json",
+            report_file=self.report_path(),
+            white_reference_photo=white_photo,
+        )
+        report = json.loads(self.report_path().read_text(encoding="utf-8"))
+        self.assertEqual(
+            report["white_reference"]["registration"]["mode"], "raw-photo-quad-warp"
+        )
+        red = next(r for r in report["regions"] if r["name"] == "blk_red")
+        self.assertTrue(red["resolvable_vs_white"])
+        self.assertGreater(red["delta_vs_white"]["dE76"], 3.0)
+        self.assertIn("white_reference_sha256", result)
+
+    def test_both_white_reference_inputs_rejected(self) -> None:
+        with self.assertRaises(tool.MultiRoiLabError):
+            tool.measure(
+                image=self.dir / "screen.png",
+                layout_file=self.dir / "layout.json",
+                report_file=self.report_path(),
+                white_reference_image=self.dir / "white.png",
+                white_reference_photo=self.dir / "white.png",
+            )
+
+    def test_no_white_reference_keeps_legacy_structure(self) -> None:
+        tool.measure(
+            image=self.dir / "screen.png",
+            layout_file=self.dir / "layout.json",
+            report_file=self.report_path(),
+        )
+        report = json.loads(self.report_path().read_text(encoding="utf-8"))
+        self.assertNotIn("white_reference", report)
+        self.assertEqual(
+            set(report["regions"][0]),
+            {
+                "name", "code", "rectangle", "analysis_rectangle", "inset_fraction",
+                "pixel_count", "L", "a", "b", "std_L", "median_rgb8",
+                "high_clip_fraction", "low_clip_fraction",
+            },
+        )
+        self.assertEqual(
+            set(report),
+            {
+                "schema_version", "kind", "created_at", "offline_only", "source",
+                "registration", "screen", "inset_fraction_per_side", "lab_convention",
+                "regions", "illumination", "derived_images", "evidence_boundaries",
+                "integrity",
+            },
+        )
 
 
 class CliTests(_FixtureMixin, unittest.TestCase):
