@@ -281,5 +281,60 @@ class MeasurementToolCompatibilityTests(unittest.TestCase):
         self.assertEqual((by_name["c_cs2"]["x"], by_name["c_cs2"]["y"]), (560.0, 416.0))
 
 
+class SpatialDecodeAuditTests(unittest.TestCase):
+    """Per-pixel decode cross-check for a spatially-varying frame.
+
+    The L535 full-frame path historically refreshed only uniform frames, where
+    a controller-mapping error cannot be seen.  This audit replays the
+    driver's exact MAP_ORIENT_V1 cascade mapping (CS1 = left half rows, CS2 =
+    right half rows, no flips or nibble swap) over the compiled route A frame
+    and verifies every pixel position decodes to the intended code.
+    """
+
+    @staticmethod
+    def _decode_display() -> list[int]:
+        frame = tool.build_atlas_frame()
+        streams = (tool.controller_stream(frame, False),
+                   tool.controller_stream(frame, True))
+        disp = bytearray(tool.WIDTH * tool.HEIGHT)
+        for second, stream in enumerate(streams):
+            for y in range(tool.HEIGHT):
+                row = stream[y * 256:(y + 1) * 256]
+                base = second * tool.CONTROLLER_WIDTH
+                for bx in range(256):
+                    disp[y * tool.WIDTH + base + bx * 2] = row[bx] >> 4
+                    disp[y * tool.WIDTH + base + bx * 2 + 1] = row[bx] & 0x0F
+        return disp
+
+    def test_every_region_decodes_to_pure_intended_code(self) -> None:
+        disp = self._decode_display()
+        for roi in list(tool.ATLAS_ROIS) + [tool.ATLAS_BACKGROUND_REFERENCE]:
+            with self.subTest(region=roi["name"]):
+                seen = {
+                    disp[y * tool.WIDTH + x]
+                    for y in range(roi["y"], roi["y"] + roi["h"])
+                    for x in range(roi["x"], roi["x"] + roi["w"])
+                }
+                self.assertEqual(seen, {roi["code"]})
+
+    def test_decoded_background_is_pure_code7(self) -> None:
+        disp = self._decode_display()
+        covered = set()
+        for roi in tool.ATLAS_ROIS:
+            for y in range(roi["y"], roi["y"] + roi["h"]):
+                for x in range(roi["x"], roi["x"] + roi["w"]):
+                    covered.add(y * tool.WIDTH + x)
+        background_codes = {
+            disp[index] for index in range(len(disp)) if index not in covered
+        }
+        self.assertEqual(background_codes, {tool.ATLAS_BACKGROUND_CODE})
+
+    def test_transport_fnv1a_identities_are_pinned(self) -> None:
+        frame = tool.build_atlas_frame()
+        self.assertEqual(tool._fnv1a(frame), 0x59C5EDC5)
+        self.assertEqual(tool._fnv1a(tool.controller_stream(frame, False)), 0x28DCCDC5)
+        self.assertEqual(tool._fnv1a(tool.controller_stream(frame, True)), 0xA6ADADC5)
+
+
 if __name__ == "__main__":
     unittest.main()
