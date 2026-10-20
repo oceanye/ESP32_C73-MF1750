@@ -536,5 +536,123 @@ class V3SessionTests(unittest.TestCase):
         )
 
 
+class V4SessionTests(unittest.TestCase):
+    """Route A V4: compact atlas in the visible camera window, no probes."""
+
+    def test_compact_layout_matches_frozen_design(self) -> None:
+        regions = tool.v4_regions()
+        self.assertEqual(
+            [(r["x"], r["y"], r["w"], r["h"], r["code"]) for r in regions],
+            [(20, 190, 110, 110, 0), (140, 190, 110, 110, 1),
+             (260, 190, 110, 110, 2), (380, 190, 110, 110, 3),
+             (20, 330, 110, 110, 4), (140, 330, 110, 110, 5),
+             (260, 330, 110, 110, 7), (380, 330, 110, 110, 6)],
+        )
+        tool._validate_v4_layout()  # raises on alignment/seam/safe-rect/overlap drift
+
+    def test_frame_bytes_and_identity(self) -> None:
+        frame = tool.build_v4_frame()
+        self.assertEqual(len(frame), 307200)
+        self.assertEqual(tool._sha256(frame),
+                         "ee9920e61be396031f2c51c73b498a5a563e4ccfcc6b666b4b5bed7afda92efb")
+        self.assertEqual(tool._fnv1a(frame), 0xA778C6A5)
+        self.assertEqual(tool._fnv1a(tool.controller_stream(frame, False)), 0x746E0EA5)
+        # Every cell sits on CS1's left half, so CS2's stream is pure code7.
+        self.assertEqual(tool._fnv1a(tool.controller_stream(frame, True)), 0x285715C5)
+        self.assertEqual(frame[0], 0x77)
+        for roi in tool.v4_regions():
+            with self.subTest(cell=roi["name"]):
+                pair = (roi["code"] << 4) | roi["code"]
+                first = roi["y"] * 512 + roi["x"] // 2
+                self.assertEqual(frame[first], pair)
+                last = (roi["y"] + roi["h"] - 1) * 512 + (roi["x"] + roi["w"]) // 2 - 1
+                self.assertEqual(frame[last], pair)
+
+    def test_every_cell_decodes_to_pure_intended_code(self) -> None:
+        frame = tool.build_v4_frame()
+        cs1 = tool.controller_stream(frame, False)
+        for roi in tool.v4_regions():
+            with self.subTest(cell=roi["name"]):
+                seen = set()
+                for y in range(roi["y"], roi["y"] + roi["h"]):
+                    row = cs1[y * 256:(y + 1) * 256]
+                    for bx in range(roi["x"] // 2, (roi["x"] + roi["w"]) // 2):
+                        seen.add(row[bx] >> 4)
+                        seen.add(row[bx] & 0x0F)
+                self.assertEqual(seen, {roi["code"]})
+
+    def test_normalize_sequence_byte_identical_to_v3(self) -> None:
+        contract = tool.render_v4()["src/generated/partial_atlas_1e_v4_contract.inc"]
+        v3_contract = (ROOT / "src/generated/partial_atlas_1e_v3_contract.inc").read_text(encoding="utf-8")
+        for marker in ("kNormalizeStepCount = 8", "FACTORY_OTP_WHITE", "ACTIVE_UNIFORM"):
+            self.assertIn(marker, contract)
+        self.assertEqual(
+            [(s["kind"], s["code"]) for s in tool.V3_NORMALIZE_SEQUENCE],
+            [("factory_otp_white", 1)] * 2 + [("active_uniform", 0), ("active_uniform", 1)] * 3,
+        )
+        self.assertIn("0xC18E7DC5", contract)  # active code0 stream fnv pin
+        self.assertIn("0xB7A855C5", contract)  # OTP/code1 stream fnv pin
+        self.assertTrue(tool.build_v4_report()["normalize"]["byte_identical_to_v3"])
+
+    def test_v4_driver_structure_and_tail_identity(self) -> None:
+        driver = tool.render_v4()["src/partial_atlas_1e_v4_epd_driver.cpp"]
+        self.assertIn(tool._r2g_tail(), driver)
+        for inc in ("spd1657_legacy_535_reference.inc", "spd1657_wf_wmask_1E.inc",
+                    "partial_atlas_1e_v4_contract.inc"):
+            self.assertIn(f'#include "generated/{inc}"', driver)
+        self.assertIn("namespace pb_profile_1e = mf1750::runtime_lut::wf_wmask_1E;", driver)
+        self.assertIn("pbv4LoadRuntimeTuple", driver)
+        self.assertIn("epdDisplayCompiledFactoryOtpWhiteRecovery", driver)
+        # The two V3 probe actions are gone.
+        self.assertNotIn("ProbeCode7", driver)
+        self.assertNotIn("ProbeCode1", driver)
+        self.assertEqual(tool.build_v4_report()["runtime_tail_sha256"],
+                         tool.build_report("V1")["runtime_tail_sha256"])
+
+    def test_v4_main_endpoints_and_no_probes(self) -> None:
+        main = tool.render_v4()["src/partial_atlas_1e_v4_main.cpp"]
+        self.assertIn('MF1750_PARTIAL_BLOCK_ATLAS_1E_20261020_V4', main)
+        for route in ("normalize", "atlas-v3", "white-recovery"):
+            with self.subTest(route=route):
+                self.assertIn(f'server.on("/api/partial-atlas-v4/{route}"', main)
+        self.assertIn('server.on("/api/partial-atlas-v4/steps", HTTP_GET', main)
+        self.assertNotIn("probe-code7", main)
+        self.assertNotIn("probe-code1", main)
+        self.assertNotIn('server.on("/api/frame"', main)
+        self.assertNotIn("frame-ingress", main)
+
+    def test_v4_render_deterministic_and_matches_disk(self) -> None:
+        first, second = tool.render_v4(), tool.render_v4()
+        self.assertEqual(first, second)
+        for relative, content in first.items():
+            with self.subTest(source=relative):
+                path = ROOT / relative
+                self.assertTrue(path.is_file())
+                self.assertEqual(path.read_bytes(), content.encode("utf-8"))
+
+    def test_v4_env_tag_and_doc_registration(self) -> None:
+        platformio = (ROOT / "platformio.ini").read_text(encoding="utf-8")
+        frame_tool = (ROOT / "tools/mf1750_frame_tool.py").read_text(encoding="utf-8")
+        api_doc = (ROOT / "docs/MF1750_DRIVER_API.md").read_text(encoding="utf-8")
+        self.assertIn(f"[env:{tool.ATLAS_ENV_V4}]", platformio)
+        self.assertIn(tool.ATLAS_TAG_V4, frame_tool)
+        self.assertIn(tool.ATLAS_TAG_V4, api_doc)
+        self.assertIn(f'FW_BUILD_TAG = "{tool.ATLAS_TAG_V4}"',
+                      tool.render_v4()["src/partial_atlas_1e_v4_main.cpp"])
+
+    def test_v4_roi_list_loads_in_multi_roi_lab(self) -> None:
+        doc = tool.v4_roi_list_doc()
+        self.assertEqual(doc["layout_revision"], "V3")
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "layout.json"
+            path.write_text(json.dumps(doc), encoding="utf-8")
+            regions, _payload = roi_lab._load_layout(path)
+        self.assertEqual(
+            [(r["name"], r["code"]) for r in regions],
+            [("code0", 0), ("code1", 1), ("code2", 2), ("code3", 3),
+             ("code4", 4), ("code5", 5), ("code7", 7), ("code6", 6)],
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -2145,6 +2145,753 @@ def render_v3() -> dict[str, str]:
     }
 
 
+# ---------------------------------------------------------------------------
+# Route A V4: compact atlas layout for the current camera window (content
+# x in [0,545], top edge clipped near x~380; safe rectangle x in [16,520],
+# y in [170,580]).  All eight cells move into the visible window on CS1's
+# half; the two probe actions are dropped (saves two refreshes).  The 8-step
+# normalize sequence is byte-identical to V3.
+# ---------------------------------------------------------------------------
+
+ATLAS_ENV_V4 = "esp32-s3-devkitc-1-partial-atlas-1e-v4"
+ATLAS_TAG_V4 = f"MF1750_PARTIAL_BLOCK_ATLAS_1E_{DATE}_V4"
+V4_PATHS = {
+    "contract_inc": "src/generated/partial_atlas_1e_v4_contract.inc",
+    "api_header": "src/partial_atlas_1e_v4_api.h",
+    "driver": "src/partial_atlas_1e_v4_epd_driver.cpp",
+    "main": "src/partial_atlas_1e_v4_main.cpp",
+}
+V4_CELL = 110
+V4_SLOTS: tuple[tuple[int, int], ...] = (
+    (20, 190), (140, 190), (260, 190), (380, 190),
+    (20, 330), (140, 330), (260, 330), (380, 330),
+)
+V4_CODES: tuple[int, ...] = (0, 1, 2, 3, 4, 5, 7, 6)
+V4_SAFE_RECT = {"x": 16, "y": 170, "w": 504, "h": 410}  # x in [16,520], y in [170,580]
+
+
+def v4_regions() -> list[dict[str, Any]]:
+    return [
+        {"name": f"code{code}", "code": code, "x": x, "y": y,
+         "w": V4_CELL, "h": V4_CELL}
+        for (x, y), code in zip(V4_SLOTS, V4_CODES)
+    ]
+
+
+def _validate_v4_layout() -> None:
+    regions = v4_regions()
+    if [roi["code"] for roi in regions] != list(V4_CODES):
+        raise RuntimeError("V4 cell code order drifted")
+    if len({roi["code"] for roi in regions}) != 8:
+        raise RuntimeError("V4 cell codes are not unique")
+    rect = V4_SAFE_RECT
+    for roi in regions:
+        if roi["x"] % 2 or roi["w"] % 2:
+            raise RuntimeError(f"V4 cell {roi['name']} is not byte aligned")
+        if roi["x"] + roi["w"] > CONTROLLER_WIDTH:
+            raise RuntimeError(f"V4 cell {roi['name']} crosses the x=512 seam")
+        if not (rect["x"] <= roi["x"]
+                and roi["x"] + roi["w"] <= rect["x"] + rect["w"]
+                and rect["y"] <= roi["y"]
+                and roi["y"] + roi["h"] <= rect["y"] + rect["h"]):
+            raise RuntimeError(f"V4 cell {roi['name']} escapes the visible safe rect")
+        if roi["y"] + roi["h"] > HEIGHT:
+            raise RuntimeError(f"V4 cell {roi['name']} escapes the panel")
+    for index, left in enumerate(regions):
+        for right in regions[index + 1:]:
+            overlap = not (
+                left["x"] + left["w"] <= right["x"]
+                or right["x"] + right["w"] <= left["x"]
+                or left["y"] + left["h"] <= right["y"]
+                or right["y"] + right["h"] <= left["y"]
+            )
+            if overlap:
+                raise RuntimeError("V4 cells overlap")
+
+
+def build_v4_frame() -> bytes:
+    """Return the compact packed-4bpp route A V4 frame (even x high nibble)."""
+
+    _validate_v4_layout()
+    frame = bytearray(
+        [(ATLAS_BACKGROUND_CODE << 4) | ATLAS_BACKGROUND_CODE] * FRAME_BYTES
+    )
+    for roi in v4_regions():
+        pair = (roi["code"] << 4) | roi["code"]
+        for y in range(roi["y"], roi["y"] + roi["h"]):
+            start = y * ROW_BYTES + roi["x"] // 2
+            frame[start:start + roi["w"] // 2] = bytes([pair]) * (roi["w"] // 2)
+    return bytes(frame)
+
+
+def v4_layout_doc() -> dict[str, Any]:
+    return {
+        "schema": "mf1750-partial-block-atlas-layout-v1",
+        "layout_revision": "V4",
+        "panel": {"width": WIDTH, "height": HEIGHT,
+                  "controller_width": CONTROLLER_WIDTH},
+        "background_code": ATLAS_BACKGROUND_CODE,
+        "background_is_l535_white_code7": True,
+        "rois": v4_regions(),
+        "background_reference": None,
+        "packed_format": "4bpp row-major, even x in the high nibble",
+        "even_x_and_width": True,
+        "seam_avoidance_x512": True,
+        "all_cells_on_cs1_left_half": True,
+        "visible_safe_rect": dict(V4_SAFE_RECT),
+        "codes_are_transport_codes_not_colour_names": True,
+    }
+
+
+def v4_roi_list_doc() -> dict[str, Any]:
+    """tools/mf1750_multi_roi_lab.py-compatible region list for the V4 layout."""
+
+    return {
+        "schema": "mf1750-partial-block-atlas-roi-list-v1",
+        "layout_revision": "V3",
+        "screen": {"width": WIDTH, "height": HEIGHT},
+        "regions": v4_regions(),
+    }
+
+
+def v4_identities() -> dict[str, Any]:
+    frame = build_v4_frame()
+    return {
+        "frame": {
+            "bytes": len(frame),
+            "fnv1a": _fnv1a(frame),
+            "sha256": _sha256(frame),
+        },
+        "streams": {
+            "cs1": _fnv1a(controller_stream(frame, False)),
+            "cs2": _fnv1a(controller_stream(frame, True)),
+        },
+        "uniform_streams": {
+            "black": _fnv1a(_uniform(CONTROLLER_DTM_BYTES, 0)),
+            "white": _fnv1a(_uniform(CONTROLLER_DTM_BYTES, 1)),
+        },
+        "layout_sha256": _sha256(_canonical(v4_layout_doc())),
+    }
+
+
+def _render_v4_contract_inc() -> str:
+    identities = v4_identities()
+    frame = identities["frame"]
+    streams = identities["streams"]
+    r20_1e = _profile_reports()["1E"]["r20_sha256"]
+    steps = ",\n".join(
+        f"    {{pbv4_step_kind::{('FACTORY_OTP_WHITE' if s['kind'] == 'factory_otp_white' else 'ACTIVE_UNIFORM')}, 0x{s['code']:02X}}}"
+        for s in V3_NORMALIZE_SEQUENCE
+    )
+    rois = ",\n".join(
+        f"    {{{roi['x']}, {roi['y']}, {roi['w']}, {roi['h']}, 0x{roi['code']:02X}}}"
+        for roi in v4_regions()
+    )
+    asserts = []
+    for index, roi in enumerate(v4_regions()):
+        asserts.append(
+            f"static_assert(kRois[{index}].x == {roi['x']} && "
+            f"kRois[{index}].y == {roi['y']} && "
+            f"kRois[{index}].width == {roi['w']} && "
+            f"kRois[{index}].height == {roi['h']} && "
+            f"kRois[{index}].code == 0x{roi['code']:02X},\n"
+            f"              \"route A V4 cell {index} identity drifted\");"
+        )
+    return f"""#pragma once
+
+#include <cstddef>
+#include <cstdint>
+
+// Generated by tools/mf1750_partial_block_build.py.  Route A V4 contract:
+// compact atlas layout for the current camera window (safe rectangle
+// x in [16,520], y in [170,580]; every cell inside CS1's left half).  The
+// 8-step NORMALIZE sequence is byte-identical to V3: 2x factory-OTP white,
+// then 3x (active-table code0 black, active-table code1 white) alternating
+// reset pairs, ending on white.  Every frame, tuple, and the step sequence is
+// compile-time pinned; no runtime frame, coordinate, or LUT input exists.
+// Codes are transport codes, not colour names.
+
+namespace mf1750::partial_block::atlas_v4 {{
+
+enum class pbv4_step_kind : std::uint8_t {{
+  FACTORY_OTP_WHITE = 0,
+  ACTIVE_UNIFORM = 1,
+}};
+struct V4NormalizeStep {{
+  pbv4_step_kind kind;
+  std::uint8_t code;
+}};
+static constexpr V4NormalizeStep kNormalizeSteps[] = {{
+{steps},
+}};
+static constexpr std::size_t kNormalizeStepCount = {len(V3_NORMALIZE_SEQUENCE)};
+
+struct AtlasRoi {{
+  std::uint16_t x;
+  std::uint16_t y;
+  std::uint16_t width;
+  std::uint16_t height;
+  std::uint8_t code;
+}};
+static constexpr std::uint8_t kBackgroundCode = 0x{ATLAS_BACKGROUND_CODE:02X};
+static constexpr std::size_t kRoiCount = {len(v4_regions())};
+static constexpr AtlasRoi kRois[kRoiCount] = {{
+{rois},
+}};
+
+static constexpr char kActiveR20Sha256[] = "{V3_ACTIVE_R20_SHA256}";
+static constexpr char kProfile1ER20Sha256[] = "{r20_1e}";
+static constexpr char kActivePwrSha256[] = "{wmask.PWR_SHA256}";
+static constexpr char kActivePllSha256[] = "{wmask.PLL_SHA256}";
+static constexpr char kActiveR21Sha256[] = "{wmask.R21_SHA256}";
+
+static constexpr char kAtlasFrameSha256[] = "{frame['sha256']}";
+static constexpr std::uint32_t kAtlasFrameFnv1a = 0x{frame['fnv1a']:08X}UL;
+static constexpr std::uint32_t kAtlasCs1StreamFnv1a = 0x{streams['cs1']:08X}UL;
+static constexpr std::uint32_t kAtlasCs2StreamFnv1a = 0x{streams['cs2']:08X}UL;
+static constexpr std::uint32_t kBlackStreamFnv1a = 0x{identities['uniform_streams']['black']:08X}UL;
+static constexpr std::uint32_t kWhiteStreamFnv1a = 0x{identities['uniform_streams']['white']:08X}UL;
+static constexpr char kLayoutSha256[] = "{identities['layout_sha256']}";
+
+{chr(10).join(asserts)}
+static_assert(kNormalizeStepCount == 8 &&
+                  kNormalizeSteps[0].kind == pbv4_step_kind::FACTORY_OTP_WHITE &&
+                  kNormalizeSteps[1].kind == pbv4_step_kind::FACTORY_OTP_WHITE &&
+                  kNormalizeSteps[2].code == 0x00 &&
+                  kNormalizeSteps[3].code == 0x01 &&
+                  kNormalizeSteps[4].code == 0x00 &&
+                  kNormalizeSteps[5].code == 0x01 &&
+                  kNormalizeSteps[6].code == 0x00 &&
+                  kNormalizeSteps[7].code == 0x01 &&
+                  kNormalizeSteps[7].kind == pbv4_step_kind::ACTIVE_UNIFORM,
+              "V4 NORMALIZE sequence drifted from the V3 8-step sequence");
+
+}}  // namespace mf1750::partial_block::atlas_v4
+"""
+
+
+def _render_v4_api_header() -> str:
+    return """#pragma once
+
+#include <cstddef>
+#include <cstdint>
+
+// Partial-block route A V4 (compact atlas in the visible camera window):
+// every action is a fixed compiled identity validated before any panel I/O.
+// This API accepts no frame, coordinate, colour code, LUT, voltage, timing,
+// SPI-frequency, retry, or recovery parameter.  Actions are never chained
+// automatically; each runs only on its own explicit endpoint.
+enum class EpdPartialAtlasV4Role : std::uint8_t {
+  Normalize = 0,
+  Atlas = 1,
+  WhiteRecovery = 2,
+};
+
+struct EpdPartialAtlasV4StepReport {
+  std::uint32_t ponMs;
+  std::uint32_t drfMs;
+  std::uint32_t pofMs;
+  std::uint32_t totalMs;
+  bool ok;
+};
+
+bool epdValidateCompiledPartialAtlasV4Fixtures();
+bool epdDisplayCompiledPartialAtlasV4(EpdPartialAtlasV4Role role);
+const EpdPartialAtlasV4StepReport *epdGetPartialAtlasV4StepReports(
+    std::size_t *count);
+"""
+
+
+def _render_v4_driver_head() -> str:
+    records = wmask.selected_records(0x0E, True)
+    return (
+        """// Dedicated translation unit for partial-block route A V4: the compact
+// atlas layout collects all eight transport-code cells into the current
+// camera's visible window (safe rectangle x in [16,520], y in [170,580], all
+// on CS1's left half).  The two probe actions are dropped; NORMALIZE and
+// WHITE_RECOVERY are byte-identical to the sealed V3 paths.  Per-action the
+// driver switches between the factory-OTP path, the pinned legacy-active
+// runtime tuple (maximal charge reset), and the wf_wmask_1E GrayExt tuple
+// (base 0x0E plus the whole records 0-3 group; the family label is not a
+// bitmask).  Every tuple's R20/PWR/PLL/R21/PSR bytes are the same compiled
+// objects as their sealed sources; the runtime tail below is byte-identical
+// to the pinned R2G template.  Production, the wf_wmask_*, and the V1/V2/V3
+// translation units stay untouched.
+#include "epd_driver.h"
+
+#include <SPI.h>
+#if defined(MF1750_PARTIAL_BLOCK_ATLAS_1E_V4_BUILD)
+#include <esp_heap_caps.h>
+#include <mbedtls/sha256.h>
+#endif
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#include "epd_config.h"
+#include "partial_atlas_1e_v4_api.h"
+
+#if !defined(MF1750_L535_FRAME_PATH_BUILD) || MF1750_L535_FRAME_PATH_BUILD != 1
+#error "route A V4 requires the frozen L535 frame path build"
+#endif
+#if !defined(MF1750_PARTIAL_BLOCK_ATLAS_1E_V4_BUILD) || \\
+    MF1750_PARTIAL_BLOCK_ATLAS_1E_V4_BUILD != 1
+#error "route A V4 requires MF1750_PARTIAL_BLOCK_ATLAS_1E_V4_BUILD=1"
+#endif
+#if !defined(MF1750_ENABLE_FACTORY_OTP_WHITE_RECOVERY) || \\
+    MF1750_ENABLE_FACTORY_OTP_WHITE_RECOVERY != 1
+#error "route A V4 requires the factory-OTP fixture for its white steps"
+#endif
+#if !defined(MF1750_OTP_WHITE_FOR_PROFILE_WF23_25) || \\
+    MF1750_OTP_WHITE_FOR_PROFILE_WF23_25 != 1 || \\
+    MF1750_OTP_WHITE_FOR_PROFILE_WF20_25 != 0
+#error "route A V4 binds the WF23_25 factory-OTP white profile exactly"
+#endif
+
+#include "generated/spd1657_legacy_535_reference.inc"
+namespace l535_lut = mf1750::runtime_lut::legacy_reference;
+#include "generated/spd1657_wf_wmask_1E.inc"
+namespace pb_profile_1e = mf1750::runtime_lut::wf_wmask_1E;
+// The inherited full-frame path (unused by every V4 action) binds the 1E
+// tuple so the byte-identical runtime tail compiles unchanged.
+namespace l535_variant = mf1750::runtime_lut::wf_wmask_1E;
+#include "generated/partial_atlas_1e_v4_contract.inc"
+namespace pbv4 = mf1750::partial_block::atlas_v4;
+
+"""
+        + _cpp_spans_predicate("pbv4Profile1EUseCommented", records)
+        + "\n"
+        + _cpp_records_proof("Pbv4Profile1ERecordsMatch", "pbv4Profile1EUseCommented",
+                             "pb_profile_1e", "route A V4 1E")
+        + "\n"
+        + _cpp_pwr_pll_asserts("pb_profile_1e", "route A V4 1E")
+        + "\n"
+        + _cpp_r21_proof("Pbv4ActiveR21Unchanged", "route A V4")
+        + "\n"
+    )
+
+
+_V4_FIXTURE = """
+// ===========================================================================
+// Route A V4 fixture: the V3 normalization + white-recovery paths plus the
+// compact atlas action.  The two V3 probe actions are dropped (saves two
+// refreshes).  Every identity is validated before any panel I/O; no
+// caller-controlled frame, coordinate, code, LUT, voltage, timing, retry, or
+// recovery parameter is accepted.
+#if defined(MF1750_PARTIAL_BLOCK_ATLAS_1E_V4_BUILD)
+
+namespace {
+
+constexpr const char *PBV4_FAILURE_ALLOCATION = "allocation";
+constexpr const char *PBV4_FAILURE_ROLE = "role";
+constexpr const char *PBV4_FAILURE_TUPLE_IDENTITY = "tuple_identity";
+constexpr const char *PBV4_FAILURE_FRAME_IDENTITY = "frame_identity";
+constexpr const char *PBV4_FAILURE_CASCADE_PREPARE = "cascade_prepare";
+constexpr const char *PBV4_FAILURE_TUPLE_LOAD = "tuple_load";
+constexpr const char *PBV4_FAILURE_STREAM_IDENTITY = "stream_identity";
+constexpr const char *PBV4_FAILURE_REFRESH_SEQUENCE = "refresh_sequence";
+constexpr const char *PBV4_FAILURE_NORMALIZE_STEP = "normalize_step";
+
+EpdPartialAtlasV4StepReport pbv4StepReports[8];
+size_t pbv4StepReportCount = 0;
+
+bool pbv4DigestMatchesHex(const uint8_t digest[32], const char *expected) {
+  if (!digest || !expected || std::strlen(expected) != 64) return false;
+  static constexpr char kHex[] = "0123456789abcdef";
+  for (size_t index = 0; index < 32; ++index) {
+    if (expected[index * 2] != kHex[digest[index] >> 4] ||
+        expected[index * 2 + 1] != kHex[digest[index] & 0x0F]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool pbv4PayloadShaMatches(const uint8_t *payload, size_t length,
+                           const char *expected, int32_t *errorCode) {
+  if (!payload || length == 0 || !errorCode) return false;
+  uint8_t digest[32] = {};
+  *errorCode = mbedtls_sha256_ret(payload, length, digest, 0);
+  return *errorCode == 0 && pbv4DigestMatchesHex(digest, expected);
+}
+
+bool pbv4ValidateTuples(int32_t *errorCode) {
+  return pbv4PayloadShaMatches(l535_lut::active::kR20Payload, 535,
+                               pbv4::kActiveR20Sha256, errorCode) &&
+         pbv4PayloadShaMatches(pb_profile_1e::kR20Payload, 535,
+                               pbv4::kProfile1ER20Sha256, errorCode) &&
+         pbv4PayloadShaMatches(l535_lut::active::kPowerPayload, 6,
+                               pbv4::kActivePwrSha256, errorCode) &&
+         pbv4PayloadShaMatches(pb_profile_1e::kPowerPayload, 6,
+                               pbv4::kActivePwrSha256, errorCode) &&
+         pbv4PayloadShaMatches(l535_lut::active::kPllPayload, 1,
+                               pbv4::kActivePllSha256, errorCode) &&
+         pbv4PayloadShaMatches(pb_profile_1e::kPllPayload, 1,
+                               pbv4::kActivePllSha256, errorCode) &&
+         pbv4PayloadShaMatches(l535_lut::active::kR21Payload, 704,
+                               pbv4::kActiveR21Sha256, errorCode);
+}
+
+bool pbv4LoadRuntimeTuple(const uint8_t *r20) {
+  // Byte-identical command sequence to the sealed epdLoadL535RuntimeLut, with
+  // the R20 payload selected per action.  PWR/PLL/R21 are the pinned active
+  // payloads shared by every WMASK profile.
+  setActiveControllers(true, true);
+  static constexpr uint8_t kRuntimePsr[2] = {0x5F, 0xE9};
+  static constexpr uint8_t kControllerTres[4] = {0x02, 0x00, 0x02, 0x58};
+  epdWriteL535Payload(0x00, kRuntimePsr, sizeof(kRuntimePsr));
+  epdWriteL535Payload(0x01, l535_lut::active::kPowerPayload, 6);
+  if (!epdWaitIdle("V4 PWR")) return false;
+  epdWriteL535Payload(0x30, l535_lut::active::kPllPayload, 1);
+  epdWriteL535Payload(0x61, kControllerTres, sizeof(kControllerTres));
+  for (const bool second : {false, true}) {
+    setActiveControllers(!second, second);
+    static constexpr uint8_t kHiddenEnable[1] = {0x01};
+    epdWriteL535Payload(0xE9, kHiddenEnable, sizeof(kHiddenEnable));
+    if (!epdWaitIdle(second ? "V4 CS2 E9" : "V4 CS1 E9")) return false;
+    epdWriteL535Payload(0x20, r20, 535);
+    epdWriteL535Payload(0x21, l535_lut::active::kR21Payload, 704);
+  }
+  setActiveControllers(true, true);
+  return true;
+}
+
+uint32_t pbv4StreamUniformControllerDtm(bool secondController, uint8_t code,
+                                        uint32_t hash) {
+  const uint8_t pair = static_cast<uint8_t>((code << 4) | code);
+  setActiveControllers(!secondController, secondController);
+  epdCommand(DTM);
+  epdStreamFillBytes(EPD_CONTROLLER_FRAME_BYTES, pair);
+  for (uint32_t index = 0; index < EPD_CONTROLLER_FRAME_BYTES; ++index) {
+    hash = fnv1aUpdate(hash, pair);
+  }
+  return hash;
+}
+
+bool pbv4RefreshFullFrame() {
+  setActiveControllers(true, true);
+  const bool ok = epdSecondSettingAndRefresh();
+  epdSetSpiFrequency(EPD_SPI_DEFAULT_HZ);
+  return ok;
+}
+
+bool pbv4OtpWhiteStep() {
+  // Byte-identical to the sealed factory-OTP white fixture path: cascade init
+  // (PSR 5F,69 selects the OTP LUT), full 0x11 frame to both controllers, then
+  // the sealed refresh.
+  if (!epdPrepareCascade(EPD_SPI_DEFAULT_HZ)) return false;
+  const uint32_t cs1Fnv = pbv4StreamUniformControllerDtm(false, 0x01, FNV1A_OFFSET_BASIS);
+  const uint32_t cs2Fnv = pbv4StreamUniformControllerDtm(true, 0x01, FNV1A_OFFSET_BASIS);
+  diagnosticReport.cs1DtmFnv1a = cs1Fnv;
+  diagnosticReport.cs2DtmFnv1a = cs2Fnv;
+  diagnosticReport.mappingApplied = true;
+  if (cs1Fnv != pbv4::kWhiteStreamFnv1a || cs2Fnv != pbv4::kWhiteStreamFnv1a) {
+    return false;
+  }
+  return pbv4RefreshFullFrame();
+}
+
+bool pbv4ActiveUniformStep(uint8_t code) {
+  if (!epdPrepareCascade(EPD_SPI_DEFAULT_HZ)) return false;
+  if (!pbv4LoadRuntimeTuple(l535_lut::active::kR20Payload)) return false;
+  const uint32_t expected =
+      code == 0x00 ? pbv4::kBlackStreamFnv1a : pbv4::kWhiteStreamFnv1a;
+  const uint32_t cs1Fnv = pbv4StreamUniformControllerDtm(false, code, FNV1A_OFFSET_BASIS);
+  const uint32_t cs2Fnv = pbv4StreamUniformControllerDtm(true, code, FNV1A_OFFSET_BASIS);
+  diagnosticReport.cs1DtmFnv1a = cs1Fnv;
+  diagnosticReport.cs2DtmFnv1a = cs2Fnv;
+  diagnosticReport.mappingApplied = true;
+  if (cs1Fnv != expected || cs2Fnv != expected) return false;
+  return pbv4RefreshFullFrame();
+}
+
+bool pbv4RunNormalize() {
+  const uint32_t started = epdBeginOperation(EPD_SPI_DEFAULT_HZ);
+  diagnosticReport.freePsramBefore = ESP.getFreePsram();
+  diagnosticReport.largestPsramBlockBefore =
+      heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM);
+  pbv4StepReportCount = 0;
+  for (size_t index = 0; index < pbv4::kNormalizeStepCount; ++index) {
+    pbv4StepReports[index] = EpdPartialAtlasV4StepReport{};
+  }
+  int32_t identityError = 0;
+  if (!pbv4ValidateTuples(&identityError)) {
+    return epdRejectBeforePanelIo(started, PBV4_FAILURE_TUPLE_IDENTITY,
+                                  identityError);
+  }
+  for (size_t step = 0; step < pbv4::kNormalizeStepCount; ++step) {
+    const pbv4::V4NormalizeStep &current = pbv4::kNormalizeSteps[step];
+    const uint32_t stepStarted = millis();
+    const bool ok = current.kind == pbv4::pbv4_step_kind::FACTORY_OTP_WHITE
+                        ? pbv4OtpWhiteStep()
+                        : pbv4ActiveUniformStep(current.code);
+    pbv4StepReports[step].ponMs = diagnosticReport.ponWaitMs;
+    pbv4StepReports[step].drfMs = diagnosticReport.drfWaitMs;
+    pbv4StepReports[step].pofMs = diagnosticReport.pofWaitMs;
+    pbv4StepReports[step].totalMs = millis() - stepStarted;
+    pbv4StepReports[step].ok = ok;
+    pbv4StepReportCount = step + 1;
+    if (!ok) {
+      epdRecordFailure(PBV4_FAILURE_NORMALIZE_STEP,
+                       static_cast<int32_t>(step) + 1);
+      return epdFinishOperation(started, false);
+    }
+  }
+  return epdFinishOperation(started, true);
+}
+
+bool pbv4RunAtlas() {
+  const uint32_t started = epdBeginOperation(EPD_SPI_DEFAULT_HZ);
+  diagnosticReport.freePsramBefore = ESP.getFreePsram();
+  diagnosticReport.largestPsramBlockBefore =
+      heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM);
+  int32_t identityError = 0;
+  if (!pbv4ValidateTuples(&identityError)) {
+    return epdRejectBeforePanelIo(started, PBV4_FAILURE_TUPLE_IDENTITY,
+                                  identityError);
+  }
+  uint8_t *frame = static_cast<uint8_t *>(ps_malloc(EPD_FRAME_BYTES));
+  if (!frame) {
+    return epdRejectBeforePanelIo(started, PBV4_FAILURE_ALLOCATION);
+  }
+  const uint8_t backgroundPair = static_cast<uint8_t>(
+      (pbv4::kBackgroundCode << 4) | pbv4::kBackgroundCode);
+  std::memset(frame, backgroundPair, EPD_FRAME_BYTES);
+  for (size_t index = 0; index < pbv4::kRoiCount; ++index) {
+    const pbv4::AtlasRoi &roi = pbv4::kRois[index];
+    const uint8_t pair = static_cast<uint8_t>((roi.code << 4) | roi.code);
+    for (uint16_t y = roi.y; y < roi.y + roi.height; ++y) {
+      std::memset(frame + static_cast<size_t>(y) * (EPD_WIDTH / 2) + roi.x / 2,
+                  pair, roi.width / 2);
+    }
+  }
+  const uint32_t frameFnv = fnv1a(frame, EPD_FRAME_BYTES);
+  uint8_t digest[32] = {};
+  const int shaResult = mbedtls_sha256_ret(frame, EPD_FRAME_BYTES, digest, 0);
+  diagnosticReport.inputFrameFnv1a = frameFnv;
+  if (shaResult != 0 || frameFnv != pbv4::kAtlasFrameFnv1a ||
+      !pbv4DigestMatchesHex(digest, pbv4::kAtlasFrameSha256)) {
+    std::free(frame);
+    return epdRejectBeforePanelIo(started, PBV4_FAILURE_FRAME_IDENTITY,
+                                  shaResult);
+  }
+  if (!epdPrepareCascade(EPD_SPI_DEFAULT_HZ)) {
+    std::free(frame);
+    return epdFinishFailedOperationSafe(started, PBV4_FAILURE_CASCADE_PREPARE);
+  }
+  if (!pbv4LoadRuntimeTuple(pb_profile_1e::kR20Payload)) {
+    std::free(frame);
+    return epdFinishFailedOperationSafe(started, PBV4_FAILURE_TUPLE_LOAD);
+  }
+  const uint32_t cs1Started = millis();
+  diagnosticReport.cs1DtmFnv1a = epdStreamPackedFrameController(frame, false);
+  diagnosticReport.cs1UploadMs = millis() - cs1Started;
+  const uint32_t cs2Started = millis();
+  diagnosticReport.cs2DtmFnv1a = epdStreamPackedFrameController(frame, true);
+  diagnosticReport.cs2UploadMs = millis() - cs2Started;
+  diagnosticReport.mappingApplied = true;
+  std::free(frame);
+  if (diagnosticReport.cs1DtmFnv1a != pbv4::kAtlasCs1StreamFnv1a ||
+      diagnosticReport.cs2DtmFnv1a != pbv4::kAtlasCs2StreamFnv1a) {
+    return epdFinishFailedOperationSafe(started, PBV4_FAILURE_STREAM_IDENTITY);
+  }
+  const bool ok = pbv4RefreshFullFrame();
+  if (!ok) epdRecordFailure(PBV4_FAILURE_REFRESH_SEQUENCE);
+  return epdFinishOperation(started, ok);
+}
+
+}  // namespace
+
+bool epdValidateCompiledPartialAtlasV4Fixtures() {
+  int32_t errorCode = 0;
+  return pbv4ValidateTuples(&errorCode) &&
+         epdValidateCompiledFactoryOtpWhiteRecoveryFixture();
+}
+
+bool epdDisplayCompiledPartialAtlasV4(EpdPartialAtlasV4Role role) {
+  switch (role) {
+    case EpdPartialAtlasV4Role::Normalize:
+      return pbv4RunNormalize();
+    case EpdPartialAtlasV4Role::Atlas:
+      return pbv4RunAtlas();
+    case EpdPartialAtlasV4Role::WhiteRecovery:
+      return epdDisplayCompiledFactoryOtpWhiteRecovery();
+  }
+  return false;
+}
+
+const EpdPartialAtlasV4StepReport *epdGetPartialAtlasV4StepReports(
+    std::size_t *count) {
+  if (count) *count = pbv4StepReportCount;
+  return pbv4StepReports;
+}
+
+#endif  // MF1750_PARTIAL_BLOCK_ATLAS_1E_V4_BUILD
+"""
+
+
+def render_v4() -> dict[str, str]:
+    """Return {relative_path: content} for the V4 generated sources."""
+
+    v4_driver = (
+        _render_v4_driver_head() + _r2g_tail() + _V4_FIXTURE
+    )
+    main_template = R2G_MAIN_PATH.read_text(encoding="utf-8")
+    v4_main = _render_main(
+        main_template,
+        ATLAS_TAG_V4,
+        "partial block route A V4: compact atlas in visible window",
+        "partial_atlas_1e_v4_api.h",
+        "MF1750_PARTIAL_BLOCK_ATLAS_1E_V4_BUILD",
+        "  PartialAtlasV4Normalize,\n"
+        "  PartialAtlasV4Atlas,\n"
+        "  PartialAtlasV4WhiteRecovery,\n",
+        '  server.on("/api/partial-atlas-v4/normalize", HTTP_POST, []() {\n'
+        '    queueEpdJobAndRespond(PendingEpdAction::PartialAtlasV4Normalize,\n'
+        '                          "partial_atlas_v4_normalize");\n'
+        "  });\n"
+        '  server.on("/api/partial-atlas-v4/atlas-v3", HTTP_POST, []() {\n'
+        '    queueEpdJobAndRespond(PendingEpdAction::PartialAtlasV4Atlas,\n'
+        '                          "partial_atlas_v4_atlas");\n'
+        "  });\n"
+        '  server.on("/api/partial-atlas-v4/white-recovery", HTTP_POST, []() {\n'
+        '    queueEpdJobAndRespond(PendingEpdAction::PartialAtlasV4WhiteRecovery,\n'
+        '                          "partial_atlas_v4_white_recovery");\n'
+        "  });\n"
+        '  server.on("/api/partial-atlas-v4/steps", HTTP_GET, []() {\n'
+        "    size_t count = 0;\n"
+        "    const EpdPartialAtlasV4StepReport *steps =\n"
+        "        epdGetPartialAtlasV4StepReports(&count);\n"
+        '    String json = "{\\"schema_version\\":1,\\"kind\\":\\"partial-atlas-v4-normalize-steps\\",\\"steps\\":[";\n'
+        "    for (size_t index = 0; index < count; ++index) {\n"
+        '      if (index) json += ",";\n'
+        '      json += String("{\\"ordinal\\":") + String(index + 1) +\n'
+        '              ",\\"pon_ms\\":" + String(steps[index].ponMs) +\n'
+        '              ",\\"drf_ms\\":" + String(steps[index].drfMs) +\n'
+        '              ",\\"pof_ms\\":" + String(steps[index].pofMs) +\n'
+        '              ",\\"total_ms\\":" + String(steps[index].totalMs) +\n'
+        '              ",\\"ok\\":" + (steps[index].ok ? "true" : "false") + "}";\n'
+        "    }\n"
+        '    json += "]}";\n'
+        '    server.send(200, "application/json", json);\n'
+        "  });\n",
+        "      case PendingEpdAction::PartialAtlasV4Normalize:\n"
+        "        result = epdDisplayCompiledPartialAtlasV4(\n"
+        "            EpdPartialAtlasV4Role::Normalize);\n"
+        "        resultKnown = true;\n"
+        "        break;\n"
+        "      case PendingEpdAction::PartialAtlasV4Atlas:\n"
+        "        result = epdDisplayCompiledPartialAtlasV4(\n"
+        "            EpdPartialAtlasV4Role::Atlas);\n"
+        "        resultKnown = true;\n"
+        "        break;\n"
+        "      case PendingEpdAction::PartialAtlasV4WhiteRecovery:\n"
+        "        result = epdDisplayCompiledPartialAtlasV4(\n"
+        "            EpdPartialAtlasV4Role::WhiteRecovery);\n"
+        "        resultKnown = true;\n"
+        "        break;\n",
+        remove_frame_ingress=True,
+    )
+    return {
+        V4_PATHS["contract_inc"]: _render_v4_contract_inc(),
+        V4_PATHS["api_header"]: _render_v4_api_header(),
+        V4_PATHS["driver"]: v4_driver,
+        V4_PATHS["main"]: v4_main,
+    }
+
+
+def build_v4_report() -> dict[str, Any]:
+    """V4 compact-atlas session report (V3 pattern minus the two probes)."""
+
+    identities = v4_identities()
+    profiles = _profile_reports()
+    tail = _r2g_tail()
+    rendered = render_v4()
+    return {
+        "schema_version": 1,
+        "kind": "mf1750-partial-block-v4-session-generation",
+        "date": DATE,
+        "handoff": HANDOFF_DOC,
+        "amendment": (
+            "V4: compact 110x110 cells at xs [20,140,260,380] ys [190,330] "
+            "inside the current camera window (safe rect x[16,520] "
+            "y[170,580]); probes dropped; V3 8-step normalize kept"
+        ),
+        "offline_only": True,
+        "hardware_accessed": False,
+        "device_network_accessed": False,
+        "serial_or_com_accessed": False,
+        "firmware_flashed": False,
+        "display_refreshed": False,
+        "env": ATLAS_ENV_V4,
+        "tag": ATLAS_TAG_V4,
+        "spi_hz": 1_000_000,
+        "spi_hz_is_frozen_default": True,
+        "tuples": {
+            "factory_otp": {
+                "path": "sealed ec5_factory_otp_white_recovery_driver.inc "
+                        "cascade path (PSR 5F,69 selects OTP LUT)",
+                "runtime_lut_uploaded": False,
+            },
+            "active": {
+                "r20_sha256": V3_ACTIVE_R20_SHA256,
+                "pwr_sha256": wmask.PWR_SHA256,
+                "pll_sha256": wmask.PLL_SHA256,
+                "r21_sha256": wmask.R21_SHA256,
+                "byte_identity": "same compiled objects as the sealed legacy "
+                                 "active reference (spd1657_legacy_535_reference.inc)",
+            },
+            "1E": {
+                "family_label": "1E",
+                "family_label_is_not_bitmask": True,
+                "r20_sha256": profiles["1E"]["r20_sha256"],
+                "pwr_sha256": profiles["1E"]["pwr_sha256"],
+                "pll_sha256": profiles["1E"]["pll_sha256"],
+                "r21_sha256": profiles["1E"]["r21_sha256"],
+                "byte_identity": "same compiled object as the sealed "
+                                 "wf_wmask_1E build",
+            },
+        },
+        "normalize": {
+            "sequence": [dict(step) for step in V3_NORMALIZE_SEQUENCE],
+            "step_count": len(V3_NORMALIZE_SEQUENCE),
+            "byte_identical_to_v3": True,
+            "reading": (
+                "2x factory-OTP white, then 3x (code0 black, code1 white) "
+                "alternating reset pairs under the active tuple, ending on "
+                "white; per-step PON/DRF/POF timings published via "
+                "/api/partial-atlas-v4/steps"
+            ),
+            "stop_on_failure": "fail-closed: a failed step aborts the sequence",
+        },
+        "atlas_layout": {
+            "doc": v4_layout_doc(),
+            "sha256": identities["layout_sha256"],
+            "cell_size": [V4_CELL, V4_CELL],
+            "codes_row_major": list(V4_CODES),
+        },
+        "frame": identities["frame"],
+        "controller_stream_fnv1a": identities["streams"],
+        "normalize_uniform_stream_fnv1a": identities["uniform_streams"],
+        "actions": [
+            {"ordinal": 1, "role": "NORMALIZE", "profile": "factory_otp+active",
+             "endpoint": "/api/partial-atlas-v4/normalize"},
+            {"ordinal": 2, "role": "ATLAS", "profile": "1E",
+             "frame_sha256": identities["frame"]["sha256"],
+             "endpoint": "/api/partial-atlas-v4/atlas-v3"},
+            {"ordinal": 3, "role": "WHITE_RECOVERY", "profile": "factory_otp",
+             "endpoint": "/api/partial-atlas-v4/white-recovery"},
+        ],
+        "runtime_tail_sha256": _sha256(tail.encode("utf-8")),
+        "runtime_tail_byte_identical_to_r2g": True,
+        "generated_sources": {
+            path: {"bytes": len(content.encode("utf-8")),
+                   "sha256": _sha256(content.encode("utf-8"))}
+            for path, content in sorted(rendered.items())
+        },
+    }
+
+
 def render_version(version: str = "V1") -> dict[str, str]:
     """Return {relative_path: content} for one version's generated sources."""
 
@@ -2548,6 +3295,14 @@ def generate_sources() -> dict[str, Any]:
                 v3_report["generated_sources"][relative]["sha256"]:
             raise RuntimeError(f"on-disk hash differs after generation: {path}")
     reports["V3"] = v3_report
+    v4_report = build_v4_report()
+    for relative, content in render_v4().items():
+        path = ROOT / relative
+        _write_generated(path, content)
+        if _sha256(path.read_bytes()) != \
+                v4_report["generated_sources"][relative]["sha256"]:
+            raise RuntimeError(f"on-disk hash differs after generation: {path}")
+    reports["V4"] = v4_report
     return reports
 
 
@@ -2567,6 +3322,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             for path, content in render_version(version).items()
         }
         rendered.update(render_v3())
+        rendered.update(render_v4())
         drift = [
             path for path, content in rendered.items()
             if not (ROOT / path).is_file()
@@ -2580,6 +3336,17 @@ def main(argv: Sequence[str] | None = None) -> int:
     reports = generate_sources()
     summary = {}
     for version, report in reports.items():
+        if version == "V4":
+            summary[version] = {
+                "kind": report["kind"],
+                "env": report["env"],
+                "tag": report["tag"],
+                "normalize_steps": report["normalize"]["step_count"],
+                "atlas_frame_sha256": report["frame"]["sha256"],
+                "layout_sha256": report["atlas_layout"]["sha256"],
+                "generated_sources": report["generated_sources"],
+            }
+            continue
         if version == "V3":
             summary[version] = {
                 "kind": report["kind"],
