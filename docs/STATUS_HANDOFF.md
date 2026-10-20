@@ -7,7 +7,16 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-10-20 15:10 +0800`
+最后更新：`2026-10-20 20:40 +0800`
+
+## 2026-10-20 20:40 +0800 P0 V4 批 **FAIL_STOP**：OTP 基线 drf 39881 超硬上限 + 台架功率计 OFF（面板疑似寄生供电），V4 未烧录（1 刷 0 写）
+
+- **批次 [`MF1750_PARTIAL_BLOCK_P0V4_20261020_V1`](../.test-output/hardware/MF1750_PARTIAL_BLOCK_P0V4_20261020_V1/)，manifest 自封 sha `c08f515b…`（主线重算 MATCH）。** 判定 `FAIL_STOP_DRF_OVER_HARD_LIMIT_AND_POWER_SUPPLY_ANOMALY`。
+- **异常时间线**：relay ON receipt 通过但 BUSY 恒 0（既往空闲应读 1）；ESP32 在 relay ON 期间重启过；OTP 基线白场刷新设备侧 sequence_ok 但 **pon_ms=16130（正常约 260）、drf_ms=39881（>36000 硬上限）**，host frame tool 在 busy_trace PON 校验 fail-closed；异常照片显示台面 USB 功率计读 **00.00V OFF**，面板白场完好，取景背景再次出现变化（有点亮的显示器）——**批中台架状态被外部改动**。
+- **分析**：relay ON 而功率计 OFF → 刷新期间面板主电源缺失，疑似经数据线寄生供电驱动，致 PON/DRF 时序严重异常并解释 BUSY 恒 0。**寄生供电下驱动面板有硬件风险，台架电源路径核实前不再跑任何批次。**
+- **处置**（按停止条件，无 retry）：V4 固件未烧录（生产固件从未被替换）；relay OFF；最终 busy=0、版本 `MF1750_DRIVER_RC2G_…2026-08-07`、面板白场保持。证据：preflight 照、`01-otp-anomaly-photo.jpg`（功率计 OFF 可见）、busy_trace 诊断、relay-off/status/version 收尾三件。
+- **V4 构建本身已完成核验并推送**（`76e3b09`）：env `esp32-s3-devkitc-1-partial-atlas-1e-v4`，bin sha `7e858af3…`（主线对拍 MATCH）、帧 sha `ee9920e6…`、生产 env 重编精确命中 `ba59c3d6…`、定向 40 passed + 89 subtests、contract passed；紧凑布局 8 cell 110×110 xs=[20,140,260,380] ys=[190,330] 全在可见窗内，探针端点已取消。
+- **下一入口**：现场核实台架供电（功率计为何 OFF、继电器回路、面板供电与数据线）→ 安全 live 核查（拍照+status，0 刷新）确认供电恢复 → 以 `MF1750_PARTIAL_BLOCK_P0V4_20261020_V2` 重跑收尾批（预算 12 刷 2 写不变）。
 
 ## 2026-10-20 15:10 +0800 P0 V3 侦察批完成 + 几何仲裁定案：不旋转，归一化清位置色但不清 code0/code1 翻转（12 刷 2 写）
 
