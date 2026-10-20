@@ -14,6 +14,12 @@ PON) at the frozen 1 MHz SPI.  Runtime actions A/B/C bind the wf_wmask_1E /
 wf_wmask_0E / wf_wmask_1C complete R20 tuples byte-identically; factory-OTP
 white anchors and closes the sequence.
 
+V2 (handoff amendment 2, after the P0 anomaly analysis): the route A layout
+keeps the eight slot coordinates but swaps (544,384) to the code7 probe and
+(792,384) to code6; route B's cropped patch code is 4 instead of 0; both
+variants get dedicated *_V2 tags, envs, and generated TUs.  V1 outputs stay
+byte-identical.
+
 No hardware, serial, relay, network, camera, or flashing access is performed.
 Generated files are never overwritten with different content.
 """
@@ -53,6 +59,10 @@ ATLAS_ENV = "esp32-s3-devkitc-1-partial-atlas-1e"
 ATLAS_TAG = f"MF1750_PARTIAL_BLOCK_ATLAS_1E_{DATE}"
 PTLW_ENV = "esp32-s3-devkitc-1-partial-block-ptlw"
 PTLW_TAG = f"MF1750_PARTIAL_BLOCK_PTLW_{DATE}"
+ATLAS_ENV_V2 = "esp32-s3-devkitc-1-partial-atlas-1e-v2"
+ATLAS_TAG_V2 = f"MF1750_PARTIAL_BLOCK_ATLAS_1E_{DATE}_V2"
+PTLW_ENV_V2 = "esp32-s3-devkitc-1-partial-block-ptlw-v2"
+PTLW_TAG_V2 = f"MF1750_PARTIAL_BLOCK_PTLW_{DATE}_V2"
 
 ATLAS_PATHS = {
     "layout_inc": ROOT / "src/generated/partial_atlas_1e_layout.inc",
@@ -66,6 +76,44 @@ PTLW_PATHS = {
     "driver": ROOT / "src/partial_block_ptlw_epd_driver.cpp",
     "main": ROOT / "src/partial_block_ptlw_main.cpp",
 }
+
+
+def _version_names(version: str) -> dict[str, str]:
+    if version == "V1":
+        return {
+            "atlas_env": ATLAS_ENV,
+            "atlas_tag": ATLAS_TAG,
+            "ptlw_env": PTLW_ENV,
+            "ptlw_tag": PTLW_TAG,
+            "atlas_layout_inc": "src/generated/partial_atlas_1e_layout.inc",
+            "ptlw_contract_inc": "src/generated/partial_block_ptlw_contract.inc",
+            "atlas_driver": "src/partial_atlas_1e_epd_driver.cpp",
+            "atlas_main": "src/partial_atlas_1e_main.cpp",
+            "ptlw_driver": "src/partial_block_ptlw_epd_driver.cpp",
+            "ptlw_main": "src/partial_block_ptlw_main.cpp",
+            "atlas_boot":
+                "partial block route A: compiled 1E seven-code atlas on white",
+            "ptlw_boot":
+                "partial block route B: clean PTLW windows A=1E B=0E C=1C + factory white",
+        }
+    if version == "V2":
+        return {
+            "atlas_env": ATLAS_ENV_V2,
+            "atlas_tag": ATLAS_TAG_V2,
+            "ptlw_env": PTLW_ENV_V2,
+            "ptlw_tag": PTLW_TAG_V2,
+            "atlas_layout_inc": "src/generated/partial_atlas_1e_v2_layout.inc",
+            "ptlw_contract_inc": "src/generated/partial_block_ptlw_v2_contract.inc",
+            "atlas_driver": "src/partial_atlas_1e_v2_epd_driver.cpp",
+            "atlas_main": "src/partial_atlas_1e_v2_main.cpp",
+            "ptlw_driver": "src/partial_block_ptlw_v2_epd_driver.cpp",
+            "ptlw_main": "src/partial_block_ptlw_v2_main.cpp",
+            "atlas_boot":
+                "partial block route A V2: code7 probe at (544,384), code6 at (792,384)",
+            "ptlw_boot":
+                "partial block route B V2: patch code4 clean PTLW windows A=1E B=0E C=1C + factory white",
+        }
+    raise ValueError(f"unknown partial-block version {version!r}")
 
 
 def _sha256(payload: bytes) -> str:
@@ -90,34 +138,64 @@ def _fnv1a(payload: bytes) -> int:
 
 
 # ---------------------------------------------------------------------------
-# Route A layout: white (code 7) background, seven 192x160 ROIs for codes 0-6.
-# Columns/rows keep every ROI fully inside one 512-pixel controller half on
-# even byte boundaries, clear of the x=512 cascade seam; slot (792,384) stays
-# background as the on-frame white reference.
+# Route A layouts.  V1: white (code 7) background, seven 192x160 ROIs for codes
+# 0-6 plus the code-7 background reference slot at (792,384).  V2 (handoff
+# amendment 2): same eight slot coordinates, codes 0-5 unchanged, (544,384)
+# becomes the code7 probe and (792,384) becomes code6 — discriminating whether
+# the P0 olive block follows code7 or the (792,384) position.  Columns/rows
+# keep every ROI fully inside one 512-pixel controller half on even byte
+# boundaries, clear of the x=512 cascade seam.
 # ---------------------------------------------------------------------------
 
 ATLAS_BACKGROUND_CODE = 7
 ATLAS_ROI_WIDTH = 192
 ATLAS_ROI_HEIGHT = 160
-ATLAS_ROIS: tuple[dict[str, int], ...] = tuple(
-    {"name": f"code{code}", "code": code, "x": x, "y": y,
-     "w": ATLAS_ROI_WIDTH, "h": ATLAS_ROI_HEIGHT}
-    for code, (x, y) in enumerate(
-        ((48, 64), (288, 64), (544, 64), (792, 64), (48, 384), (288, 384), (544, 384))
-    )
+ATLAS_SLOTS: tuple[tuple[int, int], ...] = (
+    (48, 64), (288, 64), (544, 64), (792, 64),
+    (48, 384), (288, 384), (544, 384), (792, 384),
 )
-ATLAS_BACKGROUND_REFERENCE = {
-    "name": "bg_ref", "code": ATLAS_BACKGROUND_CODE,
-    "x": 792, "y": 384, "w": ATLAS_ROI_WIDTH, "h": ATLAS_ROI_HEIGHT,
-}
+ATLAS_CODES_V1: tuple[int | None, ...] = (0, 1, 2, 3, 4, 5, 6, None)
+ATLAS_CODES_V2: tuple[int, ...] = (0, 1, 2, 3, 4, 5, 7, 6)
+ATLAS_V2_PROBE_NAME = "code7_probe"
+ATLAS_V1_BG_REF_NAME = "bg_ref"
+ATLAS_VERSIONS = ("V1", "V2")
+PTLW_PATCH_CODES = {"V1": 0, "V2": 4}
 
 
-def _validate_atlas_layout() -> None:
-    slots = list(ATLAS_ROIS) + [ATLAS_BACKGROUND_REFERENCE]
-    if len({roi["code"] for roi in ATLAS_ROIS}) != 7:
+def atlas_regions(version: str = "V1") -> tuple[list[dict[str, Any]], dict[str, Any] | None]:
+    """Return (code regions, optional background-reference region)."""
+
+    codes = ATLAS_CODES_V1 if version == "V1" else ATLAS_CODES_V2
+    regions: list[dict[str, Any]] = []
+    background_reference: dict[str, Any] | None = None
+    for (x, y), code in zip(ATLAS_SLOTS, codes):
+        if code is None:
+            background_reference = {
+                "name": ATLAS_V1_BG_REF_NAME, "code": ATLAS_BACKGROUND_CODE,
+                "x": x, "y": y, "w": ATLAS_ROI_WIDTH, "h": ATLAS_ROI_HEIGHT,
+            }
+            continue
+        name = (ATLAS_V2_PROBE_NAME if version == "V2" and (x, y) == (544, 384)
+                else f"code{code}")
+        regions.append({"name": name, "code": code, "x": x, "y": y,
+                        "w": ATLAS_ROI_WIDTH, "h": ATLAS_ROI_HEIGHT})
+    return regions, background_reference
+
+
+ATLAS_ROIS: tuple[dict[str, Any], ...] = tuple(atlas_regions("V1")[0])
+ATLAS_BACKGROUND_REFERENCE = atlas_regions("V1")[1]
+
+
+def _validate_atlas_layout(version: str = "V1") -> None:
+    regions, background_reference = atlas_regions(version)
+    slots = list(regions) + ([background_reference] if background_reference else [])
+    codes = [roi["code"] for roi in regions]
+    if len(set(codes)) != len(codes):
         raise RuntimeError("route A ROI codes are not unique")
-    if [roi["code"] for roi in ATLAS_ROIS] != [0, 1, 2, 3, 4, 5, 6]:
-        raise RuntimeError("route A ROI code order drifted")
+    if version == "V1" and codes != [0, 1, 2, 3, 4, 5, 6]:
+        raise RuntimeError("route A V1 ROI code order drifted")
+    if version == "V2" and sorted(codes) != [0, 1, 2, 3, 4, 5, 6, 7]:
+        raise RuntimeError("route A V2 ROI code set drifted")
     for roi in slots:
         if roi["x"] % 2 or roi["w"] % 2:
             raise RuntimeError(f"route A ROI {roi['name']} is not byte aligned")
@@ -138,14 +216,15 @@ def _validate_atlas_layout() -> None:
                 raise RuntimeError("route A ROIs overlap")
 
 
-def build_atlas_frame() -> bytes:
+def build_atlas_frame(version: str = "V1") -> bytes:
     """Return the fixed packed-4bpp route A frame (even x in the high nibble)."""
 
-    _validate_atlas_layout()
+    _validate_atlas_layout(version)
+    regions, _background_reference = atlas_regions(version)
     frame = bytearray(
         [(ATLAS_BACKGROUND_CODE << 4) | ATLAS_BACKGROUND_CODE] * FRAME_BYTES
     )
-    for roi in ATLAS_ROIS:
+    for roi in regions:
         pair = (roi["code"] << 4) | roi["code"]
         for y in range(roi["y"], roi["y"] + roi["h"]):
             start = y * ROW_BYTES + roi["x"] // 2
@@ -166,37 +245,53 @@ def controller_stream(frame: bytes, second_controller: bool) -> bytes:
     return bytes(stream)
 
 
-def atlas_layout_doc() -> dict[str, Any]:
-    return {
+def atlas_layout_doc(version: str = "V1") -> dict[str, Any]:
+    regions, background_reference = atlas_regions(version)
+    doc: dict[str, Any] = {
         "schema": "mf1750-partial-block-atlas-layout-v1",
         "panel": {"width": WIDTH, "height": HEIGHT,
                   "controller_width": CONTROLLER_WIDTH},
         "background_code": ATLAS_BACKGROUND_CODE,
         "background_is_l535_white_code7": True,
-        "rois": [dict(roi) for roi in ATLAS_ROIS],
-        "background_reference": dict(ATLAS_BACKGROUND_REFERENCE),
+        "rois": [dict(roi) for roi in regions],
+        "background_reference": (
+            dict(background_reference) if background_reference else None
+        ),
         "packed_format": "4bpp row-major, even x in the high nibble",
         "even_x_and_width": True,
         "seam_avoidance_x512": True,
         "codes_are_transport_codes_not_colour_names": True,
     }
+    if version != "V1":
+        doc["layout_revision"] = version
+        doc["layout_change_vs_v1"] = (
+            "(544,384) code6 -> code7 probe; (792,384) code7 background "
+            "reference -> code6; slot coordinates unchanged; discriminates "
+            "whether the P0 olive block follows code7 or the (792,384) position"
+        )
+    return doc
 
 
-def atlas_roi_list_doc() -> dict[str, Any]:
+def atlas_roi_list_doc(version: str = "V1") -> dict[str, Any]:
     """tools/mf1750_multi_roi_lab.py-compatible region list."""
 
-    return {
+    regions, background_reference = atlas_regions(version)
+    listed = list(regions) + ([background_reference] if background_reference else [])
+    doc: dict[str, Any] = {
         "schema": "mf1750-partial-block-atlas-roi-list-v1",
         "screen": {"width": WIDTH, "height": HEIGHT},
         "regions": [
             {"name": roi["name"], "code": roi["code"], "x": roi["x"],
              "y": roi["y"], "w": roi["w"], "h": roi["h"]}
-            for roi in list(ATLAS_ROIS) + [ATLAS_BACKGROUND_REFERENCE]
+            for roi in listed
         ],
     }
+    if version != "V1":
+        doc["layout_revision"] = version
+    return doc
 
 
-def ptlw_roi_list_doc() -> dict[str, Any]:
+def ptlw_roi_list_doc(version: str = "V1") -> dict[str, Any]:
     """Route B measurement regions: both controller halves per window.
 
     Each partial action paints one symmetric patch pair (same window
@@ -205,12 +300,13 @@ def ptlw_roi_list_doc() -> dict[str, Any]:
     patch-free background strips for the outside-window checks.
     """
 
+    patch_code = PTLW_PATCH_CODES[version]
     regions: list[dict[str, Any]] = []
     for window in PTLW_WINDOWS:
         for controller, x_offset in (("cs1", 0), ("cs2", CONTROLLER_WIDTH)):
             regions.append({
                 "name": f"{window['name'].lower()}_{controller}",
-                "code": PATCH_CODE,
+                "code": patch_code,
                 "x": window["x"] + x_offset,
                 "y": window["y"],
                 "w": window["w"],
@@ -218,11 +314,14 @@ def ptlw_roi_list_doc() -> dict[str, Any]:
             })
     regions.append({"name": "bg_north", "x": 432, "y": 24, "w": 160, "h": 32})
     regions.append({"name": "bg_south", "x": 432, "y": 556, "w": 160, "h": 32})
-    return {
+    doc: dict[str, Any] = {
         "schema": "mf1750-partial-block-ptlw-roi-list-v1",
         "screen": {"width": WIDTH, "height": HEIGHT},
         "regions": regions,
     }
+    if version != "V1":
+        doc["layout_revision"] = version
+    return doc
 
 
 # ---------------------------------------------------------------------------
@@ -233,7 +332,6 @@ PTLW_COMMAND = 0x83
 PTLW_MODE = 0x01
 PTLW_PAYLOAD_BYTES = 9
 PRELOAD_CODE = 7
-PATCH_CODE = 0
 PTLW_WINDOWS: tuple[dict[str, int], ...] = (
     {"name": "A", "x": 48, "y": 64, "w": 160, "h": 120},
     {"name": "B", "x": 304, "y": 240, "w": 160, "h": 120},
@@ -282,10 +380,11 @@ def _uniform(byte_count: int, code: int) -> bytes:
     return bytes([(code << 4) | code]) * byte_count
 
 
-def route_b_identities() -> dict[str, Any]:
+def route_b_identities(version: str = "V1") -> dict[str, Any]:
     _validate_ptlw_windows()
+    patch_code = PTLW_PATCH_CODES[version]
     preload = _uniform(CONTROLLER_DTM_BYTES, PRELOAD_CODE)
-    crop = _uniform(160 * 120 // 2, PATCH_CODE)
+    crop = _uniform(160 * 120 // 2, patch_code)
     combined = preload + crop
     return {
         "preload_dtm": {
@@ -293,7 +392,7 @@ def route_b_identities() -> dict[str, Any]:
             "fnv1a": _fnv1a(preload), "sha256": _sha256(preload),
         },
         "crop_dtm": {
-            "bytes": len(crop), "code": PATCH_CODE,
+            "bytes": len(crop), "code": patch_code,
             "fnv1a": _fnv1a(crop), "sha256": _sha256(crop),
         },
         "combined_dtm": {
@@ -395,13 +494,14 @@ def _r2g_tail() -> str:
 
 
 def _render_atlas_layout_inc(frame: bytes, cs1: bytes, cs2: bytes,
-                             layout_sha: str) -> str:
+                             layout_sha: str, version: str = "V1") -> str:
+    regions, _background_reference = atlas_regions(version)
     rois = ",\n".join(
         f"    {{{roi['x']}, {roi['y']}, {roi['w']}, {roi['h']}, 0x{roi['code']:02X}}}"
-        for roi in ATLAS_ROIS
+        for roi in regions
     )
     asserts = []
-    for index, roi in enumerate(ATLAS_ROIS):
+    for index, roi in enumerate(regions):
         asserts.append(
             f"static_assert(kRois[{index}].x == {roi['x']} && "
             f"kRois[{index}].y == {roi['y']} && "
@@ -420,8 +520,8 @@ def _render_atlas_layout_inc(frame: bytes, cs1: bytes, cs2: bytes,
             f"              \"route A ROI {index} violates alignment, seam, or bounds\");"
         )
     disjoint = []
-    for left_index in range(len(ATLAS_ROIS)):
-        for right_index in range(left_index + 1, len(ATLAS_ROIS)):
+    for left_index in range(len(regions)):
+        for right_index in range(left_index + 1, len(regions)):
             disjoint.append(
                 f"static_assert(kRois[{left_index}].x + kRois[{left_index}].width <= "
                 f"kRois[{right_index}].x ||\n"
@@ -433,18 +533,30 @@ def _render_atlas_layout_inc(frame: bytes, cs1: bytes, cs2: bytes,
                 f"kRois[{left_index}].y,\n"
                 f"              \"route A ROIs {left_index}/{right_index} overlap\");"
             )
+    if version == "V1":
+        comment = """// Generated by tools/mf1750_partial_block_build.py.  Route A (P0) layout:
+// white (code 7) background with seven fixed 192x160 ROIs, one per transport
+// code {0,1,2,3,4,5,6}; every ROI sits fully inside one 512-pixel controller
+// half, on even byte boundaries, clear of the x=512 cascade seam.  Codes are
+// transport codes, not colour names."""
+        namespace = "partial_atlas_1e"
+    else:
+        comment = """// Generated by tools/mf1750_partial_block_build.py.  Route A (P0) layout V2
+// (handoff amendment 2): white (code 7) background; same eight slot
+// coordinates as V1; codes 0-5 unchanged; (544,384) carries the code7 probe
+// and (792,384) carries code6, discriminating whether the P0 olive block
+// follows code7 or the (792,384) position.  Every ROI sits fully inside one
+// 512-pixel controller half, on even byte boundaries, clear of the x=512
+// cascade seam.  Codes are transport codes, not colour names."""
+        namespace = "partial_atlas_1e_v2"
     return f"""#pragma once
 
 #include <cstddef>
 #include <cstdint>
 
-// Generated by tools/mf1750_partial_block_build.py.  Route A (P0) layout:
-// white (code 7) background with seven fixed 192x160 ROIs, one per transport
-// code {{0,1,2,3,4,5,6}}; every ROI sits fully inside one 512-pixel controller
-// half, on even byte boundaries, clear of the x=512 cascade seam.  Codes are
-// transport codes, not colour names.
+{comment}
 
-namespace mf1750::partial_block::partial_atlas_1e {{
+namespace mf1750::partial_block::{namespace} {{
 
 struct AtlasRoi {{
   std::uint16_t x;
@@ -455,7 +567,7 @@ struct AtlasRoi {{
 }};
 
 static constexpr std::uint8_t kBackgroundCode = 0x{ATLAS_BACKGROUND_CODE:02X};
-static constexpr std::size_t kRoiCount = {len(ATLAS_ROIS)};
+static constexpr std::size_t kRoiCount = {len(regions)};
 static constexpr AtlasRoi kRois[kRoiCount] = {{
 {rois},
 }};
@@ -470,12 +582,14 @@ static constexpr char kLayoutSha256[] = "{layout_sha}";
 {chr(10).join(asserts)}
 {chr(10).join(disjoint)}
 
-}}  // namespace mf1750::partial_block::partial_atlas_1e
+}}  // namespace mf1750::partial_block::{namespace}
 """
 
 
 def _render_ptlw_contract_inc(identities: dict[str, Any],
-                              profiles: dict[str, dict[str, Any]]) -> str:
+                              profiles: dict[str, dict[str, Any]],
+                              version: str = "V1") -> str:
+    patch_code = identities["crop_dtm"]["code"]
     windows = ",\n".join(
         f"    {{{window['x']}, {window['y']}, {window['w']}, {window['h']}}}"
         for window in PTLW_WINDOWS
@@ -506,21 +620,36 @@ def _render_ptlw_contract_inc(identities: dict[str, Any],
             f"                  kWindows[{index}].y + kWindows[{index}].height <= 600,\n"
             f"              \"route B window {index} violates alignment, seam, or bounds\");"
         )
-    return f"""#pragma once
-
-#include <cstddef>
-#include <cstdint>
-
-// Generated by tools/mf1750_partial_block_build.py.  Route B (P1-P3) contract:
+    if version == "V1":
+        comment = """// Generated by tools/mf1750_partial_block_build.py.  Route B (P1-P3) contract:
 // PTLW command 0x83 with a 9-byte inclusive window (xe=x+w-1, ye=y+h-1,
 // mode 0x01), full code-7 controller preload without refresh, then one
 // inclusive PTLW and one cropped uniform DTM per controller, then
 // PON/DRF/POF with no PTLW repeat after PON.  Each window is written to CS1
 // and CS2 separately with identical coordinates and patch code, giving one
 // symmetric patch pair per action.  Codes are transport codes, not colour
-// names.
+// names."""
+        namespace = "ptlw"
+    else:
+        comment = """// Generated by tools/mf1750_partial_block_build.py.  Route B (P1-P3) contract
+// V2 (handoff amendment 2): identical to V1 except the cropped uniform DTM
+// patch code is 4 instead of 0 (code0 proved optically inert under 1E in the
+// P0 atlas; P1 needs a visible optical response).  PTLW command 0x83 with a
+// 9-byte inclusive window (xe=x+w-1, ye=y+h-1, mode 0x01), full code-7
+// controller preload without refresh, then one inclusive PTLW and one cropped
+// uniform DTM per controller, then PON/DRF/POF with no PTLW repeat after PON.
+// Each window is written to CS1 and CS2 separately with identical coordinates
+// and patch code, giving one symmetric patch pair per action.  Codes are
+// transport codes, not colour names."""
+        namespace = "ptlw_v2"
+    return f"""#pragma once
 
-namespace mf1750::partial_block::ptlw {{
+#include <cstddef>
+#include <cstdint>
+
+{comment}
+
+namespace mf1750::partial_block::{namespace} {{
 
 struct PtlwWindow {{
   std::uint16_t x;
@@ -536,7 +665,7 @@ static constexpr std::size_t kRuntimeActionCount = {len(PTLW_WINDOWS)};
 static constexpr std::uint32_t kFullControllerDtmBytes = {CONTROLLER_DTM_BYTES};
 static constexpr std::uint32_t kCroppedDtmBytes = {160 * 120 // 2};
 static constexpr std::uint8_t kPreloadCode = 0x{PRELOAD_CODE:02X};
-static constexpr std::uint8_t kPatchCode = 0x{PATCH_CODE:02X};
+static constexpr std::uint8_t kPatchCode = 0x{patch_code:02X};
 static constexpr PtlwWindow kWindows[kRuntimeActionCount] = {{
 {windows},
 }};
@@ -561,7 +690,7 @@ static constexpr std::uint32_t kCombinedDtmFnv1a = 0x{identities['combined_dtm']
 
 {chr(10).join(endpoint_asserts)}
 
-}}  // namespace mf1750::partial_block::ptlw
+}}  // namespace mf1750::partial_block::{namespace}
 """
 
 
@@ -600,16 +729,32 @@ bool epdDisplayCompiledPartialBlockPtlw(EpdPartialBlockPtlwRole role);
 """
 
 
-def _render_atlas_driver_head() -> str:
+def _render_atlas_driver_head(version: str = "V1") -> str:
     records = wmask.selected_records(0x0E, True)
-    return (
-        """// Dedicated translation unit for partial-block route A (P0): the fixed 1E
+    if version == "V1":
+        comment = """// Dedicated translation unit for partial-block route A (P0): the fixed 1E
 // GrayExt tuple (base 0x0E plus the whole records 0-3 group; the family label
 // is not a bitmask) drives one compiled white-background seven-code atlas
 // frame through the sealed full-frame L535 path.  R20/PWR/PLL/R21/PSR and the
 // runtime sequence are byte-identical to the sealed wf_wmask_1E build; the
 // runtime tail below is byte-identical to the pinned R2G template.  Production
-// and the wf_wmask_* translation units stay untouched.
+// and the wf_wmask_* translation units stay untouched."""
+        layout_inc = "partial_atlas_1e_layout.inc"
+        atlas_ns = "partial_atlas_1e"
+    else:
+        comment = """// Dedicated translation unit for partial-block route A (P0) V2 (handoff
+// amendment 2): the fixed 1E GrayExt tuple (base 0x0E plus the whole records
+// 0-3 group; the family label is not a bitmask) drives the compiled
+// white-background atlas frame whose (544,384) slot carries the code7 probe
+// and whose (792,384) slot carries code6, through the sealed full-frame L535
+// path.  R20/PWR/PLL/R21/PSR and the runtime sequence are byte-identical to
+// the sealed wf_wmask_1E build; the runtime tail below is byte-identical to
+// the pinned R2G template.  Production and the wf_wmask_* translation units
+// stay untouched."""
+        layout_inc = "partial_atlas_1e_v2_layout.inc"
+        atlas_ns = "partial_atlas_1e_v2"
+    return (
+        f"""{comment}
 #include "epd_driver.h"
 
 #include <SPI.h>
@@ -636,8 +781,8 @@ def _render_atlas_driver_head() -> str:
 namespace l535_lut = mf1750::runtime_lut::legacy_reference;
 #include "generated/spd1657_wf_wmask_1E.inc"
 namespace l535_variant = mf1750::runtime_lut::wf_wmask_1E;
-#include "generated/partial_atlas_1e_layout.inc"
-namespace pb_atlas = mf1750::partial_block::partial_atlas_1e;
+#include "generated/{layout_inc}"
+namespace pb_atlas = mf1750::partial_block::{atlas_ns};
 
 static_assert(sizeof(l535_variant::kR20Payload) == 535,
               "route A 1E R20 payload must be exactly 535 bytes");
@@ -655,7 +800,7 @@ static_assert(sizeof(l535_variant::kR20Payload) == 535,
     )
 
 
-def _render_ptlw_driver_head() -> str:
+def _render_ptlw_driver_head(version: str = "V1") -> str:
     profile_defs = []
     for struct_name, fn_name, alias, label in (
         ("PbProfileARecordsMatch", "pbProfileAUseCommented", "pb_profile_a", "route B profile A (1E)"),
@@ -676,15 +821,33 @@ def _render_ptlw_driver_head() -> str:
         f"                  pb_profile_b::kPowerPayload[{index}] == pb_profile_c::kPowerPayload[{index}]"
         for index in range(6)
     )
-    return (
-        """// Dedicated translation unit for partial-block route B (P1-P3): three
+    if version == "V1":
+        comment = """// Dedicated translation unit for partial-block route B (P1-P3): three
 // fixed clean-PTLW partial-window actions whose complete R20 tuples are the
 // same compiled objects as the sealed wf_wmask_1E / wf_wmask_0E / wf_wmask_1C
 // full-frame builds (1E/1C family labels are base-plus-group labels, not
 // bitmasks).  PWR, PLL=0x02, R21, PSR bytes are the pinned active payloads
 // shared by every WMASK profile; the runtime tail below is byte-identical to
 // the pinned R2G template.  Production and the wf_wmask_* translation units
-// stay untouched.  Factory-OTP white anchors and closes the action sequence.
+// stay untouched.  Factory-OTP white anchors and closes the action sequence."""
+        contract_inc = "partial_block_ptlw_contract.inc"
+        ptlw_ns = "ptlw"
+    else:
+        comment = """// Dedicated translation unit for partial-block route B (P1-P3) V2 (handoff
+// amendment 2): identical to V1 except the cropped uniform DTM patch code is
+// 4 instead of 0 (code0 proved optically inert under 1E in the P0 atlas; P1
+// needs a visible optical response).  Three fixed clean-PTLW partial-window
+// actions whose complete R20 tuples are the same compiled objects as the
+// sealed wf_wmask_1E / wf_wmask_0E / wf_wmask_1C full-frame builds (1E/1C
+// family labels are base-plus-group labels, not bitmasks).  PWR, PLL=0x02,
+// R21, PSR bytes are the pinned active payloads shared by every WMASK profile;
+// the runtime tail below is byte-identical to the pinned R2G template.
+// Production and the wf_wmask_* translation units stay untouched.
+// Factory-OTP white anchors and closes the action sequence."""
+        contract_inc = "partial_block_ptlw_v2_contract.inc"
+        ptlw_ns = "ptlw_v2"
+    return (
+        f"""{comment}
 #include "epd_driver.h"
 
 #include <SPI.h>
@@ -727,8 +890,8 @@ namespace pb_profile_c = mf1750::runtime_lut::wf_wmask_1C;
 // The inherited full-frame path (unused by every route B action) binds the
 // action-A 1E tuple so the byte-identical runtime tail compiles unchanged.
 namespace l535_variant = mf1750::runtime_lut::wf_wmask_1E;
-#include "generated/partial_block_ptlw_contract.inc"
-namespace pb = mf1750::partial_block::ptlw;
+#include "generated/{contract_inc}"
+namespace pb = mf1750::partial_block::{ptlw_ns};
 
 static_assert(sizeof(pb_profile_a::kR20Payload) == 535 &&
                   sizeof(pb_profile_b::kR20Payload) == 535 &&
@@ -749,15 +912,30 @@ static_assert(pb_profile_a::kPllPayload[0] == pb_profile_b::kPllPayload[0] &&
     )
 
 
-_ROUTE_A_FIXTURE = """
-// ===========================================================================
-// Route A (P0) compiled multi-code atlas fixture
+def _route_a_fixture(version: str) -> str:
+    if version == "V1":
+        comment = """// Route A (P0) compiled multi-code atlas fixture
 // (docs/MF1750_PARTIAL_BLOCK_WAVEFORM_HANDOFF_20261020.md).  One fixed
 // white-background 1024x600 frame carries seven fixed ROIs, one per transport
-// code {0,1,2,3,4,5,6}, refreshed once through the sealed 1E full-frame path.
+// code {0,1,2,3,4,5,6}, refreshed once through the sealed 1E full-frame path."""
+    else:
+        comment = """// Route A (P0) compiled multi-code atlas fixture V2 (handoff amendment 2).
+// One fixed white-background 1024x600 frame carries eight fixed ROIs at the
+// V1 slot coordinates with codes {0,1,2,3,4,5,7,6} — the (544,384) slot is the
+// code7 probe and the (792,384) slot carries code6 — refreshed once through
+// the sealed 1E full-frame path."""
+    return (
+        "\n// ===========================================================================\n"
+        + comment
+        + """
 // The frame is rebuilt and hash-validated before any panel I/O; no
 // caller-controlled frame, coordinate, code, LUT, voltage, timing, retry, or
-// recovery parameter is accepted.
+// recovery parameter is accepted."""
+        + _ROUTE_A_FIXTURE_BODY
+    )
+
+
+_ROUTE_A_FIXTURE_BODY = """
 #if defined(MF1750_PARTIAL_BLOCK_ATLAS_1E_BUILD)
 
 namespace {
@@ -1300,28 +1478,29 @@ def _render_main(template: str, tag: str, boot: str, api_header: str,
     return text
 
 
-def render_all() -> dict[str, str]:
-    """Return {relative_path: content} for every generated source."""
+def render_version(version: str = "V1") -> dict[str, str]:
+    """Return {relative_path: content} for one version's generated sources."""
 
-    frame = build_atlas_frame()
+    names = _version_names(version)
+    frame = build_atlas_frame(version)
     cs1 = controller_stream(frame, False)
     cs2 = controller_stream(frame, True)
-    layout_doc = atlas_layout_doc()
+    layout_doc = atlas_layout_doc(version)
     layout_sha = _sha256(_canonical(layout_doc))
-    identities = route_b_identities()
+    identities = route_b_identities(version)
     profiles = _profile_reports()
 
     atlas_driver = (
-        _render_atlas_driver_head() + _r2g_tail() + _ROUTE_A_FIXTURE
+        _render_atlas_driver_head(version) + _r2g_tail() + _route_a_fixture(version)
     )
     ptlw_driver = (
-        _render_ptlw_driver_head() + _r2g_tail() + _ROUTE_B_FIXTURE
+        _render_ptlw_driver_head(version) + _r2g_tail() + _ROUTE_B_FIXTURE
     )
     main_template = R2G_MAIN_PATH.read_text(encoding="utf-8")
     atlas_main = _render_main(
         main_template,
-        ATLAS_TAG,
-        "partial block route A: compiled 1E seven-code atlas on white",
+        names["atlas_tag"],
+        names["atlas_boot"],
         "partial_atlas_1e_api.h",
         "MF1750_PARTIAL_BLOCK_ATLAS_1E_BUILD",
         "  PartialAtlas1E,\n",
@@ -1337,8 +1516,8 @@ def render_all() -> dict[str, str]:
     )
     ptlw_main = _render_main(
         main_template,
-        PTLW_TAG,
-        "partial block route B: clean PTLW windows A=1E B=0E C=1C + factory white",
+        names["ptlw_tag"],
+        names["ptlw_boot"],
         "partial_block_ptlw_api.h",
         "MF1750_PARTIAL_BLOCK_PTLW_BUILD",
         "  PartialBlockFactoryWhite,\n"
@@ -1395,30 +1574,37 @@ def render_all() -> dict[str, str]:
     )
 
     return {
-        "src/generated/partial_atlas_1e_layout.inc":
-            _render_atlas_layout_inc(frame, cs1, cs2, layout_sha),
+        names["atlas_layout_inc"]:
+            _render_atlas_layout_inc(frame, cs1, cs2, layout_sha, version),
         "src/partial_atlas_1e_api.h": _render_atlas_api_header(),
-        "src/partial_atlas_1e_epd_driver.cpp": atlas_driver,
-        "src/partial_atlas_1e_main.cpp": atlas_main,
-        "src/generated/partial_block_ptlw_contract.inc":
-            _render_ptlw_contract_inc(identities, profiles),
+        names["atlas_driver"]: atlas_driver,
+        names["atlas_main"]: atlas_main,
+        names["ptlw_contract_inc"]:
+            _render_ptlw_contract_inc(identities, profiles, version),
         "src/partial_block_ptlw_api.h": _render_ptlw_api_header(),
-        "src/partial_block_ptlw_epd_driver.cpp": ptlw_driver,
-        "src/partial_block_ptlw_main.cpp": ptlw_main,
+        names["ptlw_driver"]: ptlw_driver,
+        names["ptlw_main"]: ptlw_main,
     }
 
 
-def build_report() -> dict[str, Any]:
-    frame = build_atlas_frame()
+def render_all() -> dict[str, str]:
+    """Return {relative_path: content} for the V1 generated sources."""
+
+    return render_version("V1")
+
+
+def build_report(version: str = "V1") -> dict[str, Any]:
+    names = _version_names(version)
+    frame = build_atlas_frame(version)
     cs1 = controller_stream(frame, False)
     cs2 = controller_stream(frame, True)
-    layout_doc = atlas_layout_doc()
+    layout_doc = atlas_layout_doc(version)
     layout_sha = _sha256(_canonical(layout_doc))
-    identities = route_b_identities()
+    identities = route_b_identities(version)
     profiles = _profile_reports()
     tail = _r2g_tail()
     tail_sha = _sha256(tail.encode("utf-8"))
-    rendered = render_all()
+    rendered = render_version(version)
     r2g_text = R2G_DRIVER_PATH.read_text(encoding="utf-8")
 
     profile_summary = {}
@@ -1439,7 +1625,7 @@ def build_report() -> dict[str, Any]:
             ),
         }
 
-    return {
+    report = {
         "schema_version": 1,
         "kind": "mf1750-partial-block-first-batch-generation",
         "date": DATE,
@@ -1457,8 +1643,8 @@ def build_report() -> dict[str, Any]:
         "spi_hz": 1_000_000,
         "spi_hz_is_frozen_default": True,
         "route_a": {
-            "env": ATLAS_ENV,
-            "tag": ATLAS_TAG,
+            "env": names["atlas_env"],
+            "tag": names["atlas_tag"],
             "profile": profile_summary["1E"],
             "frame": {
                 "bytes": len(frame),
@@ -1466,7 +1652,7 @@ def build_report() -> dict[str, Any]:
                 "sha256": _sha256(frame),
                 "background_code": ATLAS_BACKGROUND_CODE,
                 "background_is_l535_white_code7": True,
-                "roi_codes": [roi["code"] for roi in ATLAS_ROIS],
+                "roi_codes": [roi["code"] for roi in atlas_regions(version)[0]],
                 "codes_are_transport_codes_not_colour_names": True,
             },
             "controller_streams": {
@@ -1476,12 +1662,12 @@ def build_report() -> dict[str, Any]:
                         "sha256": _sha256(cs2)},
             },
             "layout": {"doc": layout_doc, "sha256": layout_sha},
-            "roi_list": atlas_roi_list_doc(),
+            "roi_list": atlas_roi_list_doc(version),
             "refresh": "sealed full-frame path (PON, BTST2, DRF 0x00, POF 0x00)",
         },
         "route_b": {
-            "env": PTLW_ENV,
-            "tag": PTLW_TAG,
+            "env": names["ptlw_env"],
+            "tag": names["ptlw_tag"],
             "profiles": {label: profile_summary[label]
                          for label in PTLW_PROFILE_LABELS},
             "windows": [dict(window) for window in PTLW_WINDOWS],
@@ -1545,7 +1731,7 @@ def build_report() -> dict[str, Any]:
                 "per-action EpdOperationReport (pon/drf/pof wait ms and busy "
                 "stage evidence) published via /api/diagnostic/report"
             ),
-            "roi_list": ptlw_roi_list_doc(),
+            "roi_list": ptlw_roi_list_doc(version),
         },
         "runtime_tail_sha256": tail_sha,
         "r2g_driver_sha256": _sha256(r2g_text.encode("utf-8")),
@@ -1555,6 +1741,26 @@ def build_report() -> dict[str, Any]:
             for path, content in sorted(rendered.items())
         },
     }
+    if version != "V1":
+        report["layout_revision"] = version
+        report["changes_vs_v1"] = {
+            "route_a_layout": (
+                "slot coordinates unchanged; (544,384) code6 -> code7 probe; "
+                "(792,384) code7 background reference -> code6 block; "
+                "discriminates whether the P0 olive block follows code7 or "
+                "the (792,384) position"
+            ),
+            "route_b_patch_code": (
+                "cropped uniform DTM patch code 0 -> 4 (fill byte 0x00 -> "
+                "0x44); preload, PTLW payloads, windows, profiles, and the "
+                "refresh sequence are byte-identical to V1"
+            ),
+            "reason": (
+                "handoff amendment 2 after P0 anomaly analysis "
+                "(PARTIAL_BLOCK_P0_ANOMALY_ANALYSIS_20261020_V1)"
+            ),
+        }
+    return report
 
 
 def _write_generated(path: Path, content: str) -> None:
@@ -1567,13 +1773,17 @@ def _write_generated(path: Path, content: str) -> None:
 
 
 def generate_sources() -> dict[str, Any]:
-    report = build_report()
-    for relative, content in render_all().items():
-        path = ROOT / relative
-        _write_generated(path, content)
-        if _sha256(path.read_bytes()) != report["generated_sources"][relative]["sha256"]:
-            raise RuntimeError(f"on-disk hash differs after generation: {path}")
-    return report
+    reports = {}
+    for version in ATLAS_VERSIONS:
+        report = build_report(version)
+        for relative, content in render_version(version).items():
+            path = ROOT / relative
+            _write_generated(path, content)
+            if _sha256(path.read_bytes()) != \
+                    report["generated_sources"][relative]["sha256"]:
+                raise RuntimeError(f"on-disk hash differs after generation: {path}")
+        reports[version] = report
+    return reports
 
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
@@ -1586,7 +1796,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
 def main(argv: Sequence[str] | None = None) -> int:
     args = parse_args(argv)
     if args.check:
-        rendered = render_all()
+        rendered = {
+            path: content
+            for version in ATLAS_VERSIONS
+            for path, content in render_version(version).items()
+        }
         drift = [
             path for path, content in rendered.items()
             if not (ROOT / path).is_file()
@@ -1597,27 +1811,31 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 1
         print(json.dumps({"check": "ok", "sources": len(rendered)}, indent=1))
         return 0
-    report = generate_sources()
+    reports = generate_sources()
     print(json.dumps({
-        "kind": report["kind"],
-        "route_a": {
-            "env": report["route_a"]["env"],
-            "tag": report["route_a"]["tag"],
-            "frame_sha256": report["route_a"]["frame"]["sha256"],
-            "layout_sha256": report["route_a"]["layout"]["sha256"],
-            "r20_sha256": report["route_a"]["profile"]["r20_sha256"],
-        },
-        "route_b": {
-            "env": report["route_b"]["env"],
-            "tag": report["route_b"]["tag"],
-            "profile_r20_sha256": {
-                label: report["route_b"]["profiles"][label]["r20_sha256"]
-                for label in PTLW_PROFILE_LABELS
+        version: {
+            "kind": report["kind"],
+            "route_a": {
+                "env": report["route_a"]["env"],
+                "tag": report["route_a"]["tag"],
+                "frame_sha256": report["route_a"]["frame"]["sha256"],
+                "layout_sha256": report["route_a"]["layout"]["sha256"],
+                "r20_sha256": report["route_a"]["profile"]["r20_sha256"],
             },
-            "combined_dtm_sha256":
-                report["route_b"]["transport"]["combined_dtm"]["sha256"],
-        },
-        "generated_sources": report["generated_sources"],
+            "route_b": {
+                "env": report["route_b"]["env"],
+                "tag": report["route_b"]["tag"],
+                "profile_r20_sha256": {
+                    label: report["route_b"]["profiles"][label]["r20_sha256"]
+                    for label in PTLW_PROFILE_LABELS
+                },
+                "patch_code": report["route_b"]["transport"]["crop_dtm"]["code"],
+                "combined_dtm_sha256":
+                    report["route_b"]["transport"]["combined_dtm"]["sha256"],
+            },
+            "generated_sources": report["generated_sources"],
+        }
+        for version, report in reports.items()
     }, indent=1))
     return 0
 

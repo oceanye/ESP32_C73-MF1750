@@ -29,6 +29,7 @@ from tools import mf1750_partial_block_build as build  # noqa: E402
 from tools.check_repo_contract import run_checks  # noqa: E402
 
 OUT = ROOT / ".test-output/offline/MF1750_PARTIAL_BLOCK_20261020_V1"
+OUT_V2 = ROOT / ".test-output/offline/MF1750_PARTIAL_BLOCK_20261020_V2"
 PRODUCTION_BIN = ROOT / ".pio/build/esp32-s3-devkitc-1/firmware.bin"
 PRODUCTION_SHA256 = "ba59c3d6111a15c3426eddedf63188bf323083fdca24dec98939835b43dacdc3"
 PYTEST_COMMAND = "python -m pytest -q tests/test_mf1750_partial_block_build.py"
@@ -68,6 +69,9 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--pytest-passed", type=int, required=True)
     parser.add_argument("--pytest-subtests-passed", type=int, required=True)
+    parser.add_argument("--version", choices=("V1", "V2"), default="V1",
+                        help="bundle revision; V2 carries the handoff amendment-2 "
+                             "layout/patch-code probe changes")
     return parser.parse_args(argv)
 
 
@@ -75,8 +79,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parse_args(argv)
     if args.pytest_passed < 1 or args.pytest_subtests_passed < 0:
         raise SystemExit("invalid pytest summary")
-    if OUT.exists():
-        raise SystemExit(f"offline bundle already exists; refusing to overwrite: {OUT}")
+    version = args.version
+    names = build._version_names(version)
+    out_dir = OUT if version == "V1" else OUT_V2
+    stem_atlas = "partial-atlas-1e" if version == "V1" else "partial-atlas-1e-v2"
+    stem_ptlw = "partial-block-ptlw" if version == "V1" else "partial-block-ptlw-v2"
+    atlas_env, atlas_tag = names["atlas_env"], names["atlas_tag"]
+    ptlw_env, ptlw_tag = names["ptlw_env"], names["ptlw_tag"]
+    if out_dir.exists():
+        raise SystemExit(f"offline bundle already exists; refusing to overwrite: {out_dir}")
 
     contract = run_checks(ROOT)
     if contract["passed"] is not True:
@@ -86,7 +97,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         raise SystemExit("production firmware zero-diff identity changed")
 
     # Re-render every generated source and prove the on-disk files are exact.
-    rendered = build.render_all()
+    rendered = build.render_version(version)
     for relative, content in rendered.items():
         path = ROOT / relative
         if not path.is_file() or path.read_bytes() != content.encode("utf-8"):
@@ -95,28 +106,27 @@ def main(argv: Sequence[str] | None = None) -> int:
     frame_tool = (ROOT / "tools/mf1750_frame_tool.py").read_text(encoding="utf-8")
     api_doc = (ROOT / "docs/MF1750_DRIVER_API.md").read_text(encoding="utf-8")
     platformio = (ROOT / "platformio.ini").read_text(encoding="utf-8")
-    for env, tag in ((build.ATLAS_ENV, build.ATLAS_TAG),
-                     (build.PTLW_ENV, build.PTLW_TAG)):
+    for env, tag in ((atlas_env, atlas_tag),
+                     (ptlw_env, ptlw_tag)):
         if f"[env:{env}]" not in platformio:
             raise SystemExit(f"PlatformIO env registration missing: {env}")
         if tag not in frame_tool or tag not in api_doc:
             raise SystemExit(f"tag registration missing: {tag}")
         main_source = rendered[
-            "src/partial_atlas_1e_main.cpp" if env == build.ATLAS_ENV
-            else "src/partial_block_ptlw_main.cpp"
+            names["atlas_main"] if env == atlas_env else names["ptlw_main"]
         ]
         if f'FW_BUILD_TAG = "{tag}"' not in main_source:
             raise SystemExit(f"main TU tag mismatch: {tag}")
 
-    report = build.build_report()
-    frame = build.build_atlas_frame()
+    report = build.build_report(version)
+    frame = build.build_atlas_frame(version)
     if _sha256(frame) != report["route_a"]["frame"]["sha256"]:
         raise SystemExit("route A frame identity drifted")
 
     firmware: dict[str, dict[str, Any]] = {}
     artifacts: dict[str, bytes] = {}
-    for env, stem in ((build.ATLAS_ENV, "partial-atlas-1e"),
-                      (build.PTLW_ENV, "partial-block-ptlw")):
+    for env, stem in ((atlas_env, stem_atlas),
+                      (ptlw_env, stem_ptlw)):
         build_dir = ROOT / ".pio/build" / env
         bin_payload = (build_dir / "firmware.bin").read_bytes()
         elf_payload = (build_dir / "firmware.elf").read_bytes()
@@ -138,23 +148,33 @@ def main(argv: Sequence[str] | None = None) -> int:
         "schema_version": 1,
         "kind": "mf1750-partial-block-route-a-generation",
         **report["route_a"],
-        "firmware": firmware[build.ATLAS_ENV],
+        "firmware": firmware[atlas_env],
     }
+    if version != "V1":
+        route_a_doc["layout_revision"] = version
+        route_a_doc["changes_vs_v1"] = report["changes_vs_v1"]
     route_b_doc = {
         "schema_version": 1,
         "kind": "mf1750-partial-block-route-b-generation",
         **report["route_b"],
-        "firmware": firmware[build.PTLW_ENV],
+        "firmware": firmware[ptlw_env],
     }
-    artifacts["route-a-generation.json"] = _pretty(route_a_doc)
-    artifacts["route-b-generation.json"] = _pretty(route_b_doc)
-    artifacts["partial-atlas-1e-roi-list.json"] = _pretty(
+    if version != "V1":
+        route_b_doc["layout_revision"] = version
+        route_b_doc["changes_vs_v1"] = report["changes_vs_v1"]
+    route_a_report_name = "route-a-generation.json" if version == "V1" else "route-a-v2-generation.json"
+    route_b_report_name = "route-b-generation.json" if version == "V1" else "route-b-v2-generation.json"
+    atlas_roi_name = f"{stem_atlas}-roi-list.json"
+    ptlw_roi_name = f"{stem_ptlw}-roi-list.json"
+    artifacts[route_a_report_name] = _pretty(route_a_doc)
+    artifacts[route_b_report_name] = _pretty(route_b_doc)
+    artifacts[atlas_roi_name] = _pretty(
         report["route_a"]["roi_list"]
     )
-    artifacts["partial-block-ptlw-roi-list.json"] = _pretty(
+    artifacts[ptlw_roi_name] = _pretty(
         report["route_b"]["roi_list"]
     )
-    artifacts["partial-atlas-1e-frame.bin"] = frame
+    artifacts[f"{stem_atlas}-frame.bin"] = frame
 
     busy_evidence = (
         "per-action EpdOperationReport (pon/drf/pof wait ms and busy stage "
@@ -165,14 +185,14 @@ def main(argv: Sequence[str] | None = None) -> int:
             "ordinal": 0,
             "route": "A",
             "role": "P0_FULL_FRAME_1E_SEVEN_CODE_ATLAS",
-            "env": build.ATLAS_ENV,
+            "env": atlas_env,
             "window": None,
             "controllers": ["CS1", "CS2"],
             "dtm_bytes_per_controller": build.CONTROLLER_DTM_BYTES,
             "r20_sha256": report["route_a"]["profile"]["r20_sha256"],
             "frame_sha256": report["route_a"]["frame"]["sha256"],
             "layout_sha256": report["route_a"]["layout"]["sha256"],
-            "firmware_sha256": firmware[build.ATLAS_ENV]["bin_sha256"],
+            "firmware_sha256": firmware[atlas_env]["bin_sha256"],
             "busy_timeline": busy_evidence,
         }
     ]
@@ -182,7 +202,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             "ordinal": action["ordinal"],
             "route": "B",
             "role": action["role"],
-            "env": build.PTLW_ENV,
+            "env": ptlw_env,
             "window": action["window"],
             "controllers": ["CS1", "CS2"],
             "dtm_bytes_per_controller": (
@@ -195,7 +215,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             ),
             "profile_family_label": profile,
             "family_label_is_not_bitmask": True,
-            "firmware_sha256": firmware[build.PTLW_ENV]["bin_sha256"],
+            "firmware_sha256": firmware[ptlw_env]["bin_sha256"],
             "busy_timeline": busy_evidence,
         })
 
@@ -206,7 +226,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     manifest = {
         "schema_version": 1,
         "kind": "mf1750-partial-block-first-batch-offline-bundle",
-        "batch_id": OUT.name,
+        "batch_id": out_dir.name,
         "created_at": datetime.now().astimezone().isoformat(timespec="seconds"),
         "offline_only": True,
         "hardware_tested": False,
@@ -228,26 +248,26 @@ def main(argv: Sequence[str] | None = None) -> int:
         "runtime_tail_sha256": report["runtime_tail_sha256"],
         "runtime_tail_byte_identical_to_r2g": True,
         "route_a": {
-            "env": build.ATLAS_ENV,
-            "tag": build.ATLAS_TAG,
+            "env": atlas_env,
+            "tag": atlas_tag,
             "profile": report["route_a"]["profile"],
             "frame": report["route_a"]["frame"],
             "layout_sha256": report["route_a"]["layout"]["sha256"],
-            "roi_list_file": "partial-atlas-1e-roi-list.json",
-            "generation_report": "route-a-generation.json",
-            "firmware": firmware[build.ATLAS_ENV],
+            "roi_list_file": atlas_roi_name,
+            "generation_report": route_a_report_name,
+            "firmware": firmware[atlas_env],
         },
         "route_b": {
-            "env": build.PTLW_ENV,
-            "tag": build.PTLW_TAG,
+            "env": ptlw_env,
+            "tag": ptlw_tag,
             "profiles": report["route_b"]["profiles"],
             "windows": report["route_b"]["windows"],
             "window_semantics": report["route_b"]["window_semantics"],
             "ptlw": report["route_b"]["ptlw"],
             "transport": report["route_b"]["transport"],
-            "roi_list_file": "partial-block-ptlw-roi-list.json",
-            "generation_report": "route-b-generation.json",
-            "firmware": firmware[build.PTLW_ENV],
+            "roi_list_file": ptlw_roi_name,
+            "generation_report": route_b_report_name,
+            "firmware": firmware[ptlw_env],
         },
         "actions": actions,
         "generated_sources": report["generated_sources"],
@@ -274,47 +294,59 @@ def main(argv: Sequence[str] | None = None) -> int:
             "sha256": "",
         },
     }
+    if version != "V1":
+        manifest["layout_revision"] = version
+        manifest["changes_vs_v1"] = report["changes_vs_v1"]
+        manifest["supersedes"] = {
+            "bundle": "MF1750_PARTIAL_BLOCK_20261020_V1",
+            "note": (
+                "V1 remains the canonical P0-matched identity; V2 carries the "
+                "handoff amendment-2 probe layout and the route B patch-code "
+                "change"
+            ),
+        }
     unsigned = dict(manifest)
     unsigned.pop("integrity")
     manifest["integrity"]["sha256"] = _sha256(_canonical(unsigned))
     manifest_payload = _pretty(manifest)
 
-    OUT.mkdir(parents=False, exist_ok=False)
+    out_dir.mkdir(parents=False, exist_ok=False)
     for name, payload in sorted(artifacts.items()):
-        _write_new(OUT / name, payload)
-    _write_new(OUT / "manifest.json", manifest_payload)
+        _write_new(out_dir / name, payload)
+    _write_new(out_dir / "manifest.json", manifest_payload)
 
-    sealed = json.loads((OUT / "manifest.json").read_text(encoding="utf-8"))
+    sealed = json.loads((out_dir / "manifest.json").read_text(encoding="utf-8"))
     seal = sealed["integrity"]["sha256"]
     sealed_unsigned = dict(sealed)
     sealed_unsigned.pop("integrity")
     if _sha256(_canonical(sealed_unsigned)) != seal:
         raise SystemExit("manifest self-seal verification failed")
     for entry in sealed["files"]:
-        payload = (OUT / entry["file"]).read_bytes()
+        payload = (out_dir / entry["file"]).read_bytes()
         if len(payload) != entry["bytes"] or _sha256(payload) != entry["sha256"]:
             raise SystemExit(f"bundle file fingerprint failed: {entry['file']}")
 
     print(json.dumps({
-        "bundle": OUT.relative_to(ROOT).as_posix(),
+        "bundle": out_dir.relative_to(ROOT).as_posix(),
         "route_a": {
-            "env": build.ATLAS_ENV,
-            "tag": build.ATLAS_TAG,
+            "env": atlas_env,
+            "tag": atlas_tag,
             "frame_sha256": report["route_a"]["frame"]["sha256"],
             "layout_sha256": report["route_a"]["layout"]["sha256"],
             "r20_sha256": report["route_a"]["profile"]["r20_sha256"],
-            "bin_sha256": firmware[build.ATLAS_ENV]["bin_sha256"],
+            "bin_sha256": firmware[atlas_env]["bin_sha256"],
         },
         "route_b": {
-            "env": build.PTLW_ENV,
-            "tag": build.PTLW_TAG,
+            "env": ptlw_env,
+            "tag": ptlw_tag,
             "profile_r20_sha256": {
                 label: report["route_b"]["profiles"][label]["r20_sha256"]
                 for label in build.PTLW_PROFILE_LABELS
             },
+            "patch_code": report["route_b"]["transport"]["crop_dtm"]["code"],
             "combined_dtm_sha256":
                 report["route_b"]["transport"]["combined_dtm"]["sha256"],
-            "bin_sha256": firmware[build.PTLW_ENV]["bin_sha256"],
+            "bin_sha256": firmware[ptlw_env]["bin_sha256"],
         },
         "file_count_excluding_manifest": len(files),
         "manifest_canonical_sha256": seal,
