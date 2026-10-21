@@ -7,7 +7,16 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-10-21 01:50 +0800`
+最后更新：`2026-10-21 02:30 +0800`
+
+## 2026-10-21 02:30 +0800 **离线排查④闭合：code4 颜色旋钮=BTST2[3] booster 强度（单字节）**，LUT 两路径逐字节相同；PTLW 坐标=控制器内 180° 定论（0 刷新）
+
+- **分析包 [`PARTIAL_BLOCK_LUT_ATTRIB_ANALYSIS_20261021_V1`](../.test-output/offline/PARTIAL_BLOCK_LUT_ATTRIB_ANALYSIS_20261021_V1/)，manifest 自封 sha `8930168e…`；可复现工具 `tools/mf1750_lut_attrib_diff.py`（`8a64fd6`）。** 定向 122 passed / 176 subtests；contract 无新增。
+- **更正 01:50 条目措辞**：两路径 1E 的 R20/R21/PLL/PWR **逐字节相同**（三方一致 pinned `5f1820da…`），LUT 装载序列相同——**不是 LUT 构成差异**。整条命令链唯一不同字节在刷新段：**atlas 全帧路径 `epdSecondSettingAndRefresh` 在 DRF 前重写 BTST2 `{6F,1F,17,49}`**（`wf_bisect_r2g_epd_driver.cpp:618-622`）；**ptlw 局部路径 `pbRefreshCleanPtlw` 注释即"no BTST2/CDI"**（`partial_block_ptlw_v2_epd_driver.cpp:2978-3020`，主线已核函数归属），保留初始化 `{6F,1F,17,17}`。
+- **BTST2[3] 语义**（SPD1657B p.16）：VPH booster phase C 驱动强度+最短 OFF 时间。`0x49`=强度2/OFFH9（强）→ code4 压入深色域（暗绛 L31.6）；`0x17`=强度1/OFFH7（弱）→ 停留浅色域（浅卡其绿 L56-64）。方向与实测一致，drf 同 bin（~32.6s）排除速度差。**BTST2[3]=候选明度/颜色旋钮**：单字节寄存器把同 code 在深/浅色域间切换——直通多级明度目标。
+- **code0/code1 翻转的 LUT 层解释**：1E 混合构成把 code1 净位移压到残余前态可主导的低裕度（White category [183:271) 调制），code0 基本惰性；code2–7 驱动位移大、对残余不敏感——稳定色板与历史敏感码的分层机制闭合。
+- **子问题 2 定论**：PTLW 窗口坐标=**控制器内 180° 约定**（`physical=(512-x-w, 600-y-h)`，三窗实测全部坐实）；非驱动 bug——8 月干净批未发现的根因=全部用双控制器对称 patch+parity 检查，180° 下 parity 仍成立、绝对落点从未被照片锚定。payload 字节与 8 月封印 pin 一致。
+- **下一入口**：**BTST2[3] 扫掠判别实验**（首选：完整帧 env 变体跳过 BTST2 重写或阶梯 0x17/0x29/0x39/0x49，若 code4 随之 绛→卡其 连续移动即坐实旋钮并量化明度轴）；handoff 修订 5 落档 PTLW 坐标约定与 BTST2 发现。
 
 ## 2026-10-21 01:50 +0800 **code4 归因判别实验闭合：色调由传输路径（LUT 构成）主控，与历史无关**；atlas 路径 8 码色板历史鲁棒（14 刷 3 写）
 
