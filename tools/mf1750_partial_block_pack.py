@@ -33,6 +33,7 @@ OUT_V2 = ROOT / ".test-output/offline/MF1750_PARTIAL_BLOCK_20261020_V2"
 OUT_V3 = ROOT / ".test-output/offline/MF1750_PARTIAL_BLOCK_20261020_V3"
 OUT_V4 = ROOT / ".test-output/offline/MF1750_PARTIAL_BLOCK_20261020_V4"
 OUT_SWEEP = ROOT / ".test-output/offline/MF1750_BTST2_SWEEP_20261021_V1"
+OUT_SWEEP_V2 = ROOT / ".test-output/offline/MF1750_BTST2_SWEEP_20261021_V2"
 PRODUCTION_BIN = ROOT / ".pio/build/esp32-s3-devkitc-1/firmware.bin"
 PRODUCTION_SHA256 = "ba59c3d6111a15c3426eddedf63188bf323083fdca24dec98939835b43dacdc3"
 PYTEST_COMMAND = "python -m pytest -q tests/test_mf1750_partial_block_build.py"
@@ -457,9 +458,9 @@ def _main_v4(args: argparse.Namespace) -> int:
 
 
 def _main_sweep(args: argparse.Namespace) -> int:
-    """Seal the BTST2[3] ladder sweep bundle."""
+    """Seal the BTST2[3] ladder sweep bundle (current fix revision)."""
 
-    out_dir = OUT_SWEEP
+    out_dir = OUT_SWEEP if build.SWEEP_FIX_REVISION < 2 else OUT_SWEEP_V2
     if out_dir.exists():
         raise SystemExit(f"offline bundle already exists; refusing to overwrite: {out_dir}")
     contract = run_checks(ROOT)
@@ -578,6 +579,8 @@ def _main_sweep(args: argparse.Namespace) -> int:
         },
         "actions": actions,
         "generated_sources": report["generated_sources"],
+        "fix_revision": report["fix_revision"],
+        "fix": report["fix"],
         "verification": {
             "variant_builds": {build.SWEEP_ENV: "SUCCESS"},
             "production_build": {

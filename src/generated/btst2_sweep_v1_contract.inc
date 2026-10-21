@@ -37,5 +37,9 @@ static_assert(kRungCount == 4 && kRungBytes[0] == 0x17 &&
 static_assert(kBtst2Prefix[0] == 0x6F && kBtst2Prefix[1] == 0x1F &&
                   kBtst2Prefix[2] == 0x17,
               "BTST2 prefix bytes drifted from {0x6F,0x1F,0x17}");
+static constexpr std::uint32_t kFixRevision = 2;
+static_assert(kFixRevision >= 2,
+              "sweep V1 defect (missing controller re-selection before the "
+              "refresh) must stay fixed");
 
 }  // namespace mf1750::btst2_sweep::v1

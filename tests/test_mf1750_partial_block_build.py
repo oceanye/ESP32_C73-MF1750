@@ -709,13 +709,48 @@ class Btst2SweepTests(unittest.TestCase):
             "bool epdSecondSettingAndRefresh() {",
             "bool pbsRefreshWithBtst2(uint8_t btst2Byte3) {",
         ).replace("epdData(0x49);", "epdData(btst2Byte3);")
+        # V2 fix: the wrapper must re-select both controllers before PON (the
+        # CS2 DTM stream leaves CS2-only selected), matching the sealed V4
+        # pbv4RefreshFullFrame wrapper's first statement.
+        expected = normalized.replace(
+            "bool pbsRefreshWithBtst2(uint8_t btst2Byte3) {\n",
+            "bool pbsRefreshWithBtst2(uint8_t btst2Byte3) {\n"
+            "  setActiveControllers(true, true);\n",
+        )
         driver = tool.render_sweep()["src/btst2_sweep_v1_epd_driver.cpp"]
         start_s = driver.index("bool pbsRefreshWithBtst2(uint8_t btst2Byte3) {")
         end_s = driver.index("}", driver.index("return epdPostDisplayPowerCut();", start_s)) + 1
         wrapper = driver[start_s:end_s]
-        # The wrapper adds one explanatory comment line; strip comment lines for the compare.
+        # The wrapper adds explanatory comment lines; strip comment lines for the compare.
         body_lines = [line for line in wrapper.splitlines() if not line.strip().startswith("//")]
-        self.assertEqual("\n".join(body_lines), normalized)
+        self.assertEqual("\n".join(body_lines), expected)
+
+    def test_refresh_reselects_both_controllers_before_pon(self) -> None:
+        """Pin the V2 fix: V1 sent PON/BTST2/DRF to CS2 only -> DRF timeout."""
+
+        driver = tool.render_sweep()["src/btst2_sweep_v1_epd_driver.cpp"]
+        start = driver.index("bool pbsRefreshWithBtst2(uint8_t btst2Byte3) {")
+        end = driver.index("}", driver.index("return epdPostDisplayPowerCut();", start)) + 1
+        body = driver[start:end]
+        selection = body.index("setActiveControllers(true, true);")
+        pon = body.index("epdCommand(PON);")
+        self.assertLess(selection, pon)
+        self.assertEqual(body.count("epdCommand(PON);"), 1)
+        # The only narrowing selections allowed before the refresh are the
+        # per-controller DTM streams inside the R2G tail's own helpers; the
+        # rung wrapper itself must restore both controllers.
+        contract = tool.render_sweep()["src/generated/btst2_sweep_v1_contract.inc"]
+        self.assertIn("kFixRevision = 2", contract)
+
+    def test_v4_refresh_wrapper_also_selects_both_controllers(self) -> None:
+        v4 = (ROOT / "src/partial_atlas_1e_v4_epd_driver.cpp").read_text(encoding="utf-8")
+        start = v4.index("bool pbv4RefreshFullFrame() {")
+        end = v4.index("}", start + 200) + 1
+        body = v4[start:end]
+        self.assertLess(
+            body.index("setActiveControllers(true, true);"),
+            body.index("epdSecondSettingAndRefresh();"),
+        )
 
     def test_rung_dispatch_and_endpoints(self) -> None:
         driver = tool.render_sweep()["src/btst2_sweep_v1_epd_driver.cpp"]

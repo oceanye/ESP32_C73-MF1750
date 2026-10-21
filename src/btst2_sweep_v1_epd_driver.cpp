@@ -2725,6 +2725,11 @@ bool pbsRefreshWithBtst2(uint8_t btst2Byte3) {
   // Byte-identical command stream to the sealed epdSecondSettingAndRefresh
   // except the BTST2 phase-C byte, which comes from the compile-time rung
   // table.  The first three BTST2 bytes always stay {0x6F, 0x1F, 0x17}.
+  // V2 fix: re-select both controllers before PON.  The CS2 DTM stream leaves
+  // CS2-only selected; V1 forgot this and sent PON/BTST2/DRF to CS2 only, so
+  // the cascade master never refreshed and every rung hit DRF BUSY timeout
+  // (drf 60001, POF 0).  Mirrors the sealed V4 pbv4RefreshFullFrame wrapper.
+  setActiveControllers(true, true);
   Serial.println("EPD power on");
   if (!epdRequireIdleBeforeCommand("PON")) {
     Serial.println("EPD abort: BUSY not idle before PON; requesting safe power off");

@@ -2902,7 +2902,9 @@ def build_v4_report() -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 SWEEP_ENV = "esp32-s3-devkitc-1-btst2-sweep-v1"
-SWEEP_TAG = f"MF1750_BTST2_SWEEP_V1_{DATE.replace('20261020', '20261021')}"
+SWEEP_TAG = "MF1750_BTST2_SWEEP_V2_20261021"
+SWEEP_TAG_V1 = "MF1750_BTST2_SWEEP_V1_20261021"
+SWEEP_FIX_REVISION = 2
 SWEEP_PATHS = {
     "contract_inc": "src/generated/btst2_sweep_v1_contract.inc",
     "api_header": "src/btst2_sweep_v1_api.h",
@@ -2973,6 +2975,10 @@ static_assert(kRungCount == 4 && kRungBytes[0] == 0x17 &&
 static_assert(kBtst2Prefix[0] == 0x6F && kBtst2Prefix[1] == 0x1F &&
                   kBtst2Prefix[2] == 0x17,
               "BTST2 prefix bytes drifted from {{0x6F,0x1F,0x17}}");
+static constexpr std::uint32_t kFixRevision = {SWEEP_FIX_REVISION};
+static_assert(kFixRevision >= 2,
+              "sweep V1 defect (missing controller re-selection before the "
+              "refresh) must stay fixed");
 
 }}  // namespace mf1750::btst2_sweep::v1
 """
@@ -3176,6 +3182,11 @@ bool pbsRefreshWithBtst2(uint8_t btst2Byte3) {
   // Byte-identical command stream to the sealed epdSecondSettingAndRefresh
   // except the BTST2 phase-C byte, which comes from the compile-time rung
   // table.  The first three BTST2 bytes always stay {0x6F, 0x1F, 0x17}.
+  // V2 fix: re-select both controllers before PON.  The CS2 DTM stream leaves
+  // CS2-only selected; V1 forgot this and sent PON/BTST2/DRF to CS2 only, so
+  // the cascade master never refreshed and every rung hit DRF BUSY timeout
+  // (drf 60001, POF 0).  Mirrors the sealed V4 pbv4RefreshFullFrame wrapper.
+  setActiveControllers(true, true);
   Serial.println("EPD power on");
   if (!epdRequireIdleBeforeCommand("PON")) {
     Serial.println("EPD abort: BUSY not idle before PON; requesting safe power off");
@@ -3446,8 +3457,38 @@ def build_sweep_report() -> dict[str, Any]:
         "serial_or_com_accessed": False,
         "firmware_flashed": False,
         "display_refreshed": False,
+        "fix_revision": SWEEP_FIX_REVISION,
+        "fix": {
+            "root_cause": (
+                "V1 defect: pbsRunAtlasRung called pbsRefreshWithBtst2 after "
+                "the CS2 DTM stream without re-selecting both controllers "
+                "(setActiveControllers(true, true)).  The stream leaves "
+                "CS2-only selected, so PON/BTST2/DRF went to CS2 only; the "
+                "cascade master CS1 never received DRF and BUSY never "
+                "deasserted: every rung failed with drf 60001, POF 0.  The "
+                "function-body text comparison could not see this because it "
+                "is a call-site (sequence) difference, not a body difference"
+            ),
+            "evidence": (
+                "V1 src/btst2_sweep_v1_epd_driver.cpp:2841 (call without "
+                "selection) vs src/partial_atlas_1e_v4_epd_driver.cpp "
+                "pbv4RefreshFullFrame wrapper and the sealed callers "
+                "(setActiveControllers(true, true) before "
+                "epdSecondSettingAndRefresh); OTP white recovery worked "
+                "because the sealed FOWR path selects both controllers"
+            ),
+            "fix": (
+                "pbsRefreshWithBtst2 now begins with "
+                "setActiveControllers(true, true) before the sealed "
+                "PON/BTST2/DRF/POF stream; contract include pins "
+                "kFixRevision >= 2; regression test asserts the selection "
+                "precedes PON"
+            ),
+            "v1_bundle_reference": "MF1750_BTST2_SWEEP_20261021_V1 (defective)",
+        },
         "env": SWEEP_ENV,
         "tag": SWEEP_TAG,
+        "tag_v1_defective": SWEEP_TAG_V1,
         "spi_hz": 1_000_000,
         "spi_hz_is_frozen_default": True,
         "tuples": {

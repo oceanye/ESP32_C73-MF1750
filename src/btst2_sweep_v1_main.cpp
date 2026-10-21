@@ -14,7 +14,7 @@
 
 WebServer server(80);
 
-static constexpr const char *FW_BUILD_TAG = "MF1750_BTST2_SWEEP_V1_20261021";
+static constexpr const char *FW_BUILD_TAG = "MF1750_BTST2_SWEEP_V2_20261021";
 static constexpr uint32_t FNV1A_OFFSET_BASIS = 2166136261UL;
 static constexpr uint32_t FNV1A_PRIME = 16777619UL;
 static constexpr uint32_t MAP_ORIENT_V1_EXPECTED_FNV1A = 2634290221UL;
