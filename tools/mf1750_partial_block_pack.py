@@ -32,6 +32,7 @@ OUT = ROOT / ".test-output/offline/MF1750_PARTIAL_BLOCK_20261020_V1"
 OUT_V2 = ROOT / ".test-output/offline/MF1750_PARTIAL_BLOCK_20261020_V2"
 OUT_V3 = ROOT / ".test-output/offline/MF1750_PARTIAL_BLOCK_20261020_V3"
 OUT_V4 = ROOT / ".test-output/offline/MF1750_PARTIAL_BLOCK_20261020_V4"
+OUT_SWEEP = ROOT / ".test-output/offline/MF1750_BTST2_SWEEP_20261021_V1"
 PRODUCTION_BIN = ROOT / ".pio/build/esp32-s3-devkitc-1/firmware.bin"
 PRODUCTION_SHA256 = "ba59c3d6111a15c3426eddedf63188bf323083fdca24dec98939835b43dacdc3"
 PYTEST_COMMAND = "python -m pytest -q tests/test_mf1750_partial_block_build.py"
@@ -455,15 +456,200 @@ def _main_v4(args: argparse.Namespace) -> int:
     return 0
 
 
+def _main_sweep(args: argparse.Namespace) -> int:
+    """Seal the BTST2[3] ladder sweep bundle."""
+
+    out_dir = OUT_SWEEP
+    if out_dir.exists():
+        raise SystemExit(f"offline bundle already exists; refusing to overwrite: {out_dir}")
+    contract = run_checks(ROOT)
+    if contract["passed"] is not True:
+        raise SystemExit("repository contract is not clean")
+    production = _fingerprint(PRODUCTION_BIN)
+    if production["sha256"] != PRODUCTION_SHA256:
+        raise SystemExit("production firmware zero-diff identity changed")
+
+    rendered = build.render_sweep()
+    for relative, content in rendered.items():
+        path = ROOT / relative
+        if not path.is_file() or path.read_bytes() != content.encode("utf-8"):
+            raise SystemExit(f"generated source drifted before packing: {path}")
+
+    frame_tool = (ROOT / "tools/mf1750_frame_tool.py").read_text(encoding="utf-8")
+    api_doc = (ROOT / "docs/MF1750_DRIVER_API.md").read_text(encoding="utf-8")
+    platformio = (ROOT / "platformio.ini").read_text(encoding="utf-8")
+    if f"[env:{build.SWEEP_ENV}]" not in platformio:
+        raise SystemExit(f"PlatformIO env registration missing: {build.SWEEP_ENV}")
+    if build.SWEEP_TAG not in frame_tool or build.SWEEP_TAG not in api_doc:
+        raise SystemExit(f"tag registration missing: {build.SWEEP_TAG}")
+    if f'FW_BUILD_TAG = "{build.SWEEP_TAG}"' not in rendered[build.SWEEP_PATHS["main"]]:
+        raise SystemExit(f"main TU tag mismatch: {build.SWEEP_TAG}")
+
+    report = build.build_sweep_report()
+    frame = build.build_v4_frame()
+    if _sha256(frame) != report["frame"]["sha256"]:
+        raise SystemExit("sweep frame identity drifted from the V4 frame")
+
+    build_dir = ROOT / ".pio/build" / build.SWEEP_ENV
+    bin_payload = (build_dir / "firmware.bin").read_bytes()
+    elf_payload = (build_dir / "firmware.elf").read_bytes()
+    firmware = {
+        "build": "SUCCESS",
+        "env": build.SWEEP_ENV,
+        "bin_file": "btst2-sweep-v1-firmware.bin",
+        "bin_bytes": len(bin_payload),
+        "bin_sha256": _sha256(bin_payload),
+        "elf_file": "btst2-sweep-v1-firmware.elf",
+        "elf_bytes": len(elf_payload),
+        "elf_sha256": _sha256(elf_payload),
+    }
+    generation_doc = {
+        "schema_version": 1,
+        "kind": "mf1750-btst2-sweep-generation",
+        **report,
+        "firmware": firmware,
+    }
+    artifacts: dict[str, bytes] = {
+        "btst2-sweep-v1-firmware.bin": bin_payload,
+        "btst2-sweep-v1-firmware.elf": elf_payload,
+        "btst2-sweep-v1-generation.json": _pretty(generation_doc),
+        "partial-atlas-1e-v4-roi-list.json": _pretty(build.v4_roi_list_doc()),
+        "btst2-sweep-v1-frame.bin": frame,
+    }
+
+    busy_evidence = (
+        "per-action EpdOperationReport (pon/drf/pof wait ms and busy stage "
+        "evidence) via /api/diagnostic/report; per-rung timings via "
+        "/api/btst2-sweep/steps"
+    )
+    actions = []
+    for action in report["actions"]:
+        actions.append({
+            **action,
+            "env": build.SWEEP_ENV,
+            "firmware_sha256": firmware["bin_sha256"],
+            "r20_sha256": (
+                report["tuples"]["1E"]["r20_sha256"]
+                if action.get("profile") == "1E" else None
+            ),
+            "busy_timeline": busy_evidence,
+        })
+
+    files = [
+        {"file": name, "bytes": len(payload), "sha256": _sha256(payload)}
+        for name, payload in sorted(artifacts.items())
+    ]
+    manifest = {
+        "schema_version": 1,
+        "kind": "mf1750-btst2-sweep-offline-bundle",
+        "batch_id": out_dir.name,
+        "created_at": datetime.now().astimezone().isoformat(timespec="seconds"),
+        "offline_only": True,
+        "hardware_tested": False,
+        "refresh_count": 0,
+        "handoff": {
+            "path": build.HANDOFF_DOC,
+            "sha256": _fingerprint(ROOT / build.HANDOFF_DOC)["sha256"],
+        },
+        "amendment": report["amendment"],
+        "generator": {
+            "path": "tools/mf1750_partial_block_build.py",
+            "sha256": _fingerprint(ROOT / "tools/mf1750_partial_block_build.py")["sha256"],
+        },
+        "packager": {
+            "path": "tools/mf1750_partial_block_pack.py",
+            "sha256": _fingerprint(Path(__file__))["sha256"],
+        },
+        "spi_hz": report["spi_hz"],
+        "runtime_tail_sha256": report["runtime_tail_sha256"],
+        "runtime_tail_byte_identical_to_r2g": True,
+        "session": {
+            "env": build.SWEEP_ENV,
+            "tag": build.SWEEP_TAG,
+            "tuples": report["tuples"],
+            "rungs": report["rungs"],
+            "invariants_vs_v4": report["invariants_vs_v4"],
+            "frame": report["frame"],
+            "controller_stream_fnv1a": report["controller_stream_fnv1a"],
+            "atlas_layout_sha256": report["atlas_layout_sha256"],
+            "roi_list_file": "partial-atlas-1e-v4-roi-list.json",
+            "generation_report": "btst2-sweep-v1-generation.json",
+            "firmware": firmware,
+        },
+        "actions": actions,
+        "generated_sources": report["generated_sources"],
+        "verification": {
+            "variant_builds": {build.SWEEP_ENV: "SUCCESS"},
+            "production_build": {
+                "env": "esp32-s3-devkitc-1",
+                "status": "SUCCESS",
+                "zero_diff": True,
+                **production,
+            },
+            "check_repo_contract": {"passed": True, "hardware_tested": False},
+            "pytest": {
+                "command": PYTEST_COMMAND,
+                "status": "SUCCESS",
+                "passed": args.pytest_passed,
+                "subtests_passed": args.pytest_subtests_passed,
+                "failed": 0,
+            },
+        },
+        "files": files,
+        "integrity": {
+            "algorithm": "sha256-canonical-json-without-integrity",
+            "sha256": "",
+        },
+    }
+    unsigned = dict(manifest)
+    unsigned.pop("integrity")
+    manifest["integrity"]["sha256"] = _sha256(_canonical(unsigned))
+    manifest_payload = _pretty(manifest)
+
+    out_dir.mkdir(parents=False, exist_ok=False)
+    for name, payload in sorted(artifacts.items()):
+        _write_new(out_dir / name, payload)
+    _write_new(out_dir / "manifest.json", manifest_payload)
+
+    sealed = json.loads((out_dir / "manifest.json").read_text(encoding="utf-8"))
+    seal = sealed["integrity"]["sha256"]
+    sealed_unsigned = dict(sealed)
+    sealed_unsigned.pop("integrity")
+    if _sha256(_canonical(sealed_unsigned)) != seal:
+        raise SystemExit("manifest self-seal verification failed")
+    for entry in sealed["files"]:
+        payload = (out_dir / entry["file"]).read_bytes()
+        if len(payload) != entry["bytes"] or _sha256(payload) != entry["sha256"]:
+            raise SystemExit(f"bundle file fingerprint failed: {entry['file']}")
+
+    print(json.dumps({
+        "bundle": out_dir.relative_to(ROOT).as_posix(),
+        "env": build.SWEEP_ENV,
+        "tag": build.SWEEP_TAG,
+        "bin_sha256": firmware["bin_sha256"],
+        "rungs": [r["btst2_byte3"] for r in report["rungs"]],
+        "atlas_frame_sha256": report["frame"]["sha256"],
+        "cs1_stream_fnv1a": report["controller_stream_fnv1a"]["cs1"],
+        "cs2_stream_fnv1a": report["controller_stream_fnv1a"]["cs2"],
+        "file_count_excluding_manifest": len(files),
+        "manifest_canonical_sha256": seal,
+        "manifest_file_sha256": _sha256(manifest_payload),
+        "production_bin_sha256": production["sha256"],
+        "pytest": manifest["verification"]["pytest"],
+    }, indent=1))
+    return 0
+
+
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--pytest-passed", type=int, required=True)
     parser.add_argument("--pytest-subtests-passed", type=int, required=True)
-    parser.add_argument("--version", choices=("V1", "V2", "V3", "V4"), default="V1",
+    parser.add_argument("--version", choices=("V1", "V2", "V3", "V4", "SWEEP"), default="V1",
                         help="bundle revision; V2 carries the handoff amendment-2 "
                              "layout/patch-code probe changes, V3 the "
                              "normalization+probe session env, V4 the compact "
-                             "visible-window layout without probes")
+                             "visible-window layout without probes, SWEEP the "
+                             "BTST2 ladder")
     return parser.parse_args(argv)
 
 
@@ -475,6 +661,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _main_v3(args)
     if args.version == "V4":
         return _main_v4(args)
+    if args.version == "SWEEP":
+        return _main_sweep(args)
     version = args.version
     names = build._version_names(version)
     out_dir = OUT if version == "V1" else OUT_V2

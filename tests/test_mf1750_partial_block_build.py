@@ -654,5 +654,103 @@ class V4SessionTests(unittest.TestCase):
         )
 
 
+class Btst2SweepTests(unittest.TestCase):
+    """BTST2[3] ladder sweep: V4 frame + parameterized phase-C byte."""
+
+    def test_rung_table_is_pinned(self) -> None:
+        self.assertEqual(tool.SWEEP_RUNG_BYTES, (0x17, 0x29, 0x39, 0x49))
+        self.assertEqual(tool.SWEEP_RUNG_NAMES, ("s17", "s29", "s39", "s49"))
+        self.assertEqual(tool.SWEEP_BTST2_PREFIX, (0x6F, 0x1F, 0x17))
+        tool._validate_sweep()
+        contract = tool.render_sweep()["src/generated/btst2_sweep_v1_contract.inc"]
+        self.assertIn("kRungBytes[kRungCount] = {0x17, 0x29, 0x39, 0x49}", contract)
+        self.assertIn("kBtst2Prefix[3] = {\n    0x6F, 0x1F, 0x17}", contract)
+        self.assertIn("kRungNames[kRungCount] = {\"s17\", \"s29\", \"s39\", \"s49\"}", contract)
+
+    def test_frame_identity_equals_v4(self) -> None:
+        self.assertEqual(tool.build_v4_frame(), tool.build_v4_frame())
+        contract = tool.render_sweep()["src/generated/btst2_sweep_v1_contract.inc"]
+        identities = tool.v4_identities()
+        self.assertIn(f'static constexpr char kAtlasFrameSha256[] = "{identities["frame"]["sha256"]}"', contract)
+        self.assertIn(f"kAtlasFrameFnv1a = 0x{identities['frame']['fnv1a']:08X}UL", contract)
+        self.assertIn(f"kAtlasCs1StreamFnv1a = 0x{identities['streams']['cs1']:08X}UL", contract)
+        self.assertIn(f"kAtlasCs2StreamFnv1a = 0x{identities['streams']['cs2']:08X}UL", contract)
+        self.assertEqual(identities["frame"]["sha256"],
+                         "ee9920e61be396031f2c51c73b498a5a563e4ccfcc6b666b4b5bed7afda92efb")
+
+    def test_driver_reuses_v4_layout_and_tail(self) -> None:
+        driver = tool.render_sweep()["src/btst2_sweep_v1_epd_driver.cpp"]
+        self.assertIn(tool._r2g_tail(), driver)
+        self.assertIn('#include "generated/partial_atlas_1e_v4_contract.inc"', driver)
+        self.assertIn('#include "generated/btst2_sweep_v1_contract.inc"', driver)
+        self.assertIn("namespace pbv4 = mf1750::partial_block::atlas_v4;", driver)
+        self.assertIn("namespace pbs = mf1750::btst2_sweep::v1;", driver)
+        self.assertIn("pbv4::kAtlasFrameFnv1a == pbs::kAtlasFrameFnv1a", driver)
+        self.assertNotIn("ProbeCode7", driver)
+        self.assertNotIn("RunNormalize", driver)
+
+    def test_validation_helpers_are_byte_identical_to_v4(self) -> None:
+        sweep = tool.render_sweep()["src/btst2_sweep_v1_epd_driver.cpp"]
+        v4 = (ROOT / "src/partial_atlas_1e_v4_epd_driver.cpp").read_text(encoding="utf-8")
+        for fn in ("bool pbv4DigestMatchesHex", "bool pbv4PayloadShaMatches",
+                   "bool pbv4ValidateTuples", "bool pbv4LoadRuntimeTuple"):
+            with self.subTest(helper=fn):
+                start_v4 = v4.index(fn)
+                end_v4 = v4.index("\n}\n", start_v4) + 3
+                body = v4[start_v4:end_v4]
+                self.assertIn(body, sweep)
+
+    def test_refresh_wrapper_matches_sealed_refresh_except_one_byte(self) -> None:
+        tail = tool._r2g_tail()
+        start = tail.index("bool epdSecondSettingAndRefresh() {")
+        end = tail.index("}", tail.index("return epdPostDisplayPowerCut();", start)) + 1
+        sealed = tail[start:end]
+        normalized = sealed.replace(
+            "bool epdSecondSettingAndRefresh() {",
+            "bool pbsRefreshWithBtst2(uint8_t btst2Byte3) {",
+        ).replace("epdData(0x49);", "epdData(btst2Byte3);")
+        driver = tool.render_sweep()["src/btst2_sweep_v1_epd_driver.cpp"]
+        start_s = driver.index("bool pbsRefreshWithBtst2(uint8_t btst2Byte3) {")
+        end_s = driver.index("}", driver.index("return epdPostDisplayPowerCut();", start_s)) + 1
+        wrapper = driver[start_s:end_s]
+        # The wrapper adds one explanatory comment line; strip comment lines for the compare.
+        body_lines = [line for line in wrapper.splitlines() if not line.strip().startswith("//")]
+        self.assertEqual("\n".join(body_lines), normalized)
+
+    def test_rung_dispatch_and_endpoints(self) -> None:
+        driver = tool.render_sweep()["src/btst2_sweep_v1_epd_driver.cpp"]
+        main = tool.render_sweep()["src/btst2_sweep_v1_main.cpp"]
+        for index, name in enumerate(tool.SWEEP_RUNG_NAMES):
+            with self.subTest(rung=name):
+                self.assertIn(f'server.on("/api/btst2-sweep/{name}"', main)
+                self.assertIn(f"return pbsRunAtlasRung({index});", driver)
+        self.assertIn("epdData(btst2Byte3);", driver)
+        self.assertIn('server.on("/api/btst2-sweep/white-recovery"', main)
+        self.assertIn('server.on("/api/btst2-sweep/steps", HTTP_GET', main)
+        self.assertIn("epdDisplayCompiledFactoryOtpWhiteRecovery", driver)
+        self.assertNotIn('server.on("/api/frame"', main)
+        self.assertNotIn("frame-ingress", main)
+        self.assertNotIn("normalize", main.lower().replace("btst2_sweep_white_recovery", ""))
+
+    def test_sweep_render_deterministic_and_matches_disk(self) -> None:
+        first, second = tool.render_sweep(), tool.render_sweep()
+        self.assertEqual(first, second)
+        for relative, content in first.items():
+            with self.subTest(source=relative):
+                path = ROOT / relative
+                self.assertTrue(path.is_file())
+                self.assertEqual(path.read_bytes(), content.encode("utf-8"))
+
+    def test_sweep_env_tag_and_doc_registration(self) -> None:
+        platformio = (ROOT / "platformio.ini").read_text(encoding="utf-8")
+        frame_tool = (ROOT / "tools/mf1750_frame_tool.py").read_text(encoding="utf-8")
+        api_doc = (ROOT / "docs/MF1750_DRIVER_API.md").read_text(encoding="utf-8")
+        self.assertIn(f"[env:{tool.SWEEP_ENV}]", platformio)
+        self.assertIn(tool.SWEEP_TAG, frame_tool)
+        self.assertIn(tool.SWEEP_TAG, api_doc)
+        self.assertIn(f'FW_BUILD_TAG = "{tool.SWEEP_TAG}"',
+                      tool.render_sweep()["src/btst2_sweep_v1_main.cpp"])
+
+
 if __name__ == "__main__":
     unittest.main()
