@@ -7,7 +7,14 @@
 > 先以本页为准并回查原始 evidence。以后每完成一个软件里程碑、一次真屏 action、一次人工
 > 裁决或一次安全收尾，都必须在宣告完成前同步更新本页。
 
-最后更新：`2026-10-21 03:40 +0800`
+最后更新：`2026-10-21 04:20 +0800`
+
+## 2026-10-21 04:20 +0800 BTST2 扫掠 V3（修复版）完成：**0x29–0x49 区间响应平坦，旋钮假设证伪**；env 缺陷根因=漏选双控制器已修复（8 刷 2 写）
+
+- **批次 [`MF1750_BTST2_SWEEP_RUN_20261021_V3`](../.test-output/hardware/MF1750_BTST2_SWEEP_RUN_20261021_V3/)，manifest 自封 sha `66f39d11…`。** env 缺陷修复验证：烧后 V2 tag 通过、三档 DRF 全正常（s29/s39/s49 均 drf **32671**，PON 261/POF 151）；白恢复×3 全清、生产刷回 verify pass、relay OFF、busy=0。
+- **修复根因**（`3319d69`）：`pbsRunAtlasRung` 在 CS2 DTM 流写后未调 `setActiveControllers(true,true)`，PON/BTST2/DRF 只发给 CS2、级联主控 CS1 收不到 DRF → BUSY 永不释放。OTP 白路径自走 FOWR 故正常。回归测试已钉（选择语句先于 PON）。
+- **科学结果（重要阴性）**：三档外观**完全一致**——code4 在 0x29/0x39/0x49 全为暗绛，无绛↔卡其移动、无单调方向、drf 无差异；s49 与 P0V4 锚点一致。**BTST2[3] 在可驱动区间（0x29–0x49）对色调无可见效应**；0x17=V1 钉的不可驱动下界。atlas（绛）vs ptlw（卡其）差异**不可由 BTST2[3] 复现**——收窄为**路径级属性**：完整 second-setting+全帧 vs clean PTLW（PON→DRF→POF 跳过整段 second-setting）的差异，候选 knob 从单字节升级为"second-setting 段/驱动模式"整体。
+- **下一入口**（用户指示多 agent 并行，layer 1 扩稳定色）：①agent-8 构建**波形变体图集 env**（全帧 0E/1C + 波形库筛变体 × V4 8 码帧，一波形一刷）——0E/1C 在全帧路径下从未测过，ptlw 已证三 profile 同色但那是 clean-PTLW 路径；②agent-9 定量 V3 平坦度（每码 dE<2 坐实）+ 泛化任意网格 Lab 管线备变体图集批后分析；③随后 agent-6 跑变体图集批。
 
 ## 2026-10-21 03:40 +0800 BTST2 扫掠 V1+V2：0x17=全帧路径不可驱动点（下界数据）；扫掠 env 1E 路径实现缺陷（s49 也挂），离线 diff 修复后重扫
 
