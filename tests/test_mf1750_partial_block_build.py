@@ -787,5 +787,132 @@ class Btst2SweepTests(unittest.TestCase):
                       tool.render_sweep()["src/btst2_sweep_v1_main.cpp"])
 
 
+class WfAtlasTests(unittest.TestCase):
+    """Waveform-variant atlas: V4 frame x 5 pinned profiles."""
+
+    EXPECTED_R20 = {
+        "0E": "82528a6b1e89b636002124563477a9d7feedcb0551f080fd052a69cef27726ee",
+        "1C": "7070dc29c1723c4539b4b332ff09b74c682bf09d4b19765be38fddd4743334cf",
+        "1E": "5f1820da8b935361701bc6fe4d855b9694891c32ed33f420d4a5fce488235f40",
+        "1D": "58b5897fec693b851160456ffab49907b33a1b4ec535f3208f8192727f027119",
+        "0E_R0R1": "01938613895b88ba779089e5ede7b572b0a1cfdc294bccd80fcd5bca56b6de45",
+    }
+
+    def test_profile_table_is_pinned(self) -> None:
+        tool._validate_wf_atlas()
+        report = tool.build_wf_atlas_report()
+        self.assertEqual([p["label"] for p in report["profiles"]],
+                         ["0E", "1C", "1E", "1D", "0E_R0R1"])
+        for profile in report["profiles"]:
+            with self.subTest(profile=profile["label"]):
+                self.assertEqual(profile["r20_sha256"],
+                                 self.EXPECTED_R20[profile["label"]])
+                self.assertEqual(profile["pwr_sha256"], wmask.PWR_SHA256)
+                self.assertEqual(profile["pll_sha256"], wmask.PLL_SHA256)
+                self.assertEqual(profile["r21_sha256"], wmask.R21_SHA256)
+                self.assertTrue(profile["family_label_is_not_bitmask"])
+        contract = tool.render_wf_atlas()["src/generated/wf_atlas_v1_contract.inc"]
+        for sha in self.EXPECTED_R20.values():
+            self.assertIn(sha, contract)
+
+    def test_profile_shas_match_wmask_module(self) -> None:
+        module = {
+            "0E": wmask.build_offline_variant(0x0E)[0],
+            "1C": wmask.build_offline_variant(0x0C, True)[0],
+            "1E": wmask.build_offline_variant(0x0E, True)[0],
+            "1D": wmask.build_offline_variant(0x0D, True)[0],
+        }
+        for label, report in module.items():
+            with self.subTest(profile=label):
+                self.assertEqual(self.EXPECTED_R20[label], report["r20_sha256"])
+        self.assertEqual(self.EXPECTED_R20["0E_R0R1"],
+                         wmask.RECORD_SUBSET_ADD_VARIANTS[(0, 1)]["r20_sha256"])
+
+    def test_frame_identity_equals_v4(self) -> None:
+        contract = tool.render_wf_atlas()["src/generated/wf_atlas_v1_contract.inc"]
+        identities = tool.v4_identities()
+        self.assertIn(f'kAtlasFrameSha256[] = "{identities["frame"]["sha256"]}"', contract)
+        self.assertIn(f"kAtlasFrameFnv1a = 0x{identities['frame']['fnv1a']:08X}UL", contract)
+        self.assertIn(f"kAtlasCs1StreamFnv1a = 0x{identities['streams']['cs1']:08X}UL", contract)
+        self.assertIn(f"kAtlasCs2StreamFnv1a = 0x{identities['streams']['cs2']:08X}UL", contract)
+
+    def test_driver_structure_and_cross_pins(self) -> None:
+        driver = tool.render_wf_atlas()["src/wf_atlas_v1_epd_driver.cpp"]
+        self.assertIn(tool._r2g_tail(), driver)
+        for stem in ("0E", "1C", "1E", "1D", "0E_R0R1"):
+            with self.subTest(include=stem):
+                self.assertIn(f'#include "generated/spd1657_wf_wmask_{stem}.inc"', driver)
+        self.assertIn('#include "generated/partial_atlas_1e_v4_contract.inc"', driver)
+        self.assertIn('#include "generated/wf_atlas_v1_contract.inc"', driver)
+        self.assertIn("pbv4::kAtlasFrameFnv1a == pwfa::kAtlasFrameFnv1a", driver)
+        self.assertIn("pwfaProfileR20", driver)
+
+    def test_role_profile_index_mapping(self) -> None:
+        driver = tool.render_wf_atlas()["src/wf_atlas_v1_epd_driver.cpp"]
+        for role, index in (("Variant0E", 0), ("Variant1C", 1), ("Variant1E", 2),
+                            ("Variant1D", 3), ("Variant0ER0R1", 4)):
+            with self.subTest(role=role):
+                self.assertIn(f"case EpdWfAtlasRole::{role}:\n      return pwfaRunAtlasVariant({index});", driver)
+        for index, alias in enumerate(("pwa_0e", "pwa_1c", "pwa_1e", "pwa_1d", "pwa_0er0r1")):
+            with self.subTest(index=index):
+                self.assertIn(f"case {index}:\n      return {alias}::kR20Payload;", driver)
+
+    def test_refresh_wrapper_verbatim_and_selects_before_pon(self) -> None:
+        driver = tool.render_wf_atlas()["src/wf_atlas_v1_epd_driver.cpp"]
+        v4 = (ROOT / "src/partial_atlas_1e_v4_epd_driver.cpp").read_text(encoding="utf-8")
+        end_marker = "  return ok;\n}"
+        start_w = driver.index("bool pbv4RefreshFullFrame() {")
+        end_w = driver.index(end_marker, start_w) + len(end_marker)
+        start_v = v4.index("bool pbv4RefreshFullFrame() {")
+        end_v = v4.index(end_marker, start_v) + len(end_marker)
+        strip = lambda text: [line for line in text.splitlines()
+                              if not line.strip().startswith("//")]
+        self.assertEqual(strip(driver[start_w:end_w]), strip(v4[start_v:end_v]))
+        body = driver[start_w:end_w]
+        self.assertLess(body.index("setActiveControllers(true, true);"),
+                        body.index("epdSecondSettingAndRefresh();"))
+
+    def test_helpers_byte_identical_to_v4(self) -> None:
+        driver = tool.render_wf_atlas()["src/wf_atlas_v1_epd_driver.cpp"]
+        v4 = (ROOT / "src/partial_atlas_1e_v4_epd_driver.cpp").read_text(encoding="utf-8")
+        for fn in ("bool pbv4DigestMatchesHex", "bool pbv4PayloadShaMatches",
+                   "bool pbv4LoadRuntimeTuple"):
+            with self.subTest(helper=fn):
+                start_v4 = v4.index(fn)
+                end_v4 = v4.index("\n}\n", start_v4) + 3
+                self.assertIn(v4[start_v4:end_v4], driver)
+
+    def test_endpoints_and_no_extras(self) -> None:
+        main = tool.render_wf_atlas()["src/wf_atlas_v1_main.cpp"]
+        self.assertIn('MF1750_WF_ATLAS_V1_20261021', main)
+        for route in ("atlas-0e", "atlas-1c", "atlas-1e", "atlas-1d",
+                      "atlas-0e-r0r1", "white-recovery"):
+            with self.subTest(route=route):
+                self.assertIn(f'server.on("/api/wf-atlas/{route}"', main)
+        self.assertIn('server.on("/api/wf-atlas/steps", HTTP_GET', main)
+        self.assertNotIn('server.on("/api/frame"', main)
+        self.assertNotIn("frame-ingress", main)
+        self.assertNotIn("partial-atlas", main)
+
+    def test_wf_atlas_render_deterministic_and_matches_disk(self) -> None:
+        first, second = tool.render_wf_atlas(), tool.render_wf_atlas()
+        self.assertEqual(first, second)
+        for relative, content in first.items():
+            with self.subTest(source=relative):
+                path = ROOT / relative
+                self.assertTrue(path.is_file())
+                self.assertEqual(path.read_bytes(), content.encode("utf-8"))
+
+    def test_wf_atlas_env_tag_and_doc_registration(self) -> None:
+        platformio = (ROOT / "platformio.ini").read_text(encoding="utf-8")
+        frame_tool = (ROOT / "tools/mf1750_frame_tool.py").read_text(encoding="utf-8")
+        api_doc = (ROOT / "docs/MF1750_DRIVER_API.md").read_text(encoding="utf-8")
+        self.assertIn(f"[env:{tool.WF_ATLAS_ENV}]", platformio)
+        self.assertIn(tool.WF_ATLAS_TAG, frame_tool)
+        self.assertIn(tool.WF_ATLAS_TAG, api_doc)
+        self.assertIn(f'FW_BUILD_TAG = "{tool.WF_ATLAS_TAG}"',
+                      tool.render_wf_atlas()["src/wf_atlas_v1_main.cpp"])
+
+
 if __name__ == "__main__":
     unittest.main()
